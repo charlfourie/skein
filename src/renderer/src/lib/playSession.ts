@@ -70,7 +70,12 @@ export class PlaySession {
       const node = this.story?.current
       const activity = node?.takes === minutes ? node.activity : undefined
       // Merge with the previous entry when one beat passes time in pieces (a line, then its effects).
-      this.pendingPass.push({ minutes, ...(activity ? { activity } : {}) })
+      this.flushLog() // what happened before this, first
+      // Spoken lines take seconds; only time worth noticing goes in the transcript (the clock shows the rest).
+      if (minutes < 1 && !activity) return
+      const entry: Extract<PlayEntry, { kind: 'pass' }> = { kind: 'pass', minutes, ...(activity ? { activity } : {}), clock: '' }
+      this.entries.push(entry)
+      this.pendingPass.push(entry)
     }
     this.world.onRandom = (d, result) =>
       this.entries.push({
@@ -89,7 +94,8 @@ export class PlaySession {
     this.beat = this.step(() => this.story.start())
   }
 
-  private pendingPass: { minutes: number; activity?: string }[] = []
+  /** Pass entries waiting for the clock reading at the end of the step. */
+  private pendingPass: Extract<PlayEntry, { kind: 'pass' }>[] = []
   private replayPicks: number[] | null = null
   private replayIndex = 0
 
@@ -172,6 +178,15 @@ export class PlaySession {
     this.world.decide = undefined
   }
 
+  /** Move the world's time and rule log into the transcript. */
+  private flushLog(): void {
+    for (const line of this.world.log) {
+      if (line.startsWith('Time')) this.entries.push({ kind: 'time', text: line.replace(/^Time → /, '') })
+      else this.entries.push({ kind: 'rule', text: line })
+    }
+    this.world.log.length = 0
+  }
+
   private attach(story: SkeinStory): SkeinStory {
     story.onEnter = (n) => this.visited.add(n.id)
     return story
@@ -186,14 +201,9 @@ export class PlaySession {
       this.entries.push({ kind: 'note', text: err instanceof Error ? err.message : String(err) })
       return { kind: 'end', node: this.story.current }
     }
-    // Spoken lines take seconds; only time worth noticing goes in the transcript (the clock shows the rest).
-    for (const p of this.pendingPass) if (p.minutes >= 1 || p.activity) this.entries.push({ kind: 'pass', ...p, clock: clockText(this.world) })
+    this.flushLog()
+    for (const p of this.pendingPass) p.clock = clockText(this.world)
     this.pendingPass = []
-    for (const line of this.world.log) {
-      if (line.startsWith('Time')) this.entries.push({ kind: 'time', text: line.replace(/^Time → /, '') })
-      else this.entries.push({ kind: 'rule', text: line })
-    }
-    this.world.log.length = 0
     for (const [key, to] of this.world.changes) {
       const had = before.has(key)
       const from = had ? before.get(key)! : this.initial(key)
