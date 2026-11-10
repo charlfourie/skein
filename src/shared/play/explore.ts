@@ -68,8 +68,15 @@ export interface Ending {
 export interface NumberRange {
   key: StateKey
   label: string
+  /** Lowest and highest value at the end of a path. */
   min: number
   max: number
+  /** Lowest and highest value at any point along any path (including the start). */
+  low: number
+  high: number
+  /** Share of paths (by weight) where a change was cut short at the minimum / maximum. */
+  cappedLow: number
+  cappedHigh: number
   defMin?: number
   defMax?: number
 }
@@ -175,6 +182,9 @@ interface Played {
   fullDays: { nodeId: string | null; phase: string }[]
   weight: number
   random: boolean
+  /** Values written along the path, and changes cut short by a min ("low") or max ("high"). */
+  seen: Map<StateKey, { low: number; high: number }>
+  capped: Set<string>
 }
 
 /** Thrown from inside the runtime when a draw needs a pick that isn't in the list yet. */
@@ -193,6 +203,24 @@ function play(file: ExportFile, opts: ExploreOptions, startExtra: Record<StateKe
   const story = new SkeinStory(world, opts.flowId)
   story.onEnter = (n) => visited.add(n.id)
   const fullDays: Played['fullDays'] = []
+  const seen: Played['seen'] = new Map()
+  const capped: Played['capped'] = new Set()
+  world.onWrite = (key, stored, asked, before) => {
+    if (typeof stored !== 'number') return
+    const r = seen.get(key)
+    if (!r) {
+      const b = typeof before === 'number' ? before : stored
+      seen.set(key, { low: Math.min(b, stored), high: Math.max(b, stored) })
+    } else {
+      if (stored < r.low) r.low = stored
+      if (stored > r.high) r.high = stored
+    }
+    if (typeof asked === 'number' && Math.round(asked * 1e9) !== Math.round(stored * 1e9)) {
+      const def = world.definition(pathFromKey(key)!)
+      if (def?.min !== undefined && stored === def.min && asked < def.min) capped.add(`${key}|low`)
+      if (def?.max !== undefined && stored === def.max && asked > def.max) capped.add(`${key}|high`)
+    }
+  }
   world.onFullDay = (phase) => fullDays.push({ nodeId: story.current?.id ?? null, phase })
   const choices: string[] = []
   const maxBeats = opts.maxBeats ?? 200
@@ -208,7 +236,17 @@ function play(file: ExportFile, opts: ExploreOptions, startExtra: Record<StateKe
     choices.push(drawLabel(d, k))
     return k
   }
-  const done = (r: Omit<Played, 'choices' | 'beats' | 'world' | 'fullDays' | 'weight' | 'random'>): Played => ({ ...r, choices, beats, world, fullDays, weight, random })
+  const done = (r: Omit<Played, 'choices' | 'beats' | 'world' | 'fullDays' | 'weight' | 'random' | 'seen' | 'capped'>): Played => ({
+    ...r,
+    choices,
+    beats,
+    world,
+    fullDays,
+    weight,
+    random,
+    seen,
+    capped
+  })
   try {
     let beat = story.start()
     while (beat.kind !== 'end') {
@@ -239,7 +277,7 @@ export function explore(file: ExportFile, opts: ExploreOptions): ExploreReport {
   const errors = new Map<string, { message: string; count: number; example: PathExample }>()
   let stuck: ExploreReport['stuck'] = null
   const times = new Map<string, number>()
-  const ranges = new Map<StateKey, { min: number; max: number }>()
+  const ranges = new Map<StateKey, { min: number; max: number; low: number; high: number; cappedLow: number; cappedHigh: number }>()
   let longest: ExploreReport['longest'] = null
   const fullDays = new Map<string, ExploreReport['fullDays'][number]>()
   let paths = 0
@@ -288,11 +326,20 @@ export function explore(file: ExportFile, opts: ExploreOptions): ExploreReport {
       if (!path) continue
       const v = w.read(path)
       if (typeof v !== 'number') continue
+      const s = r.seen.get(k)
+      const low = Math.min(v, s?.low ?? v)
+      const high = Math.max(v, s?.high ?? v)
       const range = ranges.get(k)
-      if (!range) ranges.set(k, { min: v, max: v })
+      const cl = r.capped.has(`${k}|low`) ? r.weight : 0
+      const ch = r.capped.has(`${k}|high`) ? r.weight : 0
+      if (!range) ranges.set(k, { min: v, max: v, low, high, cappedLow: cl, cappedHigh: ch })
       else {
         if (v < range.min) range.min = v
         if (v > range.max) range.max = v
+        if (low < range.low) range.low = low
+        if (high > range.high) range.high = high
+        range.cappedLow += cl
+        range.cappedHigh += ch
       }
     }
     if (!longest || r.beats > longest.beats) longest = { ...example, beats: r.beats }
@@ -343,7 +390,18 @@ export function explore(file: ExportFile, opts: ExploreOptions): ExploreReport {
     ranges: [...ranges.entries()]
       .map(([key, r]) => {
         const d = definition(key)
-        return { key, label: labelForKey(key, tags), min: r.min, max: r.max, ...(d?.min !== undefined ? { defMin: d.min } : {}), ...(d?.max !== undefined ? { defMax: d.max } : {}) }
+        return {
+          key,
+          label: labelForKey(key, tags),
+          min: r.min,
+          max: r.max,
+          low: r.low,
+          high: r.high,
+          cappedLow: totalWeight ? r.cappedLow / totalWeight : 0,
+          cappedHigh: totalWeight ? r.cappedHigh / totalWeight : 0,
+          ...(d?.min !== undefined ? { defMin: d.min } : {}),
+          ...(d?.max !== undefined ? { defMax: d.max } : {})
+        }
       })
       .sort((a, b) => a.label.localeCompare(b.label)),
     times: [...times.entries()].map(([label, count]) => ({ label, count })).sort((a, b) => b.count - a.count),

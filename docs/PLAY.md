@@ -42,8 +42,9 @@ Plays **every** combination of choices from the start state and reports:
 - `advance to Night` run while it's already Night, which skips a whole day (use
   `advance until Night` if you meant "make it Night"). Play flags these in the
   transcript too;
-- the range every number ends up in, next to its defined min and max, so
-  unbounded values stand out.
+- every number: where it ends up, how far it swings along the way, its defined
+  min and max, and how often a change was held at a limit (a meter that maxes out
+  on most paths is worth a look). Numbers with no range are flagged.
 
 **Vary the start** explores several starting states at once: true and false for
 a switch, every option of an enum, or a list of numbers such as `0, 3, 5`. Each

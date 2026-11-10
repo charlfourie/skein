@@ -1,4 +1,4 @@
-import { compile } from './expr/check'
+import { compile, type StateRef } from './expr/check'
 import { FIELD_LABELS, forEachSite } from './expr/sites'
 import { analyzeFlow } from './flowAnalysis'
 import { dataRef, dataString } from './nodes'
@@ -108,18 +108,58 @@ export function validateProject(project: Project): IssueMap {
   for (const def of [...vars, ...rels]) {
     if (def.type === 'enum' && Object.keys(def.options ?? {}).length === 0) add(def.id, { level: 'warning', message: `“${def.name}” has no options yet.` })
   }
+  for (const def of [...vars, ...rels]) {
+    if (def.type !== 'number') continue
+    if (def.min !== undefined && def.max !== undefined && def.min > def.max) add(def.id, { level: 'warning', message: `“${def.name}”: minimum is above maximum.` })
+    if (def.defaultValue !== undefined) {
+      const problem = ruleValueProblem(project, def, def.defaultValue)
+      if (problem) add(def.id, { level: 'warning', message: `“${def.name}”: the starting value ${problem}.` })
+    }
+  }
+  for (const entity of Object.values(project.entities)) {
+    for (const [relId, targets] of Object.entries(entity.relations ?? {})) {
+      const rel = project.state.relationships[relId]
+      if (!rel) continue
+      for (const [toId, value] of Object.entries(targets)) {
+        const problem = ruleValueProblem(project, rel, value)
+        const to = project.entities[toId]?.name ?? 'another entity'
+        if (problem) add(entity.id, { level: 'warning', message: `${rel.name} toward ${to} ${problem}.` })
+      }
+    }
+  }
   const phases = Object.values(project.state.time.phases)
   if (phases.length === 0) add('state:time', { level: 'warning', message: 'No time phases: time can’t advance.' })
   checkTechnicalNames(phases.map((p) => ({ ownerId: p.id, name: p.label, technicalName: p.technicalName })), add)
 
   // --- Expressions ----------------------------------------------------------
+  // Numbers that actions push both up and down ("meters") should have a range.
+  const raised = new Set<string>()
+  const lowered = new Set<string>()
   forEachSite(project, (site) => {
     const result = compile(project, site.source, site.mode, site.ctx)
+    for (const a of result.actions) {
+      if (a.k !== 'set' || a.op === '=') continue
+      const id = meterId(project, a.ref, site.ctx.selfTemplateId ?? null)
+      if (id) (a.op === '+=' ? raised : lowered).add(id)
+    }
     const ownerId = site.owner.kind === 'node' ? site.owner.nodeId : site.owner.ruleId
     for (const d of result.diagnostics) {
       add(ownerId, { level: d.level, field: site.field, message: `${FIELD_LABELS[site.field] ?? site.field}: ${d.message}` })
     }
   })
+
+  for (const id of raised) {
+    if (!lowered.has(id)) continue
+    const [kind, ownerId, propId] = id.split('|')
+    const def =
+      kind === 'prop' ? project.templates[ownerId]?.properties[propId] : kind === 'var' ? project.state.variables[ownerId] : project.state.relationships[ownerId]
+    if (!def || def.type !== 'number' || def.min !== undefined || def.max !== undefined) continue
+    add(ownerId, {
+      level: 'warning',
+      ...(kind === 'prop' ? { propertyId: propId } : {}),
+      message: `“${def.name}” goes up and down (+= and -=) but has no minimum or maximum, so it can drift past what your conditions test. Set a range; Explore shows where it ends up.`
+    })
+  }
 
   // Node tags (Seen.Tag / Visits.Tag) are project-wide names.
   const tagOwners = new Map<string, string[]>()
@@ -227,4 +267,15 @@ function checkTechnicalNames(items: Named[], add: (id: string, issue: Issue) => 
 export function worstLevel(list: Issue[] | undefined): IssueLevel | null {
   if (!list?.length) return null
   return list.some((i) => i.level === 'error') ? 'error' : 'warning'
+}
+
+/** A number definition an action changes: "var|<id>", "rel|<id>" or "prop|<template id>|<property id>". */
+function meterId(project: Project, ref: StateRef, selfTemplateId: string | null): string | null {
+  if (ref.kind === 'world') return `var|${ref.varId}`
+  if (ref.kind === 'rel') return `rel|${ref.relId}`
+  if (ref.kind === 'prop') {
+    const templateId = project.entities[ref.entity]?.templateId ?? (ref.entity === 'self' ? selfTemplateId : null)
+    return templateId ? `prop|${templateId}|${ref.propId}` : null
+  }
+  return null
 }

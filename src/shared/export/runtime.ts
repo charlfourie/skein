@@ -69,6 +69,8 @@ export class SkeinWorld {
   rng: number
   /** Debugging hook: decide a draw instead of rolling (return the outcome index, see outcomesOf). */
   decide?: (draw: Draw) => number
+  /** Debugging hook: every write, with its key, the value stored, the value asked for (they differ when clamped or rounded) and the value before. */
+  onWrite?: (key: string, stored: ExportValue, asked: ExportValue, before: ExportValue) => void
   /** Debugging hook: called with every draw and its result. */
   onRandom?: (draw: Draw, result: ExportValue) => void
 
@@ -140,7 +142,7 @@ export class SkeinWorld {
     }
   }
 
-  private definition(p: StatePath): ExportDef | undefined {
+  definition(p: StatePath): ExportDef | undefined {
     const s = this.data.state
     if (p.get === 'var') return s.variables[p.var]
     if (p.get === 'rel') return s.relationships[p.rel]
@@ -187,7 +189,10 @@ export class SkeinWorld {
       if (def.min !== undefined) v = Math.max(def.min, v)
       if (def.max !== undefined) v = Math.min(def.max, v)
     }
-    this.changes.set(SkeinWorld.key(p), v)
+    const k = SkeinWorld.key(p)
+    const before = this.onWrite ? this.read(p) : null
+    this.changes.set(k, v)
+    this.onWrite?.(k, v, value, before)
   }
 
   // --- Expressions -------------------------------------------------------------

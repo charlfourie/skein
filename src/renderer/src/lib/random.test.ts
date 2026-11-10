@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { PlaySession } from '../renderer/src/lib/playSession'
-import { compile } from './expr/check'
-import { CONDITION_NODE_CTX } from './expr/sites'
-import { buildExport } from './export/build'
-import { SkeinWorld } from './export/runtime'
-import { createEmptyProject, createFlow, createStateVariable } from './factory'
-import { explore } from './play/explore'
-import type { Project } from './schema'
-import { validateProject } from './validate'
+import { PlaySession } from './playSession'
+import { compile } from '@shared/expr/check'
+import { CONDITION_NODE_CTX } from '@shared/expr/sites'
+import { buildExport } from '@shared/export/build'
+import { SkeinWorld } from '@shared/export/runtime'
+import { createEmptyProject, createFlow, createStateVariable } from '@shared/factory'
+import { explore } from '@shared/play/explore'
+import type { Project } from '@shared/schema'
+import { validateProject } from '@shared/validate'
 
 /**
  * A Condition node that's true 30% of the time, then a line that rolls a die into World.Die.

@@ -240,32 +240,13 @@ function Report({ flowId, report, file, ms, onReplay }: { flowId: string; report
 
       {report.ranges.length > 0 && (
         <section>
-          <h3 className="mb-1 text-2xs font-semibold uppercase tracking-wider text-faint">Numbers at the end of each path</h3>
-          <table className="w-full text-xs">
-            <tbody>
-              {report.ranges.map((r) => {
-                const unbounded = r.defMin === undefined && r.defMax === undefined
-                const constant = r.min === r.max
-                return (
-                  <tr key={r.key} className="border-b border-line/60 last:border-0">
-                    <td className="truncate py-1 pr-2 font-mono text-2xs text-muted" title={r.key}>
-                      {r.label}
-                    </td>
-                    <td className="whitespace-nowrap py-1 text-right tabular-nums text-fg">{constant ? r.min : `${r.min} … ${r.max}`}</td>
-                    <td className="whitespace-nowrap py-1 pl-2 text-right text-2xs">
-                      {unbounded ? (
-                        <span className="text-warn" title="No min or max set, so it can go anywhere">no range set</span>
-                      ) : (
-                        <span className="text-faint">
-                          {r.defMin ?? '−∞'} to {r.defMax ?? '∞'}
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+          <h3 className="mb-1 text-2xs font-semibold uppercase tracking-wider text-faint">Numbers</h3>
+          <p className="mb-1.5 text-2xs text-faint">Where each number ends up, and how far it swings along the way. A change past a min or max is cut short there.</p>
+          <div className="flex flex-col">
+            {report.ranges.map((r) => (
+              <RangeRow key={r.key} r={r} />
+            ))}
+          </div>
         </section>
       )}
 
@@ -275,6 +256,37 @@ function Report({ flowId, report, file, ms, onReplay }: { flowId: string; report
           {report.times.length > 4 ? ', …' : ''}.
         </p>
       )}
+    </div>
+  )
+}
+
+function RangeRow({ r }: { r: ExploreReport['ranges'][number] }) {
+  const unbounded = r.defMin === undefined && r.defMax === undefined
+  const span = (a: number, b: number) => (a === b ? String(a) : `${a} … ${b}`)
+  const pct = (x: number) => (x >= 0.995 ? 'every path' : x < 0.005 ? '<1% of paths' : `${Math.round(x * 100)}% of paths`)
+  const swings = r.low < r.min || r.high > r.max
+  return (
+    <div className="border-b border-line/60 py-1.5 last:border-0">
+      <div className="flex items-baseline gap-2">
+        <span className="min-w-0 flex-1 break-words font-mono text-2xs text-muted" title={r.key}>
+          {r.label}
+        </span>
+        <span className="shrink-0 tabular-nums text-xs text-fg" title="At the end of a path">
+          {span(r.min, r.max)}
+        </span>
+      </div>
+      <div className="mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 text-2xs">
+        {swings && <span className="text-faint">along the way {span(r.low, r.high)}</span>}
+        {unbounded ? (
+          <span className="text-warn" title="No min or max set, so nothing stops it drifting">no range set</span>
+        ) : (
+          <span className="text-faint">
+            range {r.defMin ?? '−∞'} to {r.defMax ?? '∞'}
+          </span>
+        )}
+        {r.cappedHigh > 0 && <span className="text-loop">held at max {r.defMax} on {pct(r.cappedHigh)}</span>}
+        {r.cappedLow > 0 && <span className="text-loop">held at min {r.defMin} on {pct(r.cappedLow)}</span>}
+      </div>
     </div>
   )
 }

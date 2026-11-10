@@ -109,6 +109,8 @@ Nodes use state in three places:
 - **Every node** can also have **Requires** (it's only available while this holds) and
   **Effects** (applied when the story passes through).
 
+A number that actions push both up and down (a meter, like Strain or Trust) is flagged until it has a min and max.
+
 Expressions are checked as you type. Mistakes are explained with a suggestion
 ("no property “Mod”. Did you mean “Mood”?"), and nodes with broken expressions turn
 red on the canvas. Conditions show whether they are true at game start. Renaming an
