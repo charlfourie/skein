@@ -73,6 +73,10 @@ invalid identifiers are flagged in red.
 
 - **Adding nodes:** drag from the palette, click a palette entry, or double-click or
   right-click the canvas.
+- **Frames:** select some nodes and press **Frame** (or Ctrl+G) to box them as a
+  labelled scene. Drag the title bar to move the frame with everything in it,
+  double-click it to rename it, and pick a colour on hover. Frames are only there to
+  help you read the canvas: they're never exported. Auto-layout refits them.
 - **Connecting:** drag from an output (bottom) to an input (top). While you drag:
   - inputs that can take the connection glow green;
   - nodes that can't take it fade back;

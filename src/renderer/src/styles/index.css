@@ -232,3 +232,14 @@ textarea,
     animation: none;
   }
 }
+
+/* Frames: only the title bar and resize handles take the mouse. */
+.react-flow__node-frame .sk-frame-resize {
+  pointer-events: all;
+}
+.react-flow__node-frame.selected,
+.react-flow__node-frame:focus,
+.react-flow__node-frame:focus-visible {
+  outline: none;
+  box-shadow: none;
+}

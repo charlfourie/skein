@@ -5,7 +5,8 @@ import { compareEdges, nextEdgeOrder, nextStartOrder, normalizeOrders, outgoingE
 import { newId } from '@shared/ids'
 import { deleteFlowElements } from '@shared/mutations'
 import { canConnect, INPUT_HANDLE, isExclusiveHandle, isUnsetValue, outputHandles, type ConnectionLike, type NodeType } from '@shared/nodes'
-import type { Flow, Position, Project } from '@shared/schema'
+import { frameAround, nodesInFrame, type Size } from '@shared/frames'
+import type { Flow, FlowFrame, Position, Project } from '@shared/schema'
 import { useProjectStore } from './projectStore'
 
 /** Canvas edits. Each call is one undoable step. */
@@ -137,12 +138,65 @@ export function reconnect(flowId: string, edgeId: string, c: ConnectionLike): bo
   })
 }
 
-export function deleteElements(flowId: string, nodeIds: string[], edgeIds: string[]): void {
-  if (nodeIds.length === 0 && edgeIds.length === 0) return
-  editFlow(nodeIds.length ? 'Delete nodes' : 'Delete connections', flowId, (flow) =>
+export function deleteElements(flowId: string, nodeIds: string[], edgeIds: string[], frameIds: string[] = []): void {
+  if (nodeIds.length === 0 && edgeIds.length === 0 && frameIds.length === 0) return
+  editFlow(nodeIds.length ? 'Delete nodes' : frameIds.length && !edgeIds.length ? 'Delete frame' : 'Delete connections', flowId, (flow) => {
     deleteFlowElements(flow, nodeIds, edgeIds)
-  )
+    // Deleting a frame keeps the nodes inside it.
+    for (const id of frameIds) delete flow.frames?.[id]
+    if (flow.frames && Object.keys(flow.frames).length === 0) delete flow.frames
+  })
   store().select({ kind: 'flow', id: flowId })
+}
+
+// --- Frames (editor-only groups) ------------------------------------------------
+
+/** Add a frame around these nodes (or a default-size one at `at`). Returns its id. */
+export function addFrame(flowId: string, opts: { around?: string[]; at?: Position; sizes?: Record<string, Size>; label?: string }): string | null {
+  const flow = store().project?.flows[flowId]
+  if (!flow) return null
+  const rect = (opts.around?.length ? frameAround(flow, opts.around, opts.sizes) : null) ?? {
+    position: roundPosition(opts.at ?? { x: 0, y: 0 }),
+    width: 560,
+    height: 360
+  }
+  const id = newId()
+  const ok = editFlow('Add frame', flowId, (f) => {
+    f.frames ??= {}
+    f.frames[id] = { id, label: opts.label ?? 'Scene', ...rect }
+  })
+  return ok ? id : null
+}
+
+/** Rename or recolour a frame. An empty colour goes back to neutral. */
+export function updateFrame(flowId: string, frameId: string, patch: Partial<Pick<FlowFrame, 'label' | 'color'>>): void {
+  editFlow('Edit frame', flowId, (f) => {
+    const fr = f.frames?.[frameId]
+    if (!fr) return
+    if (patch.label !== undefined && fr.label !== patch.label) fr.label = patch.label
+    if (patch.color !== undefined) {
+      if (patch.color) fr.color = patch.color
+      else delete fr.color
+    }
+  })
+}
+
+/** Move and/or resize a frame; `nodes` gives new positions for nodes moved with it. One undo step. */
+export function placeFrame(flowId: string, frameId: string, rect: { position: Position; width?: number; height?: number }, nodes: Record<string, Position> = {}): void {
+  editFlow('Move frame', flowId, (f) => {
+    const fr = f.frames?.[frameId]
+    if (!fr) return
+    const p = roundPosition(rect.position)
+    if (fr.position.x !== p.x || fr.position.y !== p.y) fr.position = p
+    if (rect.width !== undefined && Math.round(rect.width) !== fr.width) fr.width = Math.max(120, Math.round(rect.width))
+    if (rect.height !== undefined && Math.round(rect.height) !== fr.height) fr.height = Math.max(80, Math.round(rect.height))
+    for (const [id, pos] of Object.entries(nodes)) {
+      const node = f.nodes[id]
+      if (!node) continue
+      const next = roundPosition(pos)
+      if (node.position.x !== next.x || node.position.y !== next.y) node.position = next
+    }
+  })
 }
 
 /** Copy nodes (and the connections between them) slightly offset. Returns the new ids. */
@@ -223,10 +277,17 @@ export function autoLayout(flowId: string, sizes: Record<string, { width: number
   const flow = store().project?.flows[flowId]
   if (!flow) return
   const positions = computeLayout(flow, sizes)
+  // Frames keep the nodes they held: refit each around its nodes' new places.
+  const members = Object.values(flow.frames ?? {}).map((fr) => [fr.id, nodesInFrame(flow, fr, sizes)] as const)
   editFlow('Auto-layout', flowId, (f) => {
     for (const [id, pos] of Object.entries(positions)) {
       const node = f.nodes[id]
       if (node && (node.position.x !== pos.x || node.position.y !== pos.y)) node.position = pos
+    }
+    for (const [frameId, ids] of members) {
+      const fr = f.frames?.[frameId]
+      const rect = fr && frameAround(f, ids, sizes)
+      if (fr && rect) Object.assign(fr, rect)
     }
   })
 }

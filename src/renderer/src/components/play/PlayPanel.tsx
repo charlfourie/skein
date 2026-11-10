@@ -1,3 +1,4 @@
+import { ExprText } from '../defs/ExprText'
 import { motion } from 'framer-motion'
 import { AlertTriangle, ArrowRightCircle, Clock, Crosshair, Flag, Lock, Play, RotateCcw, X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -273,7 +274,11 @@ function PlayTab({
                     <Lock size={11} className="mt-0.5 shrink-0" />
                     <span className="min-w-0 flex-1">
                       {o.text}
-                      {o.requires && <span className="mt-0.5 block font-mono text-2xs text-faint/80">needs {o.requires}</span>}
+                      {o.requires && (
+                        <span className="mt-0.5 block font-mono text-2xs text-faint/80">
+                          needs <ExprText source={o.requires} />
+                        </span>
+                      )}
                     </span>
                   </div>
                 )

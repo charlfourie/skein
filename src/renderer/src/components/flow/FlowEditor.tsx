@@ -16,16 +16,17 @@ import {
   type OnSelectionChangeParams
 } from '@xyflow/react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Activity, AlertTriangle, Grid3x3, Maximize, Network, Play, Repeat } from 'lucide-react'
+import { Activity, AlertTriangle, Frame as FrameIcon, Grid3x3, Maximize, Network, Play, Repeat } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react'
 import { analyzeFlow, type FlowAnalysis } from '@shared/flowAnalysis'
+import { framesOf, nodesInFrame } from '@shared/frames'
 import { choiceNumbers, startNodes } from '@shared/flowOrder'
 import { canConnect, dataRef, dataString, NODE_TYPES, type NodeType } from '@shared/nodes'
 import type { Flow, Position, Project } from '@shared/schema'
 import type { IssueMap } from '@shared/validate'
 import { useIssues } from '../../hooks/useIssues'
 import { cx } from '../../lib/cx'
-import { addNode, autoLayout, connect, deleteElements, duplicateNodes, moveNodes, reconnect } from '../../store/flowOps'
+import { addFrame, addNode, autoLayout, connect, deleteElements, duplicateNodes, moveNodes, placeFrame, reconnect } from '../../store/flowOps'
 import { usePrefs } from '../../store/prefs'
 import { useProjectStore, type Selection } from '../../store/projectStore'
 import { usePlay } from '../../store/play'
@@ -33,9 +34,14 @@ import { PlayPanel } from '../play/PlayPanel'
 import { MenuItem, Popover } from '../ui/Popover'
 import { COLORS, FlowContext, NODE_DRAG_MIME, NODE_META } from './flowMeta'
 import { ConnectionLine, edgeColor, NarrativeEdge, type NarrativeRFEdge } from './NarrativeEdge'
+import { FrameNode, type FrameRFNode } from './FrameNode'
 import { NarrativeNode, type NarrativeRFNode } from './NarrativeNode'
 
-const nodeTypes = { narrative: NarrativeNode }
+const nodeTypes = { narrative: NarrativeNode, frame: FrameNode }
+
+/** Everything on the canvas: story nodes, and the frames that group them. */
+type CanvasNode = NarrativeRFNode | FrameRFNode
+const isFrame = (n: { type?: string }): boolean => n.type === 'frame'
 const edgeTypes = { narrative: NarrativeEdge }
 
 /** Where new nodes appear relative to the pointer (roughly the node's top centre). */
@@ -78,6 +84,21 @@ function deriveNodes(project: Project, flow: Flow, analysis: FlowAnalysis, issue
         }
       }
     })
+}
+
+function deriveFrames(flow: Flow): FrameRFNode[] {
+  return framesOf(flow).map((frame, i) => ({
+    id: frame.id,
+    type: 'frame' as const,
+    position: frame.position,
+    width: frame.width,
+    height: frame.height,
+    // Behind the story nodes; larger frames behind smaller ones.
+    zIndex: -100 + i,
+    dragHandle: '.sk-frame-handle',
+    style: { pointerEvents: 'none' as const },
+    data: { frame, flowId: flow.id, count: nodesInFrame(flow, frame).length }
+  }))
 }
 
 function deriveEdges(flow: Flow, analysis: FlowAnalysis): NarrativeRFEdge[] {
@@ -137,16 +158,16 @@ export function FlowEditor({ flow }: { flow: Flow }) {
   const { animateEdges, snapToGrid, set: setPrefs } = usePrefs()
   const issues = useIssues()
   const analysis = analyzeFlow(flow)
-  const rf = useReactFlow<NarrativeRFNode, NarrativeRFEdge>()
+  const rf = useReactFlow<CanvasNode, NarrativeRFEdge>()
   const wrapper = useRef<HTMLDivElement>(null)
 
   // React Flow owns transient state (drag positions, selection, measured
   // sizes); the store owns the document. Re-derive from the store whenever
   // the document changes, carrying the transient state across.
-  const derivedNodes = useMemo(() => deriveNodes(project, flow, analysis, issues), [project, flow, analysis, issues])
+  const derivedNodes = useMemo<CanvasNode[]>(() => [...deriveFrames(flow), ...deriveNodes(project, flow, analysis, issues)], [project, flow, analysis, issues])
   const derivedEdges = useMemo(() => deriveEdges(flow, analysis), [flow, analysis])
   const initialSelection = useProjectStore.getState().selection
-  const [nodes, setNodes] = useState<NarrativeRFNode[]>(() =>
+  const [nodes, setNodes] = useState<CanvasNode[]>(() =>
     derivedNodes.map((n) => ({ ...n, selected: initialSelection?.kind === 'node' && initialSelection.id === n.id }))
   )
   const [edges, setEdges] = useState<NarrativeRFEdge[]>(derivedEdges)
@@ -160,8 +181,8 @@ export function FlowEditor({ flow }: { flow: Flow }) {
       const fresh = sel?.kind === 'node' && sel.flowId === flow.id && !byId.has(sel.id) ? sel.id : null
       return derivedNodes.map((n) => {
         const old = byId.get(n.id)
-        if (fresh) return old ? { ...n, selected: false, measured: old.measured } : { ...n, selected: n.id === fresh }
-        return old ? { ...n, selected: old.selected, measured: old.measured } : n
+        if (fresh) return (old ? { ...n, selected: false, measured: old.measured } : { ...n, selected: n.id === fresh }) as CanvasNode
+        return (old ? { ...n, selected: old.selected, measured: old.measured } : n) as CanvasNode
       })
     })
   }, [derivedNodes, flow.id])
@@ -174,7 +195,7 @@ export function FlowEditor({ flow }: { flow: Flow }) {
 
   // Deletions go through onDelete (one undo step), so drop RF's own removals.
   const onNodesChange = useCallback(
-    (changes: NodeChange<NarrativeRFNode>[]) => setNodes((nds) => applyNodeChanges(changes.filter((c) => c.type !== 'remove'), nds)),
+    (changes: NodeChange<CanvasNode>[]) => setNodes((nds) => applyNodeChanges(changes.filter((c) => c.type !== 'remove'), nds)),
     []
   )
   const onEdgesChange = useCallback(
@@ -183,7 +204,8 @@ export function FlowEditor({ flow }: { flow: Flow }) {
   )
 
   const onSelectionChange = useCallback(
-    ({ nodes: selNodes, edges: selEdges }: OnSelectionChangeParams) => {
+    ({ nodes: allSelNodes, edges: selEdges }: OnSelectionChangeParams) => {
+      const selNodes = allSelNodes.filter((n) => !isFrame(n)) // frames are edited on the canvas itself
       const current = useProjectStore.getState().selection
       let next: Selection
       if (selNodes.length === 1 && selEdges.length === 0) next = { kind: 'node', flowId: flow.id, id: selNodes[0].id }
@@ -284,12 +306,89 @@ export function FlowEditor({ flow }: { flow: Flow }) {
     setTimeout(() => void rf.fitView({ padding: 0.25, duration: 450, maxZoom: 1 }), 60)
   }
 
+  // --- Frames -----------------------------------------------------------------
+
+  const sizesNow = () =>
+    Object.fromEntries(
+      rf
+        .getNodes()
+        .filter((n) => !isFrame(n))
+        .map((n) => [n.id, { width: n.measured?.width ?? 260, height: n.measured?.height ?? 100 }])
+    )
+
+  /** A frame around the selected nodes, or an empty one in the middle of the view. */
+  const addFrameHere = () => {
+    const selected = nodes.filter((n) => n.selected && !isFrame(n)).map((n) => n.id)
+    const rect = wrapper.current?.getBoundingClientRect()
+    const centre = rect ? rf.screenToFlowPosition({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }) : { x: 0, y: 0 }
+    addFrame(flow.id, selected.length ? { around: selected, sizes: sizesNow() } : { at: { x: centre.x - 280, y: centre.y - 180 } })
+  }
+
+  // Dragging a frame carries the nodes inside it along.
+  const frameDrag = useRef<Map<string, { start: Position; members: Map<string, Position> }>>(new Map())
+  const startFrameDrag = (dragged: CanvasNode[]) => {
+    frameDrag.current.clear()
+    const draggedIds = new Set(dragged.map((n) => n.id))
+    const sizes = sizesNow()
+    for (const n of dragged) {
+      if (!isFrame(n)) continue
+      const frame = flow.frames?.[n.id]
+      if (!frame) continue
+      const members = new Map<string, Position>()
+      for (const id of nodesInFrame(flow, frame, sizes)) if (!draggedIds.has(id)) members.set(id, flow.nodes[id].position)
+      // Frames inside the frame come along too.
+      for (const inner of framesOf(flow))
+        if (inner.id !== frame.id && !draggedIds.has(inner.id) && nodesInFrameRect(frame, inner)) members.set(inner.id, inner.position)
+      frameDrag.current.set(n.id, { start: frame.position, members })
+    }
+  }
+  const dragFrames = (dragged: CanvasNode[]) => {
+    if (!frameDrag.current.size) return
+    const moved = new Map<string, Position>()
+    for (const n of dragged) {
+      const d = frameDrag.current.get(n.id)
+      if (!d) continue
+      const dx = n.position.x - d.start.x
+      const dy = n.position.y - d.start.y
+      for (const [id, p] of d.members) moved.set(id, { x: p.x + dx, y: p.y + dy })
+    }
+    if (moved.size) setNodes((nds) => nds.map((n) => (moved.has(n.id) ? ({ ...n, position: moved.get(n.id)! } as CanvasNode) : n)))
+  }
+  const stopDrag = (dragged: CanvasNode[]) => {
+    const frames = dragged.filter(isFrame)
+    const positions: Record<string, Position> = Object.fromEntries(dragged.filter((n) => !isFrame(n)).map((n) => [n.id, n.position]))
+    if (!frames.length) {
+      moveNodes(flow.id, positions)
+      return
+    }
+    // One undo step per dragged frame, carrying its members (and any other dragged nodes) with it.
+    frames.forEach((f, i) => {
+      const d = frameDrag.current.get(f.id)
+      const dx = f.position.x - (d?.start.x ?? f.position.x)
+      const dy = f.position.y - (d?.start.y ?? f.position.y)
+      const members: Record<string, Position> = i === 0 ? { ...positions } : {}
+      const innerFrames: [string, Position][] = []
+      for (const [id, p] of d?.members ?? []) {
+        if (flow.frames?.[id]) innerFrames.push([id, { x: p.x + dx, y: p.y + dy }])
+        else members[id] = { x: p.x + dx, y: p.y + dy }
+      }
+      placeFrame(flow.id, f.id, { position: f.position }, members)
+      for (const [id, p] of innerFrames) placeFrame(flow.id, id, { position: p })
+    })
+    frameDrag.current.clear()
+  }
+
   const onKeyDown = (e: KeyboardEvent) => {
     const t = e.target as HTMLElement
     if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable) return
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'g') {
+      e.preventDefault()
+      addFrameHere()
+      return
+    }
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'd') {
       e.preventDefault()
-      const ids = nodes.filter((n) => n.selected).map((n) => n.id)
+      const ids = nodes.filter((n) => n.selected && !isFrame(n)).map((n) => n.id)
       const created = duplicateNodes(flow.id, ids)
       if (created.length === 1) select({ kind: 'node', flowId: flow.id, id: created[0] })
     }
@@ -333,7 +432,7 @@ export function FlowEditor({ flow }: { flow: Flow }) {
           if ((e.target as Element).classList.contains('react-flow__pane')) openQuickAdd({ x: e.clientX, y: e.clientY })
         }}
       >
-        <ReactFlow<NarrativeRFNode, NarrativeRFEdge>
+        <ReactFlow<CanvasNode, NarrativeRFEdge>
           nodes={nodes}
           edges={edges}
           nodeTypes={nodeTypes}
@@ -341,14 +440,22 @@ export function FlowEditor({ flow }: { flow: Flow }) {
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onSelectionChange={onSelectionChange}
-          onNodeDragStop={(_e, _n, dragged) =>
-            moveNodes(flow.id, Object.fromEntries(dragged.map((n) => [n.id, n.position])))
-          }
+          onNodeDragStart={(_e, _n, dragged) => startFrameDrag(dragged)}
+          onNodeDrag={(_e, _n, dragged) => dragFrames(dragged)}
+          onNodeDragStop={(_e, _n, dragged) => stopDrag(dragged)}
           onConnect={(c) => connect(flow.id, c)}
           onConnectEnd={onConnectEnd}
           onReconnect={(old, c) => reconnect(flow.id, old.id, c)}
           edgesReconnectable
-          onDelete={({ nodes: ns, edges: es }) => deleteElements(flow.id, ns.map((n) => n.id), es.map((e) => e.id))}
+          onDelete={({ nodes: ns, edges: es }) =>
+            deleteElements(
+              flow.id,
+              ns.filter((n) => !isFrame(n)).map((n) => n.id),
+              es.map((e) => e.id),
+              ns.filter(isFrame).map((n) => n.id)
+            )
+          }
+          elevateNodesOnSelect={false}
           isValidConnection={isValidConnection}
           connectionLineComponent={ConnectionLine}
           connectionRadius={44}
@@ -373,6 +480,7 @@ export function FlowEditor({ flow }: { flow: Flow }) {
             zoomable
             position="bottom-right"
             nodeColor={(n) => {
+              if (isFrame(n)) return 'rgba(255, 255, 255, 0.05)'
               const d = (n as NarrativeRFNode).data
               return d?.error ? COLORS.false : d?.warn ? '#fbbf24' : '#5a6174'
             }}
@@ -383,7 +491,7 @@ export function FlowEditor({ flow }: { flow: Flow }) {
           />
 
           <Panel position="top-left">
-            <Palette onAdd={addAtCenter} />
+            <Palette onAdd={addAtCenter} onFrame={addFrameHere} />
           </Panel>
 
           <Panel position="top-right">
@@ -478,7 +586,7 @@ export function FlowEditor({ flow }: { flow: Flow }) {
 
 // ---------------------------------------------------------------------------
 
-function Palette({ onAdd }: { onAdd(type: NodeType): void }) {
+function Palette({ onAdd, onFrame }: { onAdd(type: NodeType): void; onFrame(): void }) {
   return (
     <motion.div
       initial={{ opacity: 0, x: -8 }}
@@ -511,6 +619,20 @@ function Palette({ onAdd }: { onAdd(type: NodeType): void }) {
           </motion.button>
         )
       })}
+      <div className="my-0.5 border-t border-line/70" />
+      <motion.button
+        type="button"
+        onClick={onFrame}
+        whileHover={{ x: 2 }}
+        whileTap={{ scale: 0.96 }}
+        title="Group nodes in a labelled frame (Ctrl+G). Frames are for you: they don't change how the story plays."
+        className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted transition-colors hover:bg-raised hover:text-fg"
+      >
+        <span className="grid h-5 w-5 place-items-center rounded bg-raised text-muted">
+          <FrameIcon size={12} />
+        </span>
+        Frame
+      </motion.button>
     </motion.div>
   )
 }
@@ -581,3 +703,12 @@ function IssueChip({
   )
 }
 
+/** Whether frame `inner` lies entirely inside frame `outer`. */
+function nodesInFrameRect(outer: { position: Position; width: number; height: number }, inner: { position: Position; width: number; height: number }): boolean {
+  return (
+    inner.position.x >= outer.position.x &&
+    inner.position.y >= outer.position.y &&
+    inner.position.x + inner.width <= outer.position.x + outer.width &&
+    inner.position.y + inner.height <= outer.position.y + outer.height
+  )
+}

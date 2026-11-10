@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { createEmptyProject } from '@shared/factory'
 import { buildExport } from '@shared/export/build'
 import { orderedTargets, startNodes } from '@shared/flowOrder'
-import { addNode, autoLayout, computeLayout, connect, deleteElements, duplicateNodes, moveChoice, moveNodes, moveStart, reconnect, updateNodeData } from './flowOps'
+import { addFrame, addNode, autoLayout, computeLayout, connect, deleteElements, duplicateNodes, moveChoice, moveNodes, moveStart, placeFrame, reconnect, updateFrame, updateNodeData } from './flowOps'
 import { selectDirty, useProjectStore } from './projectStore'
 
 const s = () => useProjectStore.getState()
@@ -141,5 +141,29 @@ describe('flow operations', () => {
     expect(startNodes(flow()).map((n) => n.id)).toEqual([c, b])
     const [copy] = duplicateNodes(flowId, [c])
     expect(flow().nodes[copy].data.startOrder).toBeUndefined()
+  })
+
+  it('frames: wrap a selection, move with their nodes in one undo, rename, refit on auto-layout, and delete without taking nodes', () => {
+    const a = addNode(flowId, 'dialogue', { x: 0, y: 0 })!
+    const b = addNode(flowId, 'dialogue', { x: 0, y: 300 }, { source: a, sourceHandle: 'out' })!
+    const outside = addNode(flowId, 'dialogue', { x: 3000, y: 0 })!
+    const fr = addFrame(flowId, { around: [a, b] })!
+    expect(flow().frames?.[fr]).toMatchObject({ label: 'Scene', position: { x: -32, y: -56 }, width: 324, height: 488 })
+    updateFrame(flowId, fr, { label: 'Arrival', color: 'teal' })
+    expect(flow().frames?.[fr]).toMatchObject({ label: 'Arrival', color: 'teal' })
+    placeFrame(flowId, fr, { position: { x: 68, y: 44 } }, { [a]: { x: 100, y: 100 }, [b]: { x: 100, y: 400 } })
+    expect(flow().nodes[a].position).toEqual({ x: 100, y: 100 })
+    expect(flow().frames?.[fr].position).toEqual({ x: 68, y: 44 })
+    s().undo()
+    expect(flow().nodes[a].position).toEqual({ x: 0, y: 0 }) // frame and nodes undo together
+    expect(flow().frames?.[fr].position).toEqual({ x: -32, y: -56 })
+    autoLayout(flowId, {})
+    const f = flow().frames![fr]
+    const na = flow().nodes[a].position
+    expect(na.x - f.position.x).toBe(32) // refit around its nodes
+    expect(na.y - f.position.y).toBe(56)
+    deleteElements(flowId, [], [], [fr])
+    expect(flow().frames).toBeUndefined()
+    expect(Object.keys(flow().nodes).sort()).toEqual([a, b, outside].sort())
   })
 })

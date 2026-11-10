@@ -81,11 +81,29 @@ export const FlowEdgeSchema = z
   })
   .passthrough()
 
+/**
+ * A labelled box on the canvas that groups nodes visually (a scene, a beat, a
+ * conversation). Editor-only: it has no effect on play and isn't exported.
+ * Moving a frame moves the nodes inside it.
+ */
+export const FlowFrameSchema = z
+  .object({
+    id: Id,
+    label: z.string().default(''),
+    position: PositionSchema,
+    width: z.number().finite().positive(),
+    height: z.number().finite().positive(),
+    /** A colour from the frame palette (see FRAME_COLORS); absent = neutral. */
+    color: z.string().optional()
+  })
+  .passthrough()
+
 export const FlowSchema = z
   .object({
     ...treeItemShape,
     nodes: z.record(FlowNodeSchema).default({}),
-    edges: z.record(FlowEdgeSchema).default({})
+    edges: z.record(FlowEdgeSchema).default({}),
+    frames: z.record(FlowFrameSchema).optional()
   })
   .passthrough()
 
@@ -240,6 +258,7 @@ export type ProjectMeta = z.output<typeof ProjectMetaSchema>
 export type Folder = z.output<typeof FolderSchema>
 export type FlowNode = z.output<typeof FlowNodeSchema>
 export type FlowEdge = z.output<typeof FlowEdgeSchema>
+export type FlowFrame = z.output<typeof FlowFrameSchema>
 export type Flow = z.output<typeof FlowSchema>
 export type PropertyValue = z.output<typeof PropertyValueSchema>
 export type EnumOption = z.output<typeof EnumOptionSchema>

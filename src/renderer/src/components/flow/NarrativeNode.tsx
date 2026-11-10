@@ -9,6 +9,7 @@ import { cx } from '../../lib/cx'
 import { templateIcon } from '../../lib/meta'
 import { GENERIC_META, NODE_META, useFlowContext } from './flowMeta'
 import { usePlayMark } from '../../store/play'
+import { ExprText } from '../defs/ExprText'
 import { useProjectStore } from '../../store/projectStore'
 
 export interface NarrativeNodeData extends Record<string, unknown> {
@@ -190,13 +191,17 @@ function StateLines({ node }: { node: FlowNode }) {
       {requires && (
         <p className="flex items-start gap-1 text-[11px] leading-snug text-muted" title={`Requires: ${requires}`}>
           <Lock size={10} className="mt-0.5 shrink-0 text-warn" />
-          <code className="line-clamp-2 font-mono">{requires}</code>
+          <code className="line-clamp-2 font-mono">
+            <ExprText source={requires} />
+          </code>
         </p>
       )}
       {effects && (
         <p className="flex items-start gap-1 text-[11px] leading-snug text-muted" title={`Effects:\n${effects}`}>
           <Zap size={10} className="mt-0.5 shrink-0 text-ok" />
-          <code className="line-clamp-2 whitespace-pre-wrap font-mono">{effects}</code>
+          <code className="line-clamp-2 whitespace-pre-wrap font-mono">
+            <ExprText source={effects} />
+          </code>
         </p>
       )}
     </div>
@@ -236,12 +241,20 @@ function Body({ node, data }: { node: FlowNode; data: NarrativeNodeData }) {
     }
     case 'condition': {
       const expr = dataString(node, 'expression')
-      return expr ? <code className="line-clamp-3 block break-words font-mono text-xs text-fg">{expr}</code> : <Placeholder>No expression</Placeholder>
+      return expr ? (
+        <code className="line-clamp-3 block font-mono text-xs text-fg">
+          <ExprText source={expr} />
+        </code>
+      ) : (
+        <Placeholder>No expression</Placeholder>
+      )
     }
     case 'instruction': {
       const script = dataString(node, 'script')
       return script ? (
-        <code className="line-clamp-4 block whitespace-pre-wrap break-words font-mono text-xs text-fg">{script}</code>
+        <code className="line-clamp-4 block whitespace-pre-wrap font-mono text-xs text-fg">
+          <ExprText source={script} />
+        </code>
       ) : (
         <Placeholder>No instruction</Placeholder>
       )
