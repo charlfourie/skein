@@ -22,6 +22,22 @@ const CSP = [
   "form-action 'none'"
 ].join('; ')
 
+/**
+ * The page lives in web/ but the entry is in src/. A virtual id lets the same
+ * <script> tag work in the dev server (which can't serve files above its root
+ * by relative URL) and in the build.
+ */
+const ENTRY_ID = '/@skein/web-entry'
+function webEntry(): Plugin {
+  const entry = resolve(__dirname, 'src/renderer/src/web/main.tsx')
+  return {
+    name: 'skein:web-entry',
+    resolveId(id) {
+      return id === ENTRY_ID ? entry : undefined
+    }
+  }
+}
+
 function productionCsp(): Plugin {
   return {
     name: 'skein:production-csp',
@@ -40,7 +56,7 @@ export default defineConfig({
       '@shared': resolve(__dirname, 'src/shared')
     }
   },
-  plugins: [react(), productionCsp()],
+  plugins: [webEntry(), react(), productionCsp()],
   server: { fs: { allow: [__dirname] } },
   build: {
     outDir: resolve(__dirname, 'dist'),

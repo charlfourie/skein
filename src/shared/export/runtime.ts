@@ -251,6 +251,8 @@ export class SkeinStory {
   readonly flow: ExportFlow
   current: ExportNode | null = null
   private pending: Choice[] = []
+  /** Optional observer: called for every node the story enters, including ones it passes through automatically. */
+  onEnter?: (node: ExportNode) => void
 
   constructor(
     readonly world: SkeinWorld,
@@ -307,6 +309,7 @@ export class SkeinStory {
       if (!this.available(id)) return this.end(this.current)
       const node: ExportNode = this.flow.nodes[id]
       this.current = node
+      this.onEnter?.(node)
       this.world.run(node.effects)
       switch (node.type) {
         case 'dialogue':

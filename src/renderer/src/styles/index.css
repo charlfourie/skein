@@ -134,6 +134,21 @@ textarea,
   animation: sk-error-pulse 1.8s ease-in-out infinite;
 }
 
+/* The node a Play-panel play-through is on. */
+@keyframes sk-play-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 2px rgb(var(--c-ok) / 0.7), 0 0 0 0 rgb(var(--c-ok) / 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 2px rgb(var(--c-ok) / 0.95), 0 0 0 10px rgb(var(--c-ok) / 0);
+  }
+}
+.sk-play-current {
+  border-color: rgb(var(--c-ok)) !important;
+  animation: sk-play-pulse 1.6s ease-in-out infinite;
+}
+
 /* Handles. React Flow positions handles with `transform`, so size changes use
    the independent `scale` property to avoid fighting it. */
 .react-flow__handle.sk-handle {
@@ -209,6 +224,7 @@ textarea,
 
 @media (prefers-reduced-motion: reduce) {
   .sk-edge-dash,
+  .sk-play-current,
   .sk-node-warn,
   .sk-node-error,
   .sk-snap-pulse,

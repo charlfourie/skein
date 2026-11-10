@@ -58,6 +58,9 @@ namespace Skein
         public SkeinNode Current { get; private set; }
         List<SkeinChoice> pending = new List<SkeinChoice>();
 
+        /// <summary>Raised for every node the story enters, including ones it passes through automatically.</summary>
+        public event Action<SkeinNode> Entered;
+
         public SkeinStory(SkeinWorld world, string flowIdOrName)
         {
             World = world ?? throw new ArgumentNullException(nameof(world));
@@ -123,6 +126,7 @@ namespace Skein
                 if (!Available(id)) return End(Current);
                 var node = Flow.Nodes[id];
                 Current = node;
+                Entered?.Invoke(node);
                 World.Run(node.Effects);
                 switch (node.Type)
                 {

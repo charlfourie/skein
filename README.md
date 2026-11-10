@@ -154,6 +154,11 @@ Exports are deterministic, so they diff cleanly. The dialog:
   "always false", a broken action becomes "no change");
 - offers compact output and stripping the expression text.
 
+**Play and Explore:** press **Play** on any flow to click through it exactly as a game
+would, with live state, time and rule activity, from any starting state you set up.
+**Explore** plays every path at once and reports unreachable nodes, endings, loops with
+no way out and where numbers end up. See [`docs/PLAY.md`](docs/PLAY.md).
+
 For engine developers:
 
 - [`docs/EXPORT.md`](docs/EXPORT.md) specifies the format and exactly how flows, time
@@ -161,6 +166,8 @@ For engine developers:
 - `src/shared/export/runtime.ts` is a dependency-free reference runtime: `SkeinWorld`
   for state, time and rules, and `SkeinStory` to play a flow beat by beat. Use it as-is
   in a JS/TS game, or port it.
+- `runtimes/csharp` is a C# port (Unity, Godot .NET, plain .NET) that matches the reference
+  byte for byte; `runtimes/unity` adds ready-made Unity components.
 - `examples/lighthouse-v2.game.json` is a sample export.
 
 **Undo / redo:** Ctrl+Z and Ctrl+Y (or Ctrl+Shift+Z), or the arrows in the top bar. Inside a text

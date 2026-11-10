@@ -8,6 +8,7 @@ import type { Issue } from '@shared/validate'
 import { cx } from '../../lib/cx'
 import { templateIcon } from '../../lib/meta'
 import { GENERIC_META, NODE_META, useFlowContext } from './flowMeta'
+import { usePlayMark } from '../../store/play'
 
 export interface NarrativeNodeData extends Record<string, unknown> {
   node: FlowNode
@@ -52,6 +53,7 @@ function useConnectionState(): {
 
 export const NarrativeNode = memo(function NarrativeNode({ id, data, selected }: NodeProps<NarrativeRFNode>) {
   const { flow } = useFlowContext()
+  const playMark = usePlayMark(flow.id, id)
   const conn = useConnectionState()
   const node = data.node
   const baseMeta = isKnownNodeType(node.type) ? NODE_META[node.type] : GENERIC_META
@@ -92,6 +94,8 @@ export const NarrativeNode = memo(function NarrativeNode({ id, data, selected }:
         'group relative rounded-xl border bg-panel text-left shadow-[0_8px_24px_-14px_rgb(0_0_0/0.8)] transition-[border-color,box-shadow]',
         compact ? 'w-[200px]' : 'w-[260px]',
         selected ? 'border-accent shadow-[0_0_0_3px_rgb(var(--c-accent)/0.25)]' : 'border-line hover:border-faint/70',
+        playMark === 'current' && 'sk-play-current border-ok shadow-[0_0_0_3px_rgb(var(--c-ok)/0.35)]',
+        playMark === 'visited' && !selected && 'border-ok/45',
         data.error ? 'sk-node-error' : data.warn && 'sk-node-warn'
       )}
     >

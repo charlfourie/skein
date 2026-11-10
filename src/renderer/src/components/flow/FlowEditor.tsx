@@ -16,7 +16,7 @@ import {
   type OnSelectionChangeParams
 } from '@xyflow/react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Activity, AlertTriangle, Grid3x3, Maximize, Network, Repeat } from 'lucide-react'
+import { Activity, AlertTriangle, Grid3x3, Maximize, Network, Play, Repeat } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react'
 import { analyzeFlow, type FlowAnalysis } from '@shared/flowAnalysis'
 import { choiceNumbers, startNodes } from '@shared/flowOrder'
@@ -28,6 +28,8 @@ import { cx } from '../../lib/cx'
 import { addNode, autoLayout, connect, deleteElements, duplicateNodes, moveNodes, reconnect } from '../../store/flowOps'
 import { usePrefs } from '../../store/prefs'
 import { useProjectStore, type Selection } from '../../store/projectStore'
+import { usePlay } from '../../store/play'
+import { PlayPanel } from '../play/PlayPanel'
 import { MenuItem, Popover } from '../ui/Popover'
 import { COLORS, FlowContext, NODE_DRAG_MIME, NODE_META } from './flowMeta'
 import { ConnectionLine, edgeColor, NarrativeEdge, type NarrativeRFEdge } from './NarrativeEdge'
@@ -38,6 +40,9 @@ const edgeTypes = { narrative: NarrativeEdge }
 
 /** Where new nodes appear relative to the pointer (roughly the node's top centre). */
 const DROP_OFFSET = { x: 130, y: 24 }
+
+/** Width of the Play panel plus its margin (see PlayPanel). */
+const PLAY_PANEL_WIDTH = 404
 
 // ---------------------------------------------------------------------------
 // Store → React Flow
@@ -198,8 +203,12 @@ export function FlowEditor({ flow }: { flow: Flow }) {
     setNodes((nds) => nds.map((n) => ({ ...n, selected: n.id === target.id })))
     const t = setTimeout(() => {
       const measured = rf.getNode(target.id)?.measured
-      void rf.setCenter(target.position.x + (measured?.width ?? 260) / 2, target.position.y + (measured?.height ?? 100) / 2, {
-        zoom: Math.max(rf.getZoom(), 0.9),
+      const zoom = Math.max(rf.getZoom(), 0.9)
+      // With the Play panel open, centre in the part of the canvas it doesn't cover.
+      const play = usePlay.getState()
+      const shift = play.open && play.flowId === flow.id ? PLAY_PANEL_WIDTH / 2 / zoom : 0
+      void rf.setCenter(target.position.x + (measured?.width ?? 260) / 2 + shift, target.position.y + (measured?.height ?? 100) / 2, {
+        zoom,
         duration: 450
       })
     }, 60)
@@ -300,6 +309,7 @@ export function FlowEditor({ flow }: { flow: Flow }) {
     useProjectStore.getState().focusNode(flow.id, ids[i])
   }
 
+  const playing = usePlay((s) => s.open && s.flowId === flow.id)
   const ctx = useMemo(() => ({ flow, animate: animateEdges }), [flow, animateEdges])
   const empty = nodes.length === 0
 
@@ -397,6 +407,18 @@ export function FlowEditor({ flow }: { flow: Flow }) {
                   />
                 )}
               </AnimatePresence>
+              <button
+                type="button"
+                onClick={() => (playing ? usePlay.getState().close() : usePlay.getState().openFor(flow.id, 'play'))}
+                disabled={empty}
+                title={playing ? 'Stop playing' : 'Play this flow as the game would, and explore every path'}
+                className={cx(
+                  'flex h-[34px] items-center gap-1.5 rounded-lg border px-3 text-xs font-medium shadow-pop backdrop-blur transition-colors disabled:pointer-events-none disabled:opacity-40',
+                  playing ? 'border-ok/60 bg-ok/15 text-ok' : 'border-line bg-panel/90 text-fg hover:border-ok/60 hover:text-ok'
+                )}
+              >
+                <Play size={13} fill={playing ? 'currentColor' : 'none'} /> {playing ? 'Playing' : 'Play'}
+              </button>
               <div className="flex items-center rounded-lg border border-line bg-panel/90 p-0.5 shadow-pop backdrop-blur">
                 <ToolButton icon={<Network size={15} />} label="Auto-layout (undoable)" onClick={runAutoLayout} disabled={empty} />
                 <ToolButton
@@ -417,6 +439,7 @@ export function FlowEditor({ flow }: { flow: Flow }) {
             </div>
           </Panel>
         </ReactFlow>
+        <AnimatePresence>{playing && <PlayPanel key="play" project={project} flowId={flow.id} />}</AnimatePresence>
 
         {empty && (
           <motion.div
