@@ -233,18 +233,18 @@ Reload is disabled in production builds so Ctrl+R can't silently discard work.
   },
   "flows": {
     "<uuid>": {
-      "edges": { "<uuid>": { "id", "source", "target", "sourceHandle", "targetHandle" } },
+      "edges": { "<uuid>": { "id", "source", "target", "sourceHandle", "targetHandle", "order" } },   // order: choice order on that output
       "folderId": "<uuid> | null",
       "id": "<uuid>",
       "name": "Arrival",
-      "nodes": { "<uuid>": { "data": { "speakerId", "text", "isStart" }, "id", "position": { "x", "y" }, "type": "dialogue" } },
+      "nodes": { "<uuid>": { "data": { "speakerId", "text", "isStart", "startOrder" }, "id", "position": { "x", "y" }, "type": "dialogue" } },
       "order": 0
     }
   },
   "folders": { "<uuid>": { "id", "name", "order", "parentId", "section" } },
   "format": "skein.project",
   "meta": { "createdAt", "description", "id", "name" },
-  "schemaVersion": 4,
+  "schemaVersion": 5,
   "state": {
     "relationships": { "<uuid>": { "fromTemplateId", "toTemplateId", "technicalName": "Trust", "type": "number", "min": -5, "max": 5 } },
     "rules": { "<uuid>": { "trigger": "phase", "phaseId": "<night>", "forEachTemplateId": "<character>", "condition": "", "effects": "self.Energy -= 1" } },

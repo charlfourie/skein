@@ -19,6 +19,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Activity, AlertTriangle, Grid3x3, Maximize, Network, Repeat } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react'
 import { analyzeFlow, type FlowAnalysis } from '@shared/flowAnalysis'
+import { choiceNumbers, startNodes } from '@shared/flowOrder'
 import { canConnect, dataRef, dataString, NODE_TYPES, type NodeType } from '@shared/nodes'
 import type { Flow, Position, Project } from '@shared/schema'
 import type { IssueMap } from '@shared/validate'
@@ -42,6 +43,8 @@ const DROP_OFFSET = { x: 130, y: 24 }
 // Store → React Flow
 
 function deriveNodes(project: Project, flow: Flow, analysis: FlowAnalysis, issues: IssueMap): NarrativeRFNode[] {
+  const starts = startNodes(flow)
+  const startRank = new Map(starts.length > 1 ? starts.map((n, i) => [n.id, i + 1] as const) : [])
   return Object.values(flow.nodes)
     .sort((a, b) => (a.id < b.id ? -1 : 1))
     .map((node) => {
@@ -62,6 +65,7 @@ function deriveNodes(project: Project, flow: Flow, analysis: FlowAnalysis, issue
           warn: nodeIssues.some((i) => i.level === 'warning'),
           error: nodeIssues.some((i) => i.level === 'error'),
           loopJump: analysis.loopJumps.has(node.id),
+          startRank: startRank.get(node.id) ?? null,
           issues: nodeIssues
         }
       }
@@ -69,10 +73,15 @@ function deriveNodes(project: Project, flow: Flow, analysis: FlowAnalysis, issue
 }
 
 function deriveEdges(flow: Flow, analysis: FlowAnalysis): NarrativeRFEdge[] {
+  const numbers = choiceNumbers(flow)
   return Object.values(flow.edges)
     .sort((a, b) => (a.id < b.id ? -1 : 1))
     .map((e) => {
-      const data = { branch: (e.sourceHandle ?? 'out') as 'out' | 'true' | 'false', loop: analysis.loopEdges.has(e.id) }
+      const data = {
+        branch: (e.sourceHandle ?? 'out') as 'out' | 'true' | 'false',
+        loop: analysis.loopEdges.has(e.id),
+        choice: numbers.get(e.id) ?? null
+      }
       return {
         id: e.id,
         type: 'narrative' as const,

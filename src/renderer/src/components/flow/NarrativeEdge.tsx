@@ -16,6 +16,8 @@ import { COLORS, useFlowContext } from './flowMeta'
 export interface NarrativeEdgeData extends Record<string, unknown> {
   branch: 'out' | 'true' | 'false'
   loop: boolean
+  /** One of several choices on the same output: its place in the order the player sees them. */
+  choice?: { index: number; count: number } | null
 }
 
 export type NarrativeRFEdge = Edge<NarrativeEdgeData, 'narrative'>
@@ -78,6 +80,15 @@ export const NarrativeEdge = memo(function NarrativeEdge(props: EdgeProps<Narrat
           className="nodrag nopan pointer-events-auto absolute flex items-center gap-1"
           style={{ transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)` }}
         >
+          {data?.choice && (
+            <span
+              className="grid h-[18px] min-w-[18px] place-items-center rounded-full border px-1 text-[10px] font-semibold tabular-nums"
+              style={{ color: COLORS.accent, borderColor: `${COLORS.accent}66`, background: '#0f1117ee' }}
+              title={`Choice ${data.choice.index} of ${data.choice.count}: the order the player sees them in. Change it in the inspector of the node it leaves.`}
+            >
+              {data.choice.index}
+            </span>
+          )}
           {loop && (
             <span
               className="flex items-center gap-1 rounded-full border px-1.5 py-px text-[10px] font-semibold"

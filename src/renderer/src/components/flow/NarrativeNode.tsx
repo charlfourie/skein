@@ -16,6 +16,8 @@ export interface NarrativeNodeData extends Record<string, unknown> {
   warn: boolean
   error: boolean
   loopJump: boolean
+  /** Priority among several start nodes (1 = tried first), or null. */
+  startRank: number | null
   issues: Issue[]
 }
 
@@ -105,8 +107,11 @@ export const NarrativeNode = memo(function NarrativeNode({ id, data, selected }:
           {header(node, data, meta.label)}
         </span>
         {isStart && (
-          <span className="flex items-center gap-0.5 rounded bg-ok/15 px-1 py-px text-[10px] font-semibold text-ok" title="Start node">
-            <Play size={9} fill="currentColor" /> START
+          <span
+            className="flex items-center gap-0.5 rounded bg-ok/15 px-1 py-px text-[10px] font-semibold text-ok"
+            title={data.startRank ? `Start node, priority ${data.startRank}: the first start whose requirement holds is used` : 'Start node'}
+          >
+            <Play size={9} fill="currentColor" /> START{data.startRank ? ` ${data.startRank}` : ''}
           </span>
         )}
         {isEnd && (

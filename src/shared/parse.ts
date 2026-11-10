@@ -1,5 +1,6 @@
 import type { z } from 'zod'
 import { createDefaultState } from './factory'
+import { normalizeOrders } from './flowOrder'
 import { structuralValueProblem } from './values'
 import {
   PROJECT_FORMAT,
@@ -31,7 +32,37 @@ const MIGRATIONS: Record<number, (raw: Record<string, unknown>) => Record<string
   // v3 → v4: state. The placeholder `variables` section becomes `state`
   // (world variables, relationships, time, rules), and the theatre-style
   // "stage directions" on dialogue lines fold into the designer note.
-  3: migrateV3toV4
+  3: migrateV3toV4,
+  // v4 → v5: choice order and start-node priority become explicit
+  // (`edge.order`, `node.data.startOrder`) instead of following canvas
+  // positions, so moving nodes can no longer reorder a player's choices.
+  // The order each flow plays in today is what gets stored.
+  4: migrateV4toV5
+}
+
+function migrateV4toV5(raw: Record<string, unknown>): Record<string, unknown> {
+  const flows = isPlainObject(raw.flows) ? raw.flows : {}
+  for (const flow of Object.values(flows)) {
+    if (!isPlainObject(flow)) continue
+    // Order only the well-formed entries (same objects, so the order lands in
+    // the file); anything malformed is left for validation and repair to report.
+    const nodes: Record<string, { id: string; position?: { x: number; y: number }; data?: Record<string, unknown> }> = {}
+    const edges: Record<string, { id: string; source: string; target: string; sourceHandle?: string | null; targetHandle?: string | null; order?: number }> = {}
+    if (isPlainObject(flow.nodes)) {
+      for (const [id, n] of Object.entries(flow.nodes)) {
+        if (isPlainObject(n) && isPlainObject(n.data)) nodes[id] = n as unknown as (typeof nodes)[string]
+      }
+    }
+    if (isPlainObject(flow.edges)) {
+      for (const [id, e] of Object.entries(flow.edges)) {
+        if (isPlainObject(e) && typeof e.id === 'string' && typeof e.source === 'string' && typeof e.target === 'string') {
+          edges[id] = e as unknown as (typeof edges)[string]
+        }
+      }
+    }
+    normalizeOrders({ nodes, edges })
+  }
+  return raw
 }
 
 function migrateV3toV4(raw: Record<string, unknown>): Record<string, unknown> {

@@ -1,17 +1,19 @@
 import { motion } from 'framer-motion'
-import { ArrowRight, Crosshair, Trash2 } from 'lucide-react'
+import { ArrowRight, ChevronDown, ChevronUp, Crosshair, Trash2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { analyzeFlow } from '@shared/flowAnalysis'
+import { outgoingEdges, startNodes } from '@shared/flowOrder'
 import { dataRef, dataString, isEndNode, isKnownNodeType, isStartNode } from '@shared/nodes'
-import type { Project } from '@shared/schema'
+import type { Flow, Project } from '@shared/schema'
 import { useIssuesFor } from '../../hooks/useIssues'
 import { compareOrder } from '../../lib/tree'
-import { deleteElements, updateNodeData } from '../../store/flowOps'
+import { deleteElements, moveChoice, moveStart, updateNodeData } from '../../store/flowOps'
 import { useProjectStore } from '../../store/projectStore'
 import { describeNode } from '../flow/FlowEditor'
 import { GENERIC_META, NODE_META } from '../flow/flowMeta'
 import { ExpressionField } from '../defs/ExpressionField'
 import { Button } from '../ui/Button'
+import { IconButton } from '../ui/IconButton'
 import { FieldLabel, IssueList, Select, TextArea, TextInput, Toggle, type SelectOption } from '../ui/fields'
 
 export function NodeInspector({ project, flowId, nodeId }: { project: Project; flowId: string; nodeId: string }) {
@@ -136,8 +138,13 @@ export function NodeInspector({ project, flowId, nodeId }: { project: Project; f
         </FieldLabel>
       )}
 
+      {(node.type === 'dialogue' || node.type === 'hub' || node.type === 'instruction') && (
+        <ChoiceOrder project={project} flow={flow} nodeId={nodeId} kind={node.type} />
+      )}
+
       <Section title="Flow">
         <ToggleRow label="Start node" hint="the flow can begin here" checked={isStartNode(node)} onChange={(isStart) => patch({ isStart })} />
+        {isStartNode(node) && <StartPriority flow={flow} nodeId={nodeId} />}
         <ToggleRow label="End node" hint="the flow is allowed to stop here" checked={isEndNode(node)} onChange={(isEnd) => patch({ isEnd })} />
         <div className="flex justify-between text-xs">
           <span className="text-faint">Connections</span>
@@ -204,6 +211,78 @@ export function EdgeInspector({ project, flowId, edgeId }: { project: Project; f
 }
 
 // ---------------------------------------------------------------------------
+
+/**
+ * The order of the connections leaving a node's output. For dialogue lines and
+ * hubs it's the order the player sees the choices in; for instructions, the
+ * order they're tried in (the first available one is followed). Stored in the
+ * file, so moving nodes on the canvas never changes it.
+ */
+function ChoiceOrder({ project, flow, nodeId, kind }: { project: Project; flow: Flow; nodeId: string; kind: 'dialogue' | 'hub' | 'instruction' }) {
+  const focusNode = useProjectStore((s) => s.focusNode)
+  const edges = outgoingEdges(flow, nodeId, 'out')
+  if (edges.length < 2) return null
+  const hint =
+    kind === 'instruction'
+      ? 'tried in this order; the first available one is followed'
+      : 'the order the player sees them in; unavailable ones are skipped'
+  return (
+    <Section title={kind === 'instruction' ? 'Next, in order' : 'Choices, in order'}>
+      <p className="-mt-0.5 text-2xs text-faint">{hint}</p>
+      <ol className="flex flex-col gap-1">
+        {edges.map((e, i) => {
+          const target = flow.nodes[e.target]
+          const label = target ? choiceLabel(project, target) : '(missing)'
+          const gated = target && dataString(target, 'requires')
+          return (
+            <li key={e.id} className="flex items-center gap-1.5">
+              <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full border border-accent/40 text-[10px] font-semibold tabular-nums text-accent">
+                {i + 1}
+              </span>
+              <button
+                type="button"
+                onClick={() => target && focusNode(flow.id, target.id)}
+                title={gated ? `Only offered while: ${dataString(target, 'requires')}` : 'Show on canvas'}
+                className="min-w-0 flex-1 truncate rounded-md border border-line bg-bg px-2 py-1 text-left text-xs text-fg transition-colors hover:border-accent/50"
+              >
+                {label}
+                {gated && <span className="ml-1.5 text-2xs text-warn">gated</span>}
+              </button>
+              <IconButton size="sm" icon={ChevronUp} label="Move earlier" disabled={i === 0} onClick={() => moveChoice(flow.id, e.id, -1)} />
+              <IconButton size="sm" icon={ChevronDown} label="Move later" disabled={i === edges.length - 1} onClick={() => moveChoice(flow.id, e.id, 1)} />
+            </li>
+          )
+        })}
+      </ol>
+    </Section>
+  )
+}
+
+function choiceLabel(project: Project, node: Flow['nodes'][string]): string {
+  const menu = dataString(node, 'menuText')
+  return menu ? `“${menu}”` : describeNode(project, node)
+}
+
+/** Where this start node sits among the flow's start nodes (the first available one is used). */
+function StartPriority({ flow, nodeId }: { flow: Flow; nodeId: string }) {
+  const starts = startNodes(flow)
+  if (starts.length < 2) return null
+  const i = starts.findIndex((n) => n.id === nodeId)
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <div>
+        <p className="text-xs text-fg">
+          Start priority <span className="tabular-nums text-muted">{i + 1} of {starts.length}</span>
+        </p>
+        <p className="text-2xs text-faint">the first start whose requirement holds is used</p>
+      </div>
+      <div className="flex">
+        <IconButton size="sm" icon={ChevronUp} label="Higher priority" disabled={i === 0} onClick={() => moveStart(flow.id, nodeId, -1)} />
+        <IconButton size="sm" icon={ChevronDown} label="Lower priority" disabled={i === starts.length - 1} onClick={() => moveStart(flow.id, nodeId, 1)} />
+      </div>
+    </div>
+  )
+}
 
 function NodeLink({ label, onClick }: { label: string; onClick(): void }) {
   return (

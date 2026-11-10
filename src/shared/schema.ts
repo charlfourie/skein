@@ -16,7 +16,7 @@ import { z } from 'zod'
  */
 
 export const PROJECT_FORMAT = 'skein.project' as const
-export const SCHEMA_VERSION = 4 as const
+export const SCHEMA_VERSION = 5 as const
 
 export const SECTION_IDS = ['flows', 'entities', 'templates'] as const
 export type SectionId = (typeof SECTION_IDS)[number]
@@ -71,7 +71,13 @@ export const FlowEdgeSchema = z
     source: Id,
     target: Id,
     sourceHandle: z.string().nullable().default(null),
-    targetHandle: z.string().nullable().default(null)
+    targetHandle: z.string().nullable().default(null),
+    /**
+     * Position among the connections leaving the same output: the order
+     * choices are offered in. Lower first. (v5; earlier files derived it from
+     * canvas positions, and the v4 → v5 migration stores what that produced.)
+     */
+    order: Order.optional()
   })
   .passthrough()
 

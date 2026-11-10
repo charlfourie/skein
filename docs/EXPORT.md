@@ -198,7 +198,7 @@ Within a step, rules run in array order.
 "flows": {
   "<flow id>": {
     "id": "…", "name": "Arrival",
-    "start": ["<node id>", …],                 // start nodes, top to bottom
+    "start": ["<node id>", …],                 // start nodes, in priority order
     "nodes": { "<node id>": <Node> }
   }
 }
@@ -222,10 +222,14 @@ Node types:
 | `hub` | `label`, `next` | A meeting point. One available path is followed automatically; several are offered as a choice. |
 | `jump` | `jumpTo` (id or null) | Continues at the target. |
 
-Order of `next`:
+Order of `next` and `start`:
 
-- `next` lists are in canvas order: left to right, then top to bottom.
-- That is the intended order for presenting choices.
+- `next` lists are in the order set in Skein (the numbered choices on the canvas,
+  reordered in the node's inspector). Present choices in this order.
+- `start` lists start nodes in priority order: begin at the first available one.
+- Neither depends on where nodes sit on the canvas, so moving nodes or running
+  auto-layout never changes them. (Projects saved before format v5 keep the order
+  their canvas layout gave them when first opened.)
 
 Stepping rules:
 

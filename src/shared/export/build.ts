@@ -1,5 +1,6 @@
 import { compile, type Bound, type BoundStatement, type CompileContext, type StateRef } from '../expr/check'
-import { dataRef, dataString, INPUT_HANDLE, isEndNode, isKnownNodeType, isStartNode } from '../nodes'
+import { dataRef, dataString, isEndNode, isKnownNodeType, isStartNode } from '../nodes'
+import { orderedTargets, startNodes } from '../flowOrder'
 import type { Flow, FlowNode, Project, PropertyDef, PropertyValue } from '../schema'
 import { serializeCanonical } from '../serialize'
 import { toTechnicalName } from '../technicalName'
@@ -227,13 +228,8 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
 
   function exportFlow(flow: Flow): ExportFlow {
     const nodes: Record<string, ExportNode> = {}
-    const pos = (id: string) => flow.nodes[id]?.position ?? { x: 0, y: 0 }
-    // Choice order is the canvas order: left to right, then top to bottom.
-    const outgoing = (id: string, handle?: string) =>
-      Object.values(flow.edges)
-        .filter((e) => e.source === id && (handle === undefined || (e.sourceHandle ?? 'out') === handle) && (e.targetHandle ?? INPUT_HANDLE) === INPUT_HANDLE && flow.nodes[e.target])
-        .sort((a, b) => pos(a.target).x - pos(b.target).x || pos(a.target).y - pos(b.target).y || (a.id < b.id ? -1 : 1))
-        .map((e) => e.target)
+    // Choice order is the stored order (edge.order), never the canvas layout.
+    const outgoing = (id: string, handle?: string) => orderedTargets(flow, id, handle)
 
     for (const node of Object.values(flow.nodes)) {
       if (!isKnownNodeType(node.type)) {
@@ -286,9 +282,8 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
         }
       }
     }
-    const start = Object.values(flow.nodes)
-      .filter((n) => isStartNode(n) && nodes[n.id])
-      .sort((a, b) => a.position.y - b.position.y || a.position.x - b.position.x || (a.id < b.id ? -1 : 1))
+    const start = startNodes(flow)
+      .filter((n) => nodes[n.id])
       .map((n) => n.id)
     if (start.length === 0 && Object.keys(nodes).length) problems.push({ level: 'warning', message: `Flow “${flow.name}” has no start node.` })
     return { id: flow.id, name: flow.name, start, nodes }
