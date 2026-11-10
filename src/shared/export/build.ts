@@ -1,0 +1,345 @@
+import { compile, type Bound, type BoundStatement, type CompileContext, type StateRef } from '../expr/check'
+import { dataRef, dataString, INPUT_HANDLE, isEndNode, isKnownNodeType, isStartNode } from '../nodes'
+import type { Flow, FlowNode, Project, PropertyDef, PropertyValue } from '../schema'
+import { serializeCanonical } from '../serialize'
+import { toTechnicalName } from '../technicalName'
+import { defaultOf, effectiveValue } from '../values'
+import {
+  EXPORT_FORMAT,
+  EXPORT_VERSION,
+  type ExportCondition,
+  type ExportDef,
+  type ExportEffects,
+  type ExportEntity,
+  type ExportFile,
+  type ExportFlow,
+  type ExportNode,
+  type ExportRelationship,
+  type ExportRule,
+  type ExportTemplate,
+  type ExportValue,
+  type ExprNode,
+  type StatePath,
+  type Statement
+} from './types'
+
+export interface ExportOptions {
+  /** Keep each expression's source text next to its compiled form (handy for debugging). Default true. */
+  includeSource?: boolean
+}
+
+export interface ExportProblem {
+  level: 'error' | 'warning'
+  message: string
+  /** Where in the project, for the UI to link to. */
+  at?: { kind: 'node'; flowId: string; nodeId: string } | { kind: 'rule'; ruleId: string }
+}
+
+export interface ExportResult {
+  file: ExportFile
+  problems: ExportProblem[]
+}
+
+/**
+ * Build the game-ready export. Pure and deterministic: the same project
+ * always produces the same file, so exports diff cleanly in version control.
+ */
+export function buildExport(project: Project, options: ExportOptions = {}): ExportResult {
+  const includeSource = options.includeSource !== false
+  const problems: ExportProblem[] = []
+
+  // --- Name tables: everything is referred to by technical name ------------
+  const templateName = new Map(Object.values(project.templates).map((t) => [t.id, t.technicalName]))
+  const entityName = new Map(Object.values(project.entities).map((e) => [e.id, e.technicalName]))
+  const phases = Object.values(project.state.time.phases).sort((a, b) => a.order - b.order || (a.id < b.id ? -1 : 1))
+  const phaseName = new Map(phases.map((p) => [p.id, p.technicalName || toTechnicalName(p.label)]))
+  const optionName = new Map<string, string>()
+  const allDefs: PropertyDef[] = [
+    ...Object.values(project.templates).flatMap((t) => Object.values(t.properties)),
+    ...Object.values(project.state.variables),
+    ...Object.values(project.state.relationships)
+  ]
+  for (const def of allDefs) for (const o of Object.values(def.options ?? {})) optionName.set(o.id, toTechnicalName(o.label))
+  const varKey = new Map(Object.values(project.state.variables).map((v) => [v.id, `${v.namespace}.${v.technicalName}`]))
+  const relKey = new Map(
+    Object.values(project.state.relationships).map((r) => [
+      r.id,
+      `${templateName.get(r.fromTemplateId) ?? '?'}->${templateName.get(r.toTemplateId) ?? '?'}.${r.technicalName}`
+    ])
+  )
+
+  /** A literal from the compiler: option, entity and phase ids become names. */
+  const literal = (v: ExportValue): ExportValue =>
+    typeof v === 'string' ? (optionName.get(v) ?? entityName.get(v) ?? phaseName.get(v) ?? v) : v
+
+  const value = (def: PropertyDef, v: PropertyValue): ExportValue => {
+    if (v === null) return null
+    if (def.type === 'enum' && typeof v === 'string') return optionName.get(v) ?? null
+    if (def.type === 'reference' && typeof v === 'string') return entityName.get(v) ?? null
+    return v
+  }
+
+  const defOf = (def: PropertyDef): ExportDef => {
+    const out: ExportDef = { type: TYPE_MAP[def.type], default: value(def, defaultOf(def)) }
+    if (def.type === 'enum') {
+      const opts = Object.values(def.options ?? {}).sort((a, b) => a.order - b.order || (a.id < b.id ? -1 : 1))
+      out.options = opts.map((o) => toTechnicalName(o.label))
+      out.labels = opts.map((o) => o.label)
+    }
+    if (def.type === 'reference' && def.referenceTemplateId) out.template = templateName.get(def.referenceTemplateId)
+    if (def.type === 'number') {
+      if (def.min !== undefined) out.min = def.min
+      if (def.max !== undefined) out.max = def.max
+      if (def.integer) out.integer = true
+    }
+    return out
+  }
+
+  // --- Expressions -----------------------------------------------------------
+  const path = (ref: StateRef): StatePath => {
+    const ent = (id: string) => (id === 'self' ? '$self' : (entityName.get(id) ?? id))
+    switch (ref.kind) {
+      case 'world':
+        return { get: 'var', var: varKey.get(ref.varId) ?? ref.varId }
+      case 'prop': {
+        const entity = ref.entity === 'self' ? undefined : project.entities[ref.entity]
+        const template = entity ? project.templates[entity.templateId] : undefined
+        const prop =
+          template?.properties[ref.propId] ??
+          Object.values(project.templates).find((t) => t.properties[ref.propId])?.properties[ref.propId]
+        return { get: 'prop', entity: ent(ref.entity), prop: prop?.technicalName ?? ref.propId }
+      }
+      case 'rel':
+        return { get: 'rel', rel: relKey.get(ref.relId) ?? ref.relId, from: ent(ref.from), to: ent(ref.to) }
+      case 'time':
+        return { get: 'time', field: ref.field }
+    }
+  }
+
+  const expr = (b: Bound): ExprNode => {
+    switch (b.k) {
+      case 'lit':
+        return { lit: literal(b.v) }
+      case 'read':
+        return path(b.ref)
+      case 'un':
+        return b.op === 'not' ? { not: expr(b.e) } : { neg: expr(b.e) }
+      case 'bin':
+        return { op: b.op as Extract<ExprNode, { op: string }>['op'], a: expr(b.l), b: expr(b.r) }
+    }
+  }
+
+  const statement = (s: BoundStatement): Statement =>
+    s.k === 'advance'
+      ? s.toPhaseId
+        ? { advanceTo: phaseName.get(s.toPhaseId) ?? s.toPhaseId }
+        : { advance: s.count }
+      : { set: path(s.ref), op: s.op, value: expr(s.value) }
+
+  const condition = (source: string, ctx: CompileContext, where: string, at?: ExportProblem['at']): ExportCondition | undefined => {
+    if (!source.trim()) return undefined
+    const c = compile(project, source, 'condition', ctx)
+    if (!c.ok || !c.condition) {
+      problems.push({ level: 'error', message: `${where}: ${c.diagnostics[0]?.message ?? 'invalid expression'} (exported as “always false”).`, at })
+      return { expr: { lit: false }, ...(includeSource ? { source } : {}) }
+    }
+    return { expr: expr(c.condition), ...(includeSource ? { source } : {}) }
+  }
+
+  const effects = (source: string, ctx: CompileContext, where: string, at?: ExportProblem['at']): ExportEffects | undefined => {
+    if (!source.trim()) return undefined
+    const c = compile(project, source, 'action', ctx)
+    if (!c.ok) {
+      problems.push({ level: 'error', message: `${where}: ${c.diagnostics[0]?.message ?? 'invalid'} (exported as no changes).`, at })
+      return { do: [], ...(includeSource ? { source } : {}) }
+    }
+    return { do: c.actions.map(statement), ...(includeSource ? { source } : {}) }
+  }
+
+  // --- Templates & entities --------------------------------------------------
+  const templates: Record<string, ExportTemplate> = {}
+  for (const t of Object.values(project.templates)) {
+    const properties: ExportTemplate['properties'] = {}
+    for (const p of Object.values(t.properties)) properties[p.technicalName] = { ...defOf(p), ...(p.mutable ? { state: true as const } : {}) }
+    templates[t.technicalName] = { id: t.id, name: t.name, properties }
+  }
+
+  const entities: Record<string, ExportEntity> = {}
+  for (const e of Object.values(project.entities)) {
+    const t = project.templates[e.templateId]
+    if (!t) {
+      problems.push({ level: 'warning', message: `Entity “${e.name}” has no template and was left out.` })
+      continue
+    }
+    const values: Record<string, ExportValue> = {}
+    for (const p of Object.values(t.properties)) values[p.technicalName] = value(p, effectiveValue(p, e.values).value)
+    entities[e.technicalName] = { id: e.id, name: e.name, template: t.technicalName, values }
+  }
+
+  // --- State -------------------------------------------------------------------
+  const variables: Record<string, ExportDef> = {}
+  for (const v of Object.values(project.state.variables)) variables[`${v.namespace}.${v.technicalName}`] = defOf(v)
+
+  const relationships: Record<string, ExportRelationship> = {}
+  for (const r of Object.values(project.state.relationships)) {
+    const values: ExportRelationship['values'] = {}
+    for (const e of Object.values(project.entities)) {
+      const own = e.relations?.[r.id]
+      if (!own) continue
+      for (const [targetId, v] of Object.entries(own)) {
+        const from = entityName.get(e.id)
+        const to = entityName.get(targetId)
+        if (!from || !to) continue
+        values[from] = values[from] ?? {}
+        values[from][to] = value(r, v)
+      }
+    }
+    relationships[relKey.get(r.id) as string] = {
+      ...defOf(r),
+      name: r.name,
+      from: templateName.get(r.fromTemplateId) ?? '?',
+      to: templateName.get(r.toTemplateId) ?? '?',
+      values
+    }
+  }
+
+  const rules: ExportRule[] = Object.values(project.state.rules)
+    .filter((r) => r.enabled)
+    .sort((a, b) => a.order - b.order || (a.id < b.id ? -1 : 1))
+    .map((r) => {
+      const ctx = { selfTemplateId: r.forEachTemplateId, allowAdvance: false }
+      const at = { kind: 'rule' as const, ruleId: r.id }
+      const when = condition(r.condition, ctx, `Rule “${r.name}” condition`, at)
+      return {
+        id: r.id,
+        name: r.name,
+        trigger: r.trigger,
+        phase: r.trigger === 'phase' && r.phaseId ? (phaseName.get(r.phaseId) ?? null) : null,
+        forEach: r.forEachTemplateId ? (templateName.get(r.forEachTemplateId) ?? null) : null,
+        ...(when ? { when } : {}),
+        effects: effects(r.effects, ctx, `Rule “${r.name}” effects`, at) ?? { do: [] }
+      }
+    })
+
+  // --- Flows -----------------------------------------------------------------
+  const flows: Record<string, ExportFlow> = {}
+  for (const flow of Object.values(project.flows)) flows[flow.id] = exportFlow(flow)
+
+  function exportFlow(flow: Flow): ExportFlow {
+    const nodes: Record<string, ExportNode> = {}
+    const pos = (id: string) => flow.nodes[id]?.position ?? { x: 0, y: 0 }
+    // Choice order is the canvas order: left to right, then top to bottom.
+    const outgoing = (id: string, handle?: string) =>
+      Object.values(flow.edges)
+        .filter((e) => e.source === id && (handle === undefined || (e.sourceHandle ?? 'out') === handle) && (e.targetHandle ?? INPUT_HANDLE) === INPUT_HANDLE && flow.nodes[e.target])
+        .sort((a, b) => pos(a.target).x - pos(b.target).x || pos(a.target).y - pos(b.target).y || (a.id < b.id ? -1 : 1))
+        .map((e) => e.target)
+
+    for (const node of Object.values(flow.nodes)) {
+      if (!isKnownNodeType(node.type)) {
+        problems.push({ level: 'warning', message: `Flow “${flow.name}”: a node of unknown type “${node.type}” was left out.` })
+        continue
+      }
+      const at = { kind: 'node' as const, flowId: flow.id, nodeId: node.id }
+      const label = `Flow “${flow.name}”, ${node.type} node`
+      const base = baseOf(node, label, at)
+      switch (node.type) {
+        case 'dialogue': {
+          const speakerId = dataRef(node, 'speakerId')
+          const menuText = dataString(node, 'menuText')
+          nodes[node.id] = {
+            ...base,
+            type: 'dialogue',
+            speaker: speakerId ? (entityName.get(speakerId) ?? null) : null,
+            text: dataString(node, 'text'),
+            ...(menuText ? { menuText } : {}),
+            next: outgoing(node.id)
+          }
+          break
+        }
+        case 'condition':
+          nodes[node.id] = {
+            ...base,
+            type: 'condition',
+            condition: condition(dataString(node, 'expression'), {}, `${label} condition`, at) ?? null,
+            onTrue: outgoing(node.id, 'true')[0] ?? null,
+            onFalse: outgoing(node.id, 'false')[0] ?? null
+          }
+          break
+        case 'instruction':
+          nodes[node.id] = {
+            ...base,
+            type: 'instruction',
+            instruction: effects(dataString(node, 'script'), {}, `${label} instruction`, at) ?? null,
+            next: outgoing(node.id)
+          }
+          break
+        case 'hub':
+          nodes[node.id] = { ...base, type: 'hub', label: dataString(node, 'label'), next: outgoing(node.id) }
+          break
+        case 'jump': {
+          const target = dataRef(node, 'targetId')
+          const ok = target && flow.nodes[target] ? target : null
+          if (!ok) problems.push({ level: 'error', message: `${label}: jump has no valid target (exported as a dead end).`, at })
+          nodes[node.id] = { ...base, type: 'jump', jumpTo: ok }
+          break
+        }
+      }
+    }
+    const start = Object.values(flow.nodes)
+      .filter((n) => isStartNode(n) && nodes[n.id])
+      .sort((a, b) => a.position.y - b.position.y || a.position.x - b.position.x || (a.id < b.id ? -1 : 1))
+      .map((n) => n.id)
+    if (start.length === 0 && Object.keys(nodes).length) problems.push({ level: 'warning', message: `Flow “${flow.name}” has no start node.` })
+    return { id: flow.id, name: flow.name, start, nodes }
+  }
+
+  function baseOf(node: FlowNode, label: string, at: ExportProblem['at']) {
+    const requires = condition(dataString(node, 'requires'), {}, `${label} requirement`, at)
+    const fx = effects(dataString(node, 'effects'), {}, `${label} effects`, at)
+    return {
+      id: node.id,
+      ...(isStartNode(node) ? { start: true as const } : {}),
+      ...(isEndNode(node) ? { end: true as const } : {}),
+      ...(requires ? { requires } : {}),
+      ...(fx ? { effects: fx } : {})
+    }
+  }
+
+  const file: ExportFile = {
+    format: EXPORT_FORMAT,
+    version: EXPORT_VERSION,
+    project: { id: project.meta.id, name: project.meta.name },
+    templates,
+    entities,
+    state: {
+      variables,
+      relationships,
+      time: {
+        phases: phases.map((p) => phaseName.get(p.id) as string),
+        labels: phases.map((p) => p.label),
+        start: {
+          day: project.state.time.startDay,
+          phase: project.state.time.startPhaseId ? (phaseName.get(project.state.time.startPhaseId) ?? null) : null
+        }
+      },
+      rules
+    },
+    flows
+  }
+  return { file, problems }
+}
+
+const TYPE_MAP: Record<PropertyDef['type'], ExportDef['type']> = {
+  text: 'text',
+  longText: 'text',
+  number: 'number',
+  boolean: 'boolean',
+  enum: 'enum',
+  reference: 'entity',
+  color: 'color'
+}
+
+export function serializeExport(file: ExportFile, compact = false): string {
+  return serializeCanonical(file, { compact })
+}

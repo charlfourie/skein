@@ -1,0 +1,218 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design tokens (RGB triplets so Tailwind can apply alpha). Dark-first. */
+:root {
+  --c-bg: 10 11 15;
+  --c-panel: 15 17 23;
+  --c-raised: 24 27 36;
+  --c-line: 36 40 52;
+  --c-fg: 228 231 239;
+  --c-muted: 144 151 170;
+  --c-faint: 90 97 116;
+  --c-accent: 129 140 248;
+  --c-warn: 251 191 36;
+  --c-danger: 248 113 113;
+  --c-ok: 52 211 153;
+  --c-loop: 192 132 252;
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply overflow-hidden bg-bg font-sans text-[13px] text-fg antialiased;
+  user-select: none;
+}
+
+input,
+textarea,
+[contenteditable='true'] {
+  user-select: text;
+}
+
+::selection {
+  background: rgb(var(--c-accent) / 0.35);
+}
+
+:focus-visible {
+  outline: none;
+}
+
+/* Slim, unobtrusive scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--c-line));
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--c-faint));
+  background-clip: content-box;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* React Flow: blend into the workspace theme */
+.react-flow {
+  --xy-background-color: transparent;
+  --xy-node-background-color: rgb(var(--c-raised));
+  --xy-node-border: 1px solid rgb(var(--c-line));
+  --xy-node-color: rgb(var(--c-fg));
+  --xy-node-border-radius: 8px;
+  --xy-edge-stroke: rgb(var(--c-faint));
+  --xy-minimap-background-color: rgb(var(--c-panel));
+  --xy-controls-button-background-color: rgb(var(--c-panel));
+  --xy-controls-button-background-color-hover: rgb(var(--c-raised));
+  --xy-controls-button-color: rgb(var(--c-muted));
+  --xy-controls-button-border-color: rgb(var(--c-line));
+  --xy-attribution-background-color: transparent;
+}
+.react-flow__attribution a {
+  color: rgb(var(--c-faint));
+}
+.react-flow__controls {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgb(var(--c-line));
+}
+.react-flow__minimap {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgb(var(--c-line));
+}
+
+/* ---------------------------------------------------------------------------
+   Flow canvas
+   ------------------------------------------------------------------------- */
+
+/* Marching dashes: loop edges and the in-progress connection line. */
+@keyframes sk-dash {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+.sk-edge-dash {
+  animation: sk-dash 0.9s linear infinite;
+}
+
+/* Orphans and dead ends breathe amber; errors breathe red. */
+@keyframes sk-warn-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 1px rgb(var(--c-warn) / 0.55), 0 0 0 0 rgb(var(--c-warn) / 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 1px rgb(var(--c-warn) / 0.9), 0 0 0 7px rgb(var(--c-warn) / 0);
+  }
+}
+@keyframes sk-error-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 1px rgb(var(--c-danger) / 0.6), 0 0 0 0 rgb(var(--c-danger) / 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 1px rgb(var(--c-danger) / 0.95), 0 0 0 7px rgb(var(--c-danger) / 0);
+  }
+}
+.sk-node-warn {
+  border-color: rgb(var(--c-warn) / 0.6) !important;
+  animation: sk-warn-pulse 1.8s ease-in-out infinite;
+}
+.sk-node-error {
+  border-color: rgb(var(--c-danger) / 0.7) !important;
+  animation: sk-error-pulse 1.8s ease-in-out infinite;
+}
+
+/* Handles. React Flow positions handles with `transform`, so size changes use
+   the independent `scale` property to avoid fighting it. */
+.react-flow__handle.sk-handle {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: rgb(var(--c-panel));
+  border: 2px solid rgb(var(--c-faint));
+  transition:
+    scale 160ms cubic-bezier(0.2, 0.8, 0.2, 1.4),
+    background-color 150ms,
+    border-color 150ms,
+    box-shadow 150ms,
+    opacity 150ms;
+}
+.react-flow__handle.sk-handle:hover {
+  border-color: rgb(var(--c-accent));
+  scale: 1.3;
+}
+.react-flow__handle.sk-handle--true {
+  border-color: #34d399aa;
+}
+.react-flow__handle.sk-handle--false {
+  border-color: #f87171aa;
+}
+@keyframes sk-handle-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(var(--c-ok) / 0.55);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgb(var(--c-ok) / 0);
+  }
+}
+.react-flow__handle.sk-handle--valid {
+  border-color: rgb(var(--c-ok));
+  background: rgb(var(--c-ok) / 0.3);
+  scale: 1.35;
+  animation: sk-handle-pulse 1.1s ease-out infinite;
+}
+.react-flow__handle.sk-handle--snapped {
+  border-color: rgb(var(--c-ok));
+  background: rgb(var(--c-ok));
+  scale: 1.8;
+  box-shadow: 0 0 0 5px rgb(var(--c-ok) / 0.25);
+}
+.react-flow__handle.sk-handle--invalid {
+  opacity: 0.25;
+}
+
+@keyframes sk-snap-pulse {
+  0%,
+  100% {
+    scale: 1;
+  }
+  50% {
+    scale: 1.35;
+  }
+}
+.sk-snap-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sk-snap-pulse 0.8s ease-in-out infinite;
+}
+
+.react-flow__node.selected,
+.react-flow__node:focus-visible {
+  outline: none;
+}
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke-width: 2.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sk-edge-dash,
+  .sk-node-warn,
+  .sk-node-error,
+  .sk-snap-pulse,
+  .react-flow__handle.sk-handle--valid {
+    animation: none;
+  }
+}

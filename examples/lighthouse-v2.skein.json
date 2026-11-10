@@ -1,0 +1,597 @@
+{
+  "entities": {
+    "0d92f65d-f466-489b-8166-129cfd3c4dc2": {
+      "folderId": "db660c79-d14d-4690-b82f-cc928ef2674d",
+      "id": "0d92f65d-f466-489b-8166-129cfd3c4dc2",
+      "name": "Keeper",
+      "order": 1,
+      "relations": {
+        "9fed3b62-577a-4e52-b5c2-22ac38c2d853": {
+          "98a07297-e770-44f2-8633-83192ce1fedc": -1
+        }
+      },
+      "technicalName": "Keeper",
+      "templateId": "89ad611e-60f7-4b64-958a-103f266f80d7",
+      "values": {
+        "5b09a5a3-311e-465f-9a3c-7b5c713638e3": "Has kept the light for forty winters. Lost his son to the same fog.",
+        "a9869a7a-a0d5-4cdf-aa8c-7a428f6b12c5": 61,
+        "b10b4d8e-4d1c-4f20-a9c9-675eb09399bc": "#fbbf24",
+        "b9aa4edc-8003-4f04-a226-c9282775135a": "a3466080-5f86-4df4-acab-fa3ec2f5a092",
+        "fa5ac515-6eba-4a49-91e2-42ac7acd2843": "7230cd35-4816-42d0-ad85-bdc274d8a770"
+      }
+    },
+    "122418be-675d-4f39-9b2b-b7c697844b04": {
+      "folderId": null,
+      "id": "122418be-675d-4f39-9b2b-b7c697844b04",
+      "name": "Storm Lantern",
+      "order": 3,
+      "technicalName": "StormLantern",
+      "templateId": "053b2be3-8bf2-41d5-9751-aaaf41a643e6",
+      "values": {
+        "20c5a2c0-1c4a-4ad3-b50e-31b261c934b3": "7d60a2a8-8627-48e0-b205-8dd3441831d5",
+        "5f6bbf16-ab34-4352-b1a3-49f118feb48e": 1.5
+      }
+    },
+    "7230cd35-4816-42d0-ad85-bdc274d8a770": {
+      "folderId": null,
+      "id": "7230cd35-4816-42d0-ad85-bdc274d8a770",
+      "name": "Lighthouse Watch",
+      "order": 0,
+      "technicalName": "LighthouseWatch",
+      "templateId": "db0a97dc-84fb-4e01-b558-d35e4ac51259",
+      "values": {
+        "b04ba719-2b22-450a-a40e-909493c9ba34": "The light does not go out."
+      }
+    },
+    "98a07297-e770-44f2-8633-83192ce1fedc": {
+      "folderId": "db660c79-d14d-4690-b82f-cc928ef2674d",
+      "id": "98a07297-e770-44f2-8633-83192ce1fedc",
+      "name": "Stranger",
+      "order": 2,
+      "technicalName": "Stranger",
+      "templateId": "89ad611e-60f7-4b64-958a-103f266f80d7",
+      "values": {
+        "b9aa4edc-8003-4f04-a226-c9282775135a": "f500b8a9-376d-4871-ab03-8f7605ed8ff1"
+      }
+    }
+  },
+  "flows": {
+    "249fa53f-79cc-41d7-bffd-3cafedf6474f": {
+      "edges": {
+        "61d1cfdc-a6c6-4808-814a-e0f5912ba9e7": {
+          "id": "61d1cfdc-a6c6-4808-814a-e0f5912ba9e7",
+          "source": "8ea79d1b-b3c1-42d3-a204-a0b32073b5ac",
+          "sourceHandle": "out",
+          "target": "3e5c1e22-0197-4183-b521-44c7eb990b8d",
+          "targetHandle": "in"
+        },
+        "9efdd6b9-3328-4a9b-9580-6db58693a9f0": {
+          "id": "9efdd6b9-3328-4a9b-9580-6db58693a9f0",
+          "source": "3e5c1e22-0197-4183-b521-44c7eb990b8d",
+          "sourceHandle": "out",
+          "target": "af267e29-30cd-428a-85f4-2c1dea3b7d91",
+          "targetHandle": "in"
+        }
+      },
+      "folderId": "69047d45-8b38-43bf-b320-78b1c0a2df26",
+      "id": "249fa53f-79cc-41d7-bffd-3cafedf6474f",
+      "name": "Night Watch",
+      "nodes": {
+        "3e5c1e22-0197-4183-b521-44c7eb990b8d": {
+          "data": {
+            "script": "World.LighthouseLit = true\nadvance to Night"
+          },
+          "id": "3e5c1e22-0197-4183-b521-44c7eb990b8d",
+          "position": {
+            "x": 0,
+            "y": 170
+          },
+          "type": "instruction"
+        },
+        "8ea79d1b-b3c1-42d3-a204-a0b32073b5ac": {
+          "data": {
+            "isStart": true,
+            "speakerId": "0d92f65d-f466-489b-8166-129cfd3c4dc2",
+            "text": "Trim the wick. Every hour, without fail."
+          },
+          "id": "8ea79d1b-b3c1-42d3-a204-a0b32073b5ac",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "type": "dialogue"
+        },
+        "af267e29-30cd-428a-85f4-2c1dea3b7d91": {
+          "data": {
+            "isEnd": true,
+            "requires": "World.LighthouseLit",
+            "speakerId": "98a07297-e770-44f2-8633-83192ce1fedc",
+            "text": "The light holds."
+          },
+          "id": "af267e29-30cd-428a-85f4-2c1dea3b7d91",
+          "position": {
+            "x": 0,
+            "y": 330
+          },
+          "type": "dialogue"
+        }
+      },
+      "order": 1
+    },
+    "6237725b-5e2b-47fd-9730-538af764c311": {
+      "edges": {
+        "1d84be8c-9419-4ae6-985e-18479bcfcc70": {
+          "id": "1d84be8c-9419-4ae6-985e-18479bcfcc70",
+          "source": "43161192-4a30-4376-96e3-6d8262192bc4",
+          "sourceHandle": "false",
+          "target": "a97751f1-aa20-4ff3-97ea-2b8fe540ae8b",
+          "targetHandle": "in"
+        },
+        "2a6bea9a-8382-4bcb-a571-76a08e5c72d9": {
+          "id": "2a6bea9a-8382-4bcb-a571-76a08e5c72d9",
+          "source": "43161192-4a30-4376-96e3-6d8262192bc4",
+          "sourceHandle": "true",
+          "target": "ccaf6439-2f6f-49b3-8c86-ca4940d2e186",
+          "targetHandle": "in"
+        },
+        "3ade73cd-b102-407e-a514-b8dd971ea07c": {
+          "id": "3ade73cd-b102-407e-a514-b8dd971ea07c",
+          "source": "a97751f1-aa20-4ff3-97ea-2b8fe540ae8b",
+          "sourceHandle": "out",
+          "target": "93ff37d7-3870-4876-950c-43a0fe880fbb",
+          "targetHandle": "in"
+        },
+        "9c672796-99ff-4c3b-97dd-4f199add7160": {
+          "id": "9c672796-99ff-4c3b-97dd-4f199add7160",
+          "source": "27b3e23b-421a-4e41-b2ca-064496305bb9",
+          "sourceHandle": "out",
+          "target": "e5c5b9bd-01a6-46c2-9244-b8819a1da1f8",
+          "targetHandle": "in"
+        },
+        "cb845c04-29be-451e-9b2c-9b930de232ae": {
+          "id": "cb845c04-29be-451e-9b2c-9b930de232ae",
+          "source": "e5c5b9bd-01a6-46c2-9244-b8819a1da1f8",
+          "sourceHandle": "out",
+          "target": "43161192-4a30-4376-96e3-6d8262192bc4",
+          "targetHandle": "in"
+        },
+        "e5da5395-dcd1-4979-b4f9-a07f4120a782": {
+          "id": "e5da5395-dcd1-4979-b4f9-a07f4120a782",
+          "source": "93ff37d7-3870-4876-950c-43a0fe880fbb",
+          "sourceHandle": "out",
+          "target": "a07a449b-3e08-41c3-8a1a-ba370d708f63",
+          "targetHandle": "in"
+        }
+      },
+      "folderId": "69047d45-8b38-43bf-b320-78b1c0a2df26",
+      "id": "6237725b-5e2b-47fd-9730-538af764c311",
+      "name": "Arrival",
+      "nodes": {
+        "27b3e23b-421a-4e41-b2ca-064496305bb9": {
+          "data": {
+            "isStart": true,
+            "speakerId": "0d92f65d-f466-489b-8166-129cfd3c4dc2",
+            "text": "Another ship lost to the fog…"
+          },
+          "id": "27b3e23b-421a-4e41-b2ca-064496305bb9",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "type": "dialogue"
+        },
+        "43161192-4a30-4376-96e3-6d8262192bc4": {
+          "data": {
+            "expression": "Keeper->Stranger.Trust >= 1 or Player.Reputation >= 2"
+          },
+          "id": "43161192-4a30-4376-96e3-6d8262192bc4",
+          "position": {
+            "x": 0,
+            "y": 360
+          },
+          "type": "condition"
+        },
+        "93ff37d7-3870-4876-950c-43a0fe880fbb": {
+          "data": {
+            "label": "Plead again"
+          },
+          "id": "93ff37d7-3870-4876-950c-43a0fe880fbb",
+          "position": {
+            "x": 260,
+            "y": 730
+          },
+          "type": "hub"
+        },
+        "a07a449b-3e08-41c3-8a1a-ba370d708f63": {
+          "data": {
+            "note": "Loops back so the player can try again.",
+            "targetId": "e5c5b9bd-01a6-46c2-9244-b8819a1da1f8"
+          },
+          "id": "a07a449b-3e08-41c3-8a1a-ba370d708f63",
+          "position": {
+            "x": 260,
+            "y": 860
+          },
+          "type": "jump"
+        },
+        "a97751f1-aa20-4ff3-97ea-2b8fe540ae8b": {
+          "data": {
+            "effects": "Keeper.Mood = Wary\nPlayer.Reputation -= 1",
+            "speakerId": "0d92f65d-f466-489b-8166-129cfd3c4dc2",
+            "text": "The mainland is that way."
+          },
+          "id": "a97751f1-aa20-4ff3-97ea-2b8fe540ae8b",
+          "position": {
+            "x": 230,
+            "y": 540
+          },
+          "type": "dialogue"
+        },
+        "ccaf6439-2f6f-49b3-8c86-ca4940d2e186": {
+          "data": {
+            "effects": "Keeper.Mood = Warm\nKeeper->Stranger.Trust += 1",
+            "isEnd": true,
+            "speakerId": "0d92f65d-f466-489b-8166-129cfd3c4dc2",
+            "text": "Come in, then. Mind the stairs."
+          },
+          "id": "ccaf6439-2f6f-49b3-8c86-ca4940d2e186",
+          "position": {
+            "x": -230,
+            "y": 540
+          },
+          "type": "dialogue"
+        },
+        "e5c5b9bd-01a6-46c2-9244-b8819a1da1f8": {
+          "data": {
+            "requires": "World.StormRaging",
+            "speakerId": "98a07297-e770-44f2-8633-83192ce1fedc",
+            "text": "I need shelter for the night."
+          },
+          "id": "e5c5b9bd-01a6-46c2-9244-b8819a1da1f8",
+          "position": {
+            "x": 0,
+            "y": 170
+          },
+          "type": "dialogue"
+        }
+      },
+      "order": 0
+    },
+    "665a7a47-59bf-45a7-9c00-c8df3e3a7608": {
+      "edges": {},
+      "folderId": null,
+      "id": "665a7a47-59bf-45a7-9c00-c8df3e3a7608",
+      "name": "Prologue",
+      "nodes": {},
+      "order": 0
+    }
+  },
+  "folders": {
+    "69047d45-8b38-43bf-b320-78b1c0a2df26": {
+      "id": "69047d45-8b38-43bf-b320-78b1c0a2df26",
+      "name": "Act I",
+      "order": 0,
+      "parentId": null,
+      "section": "flows"
+    },
+    "db660c79-d14d-4690-b82f-cc928ef2674d": {
+      "id": "db660c79-d14d-4690-b82f-cc928ef2674d",
+      "name": "Characters",
+      "order": 0,
+      "parentId": null,
+      "section": "entities"
+    }
+  },
+  "format": "skein.project",
+  "meta": {
+    "createdAt": "2026-11-04T18:32:13.478Z",
+    "description": "Sample project: a short branching conversation on a storm-bound island.",
+    "id": "87911e96-0a26-435c-a400-28e3f02b950c",
+    "name": "The Lighthouse Keeper"
+  },
+  "schemaVersion": 4,
+  "state": {
+    "relationships": {
+      "9fed3b62-577a-4e52-b5c2-22ac38c2d853": {
+        "defaultValue": 0,
+        "description": "How far one character trusts another. One-way.",
+        "fromTemplateId": "89ad611e-60f7-4b64-958a-103f266f80d7",
+        "id": "9fed3b62-577a-4e52-b5c2-22ac38c2d853",
+        "integer": true,
+        "max": 5,
+        "min": -5,
+        "name": "Trust",
+        "order": 0,
+        "technicalName": "Trust",
+        "toTemplateId": "89ad611e-60f7-4b64-958a-103f266f80d7",
+        "type": "number"
+      }
+    },
+    "rules": {
+      "1ca807df-a9d9-4c89-9833-746f3a1ffa22": {
+        "condition": "Time.Day >= 3",
+        "effects": "World.StormRaging = false",
+        "enabled": true,
+        "forEachTemplateId": null,
+        "id": "1ca807df-a9d9-4c89-9833-746f3a1ffa22",
+        "name": "The storm blows over",
+        "order": 1,
+        "phaseId": null,
+        "trigger": "day"
+      },
+      "35f5e47f-ce5d-414e-8d9c-67bba0cc527d": {
+        "condition": "",
+        "effects": "self.Energy -= 1",
+        "enabled": true,
+        "forEachTemplateId": "89ad611e-60f7-4b64-958a-103f266f80d7",
+        "id": "35f5e47f-ce5d-414e-8d9c-67bba0cc527d",
+        "name": "Night wears everyone down",
+        "order": 0,
+        "phaseId": "50403831-bfb1-49cf-9036-f96a9cdbbcc5",
+        "trigger": "phase"
+      }
+    },
+    "time": {
+      "phases": {
+        "43f6fa8d-4145-4182-9043-8891e5eeebb6": {
+          "id": "43f6fa8d-4145-4182-9043-8891e5eeebb6",
+          "label": "Day",
+          "order": 1,
+          "technicalName": "Day"
+        },
+        "50403831-bfb1-49cf-9036-f96a9cdbbcc5": {
+          "id": "50403831-bfb1-49cf-9036-f96a9cdbbcc5",
+          "label": "Night",
+          "order": 3,
+          "technicalName": "Night"
+        },
+        "710db8fe-ed68-459c-855a-b38632ce7414": {
+          "id": "710db8fe-ed68-459c-855a-b38632ce7414",
+          "label": "Dusk",
+          "order": 2,
+          "technicalName": "Dusk"
+        },
+        "ba6855ef-3de0-49a4-9050-37ef1558ddb5": {
+          "id": "ba6855ef-3de0-49a4-9050-37ef1558ddb5",
+          "label": "Dawn",
+          "order": 0,
+          "technicalName": "Dawn"
+        }
+      },
+      "startDay": 1,
+      "startPhaseId": "ba6855ef-3de0-49a4-9050-37ef1558ddb5"
+    },
+    "variables": {
+      "10b61297-4f3a-43d8-a06e-6e48dde14762": {
+        "defaultValue": false,
+        "description": "",
+        "id": "10b61297-4f3a-43d8-a06e-6e48dde14762",
+        "name": "Lighthouse Lit",
+        "namespace": "World",
+        "order": 1,
+        "technicalName": "LighthouseLit",
+        "type": "boolean"
+      },
+      "782f5156-8737-4199-a5a1-603679c5450c": {
+        "defaultValue": true,
+        "description": "",
+        "id": "782f5156-8737-4199-a5a1-603679c5450c",
+        "name": "Storm Raging",
+        "namespace": "World",
+        "order": 0,
+        "technicalName": "StormRaging",
+        "type": "boolean"
+      },
+      "85b221ee-f3b3-4df1-8e90-63a6efdf63fb": {
+        "defaultValue": 1,
+        "description": "How the island folk regard the player.",
+        "id": "85b221ee-f3b3-4df1-8e90-63a6efdf63fb",
+        "integer": true,
+        "max": 10,
+        "min": 0,
+        "name": "Reputation",
+        "namespace": "Player",
+        "order": 2,
+        "technicalName": "Reputation",
+        "type": "number"
+      }
+    }
+  },
+  "templates": {
+    "053b2be3-8bf2-41d5-9751-aaaf41a643e6": {
+      "color": "#fbbf24",
+      "description": "",
+      "folderId": null,
+      "icon": "gem",
+      "id": "053b2be3-8bf2-41d5-9751-aaaf41a643e6",
+      "name": "Item",
+      "order": 2,
+      "properties": {
+        "20c5a2c0-1c4a-4ad3-b50e-31b261c934b3": {
+          "description": "",
+          "id": "20c5a2c0-1c4a-4ad3-b50e-31b261c934b3",
+          "name": "Rarity",
+          "options": {
+            "032178d8-982c-44b7-876c-ce2816483839": {
+              "id": "032178d8-982c-44b7-876c-ce2816483839",
+              "label": "Legendary",
+              "order": 2
+            },
+            "79bd4bf7-deaa-4ecb-92b0-b40787b74e58": {
+              "id": "79bd4bf7-deaa-4ecb-92b0-b40787b74e58",
+              "label": "Common",
+              "order": 0
+            },
+            "7d60a2a8-8627-48e0-b205-8dd3441831d5": {
+              "id": "7d60a2a8-8627-48e0-b205-8dd3441831d5",
+              "label": "Rare",
+              "order": 1
+            }
+          },
+          "order": 0,
+          "technicalName": "Rarity",
+          "type": "enum"
+        },
+        "5f6bbf16-ab34-4352-b1a3-49f118feb48e": {
+          "description": "",
+          "id": "5f6bbf16-ab34-4352-b1a3-49f118feb48e",
+          "min": 0,
+          "name": "Weight",
+          "order": 1,
+          "technicalName": "Weight",
+          "type": "number"
+        }
+      },
+      "technicalName": "Item"
+    },
+    "89ad611e-60f7-4b64-958a-103f266f80d7": {
+      "color": "#818cf8",
+      "description": "Anyone who can speak a line of dialogue.",
+      "folderId": null,
+      "icon": "user",
+      "id": "89ad611e-60f7-4b64-958a-103f266f80d7",
+      "name": "Character",
+      "order": 1,
+      "properties": {
+        "5b09a5a3-311e-465f-9a3c-7b5c713638e3": {
+          "description": "Private notes for writers; not shown in game.",
+          "id": "5b09a5a3-311e-465f-9a3c-7b5c713638e3",
+          "name": "Biography",
+          "order": 7,
+          "technicalName": "Biography",
+          "type": "longText"
+        },
+        "65bf4f61-ef5b-4b13-b0c2-bbe4a8bacb0d": {
+          "defaultValue": 5,
+          "description": "",
+          "id": "65bf4f61-ef5b-4b13-b0c2-bbe4a8bacb0d",
+          "integer": true,
+          "max": 5,
+          "min": 0,
+          "mutable": true,
+          "name": "Energy",
+          "order": 2,
+          "technicalName": "Energy",
+          "type": "number"
+        },
+        "a520b8bc-ec1e-44d6-8b06-d51afa5a7a2d": {
+          "defaultValue": true,
+          "description": "",
+          "id": "a520b8bc-ec1e-44d6-8b06-d51afa5a7a2d",
+          "mutable": true,
+          "name": "Is Alive",
+          "order": 3,
+          "technicalName": "IsAlive",
+          "type": "boolean"
+        },
+        "a9869a7a-a0d5-4cdf-aa8c-7a428f6b12c5": {
+          "description": "",
+          "id": "a9869a7a-a0d5-4cdf-aa8c-7a428f6b12c5",
+          "integer": true,
+          "max": 150,
+          "min": 0,
+          "name": "Age",
+          "order": 4,
+          "technicalName": "Age",
+          "type": "number"
+        },
+        "b10b4d8e-4d1c-4f20-a9c9-675eb09399bc": {
+          "defaultValue": "#e4e7ef",
+          "description": "",
+          "id": "b10b4d8e-4d1c-4f20-a9c9-675eb09399bc",
+          "name": "Dialogue Colour",
+          "order": 6,
+          "technicalName": "DialogueColour",
+          "type": "color"
+        },
+        "b9aa4edc-8003-4f04-a226-c9282775135a": {
+          "description": "",
+          "id": "b9aa4edc-8003-4f04-a226-c9282775135a",
+          "name": "Role",
+          "options": {
+            "a218238e-269d-4020-8179-d9fcb8824dec": {
+              "id": "a218238e-269d-4020-8179-d9fcb8824dec",
+              "label": "Antagonist",
+              "order": 2
+            },
+            "a3466080-5f86-4df4-acab-fa3ec2f5a092": {
+              "id": "a3466080-5f86-4df4-acab-fa3ec2f5a092",
+              "label": "Ally",
+              "order": 1
+            },
+            "acb7edbb-ad39-4878-82d4-ba9d7569db1f": {
+              "id": "acb7edbb-ad39-4878-82d4-ba9d7569db1f",
+              "label": "Bystander",
+              "order": 3
+            },
+            "f500b8a9-376d-4871-ab03-8f7605ed8ff1": {
+              "id": "f500b8a9-376d-4871-ab03-8f7605ed8ff1",
+              "label": "Protagonist",
+              "order": 0
+            }
+          },
+          "order": 0,
+          "technicalName": "Role",
+          "type": "enum"
+        },
+        "f6c14ef9-7623-476d-a98e-73e1193f0342": {
+          "defaultValue": "3a060757-21b9-4760-b183-70e6d76c5eb2",
+          "description": "",
+          "id": "f6c14ef9-7623-476d-a98e-73e1193f0342",
+          "mutable": true,
+          "name": "Mood",
+          "options": {
+            "3a060757-21b9-4760-b183-70e6d76c5eb2": {
+              "id": "3a060757-21b9-4760-b183-70e6d76c5eb2",
+              "label": "Calm",
+              "order": 0
+            },
+            "7fda10ce-5223-460d-ad00-b48655801c9f": {
+              "id": "7fda10ce-5223-460d-ad00-b48655801c9f",
+              "label": "Warm",
+              "order": 2
+            },
+            "f15128bf-a328-4f97-a2e1-b2dbda3c9d82": {
+              "id": "f15128bf-a328-4f97-a2e1-b2dbda3c9d82",
+              "label": "Wary",
+              "order": 1
+            }
+          },
+          "order": 1,
+          "technicalName": "Mood",
+          "type": "enum"
+        },
+        "fa5ac515-6eba-4a49-91e2-42ac7acd2843": {
+          "description": "",
+          "id": "fa5ac515-6eba-4a49-91e2-42ac7acd2843",
+          "name": "Member Of",
+          "order": 5,
+          "referenceTemplateId": "db0a97dc-84fb-4e01-b558-d35e4ac51259",
+          "technicalName": "MemberOf",
+          "type": "reference"
+        }
+      },
+      "technicalName": "Character"
+    },
+    "db0a97dc-84fb-4e01-b558-d35e4ac51259": {
+      "color": "#34d399",
+      "description": "",
+      "folderId": null,
+      "icon": "flag",
+      "id": "db0a97dc-84fb-4e01-b558-d35e4ac51259",
+      "name": "Faction",
+      "order": 0,
+      "properties": {
+        "b04ba719-2b22-450a-a40e-909493c9ba34": {
+          "description": "",
+          "id": "b04ba719-2b22-450a-a40e-909493c9ba34",
+          "name": "Motto",
+          "order": 0,
+          "technicalName": "Motto",
+          "type": "text"
+        }
+      },
+      "technicalName": "Faction"
+    }
+  }
+}
