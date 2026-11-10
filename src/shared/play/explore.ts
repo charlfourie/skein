@@ -82,6 +82,8 @@ export interface ExploreReport {
   ranges: NumberRange[]
   times: { label: string; count: number }[]
   longest: (PathExample & { beats: number }) | null
+  /** `advance to X` reached while it was already X, so time jumped a whole day: per node and phase. */
+  fullDays: { nodeId: string | null; phase: string; count: number; example: PathExample }[]
 }
 
 export function pathFromKey(key: StateKey): StatePath | null {
@@ -160,6 +162,7 @@ interface Played {
   choices: string[]
   beats: number
   world: SkeinWorld
+  fullDays: { nodeId: string | null; phase: string }[]
 }
 
 function play(file: ExportFile, opts: ExploreOptions, startExtra: Record<StateKey, ExportValue>, picks: number[], visited: Set<string>): Played {
@@ -167,6 +170,8 @@ function play(file: ExportFile, opts: ExploreOptions, startExtra: Record<StateKe
   applyStart(world, opts.start, startExtra)
   const story = new SkeinStory(world, opts.flowId)
   story.onEnter = (n) => visited.add(n.id)
+  const fullDays: Played['fullDays'] = []
+  world.onFullDay = (phase) => fullDays.push({ nodeId: story.current?.id ?? null, phase })
   const choices: string[] = []
   const maxBeats = opts.maxBeats ?? 200
   let beats = 0
@@ -174,9 +179,9 @@ function play(file: ExportFile, opts: ExploreOptions, startExtra: Record<StateKe
     let beat = story.start()
     let i = 0
     while (beat.kind !== 'end') {
-      if (++beats > maxBeats) return { branching: null, stuck: true, choices, beats, world }
+      if (++beats > maxBeats) return { branching: null, stuck: true, choices, beats, world, fullDays }
       if (beat.choices.length > 1) {
-        if (i >= picks.length) return { branching: beat.choices.length, choices, beats, world }
+        if (i >= picks.length) return { branching: beat.choices.length, choices, beats, world, fullDays }
         const c = beat.choices[picks[i++]]
         choices.push(c.text)
         beat = story.choose(c.index)
@@ -184,9 +189,9 @@ function play(file: ExportFile, opts: ExploreOptions, startExtra: Record<StateKe
         beat = story.choose(0)
       }
     }
-    return { branching: null, ending: { node: beat.node }, choices, beats, world }
+    return { branching: null, ending: { node: beat.node }, choices, beats, world, fullDays }
   } catch (err) {
-    return { branching: null, error: err instanceof Error ? err.message : String(err), choices, beats, world }
+    return { branching: null, error: err instanceof Error ? err.message : String(err), choices, beats, world, fullDays }
   }
 }
 
@@ -202,6 +207,7 @@ export function explore(file: ExportFile, opts: ExploreOptions): ExploreReport {
   const times = new Map<string, number>()
   const ranges = new Map<StateKey, { min: number; max: number }>()
   let longest: ExploreReport['longest'] = null
+  const fullDays = new Map<string, ExploreReport['fullDays'][number]>()
   let paths = 0
   let capped = false
 
@@ -213,6 +219,12 @@ export function explore(file: ExportFile, opts: ExploreOptions): ExploreReport {
   const record = (startExtra: Record<StateKey, ExportValue>, picks: number[], r: Played) => {
     paths++
     const example: PathExample = { start: startExtra, picks: [...picks], choices: r.choices }
+    for (const k of new Set(r.fullDays.map((f) => `${f.nodeId ?? '-'}|${f.phase}`))) {
+      const [nodeId, phase] = k.split('|')
+      const e = fullDays.get(k) ?? { nodeId: nodeId === '-' ? null : nodeId, phase, count: 0, example }
+      e.count++
+      fullDays.set(k, e)
+    }
     if (r.error) {
       const e = errors.get(r.error) ?? { message: r.error, count: 0, example }
       e.count++
@@ -294,6 +306,7 @@ export function explore(file: ExportFile, opts: ExploreOptions): ExploreReport {
       })
       .sort((a, b) => a.label.localeCompare(b.label)),
     times: [...times.entries()].map(([label, count]) => ({ label, count })).sort((a, b) => b.count - a.count),
-    longest
+    longest,
+    fullDays: [...fullDays.values()].sort((a, b) => b.count - a.count)
   }
 }

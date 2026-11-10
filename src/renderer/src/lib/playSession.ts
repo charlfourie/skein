@@ -11,6 +11,8 @@ export type PlayEntry =
   | { kind: 'change'; key: StateKey; label: string; from: ExportValue; to: ExportValue }
   | { kind: 'end'; nodeId: string | null; marked: boolean }
   | { kind: 'note'; text: string }
+  /** Something that's probably a design mistake, e.g. `advance to Night` at Night skipping a whole day. */
+  | { kind: 'warn'; nodeId: string | null; text: string }
 
 export interface PlayOption {
   nodeId: string
@@ -45,6 +47,12 @@ export class PlaySession {
     this.tags = tagsOf(file)
     this.world = new SkeinWorld(file)
     applyStart(this.world, start, extra)
+    this.world.onFullDay = (phase) =>
+      this.entries.push({
+        kind: 'warn',
+        nodeId: this.story.current?.id ?? null,
+        text: `“advance to ${phase}” ran during ${phase}, so it skipped a whole day. Use “advance until ${phase}” to stay.`
+      })
     this.baseline = new SkeinWorld(file)
     applyStart(this.baseline, start, extra)
     this.story = this.attach(new SkeinStory(this.world, flowId))

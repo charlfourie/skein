@@ -379,5 +379,16 @@ function TranscriptLine({ entry: e, onFocus }: { entry: PlayEntry; onFocus(id: s
       return <p className={cx('px-1 text-2xs', e.marked ? 'text-muted' : 'text-warn')}>■ {e.marked ? 'End' : 'Stopped (not marked End)'}</p>
     case 'note':
       return <p className="px-1 text-2xs text-accent">{e.text}</p>
+    case 'warn':
+      return (
+        <button
+          type="button"
+          disabled={!e.nodeId}
+          onClick={() => e.nodeId && onFocus(e.nodeId)}
+          className="rounded px-1 py-0.5 text-left text-2xs text-warn hover:bg-raised"
+        >
+          ⚠ {e.text}
+        </button>
+      )
   }
 }

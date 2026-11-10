@@ -187,7 +187,13 @@ function InsertMenu({ project, mode, ctx, onPick }: { project: Project; mode: Mo
         { text: 'Time.Day', hint: 'day number' },
         { text: 'Time.Phase', hint: env.phases.map((p) => p.technicalName).join(' / ') },
         ...(mode === 'action' && ctx?.allowAdvance !== false
-          ? [{ text: 'advance', hint: 'one phase' }, ...env.phases.map((p) => ({ text: `advance to ${p.technicalName}`, hint: '' }))]
+          ? [
+              { text: 'advance', hint: 'one phase' },
+              ...env.phases.flatMap((p) => [
+                { text: `advance until ${p.technicalName}`, hint: `stays if already ${p.label}` },
+                { text: `advance to ${p.technicalName}`, hint: `next ${p.label}: a whole day if already ${p.label}` }
+              ])
+            ]
           : [])
       ]
     })

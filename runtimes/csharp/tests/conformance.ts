@@ -82,7 +82,7 @@ function synth(seed: number): ExportFile {
   const statement = (allowTime: boolean): Statement => {
     const roll = r()
     if (allowTime && roll < 0.08) return { advance: 1 + int(3) }
-    if (allowTime && roll < 0.14) return { advanceTo: pick([...phases, 'Nope']) }
+    if (allowTime && roll < 0.14) return { advanceTo: pick([...phases, 'Nope']), ...(r() < 0.5 ? { stay: true as const } : {}) }
     return { set: pick(paths(true)), op: pick(['=', '+=', '-='] as const), value: expr(2) }
   }
   const effects = (n: number, allowTime: boolean) => ({ do: Array.from({ length: n }, () => statement(allowTime)) })

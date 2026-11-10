@@ -38,7 +38,8 @@ export type ExprNode =
 export type Statement =
   | { set: StatePath; op: '=' | '+=' | '-='; value: ExprNode }
   | { advance: number }
-  | { advanceTo: string }
+  /** `stay` (v2): do nothing if already in that phase, instead of moving a whole day. */
+  | { advanceTo: string; stay?: true }
 
 /** A compiled condition, plus (optionally) its source text for debugging. */
 export interface ExportCondition {

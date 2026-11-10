@@ -169,7 +169,7 @@ export interface ExecuteLog {
 export function execute(ctx: RunContext, statements: BoundStatement[], log?: ExecuteLog): void {
   for (const s of statements) {
     if (s.k === 'advance') {
-      advanceTime(ctx, s.count, s.toPhaseId, log)
+      advanceTime(ctx, s.count, s.toPhaseId, log, s.stay)
       continue
     }
     const value = evaluate(ctx, s.value)
@@ -187,7 +187,7 @@ export function execute(ctx: RunContext, statements: BoundStatement[], log?: Exe
  * first. Rules run in their listed order, once per matching entity for
  * "for each" rules (entities in id order), and only when their condition holds.
  */
-export function advanceTime(ctx: RunContext, count: number, toPhaseId?: string, log?: ExecuteLog): void {
+export function advanceTime(ctx: RunContext, count: number, toPhaseId?: string, log?: ExecuteLog, stay?: boolean): void {
   const env = getEnv(ctx.project)
   const n = env.phases.length
   if (n === 0) return
@@ -198,7 +198,8 @@ export function advanceTime(ctx: RunContext, count: number, toPhaseId?: string, 
   if (toPhaseId) {
     const target = env.phases.findIndex((p) => p.id === toPhaseId)
     if (target < 0) return
-    steps = ((target - ctx.state.phase + n - 1) % n) + 1 // always moves at least one phase
+    // `advance to` always moves at least one phase (a whole day if already there); `advance until` stays put.
+    steps = stay && target === ctx.state.phase ? 0 : ((target - ctx.state.phase + n - 1) % n) + 1
   }
   for (let i = 0; i < steps; i++) {
     ctx.state.phase = (ctx.state.phase + 1) % n

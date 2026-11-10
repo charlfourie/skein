@@ -39,6 +39,8 @@ export class SkeinWorld {
   log: string[] = []
   /** v2: the flow being played right now (set by SkeinStory), for rules limited to one flow. */
   playing: string | null = null
+  /** Debugging hook: an `advance to` that was already in its phase, so it moves a whole day. */
+  onFullDay?: (phase: string) => void
 
   constructor(data: ExportFile, saved?: { changes: Record<string, ExportValue>; day: number; phase: string | null }) {
     if (data.version > EXPORT_VERSION)
@@ -193,7 +195,7 @@ export class SkeinWorld {
 
   execute(s: Statement, self?: string): void {
     if ('advance' in s) return this.advance(s.advance)
-    if ('advanceTo' in s) return this.advanceTo(s.advanceTo)
+    if ('advanceTo' in s) return this.advanceTo(s.advanceTo, s.stay === true)
     const value = this.evaluate(s.value, self)
     if (s.op === '=') return this.write(s.set, value, self)
     const cur = Number(this.read(s.set, self)) || 0
@@ -216,11 +218,19 @@ export class SkeinWorld {
     }
   }
 
-  /** Advance to the next time `phase` begins (always at least one phase forward). */
-  advanceTo(phase: string): void {
+  /**
+   * Advance to the next time `phase` begins: always at least one phase forward, so
+   * a whole day when it's already that phase. With `stay` (`advance until`), do
+   * nothing when it's already that phase.
+   */
+  advanceTo(phase: string, stay = false): void {
     const phases = this.data.state.time.phases
     const target = phases.indexOf(phase)
     if (target < 0) return
+    if (target === this.phaseIndex) {
+      if (stay) return
+      this.onFullDay?.(phase)
+    }
     this.advance(((target - this.phaseIndex + phases.length - 1) % phases.length) + 1)
   }
 

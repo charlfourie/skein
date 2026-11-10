@@ -36,7 +36,7 @@ export type Bound =
 
 export type BoundStatement =
   | { k: 'set'; ref: StateRef; op: '=' | '+=' | '-='; value: Bound }
-  | { k: 'advance'; count: number; toPhaseId?: string }
+  | { k: 'advance'; count: number; toPhaseId?: string; /** `advance until`: do nothing if already in that phase. */ stay?: true }
 
 export type Mode = 'condition' | 'action'
 
@@ -439,7 +439,7 @@ class Checker {
           throw new CheckError(`There’s no time phase “${name}”.${suggest(name, names)}`, s.toPhase.start, s.toPhase.end)
         }
         this.refs.push({ kind: 'time', field: 'phase' })
-        return { k: 'advance', count: 1, toPhaseId: phase.id }
+        return { k: 'advance', count: 1, toPhaseId: phase.id, ...(s.stay ? { stay: true as const } : {}) }
       }
       this.refs.push({ kind: 'time', field: 'phase' })
       return { k: 'advance', count: s.count }

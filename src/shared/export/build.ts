@@ -145,12 +145,14 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
     }
   }
 
-  const statement = (s: BoundStatement): Statement =>
-    s.k === 'advance'
-      ? s.toPhaseId
-        ? { advanceTo: phaseName.get(s.toPhaseId) ?? s.toPhaseId }
-        : { advance: s.count }
-      : { set: path(s.ref), op: s.op, value: expr(s.value) }
+  const statement = (s: BoundStatement): Statement => {
+    if (s.k !== 'advance') return { set: path(s.ref), op: s.op, value: expr(s.value) }
+    if (!s.toPhaseId) return { advance: s.count }
+    const advanceTo = phaseName.get(s.toPhaseId) ?? s.toPhaseId
+    if (!s.stay) return { advanceTo }
+    usesV2 = true
+    return { advanceTo, stay: true }
+  }
 
   const condition = (source: string, ctx: CompileContext, where: string, at?: ExportProblem['at']): ExportCondition | undefined => {
     if (!source.trim()) return undefined

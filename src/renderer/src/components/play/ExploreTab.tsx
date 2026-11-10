@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle2, Crosshair, Flag, Loader2, Play, Repeat, Square, XCircle } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, Crosshair, Flag, Loader2, Play, Repeat, Square, XCircle, Clock } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import type { ExportFile } from '@shared/export/types'
 import type { ExploreReport, PathExample } from '@shared/play/explore'
@@ -141,7 +141,7 @@ function Report({ flowId, report, file, ms, onReplay }: { flowId: string; report
     if (n.type === 'hub') return n.label || 'Hub'
     return n.type[0].toUpperCase() + n.type.slice(1)
   }
-  const okish = report.errors.length === 0 && !report.stuck && unmarked.length === 0 && report.unreached.length === 0
+  const okish = report.errors.length === 0 && !report.stuck && unmarked.length === 0 && report.unreached.length === 0 && report.fullDays.length === 0
 
   return (
     <div className="flex flex-col gap-3">
@@ -169,6 +169,17 @@ function Report({ flowId, report, file, ms, onReplay }: { flowId: string; report
           onReplay={() => onReplay(report.stuck!.example)}
         />
       )}
+      {report.fullDays.map((f) => (
+        <Finding
+          key={`${f.nodeId ?? '-'}|${f.phase}`}
+          tone="warn"
+          icon={Clock}
+          title={`${f.count.toLocaleString()} path${f.count === 1 ? '' : 's'} skip a whole day`}
+          detail={`${f.nodeId ? `“${nodeLabel(f.nodeId)}”` : 'A node'} runs “advance to ${f.phase}” while it's already ${f.phase}, so time moves on to the next ${f.phase}. If you meant “make it ${f.phase} if it isn't yet”, use “advance until ${f.phase}”.`}
+          onFocus={f.nodeId ? () => focusNode(flowId, f.nodeId!) : undefined}
+          onReplay={() => onReplay(f.example)}
+        />
+      ))}
       {unmarked.map((e) => (
         <Finding
           key={e.nodeId ?? '-'}

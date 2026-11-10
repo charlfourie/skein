@@ -129,7 +129,9 @@ Visits.Lamp >= 3                    # how many times it has played
 Keeper.Mood = Warm
 Keeper->Stranger.Trust += 1
 Player.Reputation -= 1
-advance                             # one phase;  advance 2;  advance to Night
+advance                             # one phase;  advance 2
+advance until Night                 # make it Night (stays put if it already is)
+advance to Night                    # the next Night: a whole day on if it's Night now
 ```
 
 Give a node a **Tag** in its inspector to refer to it with `Seen.Tag` / `Visits.Tag`

@@ -44,7 +44,7 @@ use a newer feature keeps loading in older runtimes.
 | Version | Adds |
 | --- | --- |
 | 1 | Everything not listed below |
-| 2 | Visit counts (`{ "get": "visit" }`, node `count` / `tag`) and flow-scoped rules (rule `flow`) |
+| 2 | Visit counts (`{ "get": "visit" }`, node `count` / `tag`), flow-scoped rules (rule `flow`) and `advanceTo` with `stay` |
 
 A runtime should refuse a file whose `version` is higher than it knows.
 
@@ -176,7 +176,8 @@ one of:
 | `{ "set": <get…>, "op": "=", "value": e }` | assign |
 | `{ "set": <get…>, "op": "+=", "value": e }`, `"op": "-="` | numeric add / subtract |
 | `{ "advance": n }` | move time forward n phases |
-| `{ "advanceTo": "Night" }` | move forward to the next time that phase begins; always at least one phase |
+| `{ "advanceTo": "Night" }` | move forward to the next time that phase begins; always at least one phase, so from Night it moves a whole day to the next Night (`advance to Night` in Skein) |
+| `{ "advanceTo": "Night", "stay": true }` | **v2.** The same, but do nothing if it is already Night (`advance until Night` in Skein) |
 
 Writing a number clamps it to the definition's `min` / `max`, and rounds it when the
 definition is `integer`. Only variables, relationships and `"state": true` properties

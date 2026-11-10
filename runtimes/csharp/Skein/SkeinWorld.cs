@@ -362,7 +362,7 @@ namespace Skein
         public void Execute(JsonObject s, string self = null)
         {
             if (s.Has("advance")) { Advance((int)(s.Num("advance") ?? 0)); return; }
-            if (s.Has("advanceTo")) { AdvanceTo(s.Str("advanceTo")); return; }
+            if (s.Has("advanceTo")) { AdvanceTo(s.Str("advanceTo"), s.Bool("stay")); return; }
             var target = s.Obj("set");
             if (target == null) return;
             var value = Evaluate(s.Obj("value"), self);
@@ -392,12 +392,17 @@ namespace Skein
             }
         }
 
-        /// <summary>Advance to the next time <paramref name="phase"/> begins (always at least one phase forward).</summary>
-        public void AdvanceTo(string phase)
+        /// <summary>
+        /// Advance to the next time <paramref name="phase"/> begins: always at least one phase forward,
+        /// so a whole day when it's already that phase. With <paramref name="stay"/> (v2, "advance until"),
+        /// do nothing when it's already that phase.
+        /// </summary>
+        public void AdvanceTo(string phase, bool stay = false)
         {
             var phases = Data.Time.Phases;
             int target = Data.Time.IndexOf(phase);
             if (target < 0) return;
+            if (stay && target == PhaseIndex) return;
             Advance(((target - PhaseIndex + phases.Count - 1) % phases.Count) + 1);
         }
 

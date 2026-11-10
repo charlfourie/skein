@@ -10,6 +10,7 @@
  *   Keeper.Mood = Wary
  *   Keeper->Stranger.Trust += 1
  *   advance                       (one phase)   advance 2   advance to Night
+ *   advance until Night           (stays put if it's already Night)
  */
 
 export interface Diagnostic {
@@ -126,7 +127,7 @@ export type NameExpr = Extract<Expr, { kind: 'name' }>
 
 export type Statement =
   | (Spanned & { kind: 'assign'; target: NameExpr; op: '=' | '+=' | '-='; value: Expr })
-  | (Spanned & { kind: 'advance'; count: number; toPhase?: Seg })
+  | (Spanned & { kind: 'advance'; count: number; toPhase?: Seg; stay?: true })
 
 // ---------------------------------------------------------------------------
 // Parser (precedence climbing)
@@ -281,10 +282,10 @@ class Parser {
   statement(): Statement {
     const t = this.next()
     if (t.kind === 'ident' && t.value === 'advance') {
-      if (this.is('to')) {
-        this.next()
-        const phase = this.identifier('a time phase, e.g. advance to Night')
-        return { kind: 'advance', count: 1, toPhase: phase, start: t.start, end: phase.end }
+      if (this.is('to') || this.is('until')) {
+        const stay = this.next().value === 'until'
+        const phase = this.identifier(stay ? 'a time phase, e.g. advance until Night' : 'a time phase, e.g. advance to Night')
+        return { kind: 'advance', count: 1, toPhase: phase, ...(stay ? { stay: true as const } : {}), start: t.start, end: phase.end }
       }
       const n = this.peek()
       if (n.kind === 'number') {

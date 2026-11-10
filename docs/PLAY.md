@@ -35,6 +35,9 @@ Plays **every** combination of choices from the start state and reports:
   this start;
 - paths that hit an error, paths that never end (a loop with no way out), and
   stops at nodes not marked End;
+- `advance to Night` run while it's already Night, which skips a whole day (use
+  `advance until Night` if you meant "make it Night"). Play flags these in the
+  transcript too;
 - the range every number ends up in, next to its defined min and max, so
   unbounded values stand out.
 

@@ -374,7 +374,8 @@ function TimeAndRules({ project }: { project: Project }) {
         <p className="mt-2 text-2xs text-faint">
           Drag to reorder. After the last phase, a new day begins. In expressions: <code className="text-muted">Time.Phase is Night</code>,{' '}
           <code className="text-muted">Time.Phase &gt;= Dusk</code>, <code className="text-muted">Time.Day &gt;= 3</code>; in actions:{' '}
-          <code className="text-muted">advance</code>, <code className="text-muted">advance 2</code>, <code className="text-muted">advance to Night</code>.
+          <code className="text-muted">advance</code>, <code className="text-muted">advance 2</code>, <code className="text-muted">advance until Night</code> (stays if it’s already Night),{' '}
+          <code className="text-muted">advance to Night</code> (always moves on: from Night, that’s the next Night).
         </p>
         <IssueList issues={[...(issues.get('state:time') ?? []), ...phases.flatMap((p) => issues.get(p.id) ?? [])]} />
       </div>
