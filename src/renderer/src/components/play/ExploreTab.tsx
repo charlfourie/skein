@@ -215,6 +215,7 @@ function Report({ flowId, report, file, ms, onReplay }: { flowId: string; report
       {report.endings.length > 0 && (
         <section>
           <h3 className="mb-1 text-2xs font-semibold uppercase tracking-wider text-faint">Where paths end</h3>
+          {report.random && <p className="mb-1.5 text-2xs text-faint">Shares count each choice path once, split by the odds of every chance() and roll() along it.</p>}
           <div className="flex flex-col gap-1">
             {report.endings.map((e) => (
               <div key={e.nodeId ?? '-'} className="rounded-md border border-line bg-bg px-2 py-1.5">
@@ -223,13 +224,13 @@ function Report({ flowId, report, file, ms, onReplay }: { flowId: string; report
                   <button type="button" className="min-w-0 flex-1 truncate text-left text-xs text-fg hover:underline" onClick={() => e.nodeId && focusNode(flowId, e.nodeId)}>
                     {e.text}
                   </button>
-                  <span className="shrink-0 tabular-nums text-2xs text-muted">{Math.round((e.count / report.paths) * 1000) / 10}%</span>
+                  <span className="shrink-0 tabular-nums text-2xs text-muted">{Math.round((e.weight / Math.max(1e-12, report.weight)) * 1000) / 10}%</span>
                   <button type="button" onClick={() => onReplay(e.example)} className="shrink-0 text-2xs text-accent hover:underline" title="Play this path in the Play tab">
                     Replay
                   </button>
                 </div>
                 <div className="mt-1 h-1 overflow-hidden rounded bg-raised">
-                  <div className="h-full rounded bg-accent/60" style={{ width: `${Math.max(2, (e.count / report.paths) * 100)}%` }} />
+                  <div className="h-full rounded bg-accent/60" style={{ width: `${Math.max(2, (e.weight / Math.max(1e-12, report.weight)) * 100)}%` }} />
                 </div>
               </div>
             ))}

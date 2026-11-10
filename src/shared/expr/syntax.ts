@@ -11,6 +11,9 @@
  *   Keeper->Stranger.Trust += 1
  *   advance                       (one phase)   advance 2   advance to Night
  *   advance until Night           (stays put if it's already Night)
+ *
+ * Randomness (actions and Condition nodes only): chance(30) is true 30% of the time;
+ * roll(1, 6) is a whole number from 1 to 6.
  */
 
 export interface Diagnostic {
@@ -32,7 +35,7 @@ export interface Token {
   end: number
 }
 
-const OPS = ['->', '==', '!=', '<=', '>=', '+=', '-=', '&&', '||', '→', '(', ')', '.', '<', '>', '=', '+', '-', '*', '/', '!', ';']
+const OPS = ['->', '==', '!=', '<=', '>=', '+=', '-=', '&&', '||', '→', '(', ')', '.', ',', '<', '>', '=', '+', '-', '*', '/', '!', ';']
 
 export function tokenize(src: string): { tokens: Token[]; diagnostics: Diagnostic[] } {
   const tokens: Token[] = []
@@ -122,6 +125,8 @@ export type Expr =
   | (Spanned & { kind: 'name'; head: Seg; to?: Seg; member?: Seg })
   | (Spanned & { kind: 'unary'; op: 'not' | 'neg'; arg: Expr })
   | (Spanned & { kind: 'binary'; op: BinaryOp; left: Expr; right: Expr })
+  /** `chance(30)` or `roll(1, 6)`: the arguments are literal numbers. */
+  | (Spanned & { kind: 'random'; fn: 'chance' | 'roll'; args: { value: number; start: number; end: number }[] })
 
 export type NameExpr = Extract<Expr, { kind: 'name' }>
 
@@ -248,12 +253,30 @@ class Parser {
     }
     if (t.kind === 'ident') {
       if (t.value === 'true' || t.value === 'false') return { kind: 'bool', value: t.value === 'true', start: t.start, end: t.end }
+      if ((t.value === 'chance' || t.value === 'roll') && this.is('(')) return this.random(t)
       if (['and', 'or', 'is', 'not', 'advance'].includes(t.value)) {
         throw new ParseError(`“${t.value}” can’t be used here.`, t.start, t.end)
       }
       return this.nameFrom(t)
     }
     throw new ParseError(`Expected a value${describe(t)}.`, t.start, Math.max(t.end, t.start + 1))
+  }
+
+  random(t: Token): Expr {
+    const fn = t.value as 'chance' | 'roll'
+    this.next() // (
+    const args: { value: number; start: number; end: number }[] = []
+    const example = fn === 'chance' ? 'chance(30)' : 'roll(1, 6)'
+    for (;;) {
+      const neg = this.is('-') ? this.next() : null
+      const n = this.next()
+      if (n.kind !== 'number') throw new ParseError(`Expected a number, e.g. ${example}${describe(n)}.`, n.start, Math.max(n.end, n.start + 1))
+      args.push({ value: neg ? -Number(n.value) : Number(n.value), start: neg?.start ?? n.start, end: n.end })
+      if (!this.is(',')) break
+      this.next()
+    }
+    const close = this.expect(')', 'a closing “)”')
+    return { kind: 'random', fn, args, start: t.start, end: close.end }
   }
 
   nameFrom(head: Token): NameExpr {

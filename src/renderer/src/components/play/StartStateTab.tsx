@@ -1,9 +1,12 @@
-import { RotateCcw } from 'lucide-react'
+import { Dices, RotateCcw } from 'lucide-react'
+import { useMemo } from 'react'
+import { DEFAULT_SEED } from '@shared/export/runtime'
 import type { ExportDef, ExportFile, ExportValue } from '@shared/export/types'
 import { usePlay } from '../../store/play'
 import { formatValue } from '../../lib/playSession'
 import { IconButton } from '../ui/IconButton'
 import { NumberInput, Select, TextInput, Toggle } from '../ui/fields'
+import { usesRandom } from './startState'
 
 /**
  * The state a test play-through (and the explorer) starts from: the time, and
@@ -14,7 +17,9 @@ export function StartStateTab({ file }: { file: ExportFile }) {
   const overrides = usePlay((s) => s.overrides)
   const startDay = usePlay((s) => s.startDay)
   const startPhase = usePlay((s) => s.startPhase)
-  const { setOverride, setStartTime, resetStart } = usePlay.getState()
+  const seed = usePlay((s) => s.seed)
+  const { setOverride, setStartTime, setSeed, resetStart } = usePlay.getState()
+  const dice = useMemo(() => usesRandom(file), [file])
   const time = file.state.time
   const vars = Object.entries(file.state.variables).sort(([a], [b]) => a.localeCompare(b))
   const groups = new Map<string, [string, ExportDef][]>()
@@ -22,7 +27,7 @@ export function StartStateTab({ file }: { file: ExportFile }) {
     const ns = name.split('.')[0]
     groups.set(ns, [...(groups.get(ns) ?? []), [name, def]])
   }
-  const changed = Object.keys(overrides).length + (startDay !== null ? 1 : 0) + (startPhase !== null ? 1 : 0)
+  const changed = Object.keys(overrides).length + (startDay !== null ? 1 : 0) + (startPhase !== null ? 1 : 0) + (seed !== null ? 1 : 0)
 
   return (
     <div className="flex flex-col gap-4">
@@ -55,6 +60,21 @@ export function StartStateTab({ file }: { file: ExportFile }) {
           )}
         </div>
       </section>
+
+      {dice && (
+        <section className="rounded-lg border border-line bg-bg/40 p-2.5">
+          <h3 className="mb-1 text-2xs font-semibold uppercase tracking-wider text-faint">Dice</h3>
+          <p className="mb-2 text-2xs text-faint">The same seed rolls the same chance() and roll() results, so a play-through can be repeated. Explore tries every outcome regardless.</p>
+          <div className="flex items-center gap-2">
+            <span className="w-10 text-xs text-muted">Seed</span>
+            <div className="w-28">
+              <NumberInput value={seed ?? DEFAULT_SEED} onCommit={(n) => setSeed(n === null || Math.round(n) === DEFAULT_SEED ? null : Math.round(Math.abs(n)) >>> 0)} />
+            </div>
+            <IconButton size="sm" icon={Dices} label="Roll a new seed" onClick={() => setSeed((Math.random() * 2 ** 32) >>> 0)} />
+            <IconButton size="sm" icon={RotateCcw} label={`Back to the default seed (${DEFAULT_SEED})`} disabled={seed === null} onClick={() => setSeed(null)} />
+          </div>
+        </section>
+      )}
 
       {[...groups.entries()].map(([ns, list]) => (
         <section key={ns} className="rounded-lg border border-line bg-bg/40 p-2.5">

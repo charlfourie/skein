@@ -1,4 +1,5 @@
 import { compile, nodeTag, type Bound, type BoundStatement, type CompileContext, type StateRef } from '../expr/check'
+import { CONDITION_NODE_CTX } from '../expr/sites'
 import { dataRef, dataString, isEndNode, isKnownNodeType, isStartNode } from '../nodes'
 import { orderedTargets, startNodes } from '../flowOrder'
 import type { Flow, FlowNode, Project, PropertyDef, PropertyValue } from '../schema'
@@ -142,6 +143,9 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
         return b.op === 'not' ? { not: expr(b.e) } : { neg: expr(b.e) }
       case 'bin':
         return { op: b.op as Extract<ExprNode, { op: string }>['op'], a: expr(b.l), b: expr(b.r) }
+      case 'rand':
+        usesV2 = true
+        return b.fn === 'chance' ? { chance: b.p } : { roll: [b.min, b.max] }
     }
   }
 
@@ -275,7 +279,7 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
           nodes[node.id] = {
             ...base,
             type: 'condition',
-            condition: condition(dataString(node, 'expression'), {}, `${label} condition`, at) ?? null,
+            condition: condition(dataString(node, 'expression'), CONDITION_NODE_CTX, `${label} condition`, at) ?? null,
             onTrue: outgoing(node.id, 'true')[0] ?? null,
             onFalse: outgoing(node.id, 'false')[0] ?? null
           }

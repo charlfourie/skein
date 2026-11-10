@@ -29,6 +29,10 @@ export type ExprNode =
   | StatePath
   | { not: ExprNode }
   | { neg: ExprNode }
+  /** v2: true `chance` percent of the time. */
+  | { chance: number }
+  /** v2: a whole number from roll[0] to roll[1], inclusive. */
+  | { roll: [number, number] }
   | {
       op: 'and' | 'or' | '==' | '!=' | '<' | '<=' | '>' | '>=' | 'phase<' | 'phase<=' | 'phase>' | 'phase>=' | '+' | '-' | '*' | '/'
       a: ExprNode

@@ -8,7 +8,8 @@ export function currentStart(): StartState {
   return {
     values: { ...s.overrides },
     ...(s.startDay !== null ? { day: s.startDay } : {}),
-    ...(s.startPhase !== null ? { phase: s.startPhase } : {})
+    ...(s.startPhase !== null ? { phase: s.startPhase } : {}),
+    ...(s.seed !== null ? { seed: s.seed } : {})
   }
 }
 
@@ -37,6 +38,16 @@ export function variationsFor(file: ExportFile, vary: Record<StateKey, string>):
     }
   }
   return { variations, problems }
+}
+
+/** The export rolls dice somewhere (chance() or roll()). */
+export function usesRandom(file: ExportFile): boolean {
+  let found = false
+  JSON.stringify(file, (k, v) => {
+    if (k === 'chance' || k === 'roll') found = true
+    return found ? undefined : v
+  })
+  return found
 }
 
 export function defFor(file: ExportFile, key: StateKey): ExportDef | undefined {

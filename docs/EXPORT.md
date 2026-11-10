@@ -44,7 +44,7 @@ use a newer feature keeps loading in older runtimes.
 | Version | Adds |
 | --- | --- |
 | 1 | Everything not listed below |
-| 2 | Visit counts (`{ "get": "visit" }`, node `count` / `tag`), flow-scoped rules (rule `flow`) and `advanceTo` with `stay` |
+| 2 | Visit counts (`{ "get": "visit" }`, node `count` / `tag`), flow-scoped rules (rule `flow`), `advanceTo` with `stay`, and dice (`chance`, `roll`) |
 
 A runtime should refuse a file whose `version` is higher than it knows.
 
@@ -156,6 +156,8 @@ false. A missing condition always holds.
 | `{ "get": "time", "field": "day" }`, `{ "get": "time", "field": "phase" }` | day number; current phase name |
 | `{ "get": "visit", "node": "<node id>" }` | **v2.** How many times the story has entered that node (0 if never). Read-only. |
 | `{ "not": e }`, `{ "neg": e }` | logical not; numeric negation |
+| `{ "chance": p }` | **v2.** True `p` percent of the time (`p` a whole number, 0–100). See *Dice* below. |
+| `{ "roll": [min, max] }` | **v2.** A whole number from `min` to `max`, inclusive. |
 | `{ "op": o, "a": e1, "b": e2 }` | a binary operation; the operators are listed below |
 
 The values of `o`:
@@ -182,6 +184,28 @@ one of:
 Writing a number clamps it to the definition's `min` / `max`, and rounds it when the
 definition is `integer`. Only variables, relationships and `"state": true` properties
 are ever written.
+
+### Dice
+
+Skein only allows `chance` and `roll` where an expression is evaluated once per visit:
+Condition nodes, effects and instructions, and rule effects. Requirements and a rule's
+`when` never contain them, because a runtime checks those whenever it lists choices.
+
+So that every runtime rolls the same dice, use this generator (mulberry32 over an
+unsigned 32-bit state, seeded with `0x5EED` unless the game passes its own seed):
+
+```text
+next():  state = (state + 0x6D2B79F5) mod 2^32
+         t = state
+         t = (t xor (t >> 15)) * (t or 1)          // 32-bit multiply, keep the low 32 bits
+         t = t xor (t + (t xor (t >> 7)) * (t or 61))
+         return t xor (t >> 14)
+chance(p):        next() mod 100 < p
+roll(min, max):   min + next() mod (max - min + 1)
+```
+
+Each `chance` or `roll` reached draws once, in evaluation order (`and` / `or`
+short-circuit, so a draw on the skipped side doesn't happen).
 
 ## Time and rules
 
@@ -271,8 +295,10 @@ to continue.
 
 ## Save games
 
-Store the current day, phase, and every value that changed since the start
-(visit counts are saved as `visit:<node id>`). The
-reference runtime's `world.save()` / `new SkeinWorld(data, saved)` does exactly this.
+Store the current day, phase, every value that changed since the start (visit counts
+are saved as `visit:<node id>`) and the dice generator's state (`rng`). The reference
+runtime's `world.save()` / `new SkeinWorld(data, saved)` does exactly this. Start a new
+game with `new SkeinWorld(data, undefined, { seed })` (C#: `new SkeinWorld(data, null, seed)`)
+for different dice each time.
 Everything else is read from the export, so saves stay small. They also survive a new
 export that adds content.

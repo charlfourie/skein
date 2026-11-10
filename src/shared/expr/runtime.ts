@@ -72,6 +72,8 @@ export interface RunContext {
   project: Project
   state: WorldState
   self?: string | null
+  /** A number in [0, 1) for chance() and roll(); defaults to Math.random. */
+  random?: () => number
 }
 
 export function read(ctx: RunContext, ref: StateRef): Value {
@@ -93,6 +95,10 @@ export function evaluate(ctx: RunContext, b: Bound): Value {
       return b.v
     case 'read':
       return read(ctx, b.ref)
+    case 'rand': {
+      const x = (ctx.random ?? Math.random)()
+      return b.fn === 'chance' ? x * 100 < b.p : b.min + Math.floor(x * (b.max - b.min + 1))
+    }
     case 'un': {
       const v = evaluate(ctx, b.e)
       return b.op === 'not' ? !v : -(Number(v) || 0)

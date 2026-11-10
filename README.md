@@ -132,7 +132,14 @@ Player.Reputation -= 1
 advance                             # one phase;  advance 2
 advance until Night                 # make it Night (stays put if it already is)
 advance to Night                    # the next Night: a whole day on if it's Night now
+World.Weather = roll(1, 3)          # dice: a whole number from 1 to 3
+World.Lucky = chance(30)            # true 30% of the time
 ```
+
+Dice (`chance(30)`, `roll(1, 6)`) work in actions and in Condition nodes, where each
+visit rolls once. Requirements can't use them, since they are checked whenever choices
+are listed. Play rolls from a seed you can set in **Start state**. Explore tries every
+outcome and weights the endings by the odds.
 
 Give a node a **Tag** in its inspector to refer to it with `Seen.Tag` / `Visits.Tag`
 from any flow. **Only once** hides a choice after it has been picked. A rule can be

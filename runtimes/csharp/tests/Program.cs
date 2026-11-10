@@ -57,7 +57,7 @@ static class Program
         {
             for (int seed = 0; seed < 6; seed++)
             {
-                var world = new SkeinWorld(data);
+                var world = seed == 0 ? new SkeinWorld(data) : new SkeinWorld(data, null, unchecked((uint)seed * 2654435761u));
                 lines.Add($"FLOW {flowId} seed={seed}");
                 try
                 {

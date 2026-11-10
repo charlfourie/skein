@@ -46,8 +46,8 @@ export function PlayPanel({ project, flowId }: { project: Project; flowId: strin
   const restart = useCallback(
     (example?: PathExample) => {
       if (!build.file.flows[flowId]) return
-      const s = new PlaySession(build.file, flowId, currentStart(), example?.start ?? {})
-      if (example) s.replay(example.picks)
+      const s = new PlaySession(build.file, flowId, currentStart(), example?.start ?? {}, example?.picks)
+      if (example) s.replay()
       usePlay.getState().setSession(s)
       follow(s)
     },
@@ -379,6 +379,8 @@ function TranscriptLine({ entry: e, onFocus }: { entry: PlayEntry; onFocus(id: s
       return <p className={cx('px-1 text-2xs', e.marked ? 'text-muted' : 'text-warn')}>■ {e.marked ? 'End' : 'Stopped (not marked End)'}</p>
     case 'note':
       return <p className="px-1 text-2xs text-accent">{e.text}</p>
+    case 'dice':
+      return <p className="px-1 text-2xs text-accent">🎲 {e.text}</p>
     case 'warn':
       return (
         <button

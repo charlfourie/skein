@@ -29,6 +29,30 @@ import type {
 } from './types'
 import { EXPORT_VERSION } from './types'
 
+/** A random draw: chance(p) or roll(min, max). */
+export type Draw = { kind: 'chance'; p: number } | { kind: 'roll'; min: number; max: number }
+
+/** The number of outcomes of a draw: chance has 2 (0 = true, 1 = false); roll has one per result (k = min + k). */
+export function outcomesOf(d: Draw): number {
+  return d.kind === 'chance' ? 2 : d.max - d.min + 1
+}
+
+/** The probability of outcome `k` of a draw. */
+export function weightOf(d: Draw, k: number): number {
+  return d.kind === 'chance' ? (k === 0 ? d.p : 100 - d.p) / 100 : 1 / outcomesOf(d)
+}
+
+export interface SkeinSave {
+  changes: Record<string, ExportValue>
+  day: number
+  phase: string | null
+  /** v2: the random generator's state, so a loaded game rolls the same dice. */
+  rng?: number
+}
+
+/** The seed used when none is given. Pass your own (e.g. from the clock) for different dice each run. */
+export const DEFAULT_SEED = 0x5eed
+
 export class SkeinWorld {
   readonly data: ExportFile
   /** Only values that changed since the start; everything else reads through to the export. */
@@ -41,18 +65,26 @@ export class SkeinWorld {
   playing: string | null = null
   /** Debugging hook: an `advance to` that was already in its phase, so it moves a whole day. */
   onFullDay?: (phase: string) => void
+  /** The random generator's state (mulberry32). Same seed, same dice. */
+  rng: number
+  /** Debugging hook: decide a draw instead of rolling (return the outcome index, see outcomesOf). */
+  decide?: (draw: Draw) => number
+  /** Debugging hook: called with every draw and its result. */
+  onRandom?: (draw: Draw, result: ExportValue) => void
 
-  constructor(data: ExportFile, saved?: { changes: Record<string, ExportValue>; day: number; phase: string | null }) {
+  constructor(data: ExportFile, saved?: SkeinSave, options: { seed?: number } = {}) {
     if (data.version > EXPORT_VERSION)
       throw new Error(`This export is version ${data.version}, but this runtime reads version ${EXPORT_VERSION}. Update the Skein runtime.`)
     this.data = data
     const phases = data.state.time.phases
     this.day = data.state.time.start.day
     this.phaseIndex = Math.max(0, phases.indexOf(data.state.time.start.phase ?? phases[0]))
+    this.rng = (options.seed ?? DEFAULT_SEED) >>> 0
     if (saved) {
       for (const [k, v] of Object.entries(saved.changes)) this.changes.set(k, v)
       this.day = saved.day
       this.phaseIndex = Math.max(0, phases.indexOf(saved.phase ?? phases[0]))
+      if (typeof saved.rng === 'number') this.rng = saved.rng >>> 0
     }
   }
 
@@ -61,8 +93,27 @@ export class SkeinWorld {
   }
 
   /** Everything needed to restore this world later (e.g. in a save game). */
-  save(): { changes: Record<string, ExportValue>; day: number; phase: string | null } {
-    return { changes: Object.fromEntries([...this.changes].sort(([a], [b]) => (a < b ? -1 : 1))), day: this.day, phase: this.phase }
+  save(): SkeinSave {
+    return { changes: Object.fromEntries([...this.changes].sort(([a], [b]) => (a < b ? -1 : 1))), day: this.day, phase: this.phase, rng: this.rng }
+  }
+
+  // --- Randomness ----------------------------------------------------------------
+
+  /** The next 32-bit random number (mulberry32; the C# runtime produces the same sequence). */
+  nextRandom(): number {
+    this.rng = (this.rng + 0x6d2b79f5) >>> 0
+    let t = this.rng
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return (t ^ (t >>> 14)) >>> 0
+  }
+
+  /** Make a draw: chance → true/false, roll → a whole number. Uses `decide` when set. */
+  draw(d: Draw): ExportValue {
+    const k = this.decide ? this.decide(d) : this.nextRandom() % (d.kind === 'chance' ? 100 : outcomesOf(d))
+    const result = d.kind === 'chance' ? (this.decide ? k === 0 : k < d.p) : d.min + k
+    this.onRandom?.(d, result)
+    return result
   }
 
   // --- Reading and writing state ----------------------------------------------
@@ -146,6 +197,8 @@ export class SkeinWorld {
     if ('get' in e) return this.read(e, self)
     if ('not' in e) return !this.evaluate(e.not, self)
     if ('neg' in e) return -(Number(this.evaluate(e.neg, self)) || 0)
+    if ('chance' in e) return this.draw({ kind: 'chance', p: e.chance })
+    if ('roll' in e) return this.draw({ kind: 'roll', min: e.roll[0], max: e.roll[1] })
     if (e.op === 'and') return Boolean(this.evaluate(e.a, self)) && Boolean(this.evaluate(e.b, self))
     if (e.op === 'or') return Boolean(this.evaluate(e.a, self)) || Boolean(this.evaluate(e.b, self))
     const a = this.evaluate(e.a, self)

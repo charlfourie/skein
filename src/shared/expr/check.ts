@@ -33,6 +33,9 @@ export type Bound =
   | { k: 'read'; ref: StateRef }
   | { k: 'un'; op: 'not' | 'neg'; e: Bound }
   | { k: 'bin'; op: string; l: Bound; r: Bound }
+  /** chance(p): true p% of the time. roll(min, max): a whole number from min to max. */
+  | { k: 'rand'; fn: 'chance'; p: number }
+  | { k: 'rand'; fn: 'roll'; min: number; max: number }
 
 export type BoundStatement =
   | { k: 'set'; ref: StateRef; op: '=' | '+=' | '-='; value: Bound }
@@ -45,6 +48,12 @@ export interface CompileContext {
   selfTemplateId?: string | null
   /** Rules can't advance time (it would trigger more rules). */
   allowAdvance?: boolean
+  /**
+   * Conditions may only use chance()/roll() where they are evaluated exactly once
+   * (Condition nodes). Requirements are checked whenever choices are listed, so a
+   * roll there would change under the player. Actions always allow it.
+   */
+  allowRandom?: boolean
 }
 
 export interface CompileResult {
@@ -219,7 +228,8 @@ class Checker {
   readonly warnings: Diagnostic[] = []
   constructor(
     private readonly env: Env,
-    private readonly ctx: CompileContext
+    private readonly ctx: CompileContext,
+    private readonly mode: Mode
   ) {}
 
   private selfTemplate(): Template | undefined {
@@ -317,6 +327,33 @@ class Checker {
     }
   }
 
+  private random(e: Extract<Expr, { kind: 'random' }>): { b: Bound; type: VType } {
+    if (this.mode === 'condition' && !this.ctx.allowRandom) {
+      throw new CheckError(
+        `${e.fn}() can’t be used in a requirement or a rule’s “only if”: those are checked again and again, so the result would keep changing. Roll in an action (World.Lucky = ${e.fn === 'chance' ? 'chance(30)' : 'roll(1, 6)'}) or branch with a Condition node.`,
+        e.start,
+        e.end
+      )
+    }
+    const whole = (a: { value: number; start: number; end: number }, what: string) => {
+      if (!Number.isInteger(a.value)) throw new CheckError(`${what} must be a whole number.`, a.start, a.end)
+      return a.value
+    }
+    if (e.fn === 'chance') {
+      if (e.args.length !== 1) throw new CheckError('chance takes one number: the percent chance of true, e.g. chance(30).', e.start, e.end)
+      const p = whole(e.args[0], 'The percent chance')
+      if (p < 0 || p > 100) throw new CheckError('The chance is a percent, from 0 to 100.', e.args[0].start, e.args[0].end)
+      if (p === 0 || p === 100) this.warnings.push({ level: 'warning', message: `chance(${p}) is always ${p === 100}.`, start: e.start, end: e.end })
+      return { b: { k: 'rand', fn: 'chance', p }, type: { t: 'bool' } }
+    }
+    if (e.args.length !== 2) throw new CheckError('roll takes two numbers, the lowest and highest result, e.g. roll(1, 6).', e.start, e.end)
+    const min = whole(e.args[0], 'The lowest result')
+    const max = whole(e.args[1], 'The highest result')
+    if (max < min) throw new CheckError(`The highest result (${max}) is below the lowest (${min}).`, e.args[1].start, e.args[1].end)
+    if (max - min >= 100) throw new CheckError('roll can have at most 100 different results, so Play can try every one.', e.start, e.end)
+    return { b: { k: 'rand', fn: 'roll', min, max }, type: { t: 'number' } }
+  }
+
   expr(e: Expr): { b: Bound; type: VType } {
     switch (e.kind) {
       case 'number':
@@ -325,6 +362,8 @@ class Checker {
         return { b: { k: 'lit', v: e.value }, type: { t: 'text' } }
       case 'bool':
         return { b: { k: 'lit', v: e.value }, type: { t: 'bool' } }
+      case 'random':
+        return this.random(e)
       case 'name': {
         if (!e.member && !e.to) return { b: { k: 'lit', v: e.head.name }, type: { t: 'symbol', name: e.head.name } }
         const r = this.resolve(e)
@@ -482,7 +521,7 @@ class Checker {
 
 export function compile(project: Project, source: string, mode: Mode, ctx: CompileContext = {}): CompileResult {
   const env = getEnv(project)
-  const key = `${mode}\u0001${ctx.selfTemplateId ?? ''}\u0001${ctx.allowAdvance === false ? 0 : 1}\u0001${source}`
+  const key = `${mode}\u0001${ctx.selfTemplateId ?? ''}\u0001${ctx.allowAdvance === false ? 0 : 1}${ctx.allowRandom ? 1 : 0}\u0001${source}`
   const cached = env.cache.get(key)
   if (cached) return cached
 
@@ -493,7 +532,7 @@ export function compile(project: Project, source: string, mode: Mode, ctx: Compi
     const parsed = parseCondition(source)
     if (!parsed.ast) result = fail(parsed.diagnostics)
     else {
-      const checker = new Checker(env, ctx)
+      const checker = new Checker(env, ctx, mode)
       try {
         const { b, type } = checker.expr(parsed.ast)
         checker.expectBool(type, parsed.ast)
@@ -507,7 +546,7 @@ export function compile(project: Project, source: string, mode: Mode, ctx: Compi
     const parsed = parseActions(source)
     if (!parsed.ast) result = fail(parsed.diagnostics)
     else {
-      const checker = new Checker(env, ctx)
+      const checker = new Checker(env, ctx, mode)
       const actions: BoundStatement[] = []
       const errors: Diagnostic[] = []
       for (const s of parsed.ast) {

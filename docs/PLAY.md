@@ -15,6 +15,8 @@ C# port in `runtimes/csharp`), so what you see is what the game will do.
   state. The transcript records lines, picks, every state change, time passing
   and each rule that ran.
 - **Advance time** (the clock button) moves on one phase, as a game clock would.
+- Every `chance()` and `roll()` shows in the transcript with how it came out. Dice
+  roll from the seed in **Start state**, so the same seed replays the same story.
 - When a flow ends, **Continue in another flow** carries the same state into the
   next scene.
 - It warns when the story stops at a node that isn't marked End.
@@ -30,7 +32,9 @@ start from here.
 Plays **every** combination of choices from the start state and reports:
 
 - how many paths there are, and where they end (with the share of paths for each
-  ending, and **Replay** to watch one in the Play tab);
+  ending, and **Replay** to watch one in the Play tab). Every `chance()` and `roll()`
+  outcome is a separate path, and shares are weighted by the odds, so a 30% chance
+  counts as 0.3 of a path. Replay plays the dice exactly as that path had them;
 - nodes no path reaches, which usually means a requirement can never hold from
   this start;
 - paths that hit an error, paths that never end (a loop with no way out), and

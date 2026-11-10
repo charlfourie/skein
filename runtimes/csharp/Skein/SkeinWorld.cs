@@ -17,6 +17,8 @@ namespace Skein
         public SortedDictionary<string, object> Changes = new SortedDictionary<string, object>(StringComparer.Ordinal);
         public int Day = 1;
         public string Phase;
+        /// <summary>v2: the random generator's state, so a loaded game rolls the same dice. Null in older saves.</summary>
+        public uint? Rng;
 
         public string ToJson()
         {
@@ -26,6 +28,7 @@ namespace Skein
             o["changes"] = changes;
             o["day"] = (double)Day;
             o["phase"] = Phase;
+            if (Rng.HasValue) o["rng"] = (double)Rng.Value;
             return SkeinJson.Stringify(o);
         }
 
@@ -33,6 +36,8 @@ namespace Skein
         {
             if (!(SkeinJson.Parse(json) is JsonObject o)) throw new SkeinFormatException("A Skein save must be a JSON object.");
             var save = new SkeinSave { Day = (int)(o.Num("day") ?? 1), Phase = o.Str("phase") };
+            var rng = o.Num("rng");
+            if (rng.HasValue) save.Rng = (uint)rng.Value;
             foreach (var kv in o.Obj("changes") ?? new JsonObject()) save.Changes[kv.Key] = kv.Value;
             return save;
         }
@@ -129,8 +134,18 @@ namespace Skein
         /// <summary>Raised after each phase step, once the step's rules have run.</summary>
         public event Action<SkeinWorld> TimeAdvanced;
 
-        public SkeinWorld(SkeinExport data, SkeinSave saved = null)
+        /// <summary>The seed used when none is given. Pass your own (e.g. from the clock) for different dice each run.</summary>
+        public const uint DefaultSeed = 0x5EED;
+
+        /// <summary>The random generator's state (mulberry32, the same sequence as the reference runtime).</summary>
+        public uint Rng;
+
+        /// <summary>Raised with every chance()/roll() draw: (kind "chance" or "roll", result).</summary>
+        public event Action<string, object> Rolled;
+
+        public SkeinWorld(SkeinExport data, SkeinSave saved = null, uint seed = DefaultSeed)
         {
+            Rng = seed;
             Data = data ?? throw new ArgumentNullException(nameof(data));
             var phases = data.Time.Phases;
             Day = data.Time.StartDay;
@@ -140,7 +155,37 @@ namespace Skein
                 foreach (var kv in saved.Changes) Changes[kv.Key] = kv.Value;
                 Day = saved.Day;
                 PhaseIndex = Math.Max(0, data.Time.IndexOf(saved.Phase ?? (phases.Count > 0 ? phases[0] : null)));
+                if (saved.Rng.HasValue) Rng = saved.Rng.Value;
             }
+        }
+
+        /// <summary>The next 32-bit random number (mulberry32).</summary>
+        public uint NextRandom()
+        {
+            unchecked
+            {
+                Rng += 0x6D2B79F5;
+                uint t = Rng;
+                t = (t ^ (t >> 15)) * (t | 1);
+                t ^= t + (t ^ (t >> 7)) * (t | 61);
+                return t ^ (t >> 14);
+            }
+        }
+
+        /// <summary>chance(p): true p percent of the time.</summary>
+        public bool Chance(int percent)
+        {
+            var result = NextRandom() % 100 < percent;
+            Rolled?.Invoke("chance", result);
+            return result;
+        }
+
+        /// <summary>roll(min, max): a whole number from min to max, inclusive.</summary>
+        public double Roll(int min, int max)
+        {
+            double result = min + (long)(NextRandom() % (uint)(max - min + 1));
+            Rolled?.Invoke("roll", result);
+            return result;
         }
 
         /// <summary>The current phase's technical name, or null when the project has no phases.</summary>
@@ -151,7 +196,7 @@ namespace Skein
 
         public SkeinSave Save()
         {
-            var save = new SkeinSave { Day = Day, Phase = Phase };
+            var save = new SkeinSave { Day = Day, Phase = Phase, Rng = Rng };
             foreach (var kv in Changes) save.Changes[kv.Key] = kv.Value;
             return save;
         }
@@ -316,6 +361,12 @@ namespace Skein
             if (e.Has("get")) return Read(e, self);
             if (e.Has("not")) return !SkeinValue.Truthy(Evaluate(e.Obj("not"), self));
             if (e.Has("neg")) return -SkeinValue.ToNumber(Evaluate(e.Obj("neg"), self));
+            if (e.Has("chance")) return Chance((int)(e.Num("chance") ?? 0));
+            if (e.Has("roll"))
+            {
+                var r = e.Arr("roll");
+                return Roll((int)SkeinValue.ToNumber(r[0]), (int)SkeinValue.ToNumber(r[1]));
+            }
 
             var op = e.Str("op");
             if (op == "and") return SkeinValue.Truthy(Evaluate(e.Obj("a"), self)) && SkeinValue.Truthy(Evaluate(e.Obj("b"), self));

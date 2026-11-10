@@ -12,6 +12,15 @@ export const NODE_EXPR_FIELDS = {
 
 export type NodeExprField = keyof typeof NODE_EXPR_FIELDS
 
+/** A Condition node's condition runs once per visit, so it may roll dice. */
+export const CONDITION_NODE_CTX: CompileContext = Object.freeze({ allowRandom: true })
+
+/** The compile context for a node's expression field. */
+export function nodeFieldCtx(field: string): CompileContext {
+  return field === 'expression' ? CONDITION_NODE_CTX : NO_CTX
+}
+const NO_CTX: CompileContext = Object.freeze({})
+
 export const FIELD_LABELS: Record<string, string> = {
   expression: 'Condition',
   script: 'Instruction',
@@ -43,7 +52,7 @@ export function forEachSite(project: Project, fn: (site: ExprSite) => void): voi
           field,
           mode,
           source,
-          ctx: {},
+          ctx: nodeFieldCtx(field),
           set: (s) => (node.data[field] = s)
         })
       }

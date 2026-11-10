@@ -19,6 +19,8 @@ interface PlayState {
   overrides: Record<StateKey, ExportValue>
   startDay: number | null
   startPhase: string | null
+  /** Seed for chance() and roll() (null: the runtime's default seed). */
+  seed: number | null
   /** Explore tab: variables to vary ("both", "all", or a list of numbers like "0, 3, 5"), and the path cap. */
   vary: Record<StateKey, string>
   maxPaths: number
@@ -36,6 +38,7 @@ interface PlayState {
   setPosition(current: string | null, visited: ReadonlySet<string>): void
   setOverride(key: StateKey, value: ExportValue | undefined): void
   setStartTime(day: number | null, phase: string | null): void
+  setSeed(seed: number | null): void
   resetStart(): void
   setVary(key: StateKey, spec: string | undefined): void
   setMaxPaths(n: number): void
@@ -53,6 +56,7 @@ export const usePlay = create<PlayState>((set) => ({
   overrides: {},
   startDay: null,
   startPhase: null,
+  seed: null,
   vary: {},
   maxPaths: 20000,
   follow: true,
@@ -74,7 +78,8 @@ export const usePlay = create<PlayState>((set) => ({
       return { overrides }
     }),
   setStartTime: (startDay, startPhase) => set({ startDay, startPhase }),
-  resetStart: () => set({ overrides: {}, startDay: null, startPhase: null }),
+  setSeed: (seed) => set({ seed }),
+  resetStart: () => set({ overrides: {}, startDay: null, startPhase: null, seed: null }),
   setVary: (key, spec) =>
     set((s) => {
       const vary = { ...s.vary }

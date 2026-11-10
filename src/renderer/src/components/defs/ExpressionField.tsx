@@ -197,6 +197,15 @@ function InsertMenu({ project, mode, ctx, onPick }: { project: Project; mode: Mo
           : [])
       ]
     })
+    if (mode === 'action' || ctx?.allowRandom) {
+      out.push({
+        title: 'Dice',
+        items: [
+          { text: 'chance(50)', hint: 'true half the time' },
+          { text: 'roll(1, 6)', hint: 'a whole number from 1 to 6' }
+        ]
+      })
+    }
     if (mode === 'condition' && env.tags.size) {
       const items: Group['items'] = []
       for (const [tag, at] of [...env.tags.entries()].sort(([a], [b]) => a.localeCompare(b))) {

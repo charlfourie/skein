@@ -1,4 +1,4 @@
-import { SkeinStory, SkeinWorld, type Beat, type Choice } from '@shared/export/runtime'
+import { outcomesOf, SkeinStory, SkeinWorld, type Beat, type Choice } from '@shared/export/runtime'
 import type { ExportFile, ExportNode, ExportValue } from '@shared/export/types'
 import { applyStart, labelForKey, pathFromKey, tagsOf, type StartState, type StateKey } from '@shared/play/explore'
 
@@ -13,6 +13,8 @@ export type PlayEntry =
   | { kind: 'note'; text: string }
   /** Something that's probably a design mistake, e.g. `advance to Night` at Night skipping a whole day. */
   | { kind: 'warn'; nodeId: string | null; text: string }
+  /** A chance() or roll() and how it came out. */
+  | { kind: 'dice'; text: string }
 
 export interface PlayOption {
   nodeId: string
@@ -42,11 +44,28 @@ export class PlaySession {
     readonly file: ExportFile,
     flowId: string,
     readonly start: StartState,
-    extra: Record<StateKey, ExportValue> = {}
+    extra: Record<StateKey, ExportValue> = {},
+    /** Replay a path from the explorer: its picks, in order (choices and dice outcomes). */
+    picks?: number[]
   ) {
     this.tags = tagsOf(file)
     this.world = new SkeinWorld(file)
     applyStart(this.world, start, extra)
+    if (picks) {
+      // Replaying an explored path: choices and dice come out as recorded, in order.
+      this.replayPicks = picks
+      this.world.decide = (d) => {
+        if (this.replayIndex < picks.length) return picks[this.replayIndex++]
+        this.world.decide = undefined // past the recorded path: roll as usual
+        const x = this.world.nextRandom()
+        return d.kind === 'chance' ? (x % 100 < d.p ? 0 : 1) : x % outcomesOf(d)
+      }
+    }
+    this.world.onRandom = (d, result) =>
+      this.entries.push({
+        kind: 'dice',
+        text: d.kind === 'chance' ? `chance ${d.p}% → ${result ? 'yes' : 'no'}` : `roll ${d.min}–${d.max} → ${result}`
+      })
     this.world.onFullDay = (phase) =>
       this.entries.push({
         kind: 'warn',
@@ -58,6 +77,9 @@ export class PlaySession {
     this.story = this.attach(new SkeinStory(this.world, flowId))
     this.beat = this.step(() => this.story.start())
   }
+
+  private replayPicks: number[] | null = null
+  private replayIndex = 0
 
   get flowId(): string {
     return this.story.flow.id
@@ -123,15 +145,17 @@ export class PlaySession {
     this.beat = this.step(() => this.story.start())
   }
 
-  /** Replay recorded choice picks (from the explorer) to the end of that path. */
-  replay(picks: number[]): void {
-    let i = 0
+  /** Play on to the end of the recorded path given to the constructor (choices and dice in order). */
+  replay(): void {
+    const picks = this.replayPicks
+    if (!picks) return
     for (let guard = 0; guard < 1000 && !this.ended; guard++) {
       if (choicesOf(this.beat).length > 1) {
-        if (i >= picks.length) return
-        this.choose(picks[i++])
+        if (this.replayIndex >= picks.length) break
+        this.choose(picks[this.replayIndex++])
       } else this.choose(0)
     }
+    this.world.decide = undefined
   }
 
   private attach(story: SkeinStory): SkeinStory {

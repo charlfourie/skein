@@ -27,6 +27,9 @@ namespace Skein.Unity
         [Tooltip("Write time and rule activity to the Console.")]
         [SerializeField] bool logActivity;
 
+        [Tooltip("Dice (chance/roll) seed for a new game. 0 = a different seed every run. A loaded save keeps its own dice.")]
+        [SerializeField] int diceSeed;
+
         [Header("Events")]
         public SkeinBeatEvent onLine = new SkeinBeatEvent();
         public SkeinBeatEvent onChoice = new SkeinBeatEvent();
@@ -86,7 +89,8 @@ namespace Skein.Unity
 
         void NewWorld(SkeinSave saved)
         {
-            World = new SkeinWorld(Data, saved);
+            uint seed = diceSeed != 0 ? unchecked((uint)diceSeed) : unchecked((uint)Environment.TickCount ^ (uint)DateTime.UtcNow.Ticks);
+            World = new SkeinWorld(Data, saved, seed);
             if (logActivity) World.TimeAdvanced += FlushLog;
             Story = null;
             Beat = null;

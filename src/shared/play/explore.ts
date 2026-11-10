@@ -12,7 +12,7 @@
  * explorer independent of runtime internals; flows of a few hundred nodes
  * explore tens of thousands of paths per second.
  */
-import { SkeinStory, SkeinWorld } from '../export/runtime'
+import { outcomesOf, SkeinStory, SkeinWorld, weightOf, type Draw } from '../export/runtime'
 import type { ExportFile, ExportNode, ExportValue, StatePath } from '../export/types'
 
 /** A piece of state by its runtime key: "var:World.Storm", "prop:Keeper.Mood", "rel:<rel>:<from>:<to>". */
@@ -23,6 +23,8 @@ export interface StartState {
   day?: number
   /** Phase technical name. */
   phase?: string | null
+  /** Seed for chance() and roll() in Play (Explore tries every outcome instead). */
+  seed?: number
 }
 
 export interface Variation {
@@ -43,10 +45,11 @@ export interface ExploreOptions {
   onProgress?: (paths: number) => void
 }
 
-/** Enough to replay a path: its starting state and the choice picked at each decision. */
+/** Enough to replay a path: its starting state and the pick at each decision (a choice, or a chance()/roll() outcome, in the order they happened). */
 export interface PathExample {
   start: Record<StateKey, ExportValue>
   picks: number[]
+  /** What each pick was, for people: a choice's text, or e.g. "🎲 chance 30% → yes". */
   choices: string[]
 }
 
@@ -57,6 +60,8 @@ export interface Ending {
   /** The node is marked End. Unmarked stops are usually an oversight. */
   marked: boolean
   count: number
+  /** The paths' combined probability: each choice path counts 1, split across chance()/roll() outcomes. */
+  weight: number
   example: PathExample
 }
 
@@ -73,6 +78,10 @@ export interface ExploreReport {
   flowName: string
   starts: number
   paths: number
+  /** Total weight of the paths that ended (see Ending.weight); endings' shares are weight / this. */
+  weight: number
+  /** Some path rolled dice (chance or roll), so shares are weighted by probability. */
+  random: boolean
   capped: boolean
   endings: Ending[]
   errors: { message: string; count: number; example: PathExample }[]
@@ -125,6 +134,7 @@ export function labelForKey(key: StateKey, tags?: Map<string, string>): string {
 /** Apply a starting state to a fresh world. */
 export function applyStart(world: SkeinWorld, start: StartState | undefined, extra: Record<StateKey, ExportValue> = {}): void {
   if (start?.day !== undefined) world.day = start.day
+  if (start?.seed !== undefined) world.rng = start.seed >>> 0
   if (start?.phase) {
     const i = world.data.state.time.phases.indexOf(start.phase)
     if (i >= 0) world.phaseIndex = i
@@ -163,6 +173,18 @@ interface Played {
   beats: number
   world: SkeinWorld
   fullDays: { nodeId: string | null; phase: string }[]
+  weight: number
+  random: boolean
+}
+
+/** Thrown from inside the runtime when a draw needs a pick that isn't in the list yet. */
+class NeedPick {
+  constructor(readonly outcomes: number) {}
+}
+
+/** A readable label for a draw's outcome. */
+export function drawLabel(d: Draw, k: number): string {
+  return d.kind === 'chance' ? `🎲 chance ${d.p}% → ${k === 0 ? 'yes' : 'no'}` : `🎲 roll ${d.min}–${d.max} → ${d.min + k}`
 }
 
 function play(file: ExportFile, opts: ExploreOptions, startExtra: Record<StateKey, ExportValue>, picks: number[], visited: Set<string>): Played {
@@ -175,13 +197,24 @@ function play(file: ExportFile, opts: ExploreOptions, startExtra: Record<StateKe
   const choices: string[] = []
   const maxBeats = opts.maxBeats ?? 200
   let beats = 0
+  let weight = 1
+  let random = false
+  let i = 0
+  world.decide = (d) => {
+    random = true
+    if (i >= picks.length) throw new NeedPick(outcomesOf(d))
+    const k = picks[i++]
+    weight *= weightOf(d, k)
+    choices.push(drawLabel(d, k))
+    return k
+  }
+  const done = (r: Omit<Played, 'choices' | 'beats' | 'world' | 'fullDays' | 'weight' | 'random'>): Played => ({ ...r, choices, beats, world, fullDays, weight, random })
   try {
     let beat = story.start()
-    let i = 0
     while (beat.kind !== 'end') {
-      if (++beats > maxBeats) return { branching: null, stuck: true, choices, beats, world, fullDays }
+      if (++beats > maxBeats) return done({ branching: null, stuck: true })
       if (beat.choices.length > 1) {
-        if (i >= picks.length) return { branching: beat.choices.length, choices, beats, world, fullDays }
+        if (i >= picks.length) return done({ branching: beat.choices.length })
         const c = beat.choices[picks[i++]]
         choices.push(c.text)
         beat = story.choose(c.index)
@@ -189,9 +222,10 @@ function play(file: ExportFile, opts: ExploreOptions, startExtra: Record<StateKe
         beat = story.choose(0)
       }
     }
-    return { branching: null, ending: { node: beat.node }, choices, beats, world, fullDays }
+    return done({ branching: null, ending: { node: beat.node } })
   } catch (err) {
-    return { branching: null, error: err instanceof Error ? err.message : String(err), choices, beats, world, fullDays }
+    if (err instanceof NeedPick) return done({ branching: err.outcomes })
+    return done({ branching: null, error: err instanceof Error ? err.message : String(err) })
   }
 }
 
@@ -209,6 +243,8 @@ export function explore(file: ExportFile, opts: ExploreOptions): ExploreReport {
   let longest: ExploreReport['longest'] = null
   const fullDays = new Map<string, ExploreReport['fullDays'][number]>()
   let paths = 0
+  let totalWeight = 0
+  let anyRandom = false
   let capped = false
 
   const tags = tagsOf(file)
@@ -219,6 +255,7 @@ export function explore(file: ExportFile, opts: ExploreOptions): ExploreReport {
   const record = (startExtra: Record<StateKey, ExportValue>, picks: number[], r: Played) => {
     paths++
     const example: PathExample = { start: startExtra, picks: [...picks], choices: r.choices }
+    if (r.random) anyRandom = true
     for (const k of new Set(r.fullDays.map((f) => `${f.nodeId ?? '-'}|${f.phase}`))) {
       const [nodeId, phase] = k.split('|')
       const e = fullDays.get(k) ?? { nodeId: nodeId === '-' ? null : nodeId, phase, count: 0, example }
@@ -237,8 +274,10 @@ export function explore(file: ExportFile, opts: ExploreOptions): ExploreReport {
     }
     const node = r.ending?.node ?? null
     const key = node?.id ?? '-'
-    const ending = endings.get(key) ?? { nodeId: node?.id ?? null, text: nodeText(node), marked: node?.end === true, count: 0, example }
+    const ending = endings.get(key) ?? { nodeId: node?.id ?? null, text: nodeText(node), marked: node?.end === true, count: 0, weight: 0, example }
     ending.count++
+    ending.weight += r.weight
+    totalWeight += r.weight
     endings.set(key, ending)
     const w = r.world
     const t = `Day ${w.day}${w.phase ? `, ${w.phase}` : ''}`
@@ -293,8 +332,10 @@ export function explore(file: ExportFile, opts: ExploreOptions): ExploreReport {
     flowName: flow.name,
     starts: starts.length,
     paths,
+    weight: totalWeight,
+    random: anyRandom,
     capped,
-    endings: [...endings.values()].sort((a, b) => b.count - a.count),
+    endings: [...endings.values()].sort((a, b) => b.weight - a.weight || b.count - a.count),
     errors: [...errors.values()].sort((a, b) => b.count - a.count),
     stuck,
     visited: [...visited].sort(),

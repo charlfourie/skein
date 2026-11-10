@@ -1,3 +1,4 @@
+import { CONDITION_NODE_CTX } from '@shared/expr/sites'
 import { motion } from 'framer-motion'
 import { ArrowRight, ChevronDown, ChevronUp, Crosshair, Trash2 } from 'lucide-react'
 import type { ReactNode } from 'react'
@@ -71,6 +72,7 @@ export function NodeInspector({ project, flowId, nodeId }: { project: Project; f
             project={project}
             value={dataString(node, 'expression')}
             mode="condition"
+            ctx={CONDITION_NODE_CTX}
             rows={3}
             placeholder="Keeper->Stranger.Trust >= 2 or Player.Reputation > 3"
             onCommit={(expression) => patch({ expression })}

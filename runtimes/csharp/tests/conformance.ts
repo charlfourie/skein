@@ -73,6 +73,7 @@ function synth(seed: number): ExportFile {
   const expr = (depth: number): ExprNode => {
     const roll = r()
     if (depth <= 0 || roll < 0.25) return r() < 0.5 ? pick(lits) : pick(paths(false))
+    if (roll < 0.29) return r() < 0.5 ? { chance: int(101) } : { roll: [int(5) - 2, int(5) + 3] }
     if (roll < 0.32) return { not: expr(depth - 1) }
     if (roll < 0.38) return { neg: expr(depth - 1) }
     const op = pick(ops)
@@ -214,7 +215,7 @@ function trace(file: ExportFile): string {
   // 2. Playthroughs: every flow, several choice policies, time advancing between beats.
   for (const flowId of Object.keys(file.flows)) {
     for (let seed = 0; seed < 6; seed++) {
-      const world = new SkeinWorld(file)
+      const world = new SkeinWorld(file, undefined, { seed: seed === 0 ? undefined : seed * 2654435761 })
       lines.push(`FLOW ${flowId} seed=${seed}`)
       try {
         const story = new SkeinStory(world, flowId)
