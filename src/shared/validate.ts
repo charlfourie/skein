@@ -190,6 +190,15 @@ export function validateProject(project: Project): IssueMap {
       for (const branch of a.openBranches.get(n.id) ?? []) {
         node(n.id, { level: 'warning', message: `The “${branch}” branch isn’t connected.` })
       }
+      if (n.type === 'jump' && dataRef(n, 'targetFlowId') && !project.flows[dataRef(n, 'targetFlowId') as string]) {
+        node(n.id, { level: 'error', message: 'The flow this jump continues in no longer exists.' })
+      }
+      if (n.type === 'call') {
+        const callee = dataRef(n, 'flowId')
+        if (!callee) node(n.id, { level: 'warning', message: 'No flow chosen to play.' })
+        else if (!project.flows[callee]) node(n.id, { level: 'error', message: 'The flow it plays no longer exists.' })
+        else if (callee === flow.id) node(n.id, { level: 'warning', message: 'Plays its own flow: make sure the repeat has a way out.' })
+      }
       if (n.type === 'jump' && a.brokenJumps.has(n.id)) {
         node(n.id, { level: 'error', message: dataRef(n, 'targetId') ? 'Jump target is not in this flow.' : 'Jump has no target.' })
       }

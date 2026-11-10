@@ -29,7 +29,8 @@ export const NODE_LABELS: Record<NodeType, string> = {
   condition: 'Condition',
   instruction: 'Instruction',
   hub: 'Hub',
-  jump: 'Jump'
+  jump: 'Jump',
+  call: 'Play flow'
 }
 
 export function addNode(

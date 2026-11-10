@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react'
-import { CircleDot, CornerDownRight, GitBranch, MessageSquare, Zap, type LucideIcon } from 'lucide-react'
+import { CircleDot, CornerDownRight, GitBranch, MessageSquare, Workflow, Zap, type LucideIcon } from 'lucide-react'
 import type { NodeType } from '@shared/nodes'
 import type { Flow } from '@shared/schema'
 
@@ -22,7 +22,8 @@ export const NODE_META: Record<NodeType, { label: string; icon: LucideIcon; colo
   condition: { label: 'Condition', icon: GitBranch, color: '#fbbf24', hint: 'Branches on true / false' },
   instruction: { label: 'Instruction', icon: Zap, color: '#2dd4bf', hint: 'Changes game state' },
   hub: { label: 'Hub', icon: CircleDot, color: '#60a5fa', hint: 'A meeting point that paths merge into' },
-  jump: { label: 'Jump', icon: CornerDownRight, color: '#fb923c', hint: 'Continues the flow at another node' }
+  jump: { label: 'Jump', icon: CornerDownRight, color: '#fb923c', hint: 'Continues at another node, or in another flow' },
+  call: { label: 'Play flow', icon: Workflow, color: '#f472b6', hint: 'Plays another flow, then carries on here' }
 }
 
 export const GENERIC_META = { label: 'Node', icon: CircleDot, color: '#90979e', hint: '' }

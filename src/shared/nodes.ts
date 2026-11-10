@@ -13,9 +13,11 @@ import type { Flow, FlowNode } from './schema'
  *   instruction  script?: string
  *   hub          label?: string
  *   jump         targetId?: node id           (no outputs: flow continues at the target)
+ *                targetFlowId?: flow id       (instead: continue at that flow's start, a hand-off)
+ *   call         flowId?: flow id             (plays that flow from its start, then continues on "out")
  */
 
-export const NODE_TYPES = ['dialogue', 'condition', 'instruction', 'hub', 'jump'] as const
+export const NODE_TYPES = ['dialogue', 'condition', 'instruction', 'hub', 'jump', 'call'] as const
 export type NodeType = (typeof NODE_TYPES)[number]
 
 export const INPUT_HANDLE = 'in'
@@ -25,7 +27,8 @@ const OUTPUTS: Record<NodeType, readonly string[]> = {
   condition: ['true', 'false'],
   instruction: ['out'],
   hub: ['out'],
-  jump: []
+  jump: [],
+  call: ['out']
 }
 
 export function isKnownNodeType(type: string): type is NodeType {

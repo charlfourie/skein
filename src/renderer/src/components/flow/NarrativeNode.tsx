@@ -9,11 +9,14 @@ import { cx } from '../../lib/cx'
 import { templateIcon } from '../../lib/meta'
 import { GENERIC_META, NODE_META, useFlowContext } from './flowMeta'
 import { usePlayMark } from '../../store/play'
+import { useProjectStore } from '../../store/projectStore'
 
 export interface NarrativeNodeData extends Record<string, unknown> {
   node: FlowNode
   speaker: { name: string; color: string; icon: string } | null
   jumpTarget: string | null
+  /** Jump hand-off or Play flow: the other flow. */
+  otherFlow: { id: string; name: string } | null
   warn: boolean
   error: boolean
   loopJump: boolean
@@ -83,7 +86,7 @@ export const NarrativeNode = memo(function NarrativeNode({ id, data, selected }:
 
   const isStart = isStartNode(node)
   const isEnd = isEndNode(node)
-  const compact = node.type === 'hub' || node.type === 'jump'
+  const compact = node.type === 'hub' || node.type === 'jump' || node.type === 'call'
   const tooltip = data.issues.map((i) => i.message).join('\n')
 
   return (
@@ -246,12 +249,35 @@ function Body({ node, data }: { node: FlowNode; data: NarrativeNodeData }) {
     case 'hub':
       return <p className="text-2xs text-faint">Paths meet here</p>
     case 'jump':
+      if (data.otherFlow) return <FlowLink flow={data.otherFlow} prefix="Continue in" />
       return data.jumpTarget ? (
         <p className="truncate text-xs text-fg">→ {data.jumpTarget}</p>
       ) : (
         <Placeholder>Pick a target in the inspector</Placeholder>
       )
+    case 'call':
+      return data.otherFlow ? <FlowLink flow={data.otherFlow} prefix="Play" suffix="then carry on" /> : <Placeholder>Pick a flow in the inspector</Placeholder>
     default:
       return <Placeholder>{`Unknown node type “${node.type}”`}</Placeholder>
   }
+}
+
+/** A link to another flow, from a hand-off jump or a Play flow node. Click opens that flow. */
+function FlowLink({ flow, prefix, suffix }: { flow: { id: string; name: string }; prefix: string; suffix?: string }) {
+  const openDoc = useProjectStore((s) => s.openDoc)
+  return (
+    <button
+      type="button"
+      className="nodrag block w-full min-w-0 text-left text-xs text-fg hover:underline"
+      title={`Open “${flow.name}”`}
+      onClick={(e) => {
+        e.stopPropagation()
+        openDoc({ kind: 'flow', id: flow.id })
+      }}
+    >
+      <span className="text-faint">{prefix} </span>
+      <span className="font-medium">{flow.name}</span>
+      {suffix && <span className="text-faint">, {suffix}</span>}
+    </button>
+  )
 }

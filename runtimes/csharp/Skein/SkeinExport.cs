@@ -130,7 +130,7 @@ namespace Skein
         public JsonObject Effects;
     }
 
-    public enum SkeinNodeType { Dialogue, Condition, Instruction, Hub, Jump }
+    public enum SkeinNodeType { Dialogue, Condition, Instruction, Hub, Jump, Call }
 
     public sealed class SkeinNode
     {
@@ -163,6 +163,10 @@ namespace Skein
         public IReadOnlyList<string> Next = Array.Empty<string>();
         // jump
         public string JumpTo;
+        /// <summary>v2 jump: continue at the start of this flow (a hand-off) instead of JumpTo.</summary>
+        public string JumpFlow;
+        /// <summary>v2 call: the flow to play before continuing with Next.</summary>
+        public string CallFlow;
     }
 
     public sealed class SkeinFlow
@@ -339,6 +343,11 @@ namespace Skein
                 case "jump":
                     n.Type = SkeinNodeType.Jump;
                     n.JumpTo = o.Str("jumpTo");
+                    n.JumpFlow = o.Str("jumpFlow");
+                    break;
+                case "call":
+                    n.Type = SkeinNodeType.Call;
+                    n.CallFlow = o.Str("flow");
                     break;
                 default:
                     throw new SkeinFormatException($"Unknown node type \"{o.Str("type")}\" on node {o.Str("id")}.");

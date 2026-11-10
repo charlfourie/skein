@@ -64,6 +64,10 @@ export function analyzeFlow(flow: Pick<Flow, 'nodes' | 'edges'>): FlowAnalysis {
   const brokenJumps = new Set<string>()
   for (const node of nodes) {
     if (node.type !== 'jump') continue
+    if (dataRef(node, 'targetFlowId')) {
+      bump(outgoing, node.id) // a hand-off to another flow (validation checks that it exists)
+      continue
+    }
     const target = dataRef(node, 'targetId')
     if (!target || !flow.nodes[target] || target === node.id) {
       brokenJumps.add(node.id)

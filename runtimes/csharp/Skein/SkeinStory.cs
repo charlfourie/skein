@@ -52,9 +52,15 @@ namespace Skein
     public sealed class SkeinStory
     {
         const int MaxAutoSteps = 10000;
+        /// <summary>How deeply Call nodes may nest before the story gives up.</summary>
+        public const int MaxCallDepth = 100;
 
         public readonly SkeinWorld World;
-        public readonly SkeinFlow Flow;
+        /// <summary>The flow being played right now: changes on a hand-off jump or while a Call node runs another flow.</summary>
+        public SkeinFlow Flow { get; private set; }
+        readonly List<(SkeinFlow flow, SkeinNode node)> calls = new List<(SkeinFlow, SkeinNode)>();
+        /// <summary>v2: how many Call nodes are waiting for their flow to end.</summary>
+        public int CallDepth => calls.Count;
         public SkeinNode Current { get; private set; }
         List<SkeinChoice> pending = new List<SkeinChoice>();
 
@@ -71,17 +77,58 @@ namespace Skein
         public SkeinBeat Start(string nodeId = null)
         {
             World.Playing = Flow.Id;
-            var id = nodeId;
-            if (id == null)
-                foreach (var s in Flow.Start)
-                    if (Available(s)) { id = s; break; }
+            var id = nodeId ?? FirstStart();
             return id != null ? Enter(id) : End(null);
+        }
+
+        string FirstStart()
+        {
+            foreach (var s in Flow.Start)
+                if (Available(s)) return s;
+            return null;
+        }
+
+        string SwitchTo(string flowId)
+        {
+            if (flowId == null || !World.Data.Flows.TryGetValue(flowId, out var flow)) return null;
+            Flow = flow;
+            World.Playing = flow.Id;
+            return FirstStart();
+        }
+
+        string FirstAvailable(IReadOnlyList<string> ids)
+        {
+            foreach (var n in ids)
+                if (Available(n)) return n;
+            return null;
+        }
+
+        /// <summary>The current flow ran out at <paramref name="node"/>: return from a Call, or end the story (beat is then set).</summary>
+        string Finish(SkeinNode node, out SkeinBeat beat)
+        {
+            var last = node;
+            while (calls.Count > 0)
+            {
+                var frame = calls[calls.Count - 1];
+                calls.RemoveAt(calls.Count - 1);
+                Flow = frame.flow;
+                World.Playing = frame.flow.Id;
+                var next = FirstAvailable(frame.node.Next);
+                if (next != null) { beat = null; return next; }
+                last = frame.node;
+            }
+            beat = End(last);
+            return null;
         }
 
         /// <summary>Pick one of the current beat's choices (0 to continue after a single-choice line).</summary>
         public SkeinBeat Choose(int index = 0)
         {
-            if (index < 0 || index >= pending.Count) return End(Current);
+            if (index < 0 || index >= pending.Count)
+            {
+                var next = Finish(Current, out var beat);
+                return beat ?? Enter(next);
+            }
             World.Playing = Flow.Id;
             return Enter(pending[index].Node);
         }
@@ -126,7 +173,12 @@ namespace Skein
             string id = start;
             for (int steps = 0; steps < MaxAutoSteps; steps++)
             {
-                if (!Available(id)) return End(Current);
+                if (!Available(id))
+                {
+                    id = Finish(Current, out var ended);
+                    if (ended != null) return ended;
+                    continue;
+                }
                 var node = Flow.Nodes[id];
                 Current = node;
                 if (node.Count) World.CountVisit(node.Id);
@@ -142,9 +194,7 @@ namespace Skein
                         break;
                     case SkeinNodeType.Instruction:
                         World.Run(node.Instruction);
-                        id = null;
-                        foreach (var n in node.Next)
-                            if (Available(n)) { id = n; break; }
+                        id = FirstAvailable(node.Next);
                         break;
                     case SkeinNodeType.Hub:
                         var options = Choices(node.Next);
@@ -156,10 +206,23 @@ namespace Skein
                         id = options.Count > 0 ? options[0].Node : null;
                         break;
                     case SkeinNodeType.Jump:
-                        id = node.JumpTo;
+                        id = node.JumpFlow != null ? SwitchTo(node.JumpFlow) : node.JumpTo;
+                        break;
+                    case SkeinNodeType.Call:
+                        if (node.CallFlow != null && World.Data.Flows.ContainsKey(node.CallFlow))
+                        {
+                            if (calls.Count >= MaxCallDepth) throw new InvalidOperationException($"Call nodes nested {MaxCallDepth} deep: check for flows that call each other in a loop.");
+                            calls.Add((Flow, node));
+                            id = SwitchTo(node.CallFlow);
+                        }
+                        else id = FirstAvailable(node.Next);
                         break;
                 }
-                if (id == null) return End(node);
+                if (id == null)
+                {
+                    id = Finish(node, out var ended);
+                    if (ended != null) return ended;
+                }
             }
             throw new InvalidOperationException("The flow ran 10,000 automatic steps without reaching a line: check for a loop of conditions, jumps or hubs.");
         }

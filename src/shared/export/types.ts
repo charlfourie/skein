@@ -131,7 +131,10 @@ export type ExportNode =
   | (NodeBase & { type: 'condition'; condition: ExportCondition | null; onTrue: string | null; onFalse: string | null })
   | (NodeBase & { type: 'instruction'; instruction: ExportEffects | null; next: string[] })
   | (NodeBase & { type: 'hub'; label: string; next: string[] })
-  | (NodeBase & { type: 'jump'; jumpTo: string | null })
+  /** `jumpFlow` (v2): continue at the start of another flow instead (a hand-off; `jumpTo` is then null). */
+  | (NodeBase & { type: 'jump'; jumpTo: string | null; jumpFlow?: string })
+  /** v2: play another flow from its start, then come back and continue with `next`. */
+  | (NodeBase & { type: 'call'; flow: string | null; next: string[] })
 
 export interface ExportFlow {
   id: string

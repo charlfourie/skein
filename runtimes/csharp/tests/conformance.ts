@@ -111,8 +111,11 @@ function synth(seed: number): ExportFile {
         nodes[id] = { ...base, type: 'dialogue', speaker: pick([...chars, null]), text: `Line ${id}`, ...(r() < 0.3 ? { menuText: r() < 0.2 ? '' : `Choose ${id}` } : {}), next: refs() }
       else if (t < 0.6) nodes[id] = { ...base, type: 'condition', condition: r() < 0.1 ? null : { expr: expr(3) }, onTrue: ref(), onFalse: ref() }
       else if (t < 0.75) nodes[id] = { ...base, type: 'instruction', instruction: r() < 0.1 ? null : effects(1 + int(3), true), next: refs() }
-      else if (t < 0.9) nodes[id] = { ...base, type: 'hub', label: `Hub ${id}`, next: refs() }
-      else nodes[id] = { ...base, type: 'jump', jumpTo: ref() }
+      else if (t < 0.85) nodes[id] = { ...base, type: 'hub', label: `Hub ${id}`, next: refs() }
+      // v2: calls into other flows (including this one, and missing flows), and hand-off jumps.
+      else if (t < 0.93) nodes[id] = { ...base, type: 'call', flow: r() < 0.1 ? null : r() < 0.1 ? 'missing-flow' : pick(flowKeys), next: refs() }
+      else if (r() < 0.6) nodes[id] = { ...base, type: 'jump', jumpTo: ref() }
+      else nodes[id] = { ...base, type: 'jump', jumpTo: null, jumpFlow: r() < 0.1 ? 'missing-flow' : pick(flowKeys) }
     }
     flows[flowKeys[f]] = { id: '', name: `Flow ${f}`, start: [ids[0], pick(ids)], nodes }
   }
@@ -221,7 +224,7 @@ function trace(file: ExportFile): string {
         const story = new SkeinStory(world, flowId)
         let beat = story.start()
         for (let step = 0; step < 40; step++) {
-          lines.push(`${beatLine(beat)} playing=${world.playing ?? '-'}`)
+          lines.push(`${beatLine(beat)} playing=${world.playing ?? '-'} flow=${story.flow.id} depth=${story.calls.length}`)
           if (beat.kind === 'end') break
           if ((step + seed) % 3 === 0) world.advance(1 + (seed % 2))
           const n = beat.choices.length

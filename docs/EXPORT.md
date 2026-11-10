@@ -44,7 +44,7 @@ use a newer feature keeps loading in older runtimes.
 | Version | Adds |
 | --- | --- |
 | 1 | Everything not listed below |
-| 2 | Visit counts (`{ "get": "visit" }`, node `count` / `tag`), flow-scoped rules (rule `flow`), `advanceTo` with `stay`, and dice (`chance`, `roll`) |
+| 2 | Visit counts (`{ "get": "visit" }`, node `count` / `tag`), flow-scoped rules (rule `flow`), `advanceTo` with `stay`, dice (`chance`, `roll`), `call` nodes and `jumpFlow` |
 
 A runtime should refuse a file whose `version` is higher than it knows.
 
@@ -265,11 +265,12 @@ Node types:
 
 | `type` | Fields | Behaviour |
 | --- | --- | --- |
-| `dialogue` | `speaker` (entity name or null), `text`, `menuText?`, `next: [ids]` | Shows a line. One available `next` = continue. Several = the player chooses (show each target's `menuText`, else its `text`). None = the story ends. |
+| `dialogue` | `speaker` (entity name or null), `text`, `menuText?`, `next: [ids]` | Shows a line. One available `next` = continue. Several = the player chooses (show each target's `menuText`, else its `text`). None = this flow ends after the line: call `choose(0)` to get the end beat (or, inside a Call, the beat after it). |
 | `condition` | `condition`, `onTrue`, `onFalse` (ids or null) | Evaluates and follows a branch automatically. |
 | `instruction` | `instruction` (effects), `next` | Runs `instruction`, then follows the first available `next`. |
 | `hub` | `label`, `next` | A meeting point. One available path is followed automatically; several are offered as a choice. |
-| `jump` | `jumpTo` (id or null) | Continues at the target. |
+| `jump` | `jumpTo` (id or null), `jumpFlow?` | Continues at the target. **v2:** with `jumpFlow` (a flow id), the current flow is over and the story continues at that flow's first available start (a hand-off). |
+| `call` | `flow` (flow id or null), `next` | **v2.** Plays `flow` from its first available start. When that flow runs out, the story comes back and follows the first available `next`. A null or missing `flow` passes straight through to `next`. |
 
 Order of `next` and `start`:
 
@@ -289,6 +290,16 @@ Stepping rules:
   (combined with `and` with any other requirement; `source` reads "only once").
   Counting happens on entry, so the node hides itself after the first visit.
 - When a dialogue line or hub offers choices, list only targets whose `requires` holds.
+
+Calls (v2):
+
+- The story keeps a stack of Call nodes. A flow "runs out" when a path ends in it (no
+  available next, a failed `requires`, or `choose` on a line with no choices). If the
+  stack is empty, the story ends there. Otherwise pop the Call node, switch back to its
+  flow, and follow its first available `next`; if none, that flow has run out too.
+- While a called or handed-off flow plays, it is the flow that's *playing* for
+  flow-scoped rules.
+- Stop with an error past 100 nested calls (a flow that keeps calling itself).
 
 The reference `SkeinStory` returns *beats*: `line`, `choice` or `end`. Call `choose(i)`
 to continue.

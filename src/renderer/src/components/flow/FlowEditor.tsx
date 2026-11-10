@@ -58,6 +58,8 @@ function deriveNodes(project: Project, flow: Flow, analysis: FlowAnalysis, issue
       const template = speaker ? project.templates[speaker.templateId] : undefined
       const targetId = dataRef(node, 'targetId')
       const target = targetId ? flow.nodes[targetId] : undefined
+      const otherFlowId = node.type === 'jump' ? dataRef(node, 'targetFlowId') : node.type === 'call' ? dataRef(node, 'flowId') : null
+      const otherFlow = otherFlowId ? project.flows[otherFlowId] : undefined
       const nodeIssues = issues.get(node.id) ?? []
       return {
         id: node.id,
@@ -67,6 +69,7 @@ function deriveNodes(project: Project, flow: Flow, analysis: FlowAnalysis, issue
           node,
           speaker: speaker ? { name: speaker.name, color: template?.color ?? COLORS.accent, icon: template?.icon ?? 'user' } : null,
           jumpTarget: target ? describeNode(project, target) : null,
+          otherFlow: otherFlow ? { id: otherFlow.id, name: otherFlow.name } : null,
           warn: nodeIssues.some((i) => i.level === 'warning'),
           error: nodeIssues.some((i) => i.level === 'error'),
           loopJump: analysis.loopJumps.has(node.id),

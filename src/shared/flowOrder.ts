@@ -108,7 +108,7 @@ export function nextStartOrder(flow: LooseFlow): number {
 
 /** Output handles with more than one connection, where order is meaningful. */
 export function isOrderedHandle(type: string, handle: string): boolean {
-  return handle === DEFAULT_HANDLE && (type === 'dialogue' || type === 'hub' || type === 'instruction')
+  return handle === DEFAULT_HANDLE && (type === 'dialogue' || type === 'hub' || type === 'instruction' || type === 'call')
 }
 
 /**

@@ -60,7 +60,7 @@ Duplicate an entity with Ctrl+D. Entities that link to the open one are listed a
 are derived from the display name and follow renames, until you edit one by hand. Duplicates and
 invalid identifiers are flagged in red.
 
-**Flows** are edited on the canvas. Five node types:
+**Flows** are edited on the canvas. Six node types:
 
 | Node | What it does |
 | --- | --- |
@@ -68,7 +68,8 @@ invalid identifiers are flagged in red.
 | **Condition** | Branches true / false |
 | **Instruction** | Changes game state |
 | **Hub** | A meeting point that paths merge into |
-| **Jump** | Continues the flow at another node |
+| **Jump** | Continues at another node, or hands off to another flow's start |
+| **Play flow** | Plays another flow (a reusable scene), then carries on from here |
 
 - **Adding nodes:** drag from the palette, click a palette entry, or double-click or
   right-click the canvas.

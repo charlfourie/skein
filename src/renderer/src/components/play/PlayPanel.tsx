@@ -49,6 +49,7 @@ export function PlayPanel({ project, flowId }: { project: Project; flowId: strin
       const s = new PlaySession(build.file, flowId, currentStart(), example?.start ?? {}, example?.picks)
       if (example) s.replay()
       usePlay.getState().setSession(s)
+      if (s.flowId !== flowId) usePlay.setState({ flowId: s.flowId }) // the path ended in another flow
       follow(s)
     },
     [build.file, flowId, follow]

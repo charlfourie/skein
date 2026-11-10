@@ -135,7 +135,7 @@ function Report({ flowId, report, file, ms, onReplay }: { flowId: string; report
   const reached = total - report.unreached.length
   const unmarked = report.endings.filter((e) => !e.marked)
   const nodeLabel = (id: string) => {
-    const n = flow?.nodes[id]
+    const n = flow?.nodes[id] ?? Object.values(file.flows).find((f) => f.nodes[id])?.nodes[id]
     if (!n) return id
     if (n.type === 'dialogue') return n.menuText || n.text || 'Dialogue'
     if (n.type === 'hub') return n.label || 'Hub'

@@ -296,10 +296,27 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
           nodes[node.id] = { ...base, type: 'hub', label: dataString(node, 'label'), next: outgoing(node.id) }
           break
         case 'jump': {
+          const toFlow = dataRef(node, 'targetFlowId')
+          if (toFlow) {
+            usesV2 = true
+            if (!project.flows[toFlow]) {
+              problems.push({ level: 'error', message: `${label}: the flow it continues in no longer exists (exported as a dead end).`, at })
+              nodes[node.id] = { ...base, type: 'jump', jumpTo: null }
+            } else nodes[node.id] = { ...base, type: 'jump', jumpTo: null, jumpFlow: toFlow }
+            break
+          }
           const target = dataRef(node, 'targetId')
           const ok = target && flow.nodes[target] ? target : null
           if (!ok) problems.push({ level: 'error', message: `${label}: jump has no valid target (exported as a dead end).`, at })
           nodes[node.id] = { ...base, type: 'jump', jumpTo: ok }
+          break
+        }
+        case 'call': {
+          usesV2 = true
+          const callee = dataRef(node, 'flowId')
+          const ok = callee && project.flows[callee] ? callee : null
+          if (!ok) problems.push({ level: 'warning', message: `${label}: ${callee ? 'the flow it plays no longer exists' : 'no flow chosen to play'} (exported as a pass-through).`, at })
+          nodes[node.id] = { ...base, type: 'call', flow: ok, next: outgoing(node.id) }
           break
         }
       }

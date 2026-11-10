@@ -65,7 +65,7 @@ static class Program
                     var beat = story.Start();
                     for (int step = 0; step < 40; step++)
                     {
-                        lines.Add($"{BeatLine(beat)} playing={world.Playing ?? "-"}");
+                        lines.Add($"{BeatLine(beat)} playing={world.Playing ?? "-"} flow={story.Flow.Id} depth={story.CallDepth}");
                         if (beat.Kind == SkeinBeatKind.End) break;
                         if ((step + seed) % 3 == 0) world.Advance(1 + (seed % 2));
                         int n = beat.Choices.Count;

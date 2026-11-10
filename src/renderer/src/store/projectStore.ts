@@ -213,12 +213,16 @@ export const useProjectStore = create<ProjectStore>()((set, get) => ({
 
   setExternalChange: (change) => set({ externalChange: change }),
 
-  focusNode: (flowId, nodeId) =>
+  focusNode: (hintFlowId, nodeId) => {
+    // Node ids are unique project-wide; find the flow that actually holds it (Play can cross flows).
+    const flows = get().project?.flows ?? {}
+    const flowId = flows[hintFlowId]?.nodes[nodeId] ? hintFlowId : (Object.values(flows).find((f) => f.nodes[nodeId])?.id ?? hintFlowId)
     set({
       activeDoc: { kind: 'flow', id: flowId },
       selection: { kind: 'node', flowId, id: nodeId },
       focusRequest: { flowId, nodeId, nonce: Date.now() }
     })
+  }
 }))
 
 export { selectionExists }

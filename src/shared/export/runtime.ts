@@ -329,11 +329,16 @@ export type Beat =
   | { kind: 'end'; node: ExportNode | null }
 
 const MAX_AUTO_STEPS = 10_000
+/** How deeply Call nodes may nest before the story gives up (a flow that calls itself forever). */
+export const MAX_CALL_DEPTH = 100
 
 export class SkeinStory {
-  readonly flow: ExportFlow
+  /** The flow being played right now: changes when a jump hands off to another flow or a Call node runs one. */
+  flow: ExportFlow
   current: ExportNode | null = null
   private pending: Choice[] = []
+  /** v2: Call nodes waiting for the flow they started to end: where to come back to. */
+  readonly calls: { flow: ExportFlow; node: ExportNode }[] = []
   /** Optional observer: called for every node the story enters, including ones it passes through automatically. */
   onEnter?: (node: ExportNode) => void
 
@@ -349,14 +354,48 @@ export class SkeinStory {
   /** Begin at the first available start node (or a given node). */
   start(nodeId?: string): Beat {
     this.world.playing = this.flow.id
-    const id = nodeId ?? this.flow.start.find((s) => this.available(s))
+    const id = nodeId ?? this.firstStart()
     return id ? this.enter(id) : this.end(null)
+  }
+
+  private firstStart(): string | null {
+    return this.flow.start.find((s) => this.available(s)) ?? null
+  }
+
+  /** Switch to playing another flow (a hand-off or a call); returns its first available start. */
+  private switchTo(flowId: string): string | null {
+    const flow = this.world.data.flows[flowId]
+    if (!flow) return null
+    this.flow = flow
+    this.world.playing = flow.id
+    return this.firstStart()
+  }
+
+  /**
+   * The current flow has run out at `node`. Inside a called flow, return to the
+   * Call node and continue after it; otherwise the story ends.
+   */
+  private finish(node: ExportNode | null): { beat: Beat } | { next: string } {
+    let last = node
+    for (;;) {
+      const frame = this.calls.pop()
+      if (!frame) return { beat: this.end(last) }
+      this.flow = frame.flow
+      this.world.playing = frame.flow.id
+      const next = (frame.node as { next: string[] }).next.find((n) => this.available(n))
+      if (next) return { next }
+      last = frame.node
+    }
   }
 
   /** Pick one of the current beat's choices (0 to continue after a single-choice line). */
   choose(index = 0): Beat {
     const choice = this.pending[index]
-    if (!choice) return this.end(this.current)
+    if (!choice) {
+      // Nothing follows: the flow ends here (or, inside a Call, the story goes back to the caller).
+      const f = this.finish(this.current)
+      return 'beat' in f ? f.beat : this.enter(f.next)
+    }
     this.world.playing = this.flow.id
     return this.enter(choice.node)
   }
@@ -392,7 +431,12 @@ export class SkeinStory {
   private enter(start: string): Beat {
     let id: string | null = start
     for (let steps = 0; steps < MAX_AUTO_STEPS; steps++) {
-      if (!this.available(id)) return this.end(this.current)
+      if (!this.available(id)) {
+        const f = this.finish(this.current)
+        if ('beat' in f) return f.beat
+        id = f.next
+        continue
+      }
       const node: ExportNode = this.flow.nodes[id]
       this.current = node
       if (node.count) this.world.countVisit(node.id)
@@ -419,10 +463,21 @@ export class SkeinStory {
           break
         }
         case 'jump':
-          id = node.jumpTo
+          id = node.jumpFlow ? this.switchTo(node.jumpFlow) : node.jumpTo
+          break
+        case 'call':
+          if (node.flow && this.world.data.flows[node.flow]) {
+            if (this.calls.length >= MAX_CALL_DEPTH) throw new Error(`Call nodes nested ${MAX_CALL_DEPTH} deep: check for flows that call each other in a loop.`)
+            this.calls.push({ flow: this.flow, node })
+            id = this.switchTo(node.flow)
+          } else id = node.next.find((n) => this.available(n)) ?? null
           break
       }
-      if (id === null) return this.end(node)
+      if (id === null) {
+        const f = this.finish(node)
+        if ('beat' in f) return f.beat
+        id = f.next
+      }
     }
     throw new Error('The flow ran 10,000 automatic steps without reaching a line: check for a loop of conditions, jumps or hubs.')
   }

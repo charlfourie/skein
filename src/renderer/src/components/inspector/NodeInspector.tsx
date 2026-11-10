@@ -21,6 +21,7 @@ import { FieldLabel, IssueList, Select, TextArea, TextInput, Toggle, type Select
 export function NodeInspector({ project, flowId, nodeId }: { project: Project; flowId: string; nodeId: string }) {
   const issues = useIssuesFor(nodeId)
   const focusNode = useProjectStore((s) => s.focusNode)
+  const openDoc = useProjectStore((s) => s.openDoc)
   const flow = project.flows[flowId]
   const node = flow?.nodes[nodeId]
   if (!flow || !node) return null
@@ -121,13 +122,52 @@ export function NodeInspector({ project, flowId, nodeId }: { project: Project; f
         </FieldLabel>
       )}
 
-      {node.type === 'jump' && (
+      {node.type === 'call' && (
+        <FieldLabel label="Flow to play" hint="from its start, then back here">
+          <Select
+            value={dataRef(node, 'flowId')}
+            placeholder="Pick a flow…"
+            options={flowOptions(project, flowId)}
+            onChange={(id) => patch({ flowId: id })}
+          />
+          {dataRef(node, 'flowId') && project.flows[dataRef(node, 'flowId') as string] && (
+            <button
+              type="button"
+              onClick={() => openDoc({ kind: 'flow', id: dataRef(node, 'flowId') as string })}
+              className="mt-1.5 flex items-center gap-1 text-xs text-accent hover:underline"
+            >
+              <Crosshair size={12} /> Open flow
+            </button>
+          )}
+        </FieldLabel>
+      )}
+
+      {node.type === 'jump' && dataRef(node, 'targetFlowId') && (
+        <FieldLabel label="Jump to" hint="this flow ends and the story continues at the other's start">
+          <Select
+            value={`flow:${dataRef(node, 'targetFlowId')}`}
+            options={jumpOptions(project, flowId, nodeId)}
+            onChange={(v) => (v?.startsWith('flow:') ? patch({ targetFlowId: v!.slice(5), targetId: null }) : patch({ targetId: v, targetFlowId: null }))}
+          />
+          {project.flows[dataRef(node, 'targetFlowId') as string] && (
+            <button
+              type="button"
+              onClick={() => openDoc({ kind: 'flow', id: dataRef(node, 'targetFlowId') as string })}
+              className="mt-1.5 flex items-center gap-1 text-xs text-accent hover:underline"
+            >
+              <Crosshair size={12} /> Open flow
+            </button>
+          )}
+        </FieldLabel>
+      )}
+
+      {node.type === 'jump' && !dataRef(node, 'targetFlowId') && (
         <FieldLabel label="Jump to">
           <Select
             value={dataRef(node, 'targetId')}
             placeholder="Pick a node…"
             options={jumpOptions(project, flowId, nodeId)}
-            onChange={(targetId) => patch({ targetId })}
+            onChange={(v) => (v?.startsWith('flow:') ? patch({ targetFlowId: v!.slice(5), targetId: null }) : patch({ targetId: v }))}
           />
           {dataRef(node, 'targetId') && flow.nodes[dataRef(node, 'targetId') as string] && (
             <button
@@ -141,7 +181,7 @@ export function NodeInspector({ project, flowId, nodeId }: { project: Project; f
         </FieldLabel>
       )}
 
-      {(node.type === 'dialogue' || node.type === 'hub' || node.type === 'instruction') && (
+      {(node.type === 'dialogue' || node.type === 'hub' || node.type === 'instruction' || node.type === 'call') && (
         <ChoiceOrder project={project} flow={flow} nodeId={nodeId} kind={node.type} />
       )}
 
@@ -235,16 +275,16 @@ export function EdgeInspector({ project, flowId, edgeId }: { project: Project; f
  * order they're tried in (the first available one is followed). Stored in the
  * file, so moving nodes on the canvas never changes it.
  */
-function ChoiceOrder({ project, flow, nodeId, kind }: { project: Project; flow: Flow; nodeId: string; kind: 'dialogue' | 'hub' | 'instruction' }) {
+function ChoiceOrder({ project, flow, nodeId, kind }: { project: Project; flow: Flow; nodeId: string; kind: 'dialogue' | 'hub' | 'instruction' | 'call' }) {
   const focusNode = useProjectStore((s) => s.focusNode)
   const edges = outgoingEdges(flow, nodeId, 'out')
   if (edges.length < 2) return null
   const hint =
-    kind === 'instruction'
+    kind === 'instruction' || kind === 'call'
       ? 'tried in this order; the first available one is followed'
       : 'the order the player sees them in; unavailable ones are skipped'
   return (
-    <Section title={kind === 'instruction' ? 'Next, in order' : 'Choices, in order'}>
+    <Section title={kind === 'instruction' || kind === 'call' ? 'Next, in order' : 'Choices, in order'}>
       <p className="-mt-0.5 text-2xs text-faint">{hint}</p>
       <ol className="flex flex-col gap-1">
         {edges.map((e, i) => {
@@ -346,9 +386,19 @@ function speakerOptions(project: Project): SelectOption[] {
 
 function jumpOptions(project: Project, flowId: string, selfId: string): SelectOption[] {
   const flow = project.flows[flowId]
-  return Object.values(flow.nodes)
-    .filter((n) => n.id !== selfId && n.type !== 'jump')
-    .sort((a, b) => (a.type === 'hub' ? 0 : 1) - (b.type === 'hub' ? 0 : 1) || a.position.y - b.position.y || a.position.x - b.position.x)
-    .map((n) => ({ value: n.id, label: describeNode(project, n), group: n.type === 'hub' ? 'Hubs' : 'Other nodes' }))
+  return [
+    ...Object.values(flow.nodes)
+      .filter((n) => n.id !== selfId && n.type !== 'jump')
+      .sort((a, b) => (a.type === 'hub' ? 0 : 1) - (b.type === 'hub' ? 0 : 1) || a.position.y - b.position.y || a.position.x - b.position.x)
+      .map((n) => ({ value: n.id, label: describeNode(project, n), group: n.type === 'hub' ? 'Hubs' : 'Other nodes' })),
+    ...flowOptions(project, flowId).map((o) => ({ value: `flow:${o.value}`, label: `Continue in “${o.label}”`, group: 'Hand off to another flow' }))
+  ]
+}
+
+function flowOptions(project: Project, selfFlowId: string): SelectOption[] {
+  return Object.values(project.flows)
+    .filter((f) => f.id !== selfFlowId)
+    .sort(compareOrder)
+    .map((f) => ({ value: f.id, label: f.name }))
 }
 
