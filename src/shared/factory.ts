@@ -1,3 +1,4 @@
+import { DEFAULT_DAY_START, DEFAULT_PHASE_MINUTES, DEFAULT_SPEAKING_RATE } from './time'
 import { newId } from './ids'
 import {
   PROJECT_FORMAT,
@@ -28,10 +29,15 @@ export function createDefaultState(): ProjectState {
   const phases: Record<string, TimePhase> = {}
   DEFAULT_PHASES.forEach((label, order) => {
     const id = newId()
-    phases[id] = createPhase(id, label, label, order)
+    phases[id] = { ...createPhase(id, label, label, order), minutes: DEFAULT_PHASE_MINUTES[label] }
   })
   const first = Object.values(phases)[0]
-  return { variables: {}, relationships: {}, time: { phases, startDay: 1, startPhaseId: first.id }, rules: {} }
+  return {
+    variables: {},
+    relationships: {},
+    time: { phases, startDay: 1, startPhaseId: first.id, dayStart: DEFAULT_DAY_START, speakingRate: DEFAULT_SPEAKING_RATE },
+    rules: {}
+  }
 }
 
 export function createStateVariable(

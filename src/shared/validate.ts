@@ -4,6 +4,7 @@ import { analyzeFlow } from './flowAnalysis'
 import { dataRef, dataString } from './nodes'
 import type { Project } from './schema'
 import { TECHNICAL_NAME_RE } from './technicalName'
+import { clockOf, formatDuration, MINUTES_PER_DAY } from './time'
 import { ruleValueProblem, structuralValueProblem } from './values'
 
 /**
@@ -129,6 +130,14 @@ export function validateProject(project: Project): IssueMap {
   }
   const phases = Object.values(project.state.time.phases)
   if (phases.length === 0) add('state:time', { level: 'warning', message: 'No time phases: time can’t advance.' })
+  else {
+    const day = clockOf(project).lengths.reduce((n, m) => n + m, 0)
+    if (Math.round(day) !== MINUTES_PER_DAY)
+      add('state:time', { level: 'warning', message: `The phases add up to ${formatDuration(day)}, not 24h, so Time.Hour drifts a little each day.` })
+  }
+  for (const a of Object.values(project.state.time.activities ?? {})) {
+    if (!a.name.trim()) add('state:time', { level: 'warning', message: 'An activity has no name.' })
+  }
   checkTechnicalNames(phases.map((p) => ({ ownerId: p.id, name: p.label, technicalName: p.technicalName })), add)
 
   // --- Expressions ----------------------------------------------------------

@@ -43,7 +43,7 @@ describe('export format', () => {
     expect(file.entities.Stranger.values.Energy).toBe(5) // default applied
     expect(file.templates.Character.properties.Mood).toMatchObject({ type: 'enum', state: true, options: ['Calm', 'Wary', 'Warm'] })
     expect(file.state.relationships['Character->Character.Trust'].values).toEqual({ Keeper: { Stranger: -1 } })
-    expect(file.state.time).toEqual({ phases: ['Dawn', 'Day', 'Dusk', 'Night'], labels: ['Dawn', 'Day', 'Dusk', 'Night'], start: { day: 1, phase: 'Dawn' } })
+    expect(file.state.time).toEqual({ phases: ['Dawn', 'Day', 'Dusk', 'Night'], labels: ['Dawn', 'Day', 'Dusk', 'Night'], start: { day: 1, phase: 'Dawn' }, minutes: [360, 360, 360, 360], dayStart: 0 })
     expect(file.state.rules[0]).toMatchObject({ trigger: 'phase', phase: 'Night', forEach: 'Character' })
   })
 

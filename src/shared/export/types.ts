@@ -9,7 +9,7 @@
 
 export const EXPORT_FORMAT = 'skein.export' as const
 /** The newest format version this exporter writes. Each file carries the lowest version that can read it. */
-export const EXPORT_VERSION = 2 as const
+export const EXPORT_VERSION = 3 as const
 
 export type ExportValue = number | boolean | string | null
 
@@ -20,7 +20,8 @@ export type StatePath =
   | { get: 'var'; var: string } // "World.StormRaging"
   | { get: 'prop'; entity: string; prop: string } // Keeper.Mood
   | { get: 'rel'; rel: string; from: string; to: string } // Character->Character.Trust, Keeper → Stranger
-  | { get: 'time'; field: 'day' | 'phase' }
+  /** hour / minute (v3): the time of day, 0–23 and 0–59. */
+  | { get: 'time'; field: 'day' | 'phase' | 'hour' | 'minute' }
   /** v2: how many times the story has entered this node (only nodes with `count: true` are counted). */
   | { get: 'visit'; node: string }
 
@@ -44,6 +45,8 @@ export type Statement =
   | { advance: number }
   /** `stay` (v2): do nothing if already in that phase, instead of moving a whole day. */
   | { advanceTo: string; stay?: true }
+  /** v3: let this many minutes pass (rolling into the next phase, and its rules, as needed). */
+  | { pass: number }
 
 /** A compiled condition, plus (optionally) its source text for debugging. */
 export interface ExportCondition {
@@ -124,6 +127,10 @@ interface NodeBase {
   count?: true
   /** v2: the node's tag in Skein (Seen.Tag / Visits.Tag), for engines that want to look it up. */
   tag?: string
+  /** v3: minutes that pass when the story enters this node (its activity, or the time to speak a line). */
+  takes?: number
+  /** v3: the name of the node's activity, if it has one (for showing "Repair the radio · 2h"). */
+  activity?: string
 }
 
 export type ExportNode =
@@ -146,14 +153,23 @@ export interface ExportFlow {
 
 export interface ExportFile {
   format: typeof EXPORT_FORMAT
-  version: 1 | 2
+  version: 1 | 2 | 3
   project: { id: string; name: string }
   templates: Record<string, ExportTemplate>
   entities: Record<string, ExportEntity>
   state: {
     variables: Record<string, ExportDef>
     relationships: Record<string, ExportRelationship>
-    time: { phases: string[]; labels: string[]; start: { day: number; phase: string | null } }
+    time: {
+      phases: string[]
+      labels: string[]
+      /** `minute` (v3): minutes into the starting phase. */
+      start: { day: number; phase: string | null; minute?: number }
+      /** Minutes in each phase, parallel to `phases` (absent in older files: 24 hours split evenly). */
+      minutes?: number[]
+      /** Minutes after midnight when the first phase begins (for the time of day). */
+      dayStart?: number
+    }
     rules: ExportRule[]
   }
   flows: Record<string, ExportFlow>

@@ -352,11 +352,18 @@
       }
     ],
     "time": {
+      "dayStart": 0,
       "labels": [
         "Dawn",
         "Day",
         "Dusk",
         "Night"
+      ],
+      "minutes": [
+        360,
+        360,
+        360,
+        360
       ],
       "phases": [
         "Dawn",

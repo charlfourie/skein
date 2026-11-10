@@ -1,3 +1,4 @@
+import { parseDuration } from '../time'
 /**
  * Skein's state language: tokens, syntax tree and parser.
  *
@@ -11,6 +12,7 @@
  *   Keeper->Stranger.Trust += 1
  *   advance                       (one phase)   advance 2   advance to Night
  *   advance until Night           (stays put if it's already Night)
+ *   pass 45m   pass 2h   pass 1h 30m   (let time go by on the clock)
  *
  * Randomness (actions and Condition nodes only): chance(30) is true 30% of the time;
  * roll(1, 6) is a whole number from 1 to 6.
@@ -133,6 +135,8 @@ export type NameExpr = Extract<Expr, { kind: 'name' }>
 export type Statement =
   | (Spanned & { kind: 'assign'; target: NameExpr; op: '=' | '+=' | '-='; value: Expr })
   | (Spanned & { kind: 'advance'; count: number; toPhase?: Seg; stay?: true })
+  /** `pass 45m`, `pass 2h`, `pass 1h 30m`, `pass 90` (minutes) */
+  | (Spanned & { kind: 'pass'; minutes: number })
 
 // ---------------------------------------------------------------------------
 // Parser (precedence climbing)
@@ -304,6 +308,16 @@ class Parser {
 
   statement(): Statement {
     const t = this.next()
+    if (t.kind === 'ident' && t.value === 'pass') {
+      const parts: Token[] = []
+      while (this.peek().kind === 'number' || (this.peek().kind === 'ident' && parts.length > 0 && /^[a-z]/i.test(this.peek().value))) parts.push(this.next())
+      const text = parts.map((p) => p.value).join('')
+      const minutes = parseDuration(text)
+      const end = parts.length ? parts[parts.length - 1].end : t.end
+      if (minutes === null || !parts.length) throw new ParseError('Say how long, e.g. pass 30m, pass 2h or pass 1h 30m.', t.start, Math.max(end, t.end + 1))
+      if (!(minutes > 0)) throw new ParseError('Pass a length of time above zero.', t.start, end)
+      return { kind: 'pass', minutes, start: t.start, end }
+    }
     if (t.kind === 'ident' && t.value === 'advance') {
       if (this.is('to') || this.is('until')) {
         const stay = this.next().value === 'until'

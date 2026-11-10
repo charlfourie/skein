@@ -1,4 +1,5 @@
 import { CONDITION_NODE_CTX } from '@shared/expr/sites'
+import { formatDuration, nodeTakes } from '@shared/time'
 import { motion } from 'framer-motion'
 import { ArrowRight, ChevronDown, ChevronUp, Crosshair, Trash2 } from 'lucide-react'
 import type { ReactNode } from 'react'
@@ -16,7 +17,7 @@ import { GENERIC_META, NODE_META } from '../flow/flowMeta'
 import { ExpressionField } from '../defs/ExpressionField'
 import { Button } from '../ui/Button'
 import { IconButton } from '../ui/IconButton'
-import { FieldLabel, IssueList, Select, TextArea, TextInput, Toggle, type SelectOption } from '../ui/fields'
+import { DurationInput, FieldLabel, IssueList, Select, TextArea, TextInput, Toggle, type SelectOption } from '../ui/fields'
 
 export function NodeInspector({ project, flowId, nodeId }: { project: Project; flowId: string; nodeId: string }) {
   const issues = useIssuesFor(nodeId)
@@ -185,6 +186,8 @@ export function NodeInspector({ project, flowId, nodeId }: { project: Project; f
         <ChoiceOrder project={project} flow={flow} nodeId={nodeId} kind={node.type} />
       )}
 
+      {node.type !== 'jump' && node.type !== 'condition' && <TimeTaken project={project} flowId={flowId} nodeId={nodeId} />}
+
       <Section title="Flow">
         <ToggleRow label="Start node" hint="the flow can begin here" checked={isStartNode(node)} onChange={(isStart) => patch({ isStart })} />
         {isStartNode(node) && <StartPriority flow={flow} nodeId={nodeId} />}
@@ -350,6 +353,50 @@ function NodeLink({ label, onClick }: { label: string; onClick(): void }) {
     >
       {label}
     </button>
+  )
+}
+
+/** How long the story spends here: an activity, an own length, or (lines) the time to say it. */
+function TimeTaken({ project, flowId, nodeId }: { project: Project; flowId: string; nodeId: string }) {
+  const node = project.flows[flowId]?.nodes[nodeId]
+  if (!node) return null
+  const patch = (p: Record<string, unknown>) => updateNodeData(flowId, nodeId, p)
+  const activities = Object.values(project.state.time.activities ?? {}).sort((a, b) => a.order - b.order)
+  const takes = nodeTakes(project, node)
+  const own = typeof node.data.takes === 'number' ? node.data.takes : null
+  const explain = !takes
+    ? node.type === 'dialogue' && !(project.state.time.speakingRate ?? 0)
+      ? 'Takes no time (spoken lines are set to take none in Time & rules).'
+      : 'Takes no time.'
+    : takes.source === 'speech'
+      ? `About ${formatDuration(takes.minutes)} to say, at ${project.state.time.speakingRate} words a minute.`
+      : takes.source === 'activity'
+        ? `${takes.activity}: ${formatDuration(takes.minutes)}.`
+        : `Takes ${formatDuration(takes.minutes)}.`
+  return (
+    <Section title="Time">
+      <div className="grid grid-cols-[1fr_96px] gap-2">
+        <FieldLabel label="Activity">
+          <Select
+            value={dataRef(node, 'activityId') ?? 'none'}
+            options={[
+              { value: 'none', label: activities.length ? 'None' : 'None (add activities in Time & rules)' },
+              ...activities.map((a) => ({ value: a.id, label: `${a.name} · ${formatDuration(a.minutes)}` }))
+            ]}
+            onChange={(v) => patch({ activityId: v === 'none' ? null : v })}
+          />
+        </FieldLabel>
+        <FieldLabel label="Takes">
+          <DurationInput
+            value={own}
+            allowEmpty
+            placeholder={takes && takes.source !== 'override' ? formatDuration(takes.minutes) : 'none'}
+            onCommit={(m) => patch({ takes: m === null ? null : m })}
+          />
+        </FieldLabel>
+      </div>
+      <p className="-mt-1 text-2xs text-faint">{explain} Typing a length overrides the activity; 0 means no time.</p>
+    </Section>
   )
 }
 

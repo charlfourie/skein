@@ -17,6 +17,8 @@ namespace Skein
         public SortedDictionary<string, object> Changes = new SortedDictionary<string, object>(StringComparer.Ordinal);
         public int Day = 1;
         public string Phase;
+        /// <summary>v3: seconds into the current phase.</summary>
+        public long Seconds;
         /// <summary>v2: the random generator's state, so a loaded game rolls the same dice. Null in older saves.</summary>
         public uint? Rng;
 
@@ -28,6 +30,7 @@ namespace Skein
             o["changes"] = changes;
             o["day"] = (double)Day;
             o["phase"] = Phase;
+            o["seconds"] = (double)Seconds;
             if (Rng.HasValue) o["rng"] = (double)Rng.Value;
             return SkeinJson.Stringify(o);
         }
@@ -38,6 +41,7 @@ namespace Skein
             var save = new SkeinSave { Day = (int)(o.Num("day") ?? 1), Phase = o.Str("phase") };
             var rng = o.Num("rng");
             if (rng.HasValue) save.Rng = (uint)rng.Value;
+            save.Seconds = (long)(o.Num("seconds") ?? 0);
             foreach (var kv in o.Obj("changes") ?? new JsonObject()) save.Changes[kv.Key] = kv.Value;
             return save;
         }
@@ -124,6 +128,8 @@ namespace Skein
         public readonly Dictionary<string, object> Changes = new Dictionary<string, object>(StringComparer.Ordinal);
         public int Day;
         public int PhaseIndex;
+        /// <summary>v3: seconds into the current phase. Each phase lasts Data.Time.Minutes[i]; past that, the next phase begins.</summary>
+        public long Seconds;
         /// <summary>Trace of time and rule activity. Clear it whenever you like.</summary>
         public readonly List<string> Log = new List<string>();
         /// <summary>v2: the flow being played right now (set by SkeinStory), for rules limited to one flow.</summary>
@@ -150,8 +156,10 @@ namespace Skein
             var phases = data.Time.Phases;
             Day = data.Time.StartDay;
             PhaseIndex = Math.Max(0, data.Time.IndexOf(data.Time.StartPhase ?? (phases.Count > 0 ? phases[0] : null)));
+            Seconds = ToSeconds(data.Time.StartMinute);
             if (saved != null)
             {
+                Seconds = saved.Seconds;
                 foreach (var kv in saved.Changes) Changes[kv.Key] = kv.Value;
                 Day = saved.Day;
                 PhaseIndex = Math.Max(0, data.Time.IndexOf(saved.Phase ?? (phases.Count > 0 ? phases[0] : null)));
@@ -196,7 +204,7 @@ namespace Skein
 
         public SkeinSave Save()
         {
-            var save = new SkeinSave { Day = Day, Phase = Phase, Rng = Rng };
+            var save = new SkeinSave { Day = Day, Phase = Phase, Seconds = Seconds, Rng = Rng };
             foreach (var kv in Changes) save.Changes[kv.Key] = kv.Value;
             return save;
         }
@@ -311,7 +319,14 @@ namespace Skein
         {
             switch (path.Str("get"))
             {
-                case "time": return path.Str("field") == "day" ? (object)(double)Day : Phase;
+                case "time":
+                    switch (path.Str("field"))
+                    {
+                        case "day": return (double)Day;
+                        case "phase": return Phase;
+                        case "hour": return (double)Clock().hour;
+                        default: return (double)Clock().minute;
+                    }
                 case "visit": return Visits(path.Str("node"));
                 case "var": return ReadKey("var", path.Str("var"), null, null, null);
                 case "prop": return ReadKey("prop", null, Self(path.Str("entity"), self), path.Str("prop"), null);
@@ -414,6 +429,7 @@ namespace Skein
         {
             if (s.Has("advance")) { Advance((int)(s.Num("advance") ?? 0)); return; }
             if (s.Has("advanceTo")) { AdvanceTo(s.Str("advanceTo"), s.Bool("stay")); return; }
+            if (s.Has("pass")) { Pass(s.Num("pass") ?? 0); return; }
             var target = s.Obj("set");
             if (target == null) return;
             var value = Evaluate(s.Obj("value"), self);
@@ -422,6 +438,49 @@ namespace Skein
             var cur = SkeinValue.ToNumber(Read(target, self));
             var delta = SkeinValue.ToNumber(value);
             Write(target, op == "+=" ? cur + delta : cur - delta, self);
+        }
+
+        // --- The clock (v3) -------------------------------------------------------------
+
+        /// <summary>Round minutes to whole seconds, half up (as every Skein runtime does).</summary>
+        public static long ToSeconds(double minutes) => (long)Math.Floor(minutes * 60 + 0.5);
+
+        /// <summary>Seconds in phase <paramref name="i"/>.</summary>
+        public long PhaseSeconds(int i)
+        {
+            var t = Data.Time;
+            double m = t.Minutes != null && i < t.Minutes.Count ? t.Minutes[i] : Math.Floor(1440.0 / Math.Max(1, t.Phases.Count));
+            return Math.Max(1, ToSeconds(m));
+        }
+
+        /// <summary>Minutes into the current phase.</summary>
+        public double Minute => Seconds / 60.0;
+
+        /// <summary>The time of day: hour 0–23 and minute 0–59.</summary>
+        public (int hour, int minute) Clock()
+        {
+            long total = ToSeconds(Data.Time.DayStart) + Seconds;
+            for (int i = 0; i < PhaseIndex; i++) total += PhaseSeconds(i);
+            long m = (total / 60) % 1440;
+            return ((int)(m / 60), (int)(m % 60));
+        }
+
+        /// <summary>Raised when minutes pass on the clock (an activity, a spoken line, or "pass").</summary>
+        public event Action<double> Passed;
+
+        /// <summary>Let minutes go by. Running past the end of a phase begins the next one (and runs its rules), as often as needed.</summary>
+        public void Pass(double minutes)
+        {
+            long s = ToSeconds(minutes);
+            if (s <= 0 || Data.Time.Phases.Count == 0) return;
+            Passed?.Invoke(minutes);
+            for (int guard = 0; guard < 100000; guard++)
+            {
+                long left = PhaseSeconds(PhaseIndex) - Seconds;
+                if (s < left) { Seconds += s; return; }
+                s -= left;
+                Advance(1);
+            }
         }
 
         // --- Time and rules ------------------------------------------------------------
@@ -434,6 +493,7 @@ namespace Skein
             for (int i = 0; i < count; i++)
             {
                 PhaseIndex = (PhaseIndex + 1) % phases.Count;
+                Seconds = 0;
                 bool newDay = PhaseIndex == 0;
                 if (newDay) Day += 1;
                 Log.Add($"Time → Day {Day}, {Phase}");

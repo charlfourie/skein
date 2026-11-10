@@ -20,6 +20,7 @@ import { Activity, AlertTriangle, Frame as FrameIcon, Grid3x3, Maximize, Network
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react'
 import { analyzeFlow, type FlowAnalysis } from '@shared/flowAnalysis'
 import { framesOf, nodesInFrame } from '@shared/frames'
+import { nodeTakes } from '@shared/time'
 import { choiceNumbers, startNodes } from '@shared/flowOrder'
 import { canConnect, dataRef, dataString, NODE_TYPES, type NodeType } from '@shared/nodes'
 import type { Flow, Position, Project } from '@shared/schema'
@@ -76,6 +77,7 @@ function deriveNodes(project: Project, flow: Flow, analysis: FlowAnalysis, issue
           speaker: speaker ? { name: speaker.name, color: template?.color ?? COLORS.accent, icon: template?.icon ?? 'user' } : null,
           jumpTarget: target ? describeNode(project, target) : null,
           otherFlow: otherFlow ? { id: otherFlow.id, name: otherFlow.name } : null,
+          takes: nodeTakes(project, node),
           warn: nodeIssues.some((i) => i.level === 'warning'),
           error: nodeIssues.some((i) => i.level === 'error'),
           loopJump: analysis.loopJumps.has(node.id),

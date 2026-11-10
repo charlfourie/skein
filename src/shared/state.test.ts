@@ -63,7 +63,7 @@ describe('conditions', () => {
     expect(firstError(p, 'World.Storm')).toMatch(/No variable “Storm” in World.*StormRaging/)
     expect(firstError(p, 'Keeper.Mood == Angry')).toMatch(/isn’t one of the options.*Calm, Wary/)
     expect(firstError(p, 'Keeper->Stranger.Love > 1')).toMatch(/No relationship “Love”.*Trust/)
-    expect(firstError(p, 'Time.Hour > 3')).toMatch(/Day.*Phase/)
+    expect(firstError(p, 'Time.Hours > 3')).toMatch(/Day.*Phase.*Hour/)
   })
 
   it('reports type mismatches', () => {
@@ -99,7 +99,7 @@ describe('actions', () => {
   it('refuses to change fixed design data or time directly', () => {
     const p = world()
     expect(firstError(p, 'Keeper.Age = 41', 'action')).toMatch(/fixed design data.*Changes during play/)
-    expect(firstError(p, 'Time.Day = 3', 'action')).toMatch(/use “advance”/)
+    expect(firstError(p, 'Time.Day = 3', 'action')).toMatch(/use “pass 30m”, “advance”/)
     expect(firstError(p, 'Keeper.Mood += 1', 'action')).toMatch(/only works on numbers/)
     expect(firstError(p, 'Keeper.Mood == Wary', 'action')).toMatch(/Use “=” to change/)
   })

@@ -46,8 +46,15 @@ export interface SkeinSave {
   changes: Record<string, ExportValue>
   day: number
   phase: string | null
+  /** v3: seconds into the current phase. */
+  seconds?: number
   /** v2: the random generator's state, so a loaded game rolls the same dice. */
   rng?: number
+}
+
+/** Round to whole seconds, the same way in every runtime (half up). */
+export function toSeconds(minutes: number): number {
+  return Math.floor(minutes * 60 + 0.5)
 }
 
 /** The seed used when none is given. Pass your own (e.g. from the clock) for different dice each run. */
@@ -59,6 +66,8 @@ export class SkeinWorld {
   readonly changes = new Map<string, ExportValue>()
   day: number
   phaseIndex: number
+  /** v3: seconds into the current phase. Each phase lasts `time.minutes[i]`; past that, the next phase begins. */
+  seconds = 0
   /** Optional trace of time and rule activity. */
   log: string[] = []
   /** v2: the flow being played right now (set by SkeinStory), for rules limited to one flow. */
@@ -71,6 +80,8 @@ export class SkeinWorld {
   decide?: (draw: Draw) => number
   /** Debugging hook: every write, with its key, the value stored, the value asked for (they differ when clamped or rounded) and the value before. */
   onWrite?: (key: string, stored: ExportValue, asked: ExportValue, before: ExportValue) => void
+  /** Debugging hook: minutes passed on the clock (by an activity, a spoken line or `pass`). */
+  onPass?: (minutes: number) => void
   /** Debugging hook: called with every draw and its result. */
   onRandom?: (draw: Draw, result: ExportValue) => void
 
@@ -81,11 +92,13 @@ export class SkeinWorld {
     const phases = data.state.time.phases
     this.day = data.state.time.start.day
     this.phaseIndex = Math.max(0, phases.indexOf(data.state.time.start.phase ?? phases[0]))
+    this.seconds = toSeconds(data.state.time.start.minute ?? 0)
     this.rng = (options.seed ?? DEFAULT_SEED) >>> 0
     if (saved) {
       for (const [k, v] of Object.entries(saved.changes)) this.changes.set(k, v)
       this.day = saved.day
       this.phaseIndex = Math.max(0, phases.indexOf(saved.phase ?? phases[0]))
+      this.seconds = typeof saved.seconds === 'number' ? saved.seconds : 0
       if (typeof saved.rng === 'number') this.rng = saved.rng >>> 0
     }
   }
@@ -96,7 +109,51 @@ export class SkeinWorld {
 
   /** Everything needed to restore this world later (e.g. in a save game). */
   save(): SkeinSave {
-    return { changes: Object.fromEntries([...this.changes].sort(([a], [b]) => (a < b ? -1 : 1))), day: this.day, phase: this.phase, rng: this.rng }
+    return {
+      changes: Object.fromEntries([...this.changes].sort(([a], [b]) => (a < b ? -1 : 1))),
+      day: this.day,
+      phase: this.phase,
+      seconds: this.seconds,
+      rng: this.rng
+    }
+  }
+
+  // --- The clock -------------------------------------------------------------------
+
+  /** Seconds in phase `i`: from `time.minutes`, or (older files) 24 hours split evenly. */
+  phaseSeconds(i: number): number {
+    const t = this.data.state.time
+    const m = t.minutes?.[i] ?? Math.floor(1440 / Math.max(1, t.phases.length))
+    return Math.max(1, toSeconds(m))
+  }
+
+  /** Minutes into the current phase. */
+  get minute(): number {
+    return this.seconds / 60
+  }
+
+  /** The time of day: hour 0–23 and minute 0–59. */
+  get clock(): { hour: number; minute: number } {
+    let total = toSeconds(this.data.state.time.dayStart ?? 0) + this.seconds
+    for (let i = 0; i < this.phaseIndex; i++) total += this.phaseSeconds(i)
+    const m = Math.floor(total / 60) % 1440
+    return { hour: Math.floor(m / 60), minute: m % 60 }
+  }
+
+  /** Let minutes go by. Running past the end of a phase begins the next one (and runs its rules), as often as needed. */
+  pass(minutes: number): void {
+    let s = toSeconds(minutes)
+    if (s <= 0 || this.data.state.time.phases.length === 0) return
+    this.onPass?.(minutes)
+    for (let guard = 0; guard < 100000; guard++) {
+      const left = this.phaseSeconds(this.phaseIndex) - this.seconds
+      if (s < left) {
+        this.seconds += s
+        return
+      }
+      s -= left
+      this.advance(1)
+    }
   }
 
   // --- Randomness ----------------------------------------------------------------
@@ -155,7 +212,7 @@ export class SkeinWorld {
 
   read(path: StatePath, self?: string): ExportValue {
     const p = this.resolve(path, self)
-    if (p.get === 'time') return p.field === 'day' ? this.day : this.phase
+    if (p.get === 'time') return p.field === 'day' ? this.day : p.field === 'phase' ? this.phase : p.field === 'hour' ? this.clock.hour : this.clock.minute
     if (p.get === 'visit') return (this.changes.get(SkeinWorld.key(p)) as number | undefined) ?? 0
     const k = SkeinWorld.key(p)
     if (this.changes.has(k)) return this.changes.get(k) as ExportValue
@@ -254,6 +311,7 @@ export class SkeinWorld {
   execute(s: Statement, self?: string): void {
     if ('advance' in s) return this.advance(s.advance)
     if ('advanceTo' in s) return this.advanceTo(s.advanceTo, s.stay === true)
+    if ('pass' in s) return this.pass(s.pass)
     const value = this.evaluate(s.value, self)
     if (s.op === '=') return this.write(s.set, value, self)
     const cur = Number(this.read(s.set, self)) || 0
@@ -268,6 +326,7 @@ export class SkeinWorld {
     if (phases.length === 0) return
     for (let i = 0; i < count; i++) {
       this.phaseIndex = (this.phaseIndex + 1) % phases.length
+      this.seconds = 0
       const newDay = this.phaseIndex === 0
       if (newDay) this.day += 1
       this.log.push(`Time → Day ${this.day}, ${this.phase}`)
@@ -441,6 +500,8 @@ export class SkeinStory {
       this.current = node
       if (node.count) this.world.countVisit(node.id)
       this.onEnter?.(node)
+      // v3: the activity takes its time first (rules may run), then its effects apply.
+      if (node.takes) this.world.pass(node.takes)
       this.world.run(node.effects)
       switch (node.type) {
         case 'dialogue':

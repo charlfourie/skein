@@ -201,7 +201,25 @@ export const RelationshipDefSchema = PropertyDefSchema.extend({
 })
 
 export const TimePhaseSchema = z
-  .object({ id: Id, label: z.string(), technicalName: z.string().default(''), order: Order.default(0) })
+  .object({
+    id: Id,
+    label: z.string(),
+    technicalName: z.string().default(''),
+    order: Order.default(0),
+    /** How long the phase lasts, in minutes. Absent: phases without a length share what's left of 24 hours. */
+    minutes: z.number().finite().positive().optional()
+  })
+  .passthrough()
+
+/** Something that takes time ("Repair the radio: 2h"). Nodes refer to it by id. */
+export const ActivitySchema = z
+  .object({
+    id: Id,
+    name: z.string(),
+    /** Duration in minutes. */
+    minutes: z.number().finite().min(0),
+    order: Order.default(0)
+  })
   .passthrough()
 
 export const RULE_TRIGGERS = ['phase', 'day'] as const
@@ -232,7 +250,14 @@ export const StateSchema = z
       .object({
         phases: z.record(TimePhaseSchema).default({}),
         startDay: z.number().int().default(1),
-        startPhaseId: Id.nullable().default(null)
+        startPhaseId: Id.nullable().default(null),
+        /** Minutes into the starting phase the game begins. */
+        startMinute: z.number().finite().min(0).optional(),
+        /** Minutes after midnight when the first phase begins (for Time.Hour). Absent: midnight. */
+        dayStart: z.number().finite().min(0).max(1439).optional(),
+        /** Dialogue lines take time to speak: words per minute. Absent or 0: lines take no time. */
+        speakingRate: z.number().finite().min(0).optional(),
+        activities: z.record(ActivitySchema).optional()
       })
       .passthrough()
       .default({}),
@@ -259,6 +284,7 @@ export type Folder = z.output<typeof FolderSchema>
 export type FlowNode = z.output<typeof FlowNodeSchema>
 export type FlowEdge = z.output<typeof FlowEdgeSchema>
 export type FlowFrame = z.output<typeof FlowFrameSchema>
+export type Activity = z.output<typeof ActivitySchema>
 export type Flow = z.output<typeof FlowSchema>
 export type PropertyValue = z.output<typeof PropertyValueSchema>
 export type EnumOption = z.output<typeof EnumOptionSchema>

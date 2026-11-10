@@ -1,5 +1,6 @@
 import { compile, nodeTag, type Bound, type BoundStatement, type CompileContext, type StateRef } from '../expr/check'
 import { CONDITION_NODE_CTX } from '../expr/sites'
+import { clockOf, nodeTakes, wholeSeconds } from '../time'
 import { dataRef, dataString, isEndNode, isKnownNodeType, isStartNode } from '../nodes'
 import { orderedTargets, startNodes } from '../flowOrder'
 import type { Flow, FlowNode, Project, PropertyDef, PropertyValue } from '../schema'
@@ -8,7 +9,6 @@ import { toTechnicalName } from '../technicalName'
 import { defaultOf, effectiveValue } from '../values'
 import {
   EXPORT_FORMAT,
-  EXPORT_VERSION,
   type ExportCondition,
   type ExportDef,
   type ExportEffects,
@@ -49,8 +49,11 @@ export interface ExportResult {
 export function buildExport(project: Project, options: ExportOptions = {}): ExportResult {
   const includeSource = options.includeSource !== false
   const problems: ExportProblem[] = []
-  /** Set when the file uses anything only format v2 can express. */
-  let usesV2 = false
+  /** The lowest format version that can express everything this file uses. */
+  let level = 1
+  const need = (v: number) => {
+    if (v > level) level = v
+  }
   /** A rule's flow scope, if it points at a flow that exists. */
   const flowScope = (r: { flowId?: string | null; name: string; id: string }): string | null => {
     if (!r.flowId) return null
@@ -58,7 +61,7 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
       problems.push({ level: 'warning', message: `Rule “${r.name}” was limited to a flow that no longer exists; it runs everywhere.`, at: { kind: 'rule', ruleId: r.id } })
       return null
     }
-    usesV2 = true
+    need(2)
     return r.flowId
   }
 
@@ -126,9 +129,10 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
       case 'rel':
         return { get: 'rel', rel: relKey.get(ref.relId) ?? ref.relId, from: ent(ref.from), to: ent(ref.to) }
       case 'time':
+        if (ref.field === 'hour' || ref.field === 'minute') need(3)
         return { get: 'time', field: ref.field }
       case 'visit':
-        usesV2 = true
+        need(2)
         return { get: 'visit', node: ref.nodeId }
     }
   }
@@ -144,17 +148,21 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
       case 'bin':
         return { op: b.op as Extract<ExprNode, { op: string }>['op'], a: expr(b.l), b: expr(b.r) }
       case 'rand':
-        usesV2 = true
+        need(2)
         return b.fn === 'chance' ? { chance: b.p } : { roll: [b.min, b.max] }
     }
   }
 
   const statement = (s: BoundStatement): Statement => {
+    if (s.k === 'pass') {
+      need(3)
+      return { pass: wholeSeconds(s.minutes) }
+    }
     if (s.k !== 'advance') return { set: path(s.ref), op: s.op, value: expr(s.value) }
     if (!s.toPhaseId) return { advance: s.count }
     const advanceTo = phaseName.get(s.toPhaseId) ?? s.toPhaseId
     if (!s.stay) return { advanceTo }
-    usesV2 = true
+    need(2)
     return { advanceTo, stay: true }
   }
 
@@ -298,7 +306,7 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
         case 'jump': {
           const toFlow = dataRef(node, 'targetFlowId')
           if (toFlow) {
-            usesV2 = true
+            need(2)
             if (!project.flows[toFlow]) {
               problems.push({ level: 'error', message: `${label}: the flow it continues in no longer exists (exported as a dead end).`, at })
               nodes[node.id] = { ...base, type: 'jump', jumpTo: null }
@@ -312,7 +320,7 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
           break
         }
         case 'call': {
-          usesV2 = true
+          need(2)
           const callee = dataRef(node, 'flowId')
           const ok = callee && project.flows[callee] ? callee : null
           if (!ok) problems.push({ level: 'warning', message: `${label}: ${callee ? 'the flow it plays no longer exists' : 'no flow chosen to play'} (exported as a pass-through).`, at })
@@ -343,7 +351,9 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
       }
     }
     const count = once || tag !== null
-    if (count) usesV2 = true
+    if (count) need(2)
+    const takes = nodeTakes(project, node)
+    if (takes) need(3)
     return {
       id: node.id,
       ...(isStartNode(node) ? { start: true as const } : {}),
@@ -351,14 +361,19 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
       ...(requires ? { requires } : {}),
       ...(fx ? { effects: fx } : {}),
       ...(count ? { count: true as const } : {}),
-      ...(tag ? { tag } : {})
+      ...(tag ? { tag } : {}),
+      ...(takes ? { takes: takes.minutes, ...(takes.activity ? { activity: takes.activity } : {}) } : {})
     }
   }
+
+  const clock = clockOf(project)
+  const startMinute = wholeSeconds(project.state.time.startMinute ?? 0)
+  if (startMinute > 0) need(3)
 
   const file: ExportFile = {
     format: EXPORT_FORMAT,
     // The lowest version that can read this file: older runtimes keep working until a project uses v2 features.
-    version: usesV2 ? EXPORT_VERSION : 1,
+    version: level as ExportFile['version'],
     project: { id: project.meta.id, name: project.meta.name },
     templates,
     entities,
@@ -370,8 +385,11 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
         labels: phases.map((p) => p.label),
         start: {
           day: project.state.time.startDay,
-          phase: project.state.time.startPhaseId ? (phaseName.get(project.state.time.startPhaseId) ?? null) : null
-        }
+          phase: project.state.time.startPhaseId ? (phaseName.get(project.state.time.startPhaseId) ?? null) : null,
+          ...(startMinute > 0 ? { minute: startMinute } : {})
+        },
+        minutes: clock.lengths,
+        dayStart: clock.dayStart
       },
       rules
     },

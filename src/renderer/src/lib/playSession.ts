@@ -15,6 +15,8 @@ export type PlayEntry =
   | { kind: 'warn'; nodeId: string | null; text: string }
   /** A chance() or roll() and how it came out. */
   | { kind: 'dice'; text: string }
+  /** Time passing on the clock: an activity, a spoken line or `pass`. */
+  | { kind: 'pass'; minutes: number; activity?: string; clock: string }
 
 export interface PlayOption {
   nodeId: string
@@ -24,6 +26,9 @@ export interface PlayOption {
   requires?: string
   /** Index to pass to choose(), when available. */
   index?: number
+  /** Minutes picking it takes (the target's activity or line), and the activity's name. */
+  takes?: number
+  activity?: string
 }
 
 /**
@@ -61,6 +66,12 @@ export class PlaySession {
         return d.kind === 'chance' ? (x % 100 < d.p ? 0 : 1) : x % outcomesOf(d)
       }
     }
+    this.world.onPass = (minutes) => {
+      const node = this.story?.current
+      const activity = node?.takes === minutes ? node.activity : undefined
+      // Merge with the previous entry when one beat passes time in pieces (a line, then its effects).
+      this.pendingPass.push({ minutes, ...(activity ? { activity } : {}) })
+    }
     this.world.onRandom = (d, result) =>
       this.entries.push({
         kind: 'dice',
@@ -78,6 +89,7 @@ export class PlaySession {
     this.beat = this.step(() => this.story.start())
   }
 
+  private pendingPass: { minutes: number; activity?: string }[] = []
   private replayPicks: number[] | null = null
   private replayIndex = 0
 
@@ -111,6 +123,8 @@ export class PlaySession {
         text: label(target),
         available: index !== undefined,
         ...(index !== undefined ? { index } : {}),
+        ...(target?.takes ? { takes: target.takes } : {}),
+        ...(target?.activity ? { activity: target.activity } : {}),
         ...(target?.requires?.source ? { requires: target.requires.source } : target?.requires ? { requires: '(requirement)' } : {})
       }
     })
@@ -172,6 +186,9 @@ export class PlaySession {
       this.entries.push({ kind: 'note', text: err instanceof Error ? err.message : String(err) })
       return { kind: 'end', node: this.story.current }
     }
+    // Spoken lines take seconds; only time worth noticing goes in the transcript (the clock shows the rest).
+    for (const p of this.pendingPass) if (p.minutes >= 1 || p.activity) this.entries.push({ kind: 'pass', ...p, clock: clockText(this.world) })
+    this.pendingPass = []
     for (const line of this.world.log) {
       if (line.startsWith('Time')) this.entries.push({ kind: 'time', text: line.replace(/^Time → /, '') })
       else this.entries.push({ kind: 'rule', text: line })
@@ -221,4 +238,11 @@ export function formatValue(v: ExportValue): string {
   if (v === null) return '—'
   if (typeof v === 'string') return v === '' ? '""' : v
   return String(v)
+}
+
+/** "Day 2 · Night · 22:40". */
+export function clockText(w: SkeinWorld): string {
+  const t = w.clock
+  const phase = w.phase ? ` · ${w.data.state.time.labels[w.phaseIndex] ?? w.phase}` : ''
+  return `Day ${w.day}${phase} · ${String(t.hour).padStart(2, '0')}:${String(t.minute).padStart(2, '0')}`
 }

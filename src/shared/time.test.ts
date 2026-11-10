@@ -9,6 +9,7 @@ import type { Project } from './schema'
 /** One flow: a line, then an instruction with `effects`, then an End line. The game starts at Night. */
 function project(effects: string): Project {
   const p = createEmptyProject('Time test')
+  p.state.time.speakingRate = 0 // these tests aren't about spoken time
   p.flows = {}
   const phases = Object.values(p.state.time.phases).sort((a, b) => a.order - b.order)
   p.state.time.startPhaseId = phases.find((x) => x.technicalName === 'Night')!.id
@@ -65,6 +66,6 @@ describe('advance to / advance until', () => {
 
   it('a runtime refuses a file from a newer format', () => {
     const { file } = buildExport(project(''))
-    expect(() => new SkeinWorld({ ...file, version: 3 as never })).toThrow(/version 3/)
+    expect(() => new SkeinWorld({ ...file, version: 4 as never })).toThrow(/version 4/)
   })
 })

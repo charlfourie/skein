@@ -543,6 +543,66 @@ export function setTimeStart(patch: { startDay?: number; startPhaseId?: string |
   })
 }
 
+/** The clock: a phase's length, when the day starts, when the game starts within its phase, speaking rate. */
+export function setPhaseMinutes(id: string, minutes: number | null): void {
+  edit('Edit phase length', (p) => {
+    const phase = p.state.time.phases[id]
+    if (!phase) return
+    if (minutes === null || !(minutes > 0)) delete phase.minutes
+    else if (phase.minutes !== minutes) phase.minutes = minutes
+  })
+}
+
+export function setClock(patch: { dayStart?: number | null; startMinute?: number | null; speakingRate?: number | null }): void {
+  edit('Edit clock', (p) => {
+    const t = p.state.time as Record<string, unknown>
+    for (const [k, v] of Object.entries(patch)) {
+      if (v === undefined) continue
+      if (v === null || (k !== 'speakingRate' && v === 0)) delete t[k]
+      else if (t[k] !== v) t[k] = v
+    }
+  })
+}
+
+export function addActivity(name: string, minutes: number): string | null {
+  const trimmed = name.trim()
+  if (!trimmed) return null
+  const id = newId()
+  const ok = edit('Add activity', (p) => {
+    const t = p.state.time
+    t.activities ??= {}
+    t.activities[id] = { id, name: trimmed, minutes: Math.max(0, minutes), order: nextOrder(Object.values(t.activities)) }
+  })
+  return ok ? id : null
+}
+
+export function updateActivity(id: string, patch: { name?: string; minutes?: number }): void {
+  edit('Edit activity', (p) => {
+    const a = p.state.time.activities?.[id]
+    if (!a) return
+    if (patch.name !== undefined && patch.name.trim() && a.name !== patch.name.trim()) a.name = patch.name.trim()
+    if (patch.minutes !== undefined && patch.minutes >= 0 && a.minutes !== patch.minutes) a.minutes = patch.minutes
+  })
+}
+
+/** Delete an activity; nodes that used it lose it (and take no time unless they set their own). */
+export function removeActivity(id: string): void {
+  edit('Delete activity', (p) => {
+    delete p.state.time.activities?.[id]
+    if (p.state.time.activities && !Object.keys(p.state.time.activities).length) delete p.state.time.activities
+    for (const f of Object.values(p.flows)) for (const n of Object.values(f.nodes)) if (n.data.activityId === id) delete n.data.activityId
+  })
+}
+
+export function reorderActivities(orderedIds: string[]): void {
+  edit('Reorder activities', (p) => {
+    orderedIds.forEach((id, index) => {
+      const a = p.state.time.activities?.[id]
+      if (a && a.order !== index) a.order = index
+    })
+  })
+}
+
 export function addRule(): string | null {
   const id = newId()
   const ok = edit('Add rule', (p) => {

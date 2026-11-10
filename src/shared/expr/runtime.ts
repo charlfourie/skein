@@ -1,4 +1,5 @@
 import type { Project } from '../schema'
+import { clockOf, timeOfDay } from '../time'
 import { defaultOf, effectiveValue } from '../values'
 import { compile, getEnv, type Bound, type BoundStatement, type StateRef, type Value } from './check'
 
@@ -15,12 +16,14 @@ export interface WorldState {
   day: number
   /** Index into the ordered phase list. */
   phase: number
+  /** Minutes into the current phase. */
+  minute: number
 }
 
 export function initialState(project: Project): WorldState {
   const env = getEnv(project)
   const start = env.phases.findIndex((p) => p.id === project.state.time.startPhaseId)
-  return { changes: new Map(), day: project.state.time.startDay, phase: Math.max(0, start) }
+  return { changes: new Map(), day: project.state.time.startDay, phase: Math.max(0, start), minute: project.state.time.startMinute ?? 0 }
 }
 
 function key(ref: StateRef, self: string | null): string {
@@ -79,7 +82,10 @@ export interface RunContext {
 export function read(ctx: RunContext, ref: StateRef): Value {
   if (ref.kind === 'time') {
     const env = getEnv(ctx.project)
-    return ref.field === 'day' ? ctx.state.day : (env.phases[ctx.state.phase]?.id ?? null)
+    if (ref.field === 'day') return ctx.state.day
+    if (ref.field === 'phase') return env.phases[ctx.state.phase]?.id ?? null
+    const t = timeOfDay(clockOf(ctx.project), ctx.state.phase, ctx.state.minute)
+    return ref.field === 'hour' ? t.hour : t.minute
   }
   const k = key(ref, ctx.self ?? null)
   return ctx.state.changes.has(k) ? (ctx.state.changes.get(k) as Value) : startingValue(ctx.project, ref, ctx.self ?? null)
@@ -178,6 +184,10 @@ export function execute(ctx: RunContext, statements: BoundStatement[], log?: Exe
       advanceTime(ctx, s.count, s.toPhaseId, log, s.stay)
       continue
     }
+    if (s.k === 'pass') {
+      passTime(ctx, s.minutes, log)
+      continue
+    }
     const value = evaluate(ctx, s.value)
     if (s.op === '=') write(ctx, s.ref, value)
     else {
@@ -209,6 +219,7 @@ export function advanceTime(ctx: RunContext, count: number, toPhaseId?: string, 
   }
   for (let i = 0; i < steps; i++) {
     ctx.state.phase = (ctx.state.phase + 1) % n
+    ctx.state.minute = 0
     const newDay = ctx.state.phase === 0
     if (newDay) ctx.state.day += 1
     const phaseId = env.phases[ctx.state.phase].id
@@ -220,6 +231,22 @@ export function advanceTime(ctx: RunContext, count: number, toPhaseId?: string, 
         runRule(ctx, rule.id, log)
       }
     }
+  }
+}
+
+/** Let minutes go by, beginning the next phase (with its rules) each time one runs out. */
+export function passTime(ctx: RunContext, minutes: number, log?: ExecuteLog): void {
+  const lengths = clockOf(ctx.project).lengths
+  if (!lengths.length) return
+  let left = minutes
+  for (let guard = 0; guard < 100000 && left > 0; guard++) {
+    const rest = (lengths[ctx.state.phase] ?? 1) - ctx.state.minute
+    if (left < rest) {
+      ctx.state.minute += left
+      return
+    }
+    left -= rest
+    advanceTime(ctx, 1, undefined, log)
   }
 }
 

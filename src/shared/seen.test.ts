@@ -13,6 +13,7 @@ import { validateProject } from './validate'
  */
 function project(): Project {
   const p = createEmptyProject('Seen test')
+  p.state.time.speakingRate = 0 // these tests aren't about spoken time
   p.flows = {}
   const v = { ...createStateVariable('v1', 'World', 'Ticks', 'Ticks', 'number', 0), defaultValue: 0 }
   p.state.variables[v.id] = v

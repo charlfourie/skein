@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { AlertTriangle, XCircle } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
 import type { Issue } from '@shared/validate'
+import { formatDuration, parseDuration } from '@shared/time'
 import { cx } from '../../lib/cx'
 
 /**
@@ -284,5 +285,84 @@ export function IssueList({ issues }: { issues: Issue[] }) {
         </motion.li>
       ))}
     </ul>
+  )
+}
+
+/**
+ * A length of time typed the way people say it: "45m", "2h", "1h 30m", "90"
+ * (minutes). Shown back tidied ("1h 30m"). Empty commits null when allowed.
+ */
+export function DurationInput({
+  value,
+  onCommit,
+  placeholder,
+  allowEmpty,
+  className
+}: {
+  value: number | null
+  onCommit(minutes: number | null): void
+  placeholder?: string
+  allowEmpty?: boolean
+  className?: string
+}) {
+  const shown = value === null ? '' : formatDuration(value)
+  const [draft, setDraft] = useState(shown)
+  const [bad, setBad] = useState(false)
+  useEffect(() => setDraft(shown), [shown])
+  const commit = () => {
+    if (!draft.trim()) {
+      setBad(false)
+      if (allowEmpty) {
+        if (value !== null) onCommit(null)
+      } else setDraft(shown)
+      return
+    }
+    const m = parseDuration(draft)
+    if (m === null) {
+      setBad(true)
+      return
+    }
+    setBad(false)
+    if (m !== value) onCommit(m)
+    setDraft(formatDuration(m))
+  }
+  return (
+    <input
+      value={draft}
+      placeholder={placeholder}
+      title="e.g. 45m, 2h, 1h 30m"
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={commit}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') e.currentTarget.blur()
+        if (e.key === 'Escape') {
+          setDraft(shown)
+          setBad(false)
+        }
+      }}
+      className={cx(inputClass, 'tabular-nums', bad && 'border-danger/70 focus:border-danger focus:ring-danger/25', className)}
+    />
+  )
+}
+
+/** A time of day, "05:30", stored as minutes after midnight. */
+export function ClockInput({ value, onCommit }: { value: number; onCommit(minutes: number): void }) {
+  const shown = `${String(Math.floor(value / 60)).padStart(2, '0')}:${String(Math.round(value % 60)).padStart(2, '0')}`
+  const [draft, setDraft] = useState(shown)
+  useEffect(() => setDraft(shown), [shown])
+  const commit = () => {
+    const m = /^(\d{1,2})(?::(\d{2}))?$/.exec(draft.trim())
+    if (!m || Number(m[1]) > 23 || Number(m[2] ?? 0) > 59) return setDraft(shown)
+    const minutes = Number(m[1]) * 60 + Number(m[2] ?? 0)
+    if (minutes !== value) onCommit(minutes)
+  }
+  return (
+    <input
+      value={draft}
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={commit}
+      onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+      className={cx(inputClass, 'tabular-nums')}
+    />
   )
 }

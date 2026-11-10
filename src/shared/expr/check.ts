@@ -22,7 +22,7 @@ export type StateRef =
   | { kind: 'world'; varId: string }
   | { kind: 'prop'; entity: string; propId: string }
   | { kind: 'rel'; relId: string; from: string; to: string }
-  | { kind: 'time'; field: 'day' | 'phase' }
+  | { kind: 'time'; field: 'day' | 'phase' | 'hour' | 'minute' }
   /** How many times the story has entered a tagged node (Visits.Tag; Seen.Tag is Visits.Tag > 0). */
   | { kind: 'visit'; nodeId: string }
 
@@ -40,6 +40,8 @@ export type Bound =
 export type BoundStatement =
   | { k: 'set'; ref: StateRef; op: '=' | '+=' | '-='; value: Bound }
   | { k: 'advance'; count: number; toPhaseId?: string; /** `advance until`: do nothing if already in that phase. */ stay?: true }
+  /** `pass 45m`: let minutes go by on the clock. */
+  | { k: 'pass'; minutes: number }
 
 export type Mode = 'condition' | 'action'
 
@@ -296,7 +298,9 @@ class Checker {
     if (head.name === 'Time') {
       if (member.name === 'Day') return { ref: { kind: 'time', field: 'day' }, type: { t: 'number', integer: true }, writable: false, readonlyReason: 'time', label: 'Time.Day' }
       if (member.name === 'Phase') return { ref: { kind: 'time', field: 'phase' }, type: this.env.phaseType, writable: false, readonlyReason: 'time', label: 'Time.Phase' }
-      throw new CheckError(`Time has “Day” and “Phase”.${suggest(member.name, ['Day', 'Phase'])}`, member.start, member.end)
+      if (member.name === 'Hour') return { ref: { kind: 'time', field: 'hour' }, type: { t: 'number', integer: true }, writable: false, readonlyReason: 'time', label: 'Time.Hour' }
+      if (member.name === 'Minute') return { ref: { kind: 'time', field: 'minute' }, type: { t: 'number', integer: true }, writable: false, readonlyReason: 'time', label: 'Time.Minute' }
+      throw new CheckError(`Time has “Day”, “Phase”, “Hour” and “Minute”.${suggest(member.name, ['Day', 'Phase', 'Hour', 'Minute'])}`, member.start, member.end)
     }
 
     // World variable: Namespace.Name (namespaces win over entity names)
@@ -468,6 +472,11 @@ class Checker {
   }
 
   statement(s: Statement): BoundStatement {
+    if (s.kind === 'pass') {
+      if (this.ctx.allowAdvance === false) throw new CheckError('Rules can’t pass time (that would trigger more rules).', s.start, s.end)
+      this.refs.push({ kind: 'time', field: 'phase' })
+      return { k: 'pass', minutes: s.minutes }
+    }
     if (s.kind === 'advance') {
       if (this.ctx.allowAdvance === false) throw new CheckError('Rules can’t advance time (that would trigger more rules).', s.start, s.end)
       if (s.toPhase) {
@@ -488,7 +497,7 @@ class Checker {
     if (!target.writable) {
       const msg =
         target.readonlyReason === 'time'
-          ? 'Time can’t be set directly; use “advance”, “advance 2” or “advance to Night”.'
+          ? 'Time can’t be set directly; use “pass 30m”, “advance”, or “advance until Night”.'
           : target.readonlyReason === 'visit'
             ? `${target.label} counts itself: the story adds one each time it enters that node.`
           : `${target.label} is fixed design data. Mark the property as “Changes during play” in the ${target.readonlyReason?.slice(5) || ''} template to change it.`

@@ -4,22 +4,28 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { stateUsage } from '@shared/expr/usage'
 import { PROPERTY_TYPES, type Project, type PropertyType, type Rule } from '@shared/schema'
 import type { Issue } from '@shared/validate'
+import { clockOf, formatClock, formatDuration, MINUTES_PER_DAY, timeOfDay } from '@shared/time'
 import { useIssues } from '../../hooks/useIssues'
 import { cx } from '../../lib/cx'
 import { PROPERTY_TYPE_META, templateIcon } from '../../lib/meta'
 import { compareOrder } from '../../lib/tree'
 import {
+  addActivity,
   addPhase,
   addRelationship,
   addRule,
   addStateVariable,
+  removeActivity,
   removePhase,
   removeRule,
   renamePhase,
   reorderDefs,
   reorderPhases,
   reorderRules,
+  setClock,
+  setPhaseMinutes,
   setTimeStart,
+  updateActivity,
   updateDef,
   updateRule,
   type DefScope
@@ -28,7 +34,7 @@ import { useProjectStore, type StateDocId } from '../../store/projectStore'
 import { DefCard } from '../defs/DefCard'
 import { ExpressionField } from '../defs/ExpressionField'
 import { Button } from '../ui/Button'
-import { FieldLabel, IssueList, NumberInput, Select, TextInput, Toggle } from '../ui/fields'
+import { ClockInput, DurationInput, FieldLabel, IssueList, NumberInput, Select, TextInput, Toggle } from '../ui/fields'
 import { IconButton } from '../ui/IconButton'
 import { MenuItem, Popover, usePopover } from '../ui/Popover'
 import { DocHeader } from '../workspace/DocHeader'
@@ -323,6 +329,10 @@ function TimeAndRules({ project }: { project: Project }) {
   const ruleOrder = useOrder(rules, reorderRules)
   const [draft, setDraft] = useState('')
   const [expanded, setExpanded] = useState<string | null>(null)
+  const clock = clockOf(project)
+  const dayLength = clock.lengths.reduce((n, m) => n + m, 0)
+  // Phases by order, so their times of day line up with the chips.
+  const phaseStarts = phaseOrder.order.map((_, i) => formatClock(timeOfDay(clock, i, 0)))
 
   return (
     <>
@@ -338,6 +348,9 @@ function TimeAndRules({ project }: { project: Project }) {
                 id={id}
                 label={phase.label}
                 technicalName={phase.technicalName}
+                minutes={clock.lengths[i] ?? null}
+                setLength={typeof phase.minutes === 'number'}
+                onLength={(m) => setPhaseMinutes(id, m)}
                 index={i}
                 isStart={time.startPhaseId === id}
                 onRename={(l) => renamePhase(id, l)}
@@ -371,9 +384,21 @@ function TimeAndRules({ project }: { project: Project }) {
             Add
           </Button>
         </div>
+        <div className="mt-3 flex flex-wrap items-end gap-3">
+          <div className="w-28">
+            <FieldLabel label="Day starts at">
+              <ClockInput value={time.dayStart ?? 0} onCommit={(m) => setClock({ dayStart: m })} />
+            </FieldLabel>
+          </div>
+          <p className={cx('pb-2 text-2xs', Math.round(dayLength) === MINUTES_PER_DAY ? 'text-faint' : 'text-warn')}>
+            {phaseOrder.order.map((id, i) => `${time.phases[id]?.label} ${phaseStarts[i]}`).join(' · ')} · a day is {formatDuration(dayLength)}
+          </p>
+        </div>
         <p className="mt-2 text-2xs text-faint">
+          Each phase lasts its length, then the next begins (and its rules run). Lines, activities and <code className="text-muted">pass 30m</code> use up time.
           Drag to reorder. After the last phase, a new day begins. In expressions: <code className="text-muted">Time.Phase is Night</code>,{' '}
-          <code className="text-muted">Time.Phase &gt;= Dusk</code>, <code className="text-muted">Time.Day &gt;= 3</code>; in actions:{' '}
+          <code className="text-muted">Time.Phase &gt;= Dusk</code>, <code className="text-muted">Time.Day &gt;= 3</code>, <code className="text-muted">Time.Hour &gt;= 22</code>; in actions:{' '}
+          <code className="text-muted">pass 45m</code>,{' '}
           <code className="text-muted">advance</code>, <code className="text-muted">advance 2</code>, <code className="text-muted">advance until Night</code> (stays if it’s already Night),{' '}
           <code className="text-muted">advance to Night</code> (always moves on: from Night, that’s the next Night).
         </p>
@@ -391,7 +416,14 @@ function TimeAndRules({ project }: { project: Project }) {
             <Select value={time.startPhaseId} options={phases.map((p) => ({ value: p.id, label: p.label }))} onChange={(v) => setTimeStart({ startPhaseId: v })} />
           </FieldLabel>
         </div>
+        <div className="w-28">
+          <FieldLabel label="and into it">
+            <DurationInput value={time.startMinute ?? 0} onCommit={(m) => setClock({ startMinute: m })} />
+          </FieldLabel>
+        </div>
       </div>
+
+      <Activities project={project} />
 
       <SectionHead
         title={`Rules · ${rules.length}`}
@@ -438,10 +470,74 @@ function TimeAndRules({ project }: { project: Project }) {
   )
 }
 
+/** Named activities: things that take time. Nodes pick one in their inspector. */
+function Activities({ project }: { project: Project }) {
+  const time = project.state.time
+  const list = useMemo(() => Object.values(time.activities ?? {}).sort((a, b) => a.order - b.order), [time.activities])
+  const [name, setName] = useState('')
+  const [minutes, setMinutes] = useState<number | null>(30)
+  const add = () => {
+    if (addActivity(name, minutes ?? 0)) setName('')
+  }
+  return (
+    <>
+      <SectionHead title={`Activities · ${list.length}`} />
+      <div className="rounded-xl border border-line bg-panel/60 p-3">
+        <p className="mb-2 text-2xs text-faint">
+          Things that take time. Give a node an activity in its inspector and the clock moves on by that much when the story gets there. Choices show
+          what they cost.
+        </p>
+        <div className="flex flex-col gap-1">
+          {list.map((a) => {
+            const used = Object.values(project.flows).reduce((n, f) => n + Object.values(f.nodes).filter((x) => x.data.activityId === a.id).length, 0)
+            return (
+              <div key={a.id} className="group flex items-center gap-2">
+                <div className="min-w-0 flex-1">
+                  <TextInput value={a.name} required onCommit={(v) => updateActivity(a.id, { name: v })} className="py-1 text-xs" />
+                </div>
+                <div className="w-24">
+                  <DurationInput value={a.minutes} onCommit={(m) => m !== null && updateActivity(a.id, { minutes: m })} className="py-1 text-xs" />
+                </div>
+                <span className="w-14 text-right text-2xs text-faint">{used === 1 ? '1 node' : `${used} nodes`}</span>
+                <IconButton size="sm" tone="danger" icon={X} label={`Delete ${a.name}`} onClick={() => removeActivity(a.id)} className="opacity-0 group-hover:opacity-100" />
+              </div>
+            )
+          })}
+        </div>
+        <div className="mt-2 flex gap-1.5">
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && add()}
+            placeholder="Add an activity (e.g. Repair the radio)"
+            className="w-full rounded-md border border-dashed border-line bg-transparent px-2 py-1.5 text-fg outline-none placeholder:text-faint focus:border-accent"
+          />
+          <div className="w-24 shrink-0">
+            <DurationInput value={minutes} onCommit={setMinutes} />
+          </div>
+          <Button icon={Plus} disabled={!name.trim()} onClick={add}>
+            Add
+          </Button>
+        </div>
+        <div className="mt-3 flex items-center gap-2 border-t border-line/60 pt-3">
+          <span className="text-xs text-muted">Spoken lines take time:</span>
+          <div className="w-20">
+            <NumberInput value={time.speakingRate ?? 0} onCommit={(v) => setClock({ speakingRate: v === null ? null : Math.max(0, Math.round(v)) })} />
+          </div>
+          <span className="text-2xs text-faint">words a minute (about 150 is natural speech; 0 means lines take no time)</span>
+        </div>
+      </div>
+    </>
+  )
+}
+
 function PhaseChip({
   id,
   label,
   technicalName,
+  minutes,
+  setLength,
+  onLength,
   index,
   isStart,
   onRename,
@@ -451,6 +547,10 @@ function PhaseChip({
   id: string
   label: string
   technicalName: string
+  minutes: number | null
+  /** The length is set on this phase (not shared out from what's left). */
+  setLength: boolean
+  onLength(minutes: number | null): void
   index: number
   isStart: boolean
   onRename(l: string): void
@@ -475,6 +575,15 @@ function PhaseChip({
       <span className="text-[10px] tabular-nums text-faint">{index + 1}</span>
       <div className="w-24">
         <TextInput value={label} required onCommit={onRename} className="border-transparent bg-transparent px-1 py-0.5 text-xs hover:border-line" />
+      </div>
+      <div className="w-16" title={setLength ? 'How long this phase lasts' : 'Shares what is left of 24 hours. Type a length to set it.'}>
+        <DurationInput
+          value={setLength ? minutes : null}
+          placeholder={minutes !== null ? formatDuration(minutes) : ''}
+          allowEmpty
+          onCommit={onLength}
+          className="border-transparent bg-transparent px-1 py-0.5 text-2xs text-muted hover:border-line"
+        />
       </div>
       {isStart && (
         <span title="The game starts in this phase" className="text-ok">

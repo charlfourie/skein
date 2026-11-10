@@ -15,6 +15,7 @@ import { validateProject } from '@shared/validate'
  */
 function project(): Project {
   const p = createEmptyProject('Dice test')
+  p.state.time.speakingRate = 0 // these tests aren't about spoken time
   p.flows = {}
   const die = { ...createStateVariable('v1', 'World', 'Die', 'Die', 'number', 0), defaultValue: 0 }
   p.state.variables[die.id] = die

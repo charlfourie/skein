@@ -10,6 +10,7 @@ import { templateIcon } from '../../lib/meta'
 import { GENERIC_META, NODE_META, useFlowContext } from './flowMeta'
 import { usePlayMark } from '../../store/play'
 import { ExprText } from '../defs/ExprText'
+import { formatDuration, nodeTakes } from '@shared/time'
 import { useProjectStore } from '../../store/projectStore'
 
 export interface NarrativeNodeData extends Record<string, unknown> {
@@ -18,6 +19,8 @@ export interface NarrativeNodeData extends Record<string, unknown> {
   jumpTarget: string | null
   /** Jump hand-off or Play flow: the other flow. */
   otherFlow: { id: string; name: string } | null
+  /** Time the story spends here. */
+  takes: ReturnType<typeof nodeTakes>
   warn: boolean
   error: boolean
   loopJump: boolean
@@ -125,6 +128,14 @@ export const NarrativeNode = memo(function NarrativeNode({ id, data, selected }:
             title={data.startRank ? `Start node, priority ${data.startRank}: the first start whose requirement holds is used` : 'Start node'}
           >
             <Play size={9} fill="currentColor" /> START{data.startRank ? ` ${data.startRank}` : ''}
+          </span>
+        )}
+        {data.takes && (data.takes.source !== 'speech' || data.takes.minutes >= 1) && (
+          <span
+            className="shrink-0 rounded bg-loop/15 px-1 py-px text-[10px] font-semibold text-loop"
+            title={data.takes.activity ? `${data.takes.activity}: takes ${formatDuration(data.takes.minutes)}` : `Takes ${formatDuration(data.takes.minutes)}`}
+          >
+            ◷ {formatDuration(data.takes.minutes)}
           </span>
         )}
         {node.data.once === true && (

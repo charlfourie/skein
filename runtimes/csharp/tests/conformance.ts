@@ -67,7 +67,15 @@ function synth(seed: number): ExportFile {
     { get: 'prop', entity: self(), prop: 'Title' },
     { get: 'rel', rel: 'Character->Character.Trust', from: self(), to: self() },
     { get: 'rel', rel: 'Character->Faction.Loyal', from: self(), to: pick(factions) },
-    ...(writable ? [] : [{ get: 'time', field: 'day' } as StatePath, { get: 'time', field: 'phase' } as StatePath, { get: 'visit', node: pick(allNodeIds) } as StatePath])
+    ...(writable
+      ? []
+      : [
+          { get: 'time', field: 'day' } as StatePath,
+          { get: 'time', field: 'phase' } as StatePath,
+          { get: 'time', field: 'hour' } as StatePath,
+          { get: 'time', field: 'minute' } as StatePath,
+          { get: 'visit', node: pick(allNodeIds) } as StatePath
+        ])
   ]
   const ops = ['and', 'or', '==', '!=', '<', '<=', '>', '>=', 'phase<', 'phase<=', 'phase>', 'phase>=', '+', '-', '*', '/'] as const
   const expr = (depth: number): ExprNode => {
@@ -84,6 +92,7 @@ function synth(seed: number): ExportFile {
     const roll = r()
     if (allowTime && roll < 0.08) return { advance: 1 + int(3) }
     if (allowTime && roll < 0.14) return { advanceTo: pick([...phases, 'Nope']), ...(r() < 0.5 ? { stay: true as const } : {}) }
+    if (allowTime && roll < 0.2) return { pass: pick([1 / 60, 0.5, 7, 45, 125.25, 600, 1500]) }
     return { set: pick(paths(true)), op: pick(['=', '+=', '-='] as const), value: expr(2) }
   }
   const effects = (n: number, allowTime: boolean) => ({ do: Array.from({ length: n }, () => statement(allowTime)) })
@@ -104,7 +113,8 @@ function synth(seed: number): ExportFile {
         ...(counted && r() < 0.4
           ? { requires: { expr: r() < 0.5 ? { op: '==', a: { get: 'visit', node: id }, b: { lit: 0 } } : { op: 'and', a: { op: '<', a: { get: 'visit', node: id }, b: { lit: 2 } }, b: expr(2) } } as ExportNode['requires'] }
           : r() < 0.25 ? { requires: { expr: expr(2) } } : {}),
-        ...(r() < 0.3 ? { effects: effects(1 + int(2), r() < 0.3) } : {})
+        ...(r() < 0.3 ? { effects: effects(1 + int(2), r() < 0.3) } : {}),
+        ...(r() < 0.35 ? { takes: pick([4 / 60, 0.1, 3, 20, 90, 240.5, 700]) } : {})
       }
       const t = r()
       if (t < 0.45)
@@ -134,7 +144,7 @@ function synth(seed: number): ExportFile {
 
   return {
     format: 'skein.export',
-    version: 2,
+    version: 3,
     project: { id: hex(), name: `Synthetic ${seed}` },
     templates: {
       Character: {
@@ -165,7 +175,14 @@ function synth(seed: number): ExportFile {
         },
         'Character->Faction.Loyal': { name: 'Loyal', from: 'Character', to: 'Faction', type: 'boolean', default: false, values: { Fisher: { Guild: true } } }
       },
-      time: { phases, labels: phases, start: { day: 1, phase: pick(phases) } },
+      // v3 clock: uneven phase lengths (sometimes absent: the even split), a day start, a start minute.
+      time: {
+        phases,
+        labels: phases,
+        start: { day: 1, phase: pick(phases), ...(r() < 0.5 ? { minute: int(90) + 0.25 } : {}) },
+        ...(r() < 0.8 ? { minutes: phases.map(() => 30 + int(600) + (r() < 0.3 ? 0.5 : 0)) } : {}),
+        ...(r() < 0.8 ? { dayStart: int(1440) } : {})
+      },
       rules
     },
     flows
@@ -209,7 +226,7 @@ function trace(file: ExportFile): string {
       const self = selves[i % selves.length] ?? undefined
       world.execute(s, self)
       const vals = conds.map((c, j) => json(world.evaluate(c, selves[j % selves.length] ?? undefined)))
-      lines.push(`S${i} day=${world.day} phase=${world.phase ?? '-'} ${vals.join(',')}`)
+      lines.push(`S${i} day=${world.day} phase=${world.phase ?? '-'} s=${world.seconds} ${vals.join(',')}`)
     })
     lines.push(`SAVE ${json(world.save())}`)
     lines.push(...world.log.map((l) => `LOG ${l}`))
@@ -224,7 +241,7 @@ function trace(file: ExportFile): string {
         const story = new SkeinStory(world, flowId)
         let beat = story.start()
         for (let step = 0; step < 40; step++) {
-          lines.push(`${beatLine(beat)} playing=${world.playing ?? '-'} flow=${story.flow.id} depth=${story.calls.length}`)
+          lines.push(`${beatLine(beat)} playing=${world.playing ?? '-'} flow=${story.flow.id} depth=${story.calls.length} t=${world.day}/${world.phase ?? '-'}/${world.seconds}/${world.clock.hour}:${world.clock.minute}`)
           if (beat.kind === 'end') break
           if ((step + seed) % 3 === 0) world.advance(1 + (seed % 2))
           const n = beat.choices.length
@@ -243,6 +260,15 @@ function trace(file: ExportFile): string {
     for (const s of stmts.slice(0, 20)) a.execute(s)
     const b = new SkeinWorld(file, JSON.parse(JSON.stringify(a.save())))
     lines.push(`RESTORE ${json(b.save()) === json(a.save())} ${conds.map((c) => json(b.evaluate(c))).join(',')}`)
+  }
+
+  // 4. The clock at a phase's exact end, a minute short of it, and across several days.
+  for (const back of [0, 1]) {
+    const w = new SkeinWorld(file)
+    w.pass((w.phaseSeconds(w.phaseIndex) - w.seconds) / 60 - back)
+    lines.push(`EDGE${back} ${w.day} ${w.phase ?? '-'} ${w.seconds} ${w.clock.hour}:${w.clock.minute}`)
+    w.pass(3 * 1440 + 17.5)
+    lines.push(`DAYS${back} ${w.day} ${w.phase ?? '-'} ${w.seconds} ${w.clock.hour}:${w.clock.minute}`)
   }
   return lines.join('\n') + '\n'
 }

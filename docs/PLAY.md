@@ -14,6 +14,8 @@ C# port in `runtimes/csharp`), so what you see is what the game will do.
 - **Changed since the start** lists every value that differs from the starting
   state. The transcript records lines, picks, every state change, time passing
   and each rule that ran.
+- The header shows the day, phase and time of day. Choices show what they cost
+  (◷ 2h), and the transcript logs time passing and the activity that took it.
 - **Advance time** (the clock button) moves on one phase, as a game clock would.
 - Every `chance()` and `roll()` shows in the transcript with how it came out. Dice
   roll from the seed in **Start state**, so the same seed replays the same story.

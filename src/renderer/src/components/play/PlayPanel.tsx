@@ -1,4 +1,5 @@
 import { ExprText } from '../defs/ExprText'
+import { formatDuration } from '@shared/time'
 import { motion } from 'framer-motion'
 import { AlertTriangle, ArrowRightCircle, Clock, Crosshair, Flag, Lock, Play, RotateCcw, X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -7,7 +8,7 @@ import type { ExportFile } from '@shared/export/types'
 import type { PathExample } from '@shared/play/explore'
 import type { Project } from '@shared/schema'
 import { cx } from '../../lib/cx'
-import { formatValue, PlaySession, type PlayEntry } from '../../lib/playSession'
+import { formatValue, PlaySession, type PlayEntry, clockText } from '../../lib/playSession'
 import { usePlay } from '../../store/play'
 import { useProjectStore } from '../../store/projectStore'
 import { Button } from '../ui/Button'
@@ -153,7 +154,7 @@ function PlayTab({
   const options = session.options()
   const stale = session.file !== build
   const w = session.world
-  const time = `Day ${w.day}${w.phase ? ` · ${w.data.state.time.labels[w.phaseIndex] ?? w.phase}` : ''}`
+  const time = clockText(w)
   const changed = session.changed()
   const endEntry = session.ended ? [...session.entries].reverse().find((e): e is Extract<PlayEntry, { kind: 'end' }> => e.kind === 'end') : undefined
   const transcriptEnd = useRef<HTMLDivElement>(null)
@@ -268,6 +269,11 @@ function PlayTab({
                   >
                     <span className="mt-px grid h-4 w-4 shrink-0 place-items-center rounded bg-raised text-[10px] font-semibold tabular-nums text-muted group-hover:text-accent">{key}</span>
                     <span className="min-w-0 flex-1">{o.text}</span>
+                    {o.takes ? (
+                      <span className="shrink-0 whitespace-nowrap text-2xs text-loop" title={o.activity ? `${o.activity}: takes ${formatDuration(o.takes)}` : `Takes ${formatDuration(o.takes)}`}>
+                        ◷ {formatDuration(o.takes)}
+                      </span>
+                    ) : null}
                   </button>
                 ) : (
                   <div key={o.nodeId} className="flex items-start gap-2 rounded-md border border-dashed border-line px-2.5 py-1.5 text-xs text-faint" title="Not offered right now">
@@ -385,6 +391,13 @@ function TranscriptLine({ entry: e, onFocus }: { entry: PlayEntry; onFocus(id: s
       return <p className={cx('px-1 text-2xs', e.marked ? 'text-muted' : 'text-warn')}>■ {e.marked ? 'End' : 'Stopped (not marked End)'}</p>
     case 'note':
       return <p className="px-1 text-2xs text-accent">{e.text}</p>
+    case 'pass':
+      return (
+        <p className="px-1 text-2xs text-loop">
+          ◷ {formatDuration(e.minutes)}
+          {e.activity ? ` · ${e.activity}` : ''} <span className="text-faint">→ {e.clock}</span>
+        </p>
+      )
     case 'dice':
       return <p className="px-1 text-2xs text-accent">🎲 {e.text}</p>
     case 'warn':

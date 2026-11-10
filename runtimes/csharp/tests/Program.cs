@@ -47,7 +47,7 @@ static class Program
             {
                 world.Execute(stmts[i], selves[i % selves.Count]);
                 var vals = conds.Select((c, j) => J(world.Evaluate(c, selves[j % selves.Count])));
-                lines.Add($"S{i} day={world.Day} phase={world.Phase ?? "-"} {string.Join(",", vals)}");
+                lines.Add($"S{i} day={world.Day} phase={world.Phase ?? "-"} s={world.Seconds} {string.Join(",", vals)}");
             }
             lines.Add("SAVE " + world.Save().ToJson());
             lines.AddRange(world.Log.Select(l => "LOG " + l));
@@ -65,7 +65,7 @@ static class Program
                     var beat = story.Start();
                     for (int step = 0; step < 40; step++)
                     {
-                        lines.Add($"{BeatLine(beat)} playing={world.Playing ?? "-"} flow={story.Flow.Id} depth={story.CallDepth}");
+                        lines.Add($"{BeatLine(beat)} playing={world.Playing ?? "-"} flow={story.Flow.Id} depth={story.CallDepth} t={world.Day}/{world.Phase ?? "-"}/{world.Seconds}/{world.Clock().hour}:{world.Clock().minute}");
                         if (beat.Kind == SkeinBeatKind.End) break;
                         if ((step + seed) % 3 == 0) world.Advance(1 + (seed % 2));
                         int n = beat.Choices.Count;
@@ -86,6 +86,15 @@ static class Program
             var b = new SkeinWorld(data, SkeinSave.FromJson(a.Save().ToJson()));
             var same = b.Save().ToJson() == a.Save().ToJson();
             lines.Add($"RESTORE {(same ? "true" : "false")} {string.Join(",", conds.Select(c => J(b.Evaluate(c))))}");
+        }
+
+        foreach (var back in new[] { 0, 1 })
+        {
+            var w = new SkeinWorld(data);
+            w.Pass((w.PhaseSeconds(w.PhaseIndex) - w.Seconds) / 60.0 - back);
+            lines.Add($"EDGE{back} {w.Day} {w.Phase ?? "-"} {w.Seconds} {w.Clock().hour}:{w.Clock().minute}");
+            w.Pass(3 * 1440 + 17.5);
+            lines.Add($"DAYS{back} {w.Day} {w.Phase ?? "-"} {w.Seconds} {w.Clock().hour}:{w.Clock().minute}");
         }
         return string.Join("\n", lines) + "\n";
     }

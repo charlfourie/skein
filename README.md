@@ -141,7 +141,16 @@ advance until Night                 # make it Night (stays put if it already is)
 advance to Night                    # the next Night: a whole day on if it's Night now
 World.Weather = roll(1, 3)          # dice: a whole number from 1 to 3
 World.Lucky = chance(30)            # true 30% of the time
+pass 1h 30m                         # let time go by (rolls into the next phase as needed)
+Time.Hour >= 22                     # the time of day: Time.Hour, Time.Minute
 ```
+
+**Time passes by itself.** Each phase has a length (Night = 9h) and the day starts at a
+time you set. Activities take time: name them in **Time & rules** ("Repair the radio:
+2h") and give a node an activity, or type how long it takes. Spoken lines take as long
+as they take to say, at a speaking rate you choose. When time runs past the end of a
+phase, the next one begins and its rules run. Play shows the clock and what each choice
+costs, and the canvas marks nodes that take time.
 
 Dice (`chance(30)`, `roll(1, 6)`) work in actions and in Condition nodes, where each
 visit rolls once. Requirements can't use them, since they are checked whenever choices

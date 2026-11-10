@@ -1,4 +1,4 @@
-# Skein game export — format `skein.export` v2
+# Skein game export — format `skein.export` v3
 
 **File › Export for Game Engine… (Ctrl+E)** writes a JSON file for your game. It has
 everything the game needs and nothing the editor needs. There are no canvas positions,
@@ -46,14 +46,17 @@ use a newer feature keeps loading in older runtimes.
 | 1 | Everything not listed below |
 | 2 | Visit counts (`{ "get": "visit" }`, node `count` / `tag`), flow-scoped rules (rule `flow`), `advanceTo` with `stay`, dice (`chance`, `roll`), `call` nodes and `jumpFlow` |
 
-A runtime should refuse a file whose `version` is higher than it knows.
+| 3 | The clock: node `takes` / `activity`, `{ "pass": m }`, `Time.Hour` / `Time.Minute` reads, a start `minute` |
+
+A runtime should refuse a file whose `version` is higher than it knows. (`time.minutes`
+and `time.dayStart` are written in every file; older runtimes ignore them.)
 
 ## Top level
 
 ```jsonc
 {
   "format": "skein.export",
-  "version": 2,                     // the lowest version that reads this file
+  "version": 3,                     // the lowest version that reads this file
   "project": { "id": "…", "name": "The Lighthouse Keeper" },
   "templates": { "<Template>": … },
   "entities":  { "<Entity>": … },
@@ -154,6 +157,7 @@ false. A missing condition always holds.
 | `{ "get": "prop", "entity": "Keeper", "prop": "Mood" }` | an entity property. `"entity": "$self"` means the entity a rule is running for. |
 | `{ "get": "rel", "rel": "Character->Character.Trust", "from": "Keeper", "to": "Stranger" }` | a relationship value (`$self` allowed in `from` / `to`) |
 | `{ "get": "time", "field": "day" }`, `{ "get": "time", "field": "phase" }` | day number; current phase name |
+| `{ "get": "time", "field": "hour" }`, `"minute"` | **v3.** The time of day: hour 0–23, minute 0–59 (see *The clock*) |
 | `{ "get": "visit", "node": "<node id>" }` | **v2.** How many times the story has entered that node (0 if never). Read-only. |
 | `{ "not": e }`, `{ "neg": e }` | logical not; numeric negation |
 | `{ "chance": p }` | **v2.** True `p` percent of the time (`p` a whole number, 0–100). See *Dice* below. |
@@ -179,6 +183,7 @@ one of:
 | `{ "set": <get…>, "op": "+=", "value": e }`, `"op": "-="` | numeric add / subtract |
 | `{ "advance": n }` | move time forward n phases |
 | `{ "advanceTo": "Night" }` | move forward to the next time that phase begins; always at least one phase, so from Night it moves a whole day to the next Night (`advance to Night` in Skein) |
+| `{ "pass": 45 }` | **v3.** Let that many minutes go by (see *The clock*) |
 | `{ "advanceTo": "Night", "stay": true }` | **v2.** The same, but do nothing if it is already Night (`advance until Night` in Skein) |
 
 Writing a number clamps it to the definition's `min` / `max`, and rounds it when the
@@ -206,6 +211,32 @@ roll(min, max):   min + next() mod (max - min + 1)
 
 Each `chance` or `roll` reached draws once, in evaluation order (`and` / `or`
 short-circuit, so a draw on the skipped side doesn't happen).
+
+## The clock (v3)
+
+```jsonc
+"time": {
+  "phases": ["Dawn", "Day", "Dusk", "Night"],
+  "minutes": [120, 660, 120, 540],     // how long each phase lasts
+  "dayStart": 300,                     // the first phase begins at 05:00
+  "start": { "day": 1, "phase": "Day", "minute": 30 }   // 07:30
+}
+```
+
+The world keeps **seconds into the current phase** as a whole number (start: `minute`
+× 60, rounded half up). Convert minutes to seconds as `floor(m × 60 + 0.5)` everywhere.
+
+- `pass m` adds `m` minutes. While that reaches the end of the phase, step to the next
+  phase as described under *Time and rules* (rules run) and carry on with what's left.
+- `advance`, `advance n` and `advanceTo` move to the **start** of a phase: seconds
+  become 0. `advanceTo` with `stay`, when already there, changes nothing.
+- A node with `takes` passes that many minutes when the story enters it, **before** its
+  `effects`: the activity happens, then its results apply. `takes` comes from the node's
+  activity, its own length, or (dialogue) the time to say the line. `activity` names
+  the activity, for showing what a choice costs ("Repair the radio · 2h").
+- The time of day: `total = dayStart×60 + seconds of all earlier phases today +
+  seconds`, then `hour = floor(total / 3600) mod 24`, `minute = floor(total / 60) mod 60`.
+- A file without `minutes` splits the day evenly: `floor(1440 / phases)` each.
 
 ## Time and rules
 
@@ -306,7 +337,7 @@ to continue.
 
 ## Save games
 
-Store the current day, phase, every value that changed since the start (visit counts
+Store the current day, phase, seconds into it (`seconds`), every value that changed since the start (visit counts
 are saved as `visit:<node id>`) and the dice generator's state (`rng`). The reference
 runtime's `world.save()` / `new SkeinWorld(data, saved)` does exactly this. Start a new
 game with `new SkeinWorld(data, undefined, { seed })` (C#: `new SkeinWorld(data, null, seed)`)

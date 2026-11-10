@@ -99,6 +99,12 @@ namespace Skein
         public IReadOnlyList<string> Labels = Array.Empty<string>();
         public int StartDay = 1;
         public string StartPhase;
+        /// <summary>v3: minutes into the starting phase.</summary>
+        public double StartMinute;
+        /// <summary>Minutes in each phase (null in older files: 24 hours split evenly).</summary>
+        public IReadOnlyList<double> Minutes;
+        /// <summary>Minutes after midnight when the first phase begins.</summary>
+        public double DayStart;
 
         public string LabelOf(string phase)
         {
@@ -167,6 +173,10 @@ namespace Skein
         public string JumpFlow;
         /// <summary>v2 call: the flow to play before continuing with Next.</summary>
         public string CallFlow;
+        /// <summary>v3: minutes that pass when the story enters this node (0 = none).</summary>
+        public double Takes;
+        /// <summary>v3: the node's activity name, if any.</summary>
+        public string Activity;
     }
 
     public sealed class SkeinFlow
@@ -182,7 +192,7 @@ namespace Skein
     {
         public const string Format = "skein.export";
         /// <summary>The newest format version this runtime reads (1 and 2).</summary>
-        public const int Version = 2;
+        public const int Version = 3;
 
         public string ProjectId;
         public string ProjectName;
@@ -269,7 +279,10 @@ namespace Skein
                 Phases = SkeinDef.Strings(time.Arr("phases")),
                 Labels = SkeinDef.Strings(time.Arr("labels")),
                 StartDay = (int)(start.Num("day") ?? 1),
-                StartPhase = start.Str("phase")
+                StartPhase = start.Str("phase"),
+                StartMinute = start.Num("minute") ?? 0,
+                Minutes = time.Arr("minutes")?.ConvertAll(v => v is double d ? d : 0),
+                DayStart = time.Num("dayStart") ?? 0
             };
 
             var rules = new List<SkeinRule>();
@@ -316,6 +329,8 @@ namespace Skein
                 Effects = o.Obj("effects"),
                 Count = o.Bool("count"),
                 Tag = o.Str("tag"),
+                Takes = o.Num("takes") ?? 0,
+                Activity = o.Str("activity"),
                 Next = SkeinDef.Strings(o.Arr("next"))
             };
             switch (o.Str("type"))

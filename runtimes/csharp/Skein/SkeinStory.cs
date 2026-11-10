@@ -183,6 +183,7 @@ namespace Skein
                 Current = node;
                 if (node.Count) World.CountVisit(node.Id);
                 Entered?.Invoke(node);
+                if (node.Takes > 0) World.Pass(node.Takes); // v3: the activity takes its time, then its effects apply
                 World.Run(node.Effects);
                 switch (node.Type)
                 {

@@ -11,6 +11,7 @@ import { validateProject } from './validate'
  */
 function project(strainRange = true): Project {
   const p = createEmptyProject('Meters')
+  p.state.time.speakingRate = 0 // these tests aren't about spoken time
   p.flows = {}
   const strain = { ...createStateVariable('v1', 'World', 'Strain', 'Strain', 'number', 0), defaultValue: 0, ...(strainRange ? { min: 0, max: 3 } : {}) }
   const drift = { ...createStateVariable('v2', 'World', 'Drift', 'Drift', 'number', 1), defaultValue: 0 }
