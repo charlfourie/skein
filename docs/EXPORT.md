@@ -20,6 +20,16 @@ Properties of the file:
 everything below. Use it directly in a JS/TS game, or port it. Its tests check that it
 behaves exactly like the editor.
 
+A C# port for Unity, Godot .NET and plain .NET lives in `runtimes/csharp/Skein`
+(C# 9, no dependencies), with Unity components in `runtimes/unity`. Its conformance
+harness replays the same seeded exports through both runtimes and requires
+byte-identical traces:
+
+```bash
+npx tsx runtimes/csharp/tests/conformance.ts /tmp/skein-conformance
+dotnet run --project runtimes/csharp/tests -- /tmp/skein-conformance
+```
+
 You can also export from the command line, for build pipelines:
 
 ```bash
