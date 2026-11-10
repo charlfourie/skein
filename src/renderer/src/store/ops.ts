@@ -552,13 +552,17 @@ export function addRule(): string | null {
   return ok ? id : null
 }
 
-export type RulePatch = Partial<Pick<Rule, 'name' | 'enabled' | 'trigger' | 'phaseId' | 'forEachTemplateId' | 'condition' | 'effects'>>
+export type RulePatch = Partial<Pick<Rule, 'name' | 'enabled' | 'trigger' | 'phaseId' | 'forEachTemplateId' | 'condition' | 'effects' | 'flowId'>>
 
 export function updateRule(id: string, patch: RulePatch): void {
   edit('Edit rule', (p) => {
     const rule = p.state.rules[id] as Record<string, unknown> | undefined
     if (!rule) return
-    for (const [k, v] of Object.entries(patch)) if (v !== undefined && rule[k] !== v) rule[k] = v
+    for (const [k, v] of Object.entries(patch)) {
+      // Clearing the flow scope removes the field, so unscoped rules stay as they were in the file.
+      if (k === 'flowId' && v === null) delete rule.flowId
+      else if (v !== undefined && rule[k] !== v) rule[k] = v
+    }
   })
 }
 

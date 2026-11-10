@@ -191,6 +191,14 @@ function InsertMenu({ project, mode, ctx, onPick }: { project: Project; mode: Mo
           : [])
       ]
     })
+    if (mode === 'condition' && env.tags.size) {
+      const items: Group['items'] = []
+      for (const [tag, at] of [...env.tags.entries()].sort(([a], [b]) => a.localeCompare(b))) {
+        const flow = project.flows[at.flowId]
+        items.push({ text: `Seen.${tag}`, hint: flow ? `in ${flow.name}` : '' }, { text: `Visits.${tag}`, hint: 'how many times' })
+      }
+      out.push({ title: 'Seen (tagged nodes)', items })
+    }
     const self = ctx?.selfTemplateId ? project.templates[ctx.selfTemplateId] : undefined
     if (self) {
       out.push({

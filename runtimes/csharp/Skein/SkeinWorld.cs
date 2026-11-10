@@ -121,6 +121,8 @@ namespace Skein
         public int PhaseIndex;
         /// <summary>Trace of time and rule activity. Clear it whenever you like.</summary>
         public readonly List<string> Log = new List<string>();
+        /// <summary>v2: the flow being played right now (set by SkeinStory), for rules limited to one flow.</summary>
+        public string Playing;
 
         /// <summary>Raised after any state value is written: (key, new value).</summary>
         public event Action<string, object> Changed;
@@ -205,6 +207,7 @@ namespace Skein
                 case "var": return "var:" + name;
                 case "prop": return "prop:" + entity + "." + prop;
                 case "rel": return "rel:" + name + ":" + entity + ":" + to;
+                case "visit": return "visit:" + name;
                 default: return "time:" + name;
             }
         }
@@ -264,6 +267,7 @@ namespace Skein
             switch (path.Str("get"))
             {
                 case "time": return path.Str("field") == "day" ? (object)(double)Day : Phase;
+                case "visit": return Visits(path.Str("node"));
                 case "var": return ReadKey("var", path.Str("var"), null, null, null);
                 case "prop": return ReadKey("prop", null, Self(path.Str("entity"), self), path.Str("prop"), null);
                 case "rel": return ReadKey("rel", path.Str("rel"), Self(path.Str("from"), self), null, Self(path.Str("to"), self));
@@ -276,11 +280,29 @@ namespace Skein
         {
             switch (path.Str("get"))
             {
-                case "time": return;
+                case "time": return; // time moves by advancing
+                case "visit": return; // visits count themselves
                 case "var": WriteKey("var", path.Str("var"), null, null, null, value); return;
                 case "prop": WriteKey("prop", null, Self(path.Str("entity"), self), path.Str("prop"), null, value); return;
                 case "rel": WriteKey("rel", path.Str("rel"), Self(path.Str("from"), self), null, Self(path.Str("to"), self), value); return;
             }
+        }
+
+        /// <summary>v2: how many times the story has entered a counted node.</summary>
+        public double Visits(string nodeId) =>
+            nodeId != null && Changes.TryGetValue(Key("visit", nodeId, null, null, null), out var v) && v is double d ? d : 0;
+
+        /// <summary>v2: visits of the node with this tag (Visits.Tag in Skein), or 0.</summary>
+        public double VisitsOf(string tag) => Data.FindTagged(tag, out _) is SkeinNode n ? Visits(n.Id) : 0;
+
+        /// <summary>v2: Seen.Tag in Skein.</summary>
+        public bool Seen(string tag) => VisitsOf(tag) > 0;
+
+        internal void CountVisit(string nodeId)
+        {
+            var k = Key("visit", nodeId, null, null, null);
+            Changes[k] = Visits(nodeId) + 1;
+            Changed?.Invoke(k, Changes[k]);
         }
 
         static string Self(string name, string self) => name == "$self" ? (self ?? "$self") : name;
@@ -384,6 +406,7 @@ namespace Skein
             foreach (var rule in Data.Rules)
             {
                 if (rule.Trigger != trigger) continue;
+                if (!string.IsNullOrEmpty(rule.Flow) && rule.Flow != Playing) continue;
                 if (trigger == "phase" && !string.IsNullOrEmpty(rule.Phase) && rule.Phase != Phase) continue;
                 var selves = new List<string>();
                 if (!string.IsNullOrEmpty(rule.ForEach))

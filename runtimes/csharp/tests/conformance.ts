@@ -54,6 +54,10 @@ function synth(seed: number): ExportFile {
     { lit: true }, { lit: false }, { lit: null },
     ...['', 'Dusk', 'Night', '3', ' 4 ', 'abc', 'Calm', 'Watch', '0x1f'].map((v) => ({ lit: v }))
   ]
+  // Node ids are drawn up front so expressions can read visit counts of nodes in any flow (v2).
+  const flowIds = Array.from({ length: 4 }, (_, f) => Array.from({ length: 6 + int(8) }, (_, i) => `f${f}n${i}-${hex()}`))
+  const allNodeIds = flowIds.flat()
+  const flowKeys = flowIds.map((_, f) => `flow-${f}-${hex()}`)
   const self = () => pick(['$self', ...chars])
   const paths = (writable: boolean): StatePath[] => [
     { get: 'var', var: 'World.Storm' }, { get: 'var', var: 'World.Count' }, { get: 'var', var: 'World.Ratio' },
@@ -63,7 +67,7 @@ function synth(seed: number): ExportFile {
     { get: 'prop', entity: self(), prop: 'Title' },
     { get: 'rel', rel: 'Character->Character.Trust', from: self(), to: self() },
     { get: 'rel', rel: 'Character->Faction.Loyal', from: self(), to: pick(factions) },
-    ...(writable ? [] : [{ get: 'time', field: 'day' } as StatePath, { get: 'time', field: 'phase' } as StatePath])
+    ...(writable ? [] : [{ get: 'time', field: 'day' } as StatePath, { get: 'time', field: 'phase' } as StatePath, { get: 'visit', node: pick(allNodeIds) } as StatePath])
   ]
   const ops = ['and', 'or', '==', '!=', '<', '<=', '>', '>=', 'phase<', 'phase<=', 'phase>', 'phase>=', '+', '-', '*', '/'] as const
   const expr = (depth: number): ExprNode => {
@@ -86,14 +90,19 @@ function synth(seed: number): ExportFile {
   // Flows: random graphs. Conditions/jumps may loop; the runtimes must then agree on the error.
   const flows: ExportFile['flows'] = {}
   for (let f = 0; f < 4; f++) {
-    const ids = Array.from({ length: 6 + int(8) }, (_, i) => `f${f}n${i}-${hex()}`)
+    const ids = flowIds[f]
     const ref = () => (r() < 0.15 ? null : pick(ids))
     const refs = () => Array.from({ length: int(4) }, () => pick(ids))
     const nodes: Record<string, ExportNode> = {}
     for (const id of ids) {
+      const counted = r() < 0.45
       const base = {
         id,
-        ...(r() < 0.25 ? { requires: { expr: expr(2) } } : {}),
+        ...(counted ? { count: true as const } : {}),
+        // "only once" as the exporter writes it, sometimes combined with a requirement
+        ...(counted && r() < 0.4
+          ? { requires: { expr: r() < 0.5 ? { op: '==', a: { get: 'visit', node: id }, b: { lit: 0 } } : { op: 'and', a: { op: '<', a: { get: 'visit', node: id }, b: { lit: 2 } }, b: expr(2) } } as ExportNode['requires'] }
+          : r() < 0.25 ? { requires: { expr: expr(2) } } : {}),
         ...(r() < 0.3 ? { effects: effects(1 + int(2), r() < 0.3) } : {})
       }
       const t = r()
@@ -104,7 +113,7 @@ function synth(seed: number): ExportFile {
       else if (t < 0.9) nodes[id] = { ...base, type: 'hub', label: `Hub ${id}`, next: refs() }
       else nodes[id] = { ...base, type: 'jump', jumpTo: ref() }
     }
-    flows[`flow-${f}-${hex()}`] = { id: '', name: `Flow ${f}`, start: [ids[0], pick(ids)], nodes }
+    flows[flowKeys[f]] = { id: '', name: `Flow ${f}`, start: [ids[0], pick(ids)], nodes }
   }
   for (const [id, flow] of Object.entries(flows)) flow.id = id
 
@@ -114,13 +123,14 @@ function synth(seed: number): ExportFile {
     trigger: i === 0 ? 'day' : pick(['phase', 'phase', 'day'] as const),
     phase: r() < 0.4 ? null : pick(phases),
     forEach: r() < 0.5 ? 'Character' : null,
+    ...(r() < 0.35 ? { flow: pick(flowKeys) } : {}),
     ...(r() < 0.6 ? { when: { expr: expr(2) } } : {}),
     effects: effects(1 + int(2), false)
   }))
 
   return {
     format: 'skein.export',
-    version: 1,
+    version: 2,
     project: { id: hex(), name: `Synthetic ${seed}` },
     templates: {
       Character: {
@@ -210,7 +220,7 @@ function trace(file: ExportFile): string {
         const story = new SkeinStory(world, flowId)
         let beat = story.start()
         for (let step = 0; step < 40; step++) {
-          lines.push(beatLine(beat))
+          lines.push(`${beatLine(beat)} playing=${world.playing ?? '-'}`)
           if (beat.kind === 'end') break
           if ((step + seed) % 3 === 0) world.advance(1 + (seed % 2))
           const n = beat.choices.length

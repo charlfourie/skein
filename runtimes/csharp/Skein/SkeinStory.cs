@@ -70,6 +70,7 @@ namespace Skein
         /// <summary>Begin at the first available start node (or a given node).</summary>
         public SkeinBeat Start(string nodeId = null)
         {
+            World.Playing = Flow.Id;
             var id = nodeId;
             if (id == null)
                 foreach (var s in Flow.Start)
@@ -81,6 +82,7 @@ namespace Skein
         public SkeinBeat Choose(int index = 0)
         {
             if (index < 0 || index >= pending.Count) return End(Current);
+            World.Playing = Flow.Id;
             return Enter(pending[index].Node);
         }
 
@@ -110,6 +112,7 @@ namespace Skein
         SkeinBeat End(SkeinNode node)
         {
             pending = new List<SkeinChoice>();
+            if (World.Playing == Flow.Id) World.Playing = null;
             return new SkeinBeat { Kind = SkeinBeatKind.End, Node = node };
         }
 
@@ -126,6 +129,7 @@ namespace Skein
                 if (!Available(id)) return End(Current);
                 var node = Flow.Nodes[id];
                 Current = node;
+                if (node.Count) World.CountVisit(node.Id);
                 Entered?.Invoke(node);
                 World.Run(node.Effects);
                 switch (node.Type)

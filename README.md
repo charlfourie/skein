@@ -122,6 +122,8 @@ Keeper->Stranger.Trust >= 2 and not World.StormRaging
 Keeper.Mood is Wary                 # enum options, phases and entities by name
 Time.Phase >= Dusk or Time.Day > 3  # phases are ordered
 (Player.Reputation + 1) * 2 > 5
+Seen.AskedAboutLight                # true once a node tagged AskedAboutLight has played
+Visits.Lamp >= 3                    # how many times it has played
 
 # Actions: one change per line (or separated by ;)
 Keeper.Mood = Warm
@@ -129,6 +131,10 @@ Keeper->Stranger.Trust += 1
 Player.Reputation -= 1
 advance                             # one phase;  advance 2;  advance to Night
 ```
+
+Give a node a **Tag** in its inspector to refer to it with `Seen.Tag` / `Visits.Tag`
+from any flow. **Only once** hides a choice after it has been picked. A rule can be
+limited to **While playing** one flow, so it doesn't run during other scenes.
 
 Operators: `and or not` (or `&& || !`), `== != < <= > >=`, `is`, `is not`, and
 `+ - * /`. `#` starts a comment.

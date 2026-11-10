@@ -1,4 +1,4 @@
-# Skein game export — format `skein.export` v1
+# Skein game export — format `skein.export` v2
 
 **File › Export for Game Engine… (Ctrl+E)** writes a JSON file for your game. It has
 everything the game needs and nothing the editor needs. There are no canvas positions,
@@ -36,12 +36,24 @@ You can also export from the command line, for build pipelines:
 npm run export -- path/to/project.skein.json out/game.json [--compact] [--no-source]
 ```
 
+## Versions
+
+Each file carries the **lowest** version that can read it, so a project that doesn't
+use a newer feature keeps loading in older runtimes.
+
+| Version | Adds |
+| --- | --- |
+| 1 | Everything not listed below |
+| 2 | Visit counts (`{ "get": "visit" }`, node `count` / `tag`) and flow-scoped rules (rule `flow`) |
+
+A runtime should refuse a file whose `version` is higher than it knows.
+
 ## Top level
 
 ```jsonc
 {
   "format": "skein.export",
-  "version": 1,
+  "version": 2,                     // the lowest version that reads this file
   "project": { "id": "…", "name": "The Lighthouse Keeper" },
   "templates": { "<Template>": … },
   "entities":  { "<Entity>": … },
@@ -142,6 +154,7 @@ false. A missing condition always holds.
 | `{ "get": "prop", "entity": "Keeper", "prop": "Mood" }` | an entity property. `"entity": "$self"` means the entity a rule is running for. |
 | `{ "get": "rel", "rel": "Character->Character.Trust", "from": "Keeper", "to": "Stranger" }` | a relationship value (`$self` allowed in `from` / `to`) |
 | `{ "get": "time", "field": "day" }`, `{ "get": "time", "field": "phase" }` | day number; current phase name |
+| `{ "get": "visit", "node": "<node id>" }` | **v2.** How many times the story has entered that node (0 if never). Read-only. |
 | `{ "not": e }`, `{ "neg": e }` | logical not; numeric negation |
 | `{ "op": o, "a": e1, "b": e2 }` | a binary operation; the operators are listed below |
 
@@ -191,6 +204,15 @@ Within a step, rules run in array order.
   `$self` bound to each.
 - It applies its effects only where `when` holds.
 - Rules never contain `advance`.
+- **v2:** a rule with `"flow": "<flow id>"` only runs while that flow is being played
+  (see *Which flow is playing* below). Absent or null: it always runs.
+
+### Which flow is playing
+
+The world remembers which flow is playing. `start()` and `choose()` on a story set it
+to that story's flow, and the story reaching its end clears it (only if it is still
+that flow). Time advanced outside any story, by the game clock, sees no flow playing,
+so flow-scoped rules don't run.
 
 ## Flows
 
@@ -211,6 +233,8 @@ Every node has `id` and `type`. It may also have:
 | `start: true` / `end: true` | it's a start or end node |
 | `requires` | a condition; the node is only available while it holds |
 | `effects` | effects, applied when the story enters the node |
+| `count: true` | **v2.** Count each entry into this node (readable with `{ "get": "visit" }`) |
+| `tag` | **v2.** The node's tag in Skein (`Seen.Tag`, `Visits.Tag`), for engines that want to look a node up by name |
 
 Node types:
 
@@ -234,7 +258,11 @@ Order of `next` and `start`:
 Stepping rules:
 
 - When entering a node, first check `requires`. If it fails, the path ends there.
-- Otherwise apply `effects`, then behave as described in the table above.
+- Otherwise, if the node has `count`, add one to its visit count. Then apply
+  `effects`, then behave as described in the table above.
+- **Only once** in Skein exports as a `requires` of `visit == 0` on the node itself
+  (combined with `and` with any other requirement; `source` reads "only once").
+  Counting happens on entry, so the node hides itself after the first visit.
 - When a dialogue line or hub offers choices, list only targets whose `requires` holds.
 
 The reference `SkeinStory` returns *beats*: `line`, `choice` or `end`. Call `choose(i)`
@@ -242,7 +270,8 @@ to continue.
 
 ## Save games
 
-Store the current day, phase, and every value that changed since the start. The
+Store the current day, phase, and every value that changed since the start
+(visit counts are saved as `visit:<node id>`). The
 reference runtime's `world.save()` / `new SkeinWorld(data, saved)` does exactly this.
 Everything else is read from the export, so saves stay small. They also survive a new
 export that adds content.

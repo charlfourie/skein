@@ -23,6 +23,8 @@ export type StateRef =
   | { kind: 'prop'; entity: string; propId: string }
   | { kind: 'rel'; relId: string; from: string; to: string }
   | { kind: 'time'; field: 'day' | 'phase' }
+  /** How many times the story has entered a tagged node (Visits.Tag; Seen.Tag is Visits.Tag > 0). */
+  | { kind: 'visit'; nodeId: string }
 
 export type Value = number | boolean | string | null
 
@@ -66,7 +68,15 @@ export interface Env {
   entities: Map<string, Entity>
   phases: TimePhase[]
   phaseType: VType
+  /** Node tags (for Seen.Tag / Visits.Tag): tag → the node carrying it. The first one wins if a tag is reused. */
+  tags: Map<string, { flowId: string; nodeId: string }>
   cache: Map<string, CompileResult>
+}
+
+/** A node's tag, when it has a valid one. */
+export function nodeTag(data: Record<string, unknown>): string | null {
+  const t = data.tag
+  return typeof t === 'string' && t ? t : null
 }
 
 const envCache = new WeakMap<Project, Env>()
@@ -83,6 +93,13 @@ export function getEnv(project: Project): Env {
   const entities = new Map<string, Entity>()
   for (const e of Object.values(project.entities)) if (e.technicalName) entities.set(e.technicalName, e)
   const phases = Object.values(project.state.time.phases).sort((a, b) => a.order - b.order || (a.id < b.id ? -1 : 1))
+  const tags = new Map<string, { flowId: string; nodeId: string }>()
+  for (const flow of Object.values(project.flows).sort((a, b) => (a.id < b.id ? -1 : 1))) {
+    for (const node of Object.values(flow.nodes).sort((a, b) => (a.id < b.id ? -1 : 1))) {
+      const tag = nodeTag(node.data)
+      if (tag && !tags.has(tag)) tags.set(tag, { flowId: flow.id, nodeId: node.id })
+    }
+  }
   const env: Env = {
     project,
     namespaces,
@@ -93,6 +110,7 @@ export function getEnv(project: Project): Env {
       ordered: true,
       options: phases.map((p) => ({ id: p.id, label: p.label, technicalName: p.technicalName || toTechnicalName(p.label) }))
     },
+    tags,
     cache: new Map()
   }
   envCache.set(project, env)
@@ -217,7 +235,7 @@ class Checker {
     }
     const e = this.env.entities.get(seg.name)
     if (!e) {
-      const candidates = [...this.env.entities.keys(), ...this.env.namespaces.keys(), 'Time']
+      const candidates = [...this.env.entities.keys(), ...this.env.namespaces.keys(), 'Time', 'Seen', 'Visits']
       throw new CheckError(`There’s nothing called “${seg.name}”.${suggest(seg.name, candidates)}`, seg.start, seg.end)
     }
     return { id: e.id, template: this.env.project.templates[e.templateId], label: e.technicalName }
@@ -245,6 +263,23 @@ class Checker {
       }
       const ref: StateRef = { kind: 'rel', relId: rel.id, from: from.id, to: target.id }
       return { ref, type: propType(rel), writable: true, label: `${from.label}->${target.label}.${rel.technicalName}` }
+    }
+
+    // Visits.Tag: how many times the story has entered the node tagged Tag
+    if (head.name === 'Visits' || head.name === 'Seen') {
+      const hit = this.env.tags.get(member.name)
+      if (!hit) {
+        const known = [...this.env.tags.keys()]
+        const hint = known.length ? suggest(member.name, known) || ` Tags in this project: ${known.slice(0, 6).join(', ')}${known.length > 6 ? '…' : ''}.` : ' Give a node a tag in its inspector first.'
+        throw new CheckError(`No node is tagged “${member.name}”.${hint}`, member.start, member.end)
+      }
+      return {
+        ref: { kind: 'visit', nodeId: hit.nodeId },
+        type: head.name === 'Seen' ? { t: 'bool' } : { t: 'number', integer: true, min: 0 },
+        writable: false,
+        readonlyReason: 'visit',
+        label: `${head.name}.${member.name}`
+      }
     }
 
     // Time
@@ -294,6 +329,9 @@ class Checker {
         if (!e.member && !e.to) return { b: { k: 'lit', v: e.head.name }, type: { t: 'symbol', name: e.head.name } }
         const r = this.resolve(e)
         this.refs.push(r.ref)
+        if (e.head.name === 'Seen' && r.ref.kind === 'visit') {
+          return { b: { k: 'bin', op: '>', l: { k: 'read', ref: r.ref }, r: { k: 'lit', v: 0 } }, type: { t: 'bool' } }
+        }
         return { b: { k: 'read', ref: r.ref }, type: r.type }
       }
       case 'unary': {
@@ -412,6 +450,8 @@ class Checker {
       const msg =
         target.readonlyReason === 'time'
           ? 'Time can’t be set directly; use “advance”, “advance 2” or “advance to Night”.'
+          : target.readonlyReason === 'visit'
+            ? `${target.label} counts itself: the story adds one each time it enters that node.`
           : `${target.label} is fixed design data. Mark the property as “Changes during play” in the ${target.readonlyReason?.slice(5) || ''} template to change it.`
       throw new CheckError(msg, s.target.start, s.target.end)
     }

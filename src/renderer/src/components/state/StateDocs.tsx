@@ -510,6 +510,7 @@ function RuleCard({
       : rule.phaseId
         ? `When ${project.state.time.phases[rule.phaseId]?.label ?? '?'} begins`
         : 'Whenever a phase begins'
+  const scope = rule.flowId ? project.flows[rule.flowId] : undefined
   const hasError = issues.some((i) => i.level === 'error')
 
   return (
@@ -533,6 +534,7 @@ function RuleCard({
           <p className="truncate text-2xs text-faint">
             {when}
             {forEach ? ` · for each ${forEach.name}` : ''}
+            {scope ? ` · only during “${scope.name}”` : ''}
             {rule.condition.trim() ? ` · if ${rule.condition.trim()}` : ''}
           </p>
         </button>
@@ -586,6 +588,20 @@ function RuleCard({
                   onChange={(v) => updateRule(rule.id, { forEachTemplateId: v === 'once' ? null : v })}
                 />
               </FieldLabel>
+              <div className="col-span-2">
+                <FieldLabel label="While playing" hint="limit the rule to one flow, e.g. a scene with its own clock">
+                  <Select
+                    value={rule.flowId && project.flows[rule.flowId] ? rule.flowId : 'any'}
+                    options={[
+                      { value: 'any', label: 'Any time (whatever is playing)' },
+                      ...Object.values(project.flows)
+                        .sort(compareOrder)
+                        .map((f) => ({ value: f.id, label: `Only while “${f.name}” is playing`, group: 'One flow' }))
+                    ]}
+                    onChange={(v) => updateRule(rule.id, { flowId: v === 'any' ? null : v })}
+                  />
+                </FieldLabel>
+              </div>
               <div className="col-span-2">
                 <FieldLabel label="Only if" hint="optional condition">
                   <ExpressionField

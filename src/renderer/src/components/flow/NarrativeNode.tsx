@@ -110,12 +110,22 @@ export const NarrativeNode = memo(function NarrativeNode({ id, data, selected }:
         <span className="min-w-0 flex-1 truncate text-2xs font-semibold uppercase tracking-wider" style={{ color: meta.color }}>
           {header(node, data, meta.label)}
         </span>
+        {dataString(node, 'tag') && (
+          <span className="max-w-[90px] truncate font-mono text-[10px] text-faint" title={`Tag: Seen.${dataString(node, 'tag')} / Visits.${dataString(node, 'tag')}`}>
+            #{dataString(node, 'tag')}
+          </span>
+        )}
         {isStart && (
           <span
             className="flex items-center gap-0.5 rounded bg-ok/15 px-1 py-px text-[10px] font-semibold text-ok"
             title={data.startRank ? `Start node, priority ${data.startRank}: the first start whose requirement holds is used` : 'Start node'}
           >
             <Play size={9} fill="currentColor" /> START{data.startRank ? ` ${data.startRank}` : ''}
+          </span>
+        )}
+        {node.data.once === true && (
+          <span className="rounded bg-raised px-1 py-px text-[10px] font-semibold text-muted" title="Only once: not available again after the story has been here">
+            1×
           </span>
         )}
         {isEnd && (

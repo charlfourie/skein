@@ -8,7 +8,8 @@
  */
 
 export const EXPORT_FORMAT = 'skein.export' as const
-export const EXPORT_VERSION = 1 as const
+/** The newest format version this exporter writes. Each file carries the lowest version that can read it. */
+export const EXPORT_VERSION = 2 as const
 
 export type ExportValue = number | boolean | string | null
 
@@ -20,6 +21,8 @@ export type StatePath =
   | { get: 'prop'; entity: string; prop: string } // Keeper.Mood
   | { get: 'rel'; rel: string; from: string; to: string } // Character->Character.Trust, Keeper → Stranger
   | { get: 'time'; field: 'day' | 'phase' }
+  /** v2: how many times the story has entered this node (only nodes with `count: true` are counted). */
+  | { get: 'visit'; node: string }
 
 export type ExprNode =
   | { lit: ExportValue }
@@ -96,6 +99,8 @@ export interface ExportRule {
   phase: string | null
   /** Run once per entity of this template, with "$self" bound to each. */
   forEach: string | null
+  /** v2: only run while this flow is being played (its id). Absent or null: always. */
+  flow?: string | null
   when?: ExportCondition
   effects: ExportEffects
 }
@@ -110,6 +115,10 @@ interface NodeBase {
   requires?: ExportCondition
   /** Applied when the story enters the node. */
   effects?: ExportEffects
+  /** v2: count how many times the story enters this node (read with { get: "visit" }). */
+  count?: true
+  /** v2: the node's tag in Skein (Seen.Tag / Visits.Tag), for engines that want to look it up. */
+  tag?: string
 }
 
 export type ExportNode =
@@ -129,7 +138,7 @@ export interface ExportFlow {
 
 export interface ExportFile {
   format: typeof EXPORT_FORMAT
-  version: typeof EXPORT_VERSION
+  version: 1 | 2
   project: { id: string; name: string }
   templates: Record<string, ExportTemplate>
   entities: Record<string, ExportEntity>

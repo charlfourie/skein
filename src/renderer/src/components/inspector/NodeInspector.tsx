@@ -5,6 +5,7 @@ import { analyzeFlow } from '@shared/flowAnalysis'
 import { outgoingEdges, startNodes } from '@shared/flowOrder'
 import { dataRef, dataString, isEndNode, isKnownNodeType, isStartNode } from '@shared/nodes'
 import type { Flow, Project } from '@shared/schema'
+import { TECHNICAL_NAME_RE, toTechnicalName } from '@shared/technicalName'
 import { useIssuesFor } from '../../hooks/useIssues'
 import { compareOrder } from '../../lib/tree'
 import { deleteElements, moveChoice, moveStart, updateNodeData } from '../../store/flowOps'
@@ -146,6 +147,20 @@ export function NodeInspector({ project, flowId, nodeId }: { project: Project; f
         <ToggleRow label="Start node" hint="the flow can begin here" checked={isStartNode(node)} onChange={(isStart) => patch({ isStart })} />
         {isStartNode(node) && <StartPriority flow={flow} nodeId={nodeId} />}
         <ToggleRow label="End node" hint="the flow is allowed to stop here" checked={isEndNode(node)} onChange={(isEnd) => patch({ isEnd })} />
+        <ToggleRow
+          label="Only once"
+          hint="not available again after the story has been here"
+          checked={node.data.once === true}
+          onChange={(once) => patch({ once })}
+        />
+        <FieldLabel label="Tag" hint="lets any expression ask Seen.Tag or Visits.Tag">
+          <TextInput
+            value={dataString(node, 'tag')}
+            mono
+            placeholder="e.g. TalkedVernon"
+            onCommit={(tag) => patch({ tag: tag ? (TECHNICAL_NAME_RE.test(tag) ? tag : toTechnicalName(tag)) : '' })}
+          />
+        </FieldLabel>
         <div className="flex justify-between text-xs">
           <span className="text-faint">Connections</span>
           <span className="tabular-nums text-muted">

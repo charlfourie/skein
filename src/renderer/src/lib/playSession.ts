@@ -1,6 +1,6 @@
 import { SkeinStory, SkeinWorld, type Beat, type Choice } from '@shared/export/runtime'
 import type { ExportFile, ExportNode, ExportValue } from '@shared/export/types'
-import { applyStart, labelForKey, pathFromKey, type StartState, type StateKey } from '@shared/play/explore'
+import { applyStart, labelForKey, pathFromKey, tagsOf, type StartState, type StateKey } from '@shared/play/explore'
 
 /** One line of the Play panel's transcript. */
 export type PlayEntry =
@@ -34,6 +34,7 @@ export class PlaySession {
   readonly entries: PlayEntry[] = []
   readonly visited = new Set<string>()
   private readonly baseline: SkeinWorld
+  private readonly tags: Map<string, string>
 
   constructor(
     readonly file: ExportFile,
@@ -41,6 +42,7 @@ export class PlaySession {
     readonly start: StartState,
     extra: Record<StateKey, ExportValue> = {}
   ) {
+    this.tags = tagsOf(file)
     this.world = new SkeinWorld(file)
     applyStart(this.world, start, extra)
     this.baseline = new SkeinWorld(file)
@@ -147,7 +149,7 @@ export class PlaySession {
       const had = before.has(key)
       const from = had ? before.get(key)! : this.initial(key)
       if (had ? before.get(key) === to : from === to) continue
-      this.entries.push({ kind: 'change', key, label: labelForKey(key), from, to })
+      this.entries.push({ kind: 'change', key, label: labelForKey(key, this.tags), from, to })
     }
     if (beat !== this.beat) {
       if (beat.kind === 'line') this.entries.push({ kind: 'line', nodeId: beat.node.id, speaker: this.speakerName(beat.speaker), text: beat.text })
@@ -165,7 +167,7 @@ export class PlaySession {
   /** Every value that differs from the start, for the state view. */
   changed(): { key: StateKey; label: string; from: ExportValue; to: ExportValue }[] {
     return [...this.world.changes.entries()]
-      .map(([key, to]) => ({ key, label: labelForKey(key), from: this.initial(key), to }))
+      .map(([key, to]) => ({ key, label: labelForKey(key, this.tags), from: this.initial(key), to }))
       .filter((c) => c.from !== c.to)
       .sort((a, b) => a.label.localeCompare(b.label))
   }

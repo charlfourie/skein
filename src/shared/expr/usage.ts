@@ -18,7 +18,7 @@ export function stateUsage(project: Project): UsageIndex {
   forEachSite(project, (site) => {
     const seen = new Set<string>()
     for (const ref of compile(project, site.source, site.mode, site.ctx).refs) {
-      const id = ref.kind === 'world' ? ref.varId : ref.kind === 'prop' ? ref.propId : ref.kind === 'rel' ? ref.relId : `time:${ref.field}`
+      const id = ref.kind === 'world' ? ref.varId : ref.kind === 'prop' ? ref.propId : ref.kind === 'rel' ? ref.relId : ref.kind === 'visit' ? `visit:${ref.nodeId}` : `time:${ref.field}`
       if (seen.has(id)) continue
       seen.add(id)
       count.set(id, (count.get(id) ?? 0) + 1)

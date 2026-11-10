@@ -200,7 +200,9 @@ export const RuleSchema = z
     /** Run once per entity of this template, with `self` bound to it. */
     forEachTemplateId: Id.nullable().default(null),
     condition: z.string().default(''),
-    effects: z.string().default('')
+    effects: z.string().default(''),
+    /** Only run while this flow is being played (v2 export). Absent = always. */
+    flowId: Id.nullable().optional()
   })
   .passthrough()
 

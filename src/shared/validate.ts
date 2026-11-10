@@ -121,6 +121,16 @@ export function validateProject(project: Project): IssueMap {
     }
   })
 
+  // Node tags (Seen.Tag / Visits.Tag) are project-wide names.
+  const tagOwners = new Map<string, string[]>()
+  for (const flow of Object.values(project.flows)) {
+    for (const n of Object.values(flow.nodes)) {
+      const tag = n.data.tag
+      if (typeof tag !== 'string' || !tag) continue
+      tagOwners.set(tag, [...(tagOwners.get(tag) ?? []), n.id])
+    }
+  }
+
   for (const flow of Object.values(project.flows)) {
     const nodes = Object.values(flow.nodes)
     if (nodes.length === 0) continue
@@ -145,6 +155,12 @@ export function validateProject(project: Project): IssueMap {
       }
       if (n.type === 'condition' && !dataString(n, 'expression').trim()) {
         node(n.id, { level: 'warning', message: 'Condition has no expression yet.' })
+      }
+      const tag = dataString(n, 'tag')
+      if (tag && !TECHNICAL_NAME_RE.test(tag)) {
+        node(n.id, { level: 'error', message: `Tag “${tag}” can only use letters, digits and _, and can't start with a digit.` })
+      } else if (tag && (tagOwners.get(tag)?.length ?? 0) > 1) {
+        node(n.id, { level: 'error', message: `Tag “${tag}” is used by ${tagOwners.get(tag)!.length} nodes; Seen.${tag} needs it to be unique.` })
       }
     }
     if (a.startNodes.length === 0) add(flow.id, { level: 'warning', message: 'No start node: mark where this flow begins.' })

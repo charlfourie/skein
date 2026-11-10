@@ -34,6 +34,8 @@ function key(ref: StateRef, self: string | null): string {
       return `r:${ref.relId}:${id(ref.from)}:${id(ref.to)}`
     case 'time':
       return `t:${ref.field}`
+    case 'visit':
+      return `v:${ref.nodeId}`
   }
 }
 
@@ -61,6 +63,8 @@ export function startingValue(project: Project, ref: StateRef, self: string | nu
     }
     case 'time':
       return null
+    case 'visit':
+      return 0
   }
 }
 

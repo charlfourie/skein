@@ -98,13 +98,22 @@ export function pathFromKey(key: StateKey): StatePath | null {
     const parts = rest.split(':')
     return parts.length === 3 ? { get: 'rel', rel: parts[0], from: parts[1], to: parts[2] } : null
   }
+  if (kind === 'visit') return { get: 'visit', node: rest }
   return null
 }
 
+/** Node tags in an export, by node id (for labelling visit counts). */
+export function tagsOf(file: ExportFile): Map<string, string> {
+  const out = new Map<string, string>()
+  for (const f of Object.values(file.flows)) for (const n of Object.values(f.nodes)) if (n.tag) out.set(n.id, n.tag)
+  return out
+}
+
 /** A readable name for a state key, e.g. "Keeper → Stranger Trust". */
-export function labelForKey(key: StateKey): string {
+export function labelForKey(key: StateKey, tags?: Map<string, string>): string {
   const p = pathFromKey(key)
   if (!p) return key
+  if (p.get === 'visit') return `Visits.${tags?.get(p.node) ?? p.node.slice(0, 8)}`
   if (p.get === 'var') return p.var
   if (p.get === 'prop') return `${p.entity}.${p.prop}`
   if (p.get === 'rel') return `${p.from} → ${p.to} ${p.rel.split('.').pop()}`
@@ -196,6 +205,7 @@ export function explore(file: ExportFile, opts: ExploreOptions): ExploreReport {
   let paths = 0
   let capped = false
 
+  const tags = tagsOf(file)
   const numericVars = Object.entries(file.state.variables)
     .filter(([, d]) => d.type === 'number')
     .map(([k]) => `var:${k}`)
@@ -280,7 +290,7 @@ export function explore(file: ExportFile, opts: ExploreOptions): ExploreReport {
     ranges: [...ranges.entries()]
       .map(([key, r]) => {
         const d = definition(key)
-        return { key, label: labelForKey(key), min: r.min, max: r.max, ...(d?.min !== undefined ? { defMin: d.min } : {}), ...(d?.max !== undefined ? { defMax: d.max } : {}) }
+        return { key, label: labelForKey(key, tags), min: r.min, max: r.max, ...(d?.min !== undefined ? { defMin: d.min } : {}), ...(d?.max !== undefined ? { defMax: d.max } : {}) }
       })
       .sort((a, b) => a.label.localeCompare(b.label)),
     times: [...times.entries()].map(([label, count]) => ({ label, count })).sort((a, b) => b.count - a.count),

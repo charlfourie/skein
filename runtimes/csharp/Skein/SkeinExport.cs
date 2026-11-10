@@ -124,6 +124,8 @@ namespace Skein
         public string Phase;
         /// <summary>Template to run once per entity of, with $self bound; or null to run once.</summary>
         public string ForEach;
+        /// <summary>v2: only run while this flow (id) is being played; null = always.</summary>
+        public string Flow;
         public JsonObject When;
         public JsonObject Effects;
     }
@@ -140,6 +142,10 @@ namespace Skein
         public JsonObject Requires;
         /// <summary>Applied when the story enters the node.</summary>
         public JsonObject Effects;
+        /// <summary>v2: count how many times the story enters this node.</summary>
+        public bool Count;
+        /// <summary>v2: the node's tag in Skein (Seen.Tag / Visits.Tag), or null.</summary>
+        public string Tag;
 
         // dialogue
         public string Speaker;
@@ -171,7 +177,8 @@ namespace Skein
     public sealed class SkeinExport
     {
         public const string Format = "skein.export";
-        public const int Version = 1;
+        /// <summary>The newest format version this runtime reads (1 and 2).</summary>
+        public const int Version = 2;
 
         public string ProjectId;
         public string ProjectName;
@@ -272,6 +279,7 @@ namespace Skein
                     Trigger = o.Str("trigger"),
                     Phase = o.Str("phase"),
                     ForEach = o.Str("forEach"),
+                    Flow = o.Str("flow"),
                     When = o.Obj("when"),
                     Effects = o.Obj("effects")
                 });
@@ -302,6 +310,8 @@ namespace Skein
                 IsEnd = o.Bool("end"),
                 Requires = o.Obj("requires"),
                 Effects = o.Obj("effects"),
+                Count = o.Bool("count"),
+                Tag = o.Str("tag"),
                 Next = SkeinDef.Strings(o.Arr("next"))
             };
             switch (o.Str("type"))
@@ -334,6 +344,16 @@ namespace Skein
                     throw new SkeinFormatException($"Unknown node type \"{o.Str("type")}\" on node {o.Str("id")}.");
             }
             return n;
+        }
+
+        /// <summary>A node by its tag (any flow), or null.</summary>
+        public SkeinNode FindTagged(string tag, out SkeinFlow flow)
+        {
+            foreach (var id in FlowOrder)
+                foreach (var n in Flows[id].Nodes.Values)
+                    if (n.Tag == tag) { flow = Flows[id]; return n; }
+            flow = null;
+            return null;
         }
 
         /// <summary>A flow by id, or else by name (first match in file order). Null if none.</summary>

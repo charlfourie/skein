@@ -1,4 +1,4 @@
-import { compile, type Bound, type BoundStatement, type CompileContext, type StateRef } from '../expr/check'
+import { compile, nodeTag, type Bound, type BoundStatement, type CompileContext, type StateRef } from '../expr/check'
 import { dataRef, dataString, isEndNode, isKnownNodeType, isStartNode } from '../nodes'
 import { orderedTargets, startNodes } from '../flowOrder'
 import type { Flow, FlowNode, Project, PropertyDef, PropertyValue } from '../schema'
@@ -48,6 +48,18 @@ export interface ExportResult {
 export function buildExport(project: Project, options: ExportOptions = {}): ExportResult {
   const includeSource = options.includeSource !== false
   const problems: ExportProblem[] = []
+  /** Set when the file uses anything only format v2 can express. */
+  let usesV2 = false
+  /** A rule's flow scope, if it points at a flow that exists. */
+  const flowScope = (r: { flowId?: string | null; name: string; id: string }): string | null => {
+    if (!r.flowId) return null
+    if (!project.flows[r.flowId]) {
+      problems.push({ level: 'warning', message: `Rule “${r.name}” was limited to a flow that no longer exists; it runs everywhere.`, at: { kind: 'rule', ruleId: r.id } })
+      return null
+    }
+    usesV2 = true
+    return r.flowId
+  }
 
   // --- Name tables: everything is referred to by technical name ------------
   const templateName = new Map(Object.values(project.templates).map((t) => [t.id, t.technicalName]))
@@ -114,6 +126,9 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
         return { get: 'rel', rel: relKey.get(ref.relId) ?? ref.relId, from: ent(ref.from), to: ent(ref.to) }
       case 'time':
         return { get: 'time', field: ref.field }
+      case 'visit':
+        usesV2 = true
+        return { get: 'visit', node: ref.nodeId }
     }
   }
 
@@ -217,6 +232,7 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
         trigger: r.trigger,
         phase: r.trigger === 'phase' && r.phaseId ? (phaseName.get(r.phaseId) ?? null) : null,
         forEach: r.forEachTemplateId ? (templateName.get(r.forEachTemplateId) ?? null) : null,
+        ...((scope) => (scope ? { flow: scope } : {}))(flowScope(r)),
         ...(when ? { when } : {}),
         effects: effects(r.effects, ctx, `Rule “${r.name}” effects`, at) ?? { do: [] }
       }
@@ -290,20 +306,36 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
   }
 
   function baseOf(node: FlowNode, label: string, at: ExportProblem['at']) {
-    const requires = condition(dataString(node, 'requires'), {}, `${label} requirement`, at)
+    let requires = condition(dataString(node, 'requires'), {}, `${label} requirement`, at)
     const fx = effects(dataString(node, 'effects'), {}, `${label} effects`, at)
+    const tag = nodeTag(node.data)
+    const once = node.data.once === true
+    // "Only once": available while the story hasn't entered this node yet.
+    if (once) {
+      const unseen: ExprNode = { op: '==', a: { get: 'visit', node: node.id }, b: { lit: 0 } }
+      const src = requires?.source
+      requires = {
+        expr: requires ? { op: 'and', a: unseen, b: requires.expr } : unseen,
+        ...(includeSource ? { source: src ? `only once, and ${src}` : 'only once' } : {})
+      }
+    }
+    const count = once || tag !== null
+    if (count) usesV2 = true
     return {
       id: node.id,
       ...(isStartNode(node) ? { start: true as const } : {}),
       ...(isEndNode(node) ? { end: true as const } : {}),
       ...(requires ? { requires } : {}),
-      ...(fx ? { effects: fx } : {})
+      ...(fx ? { effects: fx } : {}),
+      ...(count ? { count: true as const } : {}),
+      ...(tag ? { tag } : {})
     }
   }
 
   const file: ExportFile = {
     format: EXPORT_FORMAT,
-    version: EXPORT_VERSION,
+    // The lowest version that can read this file: older runtimes keep working until a project uses v2 features.
+    version: usesV2 ? EXPORT_VERSION : 1,
     project: { id: project.meta.id, name: project.meta.name },
     templates,
     entities,

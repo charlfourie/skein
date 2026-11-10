@@ -27,6 +27,7 @@ import type {
   StatePath,
   Statement
 } from './types'
+import { EXPORT_VERSION } from './types'
 
 export class SkeinWorld {
   readonly data: ExportFile
@@ -36,8 +37,12 @@ export class SkeinWorld {
   phaseIndex: number
   /** Optional trace of time and rule activity. */
   log: string[] = []
+  /** v2: the flow being played right now (set by SkeinStory), for rules limited to one flow. */
+  playing: string | null = null
 
   constructor(data: ExportFile, saved?: { changes: Record<string, ExportValue>; day: number; phase: string | null }) {
+    if (data.version > EXPORT_VERSION)
+      throw new Error(`This export is version ${data.version}, but this runtime reads version ${EXPORT_VERSION}. Update the Skein runtime.`)
     this.data = data
     const phases = data.state.time.phases
     this.day = data.state.time.start.day
@@ -77,6 +82,8 @@ export class SkeinWorld {
         return `rel:${p.rel}:${p.from}:${p.to}`
       case 'time':
         return `time:${p.field}`
+      case 'visit':
+        return `visit:${p.node}`
     }
   }
 
@@ -94,6 +101,7 @@ export class SkeinWorld {
   read(path: StatePath, self?: string): ExportValue {
     const p = this.resolve(path, self)
     if (p.get === 'time') return p.field === 'day' ? this.day : this.phase
+    if (p.get === 'visit') return (this.changes.get(SkeinWorld.key(p)) as number | undefined) ?? 0
     const k = SkeinWorld.key(p)
     if (this.changes.has(k)) return this.changes.get(k) as ExportValue
     const s = this.data.state
@@ -109,10 +117,16 @@ export class SkeinWorld {
     }
   }
 
+  /** v2: the story entered a node with `count: true`. */
+  countVisit(nodeId: string): void {
+    const k = SkeinWorld.key({ get: 'visit', node: nodeId })
+    this.changes.set(k, ((this.changes.get(k) as number | undefined) ?? 0) + 1)
+  }
+
   /** Writes clamp numbers to the definition's min/max and round whole-number values. */
   write(path: StatePath, value: ExportValue, self?: string): void {
     const p = this.resolve(path, self)
-    if (p.get === 'time') return
+    if (p.get === 'time' || p.get === 'visit') return // time moves by advancing; visits count themselves
     const def = this.definition(p)
     let v = value
     if (def?.type === 'number' && typeof v === 'number') {
@@ -213,6 +227,7 @@ export class SkeinWorld {
   private runRules(trigger: 'day' | 'phase'): void {
     for (const rule of this.data.state.rules) {
       if (rule.trigger !== trigger) continue
+      if (rule.flow && rule.flow !== this.playing) continue
       if (trigger === 'phase' && rule.phase && rule.phase !== this.phase) continue
       const selves = rule.forEach
         ? Object.keys(this.data.entities)
@@ -265,6 +280,7 @@ export class SkeinStory {
 
   /** Begin at the first available start node (or a given node). */
   start(nodeId?: string): Beat {
+    this.world.playing = this.flow.id
     const id = nodeId ?? this.flow.start.find((s) => this.available(s))
     return id ? this.enter(id) : this.end(null)
   }
@@ -273,6 +289,7 @@ export class SkeinStory {
   choose(index = 0): Beat {
     const choice = this.pending[index]
     if (!choice) return this.end(this.current)
+    this.world.playing = this.flow.id
     return this.enter(choice.node)
   }
 
@@ -295,6 +312,7 @@ export class SkeinStory {
 
   private end(node: ExportNode | null): Beat {
     this.pending = []
+    if (this.world.playing === this.flow.id) this.world.playing = null
     return { kind: 'end', node }
   }
 
@@ -309,6 +327,7 @@ export class SkeinStory {
       if (!this.available(id)) return this.end(this.current)
       const node: ExportNode = this.flow.nodes[id]
       this.current = node
+      if (node.count) this.world.countVisit(node.id)
       this.onEnter?.(node)
       this.world.run(node.effects)
       switch (node.type) {
