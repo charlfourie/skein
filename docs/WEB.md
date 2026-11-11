@@ -34,3 +34,12 @@ npx vite preview --config vite.web.config.ts  # serve the build locally
 `vercel.json` holds the build settings (no framework preset, output `dist/`,
 Electron's binary download skipped during install) and security headers.
 Connect the GitHub repo in Vercel and every push to `main` redeploys.
+
+## Analytics
+
+The hosted version at [skein-mocha.vercel.app](https://skein-mocha.vercel.app) uses
+[Vercel Web Analytics](https://vercel.com/docs/analytics) to count visits. It sets no
+cookies and collects no personal data, and it never sees your projects, which stay on
+your machine. It is loaded only by the web entry (`src/renderer/src/web/main.tsx`), so
+the desktop app sends nothing. If you deploy your own copy, it only reports once you
+enable Web Analytics for your Vercel project; remove the `inject()` call to drop it.

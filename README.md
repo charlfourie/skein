@@ -55,6 +55,8 @@ It's built for:
 Open **[skein-mocha.vercel.app](https://skein-mocha.vercel.app)** and pick a demo under
 **Try a demo**. Nothing to install. Chrome, Edge, Brave and Arc read and save files in
 place; Firefox and Safari open by upload and save by download. See [docs/WEB.md](docs/WEB.md).
+The hosted version counts anonymous visits (no cookies, nothing from your projects);
+the desktop app sends nothing.
 
 ### Desktop app
 

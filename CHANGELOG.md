@@ -13,6 +13,8 @@ What's new in Skein, newest first. Dates are when the work landed on `main`.
   like a game HUD. The export marks these variables with `hud: true`.
 - Both demos track a coin budget. Choices you can't afford show as locked with what they
   need, and [docs/DEMOS.md](docs/DEMOS.md) lists the full choice matrix.
+- Anonymous visit counts on the hosted web version (Vercel Web Analytics: no cookies,
+  no project data). The desktop app sends nothing.
 - Continuous integration: type-check, tests and the web build run on every push.
 
 ### Fixed
