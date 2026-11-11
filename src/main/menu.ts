@@ -25,9 +25,11 @@ export function buildMenu(send: (command: MenuCommand) => void, isDev: boolean):
       submenu: [
         { label: 'New Project', accelerator: 'CmdOrCtrl+N', click: () => send('new') },
         { label: 'Open Project…', accelerator: 'CmdOrCtrl+O', click: () => send('open') },
+        { label: 'Open Project Folder…', accelerator: 'CmdOrCtrl+Shift+O', click: () => send('open-folder') },
         { type: 'separator' },
         { label: 'Save', accelerator: 'CmdOrCtrl+S', click: () => send('save') },
         { label: 'Save As…', accelerator: 'CmdOrCtrl+Shift+S', click: () => send('save-as') },
+        { label: 'Save As Single File…', click: () => send('save-as-file') },
         { type: 'separator' },
         { label: 'Export for Game Engine…', accelerator: 'CmdOrCtrl+E', click: () => send('export') },
         { type: 'separator' },

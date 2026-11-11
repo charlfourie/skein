@@ -16,12 +16,17 @@ export function dirname(path: string): string {
   return i > 0 ? path.slice(0, i) : path
 }
 
-/** Turn a project name into a safe default file name. */
-export function suggestedFileName(projectName: string): string {
+/** Turn a project name into a safe default name for its folder or file (no extension). */
+export function suggestedProjectName(projectName: string): string {
   const slug = projectName
     .trim()
     .replace(/[<>:"/\\|?*\u0000-\u001f]+/g, '')
     .replace(/\s+/g, '-')
     .slice(0, 80)
-  return `${slug || 'Untitled'}.skein.json`
+  return slug || 'Untitled'
+}
+
+/** Turn a project name into a safe default file name. */
+export function suggestedFileName(projectName: string): string {
+  return `${suggestedProjectName(projectName)}.skein.json`
 }

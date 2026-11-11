@@ -3,7 +3,7 @@ import { Coffee, FilePlus2, FileWarning, FolderOpen, Gem, X } from 'lucide-react
 import { useEffect, useState } from 'react'
 import type { RecentProject } from '@shared/ipc'
 import { DEMOS, type Demo } from '../demos'
-import { newProject, openDemo, openProject } from '../lib/projectIO'
+import { newProject, openDemo, openProject, openProjectFolder } from '../lib/projectIO'
 import { dirname, shortcut } from '../lib/platform'
 import { Logo } from './ui/Logo'
 
@@ -65,6 +65,12 @@ export function Welcome() {
             delay={0.1}
           />
         </div>
+        <p className="mt-2 text-right text-2xs text-faint">
+          Project saved as a folder?{' '}
+          <button type="button" className="text-accent hover:underline" onClick={() => void openProjectFolder()}>
+            Open project folder…
+          </button>
+        </p>
 
         <section className="mt-8">
           <h2 className="mb-2 text-2xs font-semibold uppercase tracking-wider text-faint">Try a demo</h2>

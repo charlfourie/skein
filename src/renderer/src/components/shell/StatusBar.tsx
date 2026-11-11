@@ -1,6 +1,8 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { Circle, CircleCheck, CircleDot } from 'lucide-react'
 import { sortedTests } from '@shared/play/storyTests'
+import { isFolderProjectPath } from '@shared/projectFiles'
+import { dirname } from '../../lib/platform'
 import { SCHEMA_VERSION, type Project } from '@shared/schema'
 import { usePlay } from '../../store/play'
 import { selectDirty, useProjectStore } from '../../store/projectStore'
@@ -41,7 +43,7 @@ export function StatusBar() {
           title="Show in folder"
           className="min-w-0 truncate font-mono text-faint transition-colors hover:text-fg"
         >
-          {filePath}
+          {isFolderProjectPath(filePath) ? `${dirname(filePath)} (folder)` : filePath}
         </button>
       )}
 

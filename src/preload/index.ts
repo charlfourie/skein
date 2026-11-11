@@ -8,7 +8,12 @@ import { IPC, type ExternalChange, type MenuCommand, type SkeinApi } from '../sh
 const api: SkeinApi = {
   platform: process.platform,
   openProjectDialog: () => ipcRenderer.invoke(IPC.openDialog),
-  saveProjectDialog: (suggestedName) => ipcRenderer.invoke(IPC.saveDialog, suggestedName),
+  openProjectFolderDialog: async () => {
+    const r: { path: string | null; error?: string } = await ipcRenderer.invoke(IPC.openFolderDialog)
+    if (r.error) throw new Error(r.error)
+    return r.path
+  },
+  saveProjectDialog: (suggestedName, layout) => ipcRenderer.invoke(IPC.saveDialog, suggestedName, layout),
   readProject: (path) => ipcRenderer.invoke(IPC.read, path),
   writeProject: (path, project) => ipcRenderer.invoke(IPC.write, path, project),
   listRecent: () => ipcRenderer.invoke(IPC.recentList),

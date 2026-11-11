@@ -165,6 +165,15 @@ export function parseProject(input: string): ParseResult {
     return { ok: false, error: describeJsonError(text, err) }
   }
 
+  return parseRaw(raw)
+}
+
+/**
+ * Migrate, validate and repair an already-parsed project object (from one file,
+ * or assembled from a project folder). `repairs` starts with any problems found
+ * while assembling it.
+ */
+export function parseRaw(raw: unknown, earlier: string[] = []): ParseResult {
   const migrated = migrate(raw)
   if (!migrated.ok) return migrated
 
@@ -172,7 +181,7 @@ export function parseProject(input: string): ParseResult {
   if (!parsed.success) return { ok: false, error: formatZodError(parsed.error) }
 
   const project = parsed.data
-  const repairs = repairIntegrity(project)
+  const repairs = [...earlier, ...repairIntegrity(project)]
   // Lines without an ID (older files, lines added by hand) get one silently; a
   // duplicate ID is a real problem, so it's reported.
   const { duplicates } = assignLineIds(project)
@@ -182,11 +191,11 @@ export function parseProject(input: string): ParseResult {
 
 // ---------------------------------------------------------------------------
 
-function isPlainObject(v: unknown): v is Record<string, unknown> {
+export function isPlainObject(v: unknown): v is Record<string, unknown> {
   return typeof v === 'object' && v !== null && !Array.isArray(v)
 }
 
-function findConflictMarker(text: string): number | null {
+export function findConflictMarker(text: string): number | null {
   const lines = text.split(/\r?\n/)
   for (let i = 0; i < lines.length; i++) {
     if (/^(?:<{7}|={7}|>{7}|\|{7})(?:\s|$)/.test(lines[i])) return i + 1
@@ -206,7 +215,7 @@ function lineCol(text: string, position: number): { line: number; column: number
   return { line, column: position - lastBreak }
 }
 
-function describeJsonError(text: string, err: unknown): string {
+export function describeJsonError(text: string, err: unknown): string {
   const msg = err instanceof Error ? err.message : String(err)
   const pos = /position (\d+)/.exec(msg)
   if (pos && !/line \d+/.test(msg)) {

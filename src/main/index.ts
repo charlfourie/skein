@@ -1,15 +1,19 @@
 import { app, BrowserWindow, dialog, ipcMain, Menu, shell } from 'electron'
-import { join, resolve } from 'path'
+import { existsSync, promises as fsp } from 'fs'
+import { dirname, join, resolve } from 'path'
 import {
   IPC,
   type ConfirmOptions,
   type DiscardChoice,
   type MenuCommand,
+  type ProjectLayout,
   type ReadResult,
   type WriteResult
 } from '../shared/ipc'
 import type { Project } from '../shared/schema'
+import { FOLDER_SUFFIX, PROJECT_FILE, isFolderProjectPath, splitProject } from '../shared/projectFiles'
 import { serializeProject } from '../shared/serialize'
+import { folderHash, folderIsUsable, readProjectFolder, writeProjectFolder } from './projectStorage'
 import { buildMenu } from './menu'
 import { RecentProjects } from './recent'
 import { hashText, readTextFile, writeFileAtomic } from './storage'
@@ -148,8 +152,43 @@ function registerIpc(): void {
     return result.canceled || !picked ? null : allow(picked)
   })
 
-  ipcMain.handle(IPC.saveDialog, async (_event, suggestedName: unknown) => {
+  ipcMain.handle(IPC.openFolderDialog, async (): Promise<{ path: string | null; error?: string }> => {
+    if (!mainWindow) return { path: null }
+    const result = await dialog.showOpenDialog(mainWindow, { title: 'Open Project Folder', properties: ['openDirectory'] })
+    const picked = result.filePaths[0]
+    if (result.canceled || !picked) return { path: null }
+    // The project folder itself, or a folder holding exactly one project folder.
+    if (existsSync(join(picked, PROJECT_FILE))) return { path: allow(join(picked, PROJECT_FILE)) }
+    const inside = (await fsp.readdir(picked).catch(() => [] as string[])).filter((n) => existsSync(join(picked, n, PROJECT_FILE)))
+    if (inside.length === 1) return { path: allow(join(picked, inside[0], PROJECT_FILE)) }
+    return { path: null, error: `That folder isn't a Skein project: it has no ${PROJECT_FILE}. Pick the “…${FOLDER_SUFFIX}” folder itself.` }
+  })
+
+  ipcMain.handle(IPC.saveDialog, async (_event, suggestedName: unknown, layout: unknown) => {
     if (!mainWindow) return null
+    if ((layout as ProjectLayout) === 'folder') {
+      const base = typeof suggestedName === 'string' && suggestedName ? suggestedName : 'Untitled'
+      const result = await dialog.showSaveDialog(mainWindow, {
+        title: 'Save Project Folder',
+        buttonLabel: 'Save',
+        defaultPath: `${base}${FOLDER_SUFFIX}`,
+        properties: ['createDirectory'],
+        message: 'Skein saves the project as a folder, with one file per flow.'
+      })
+      if (result.canceled || !result.filePath) return null
+      let folder = result.filePath.replace(/(\.skein)?\.json$/i, '')
+      if (!folder.toLowerCase().endsWith(FOLDER_SUFFIX)) folder += FOLDER_SUFFIX
+      if (!(await folderIsUsable(folder))) {
+        await dialog.showMessageBox(mainWindow, {
+          type: 'warning',
+          message: 'That folder already holds other files.',
+          detail: 'Choose a new name, or an existing Skein project folder to replace.'
+        })
+        return null
+      }
+      await fsp.mkdir(folder, { recursive: true })
+      return allow(join(folder, PROJECT_FILE))
+    }
     const result = await dialog.showSaveDialog(mainWindow, {
       title: 'Save Project',
       defaultPath: typeof suggestedName === 'string' ? suggestedName : 'Untitled.skein.json',
@@ -166,6 +205,11 @@ function registerIpc(): void {
     if (!isAllowed(path)) return { ok: false, error: 'Access to this file was not granted. Open it with File › Open.' }
     const target = resolve(path)
     try {
+      if (isFolderProjectPath(target)) {
+        const files = await readProjectFolder(dirname(target))
+        watcher.watch(target, folderHash(files), true)
+        return { ok: true, path: target, files }
+      }
       const text = await readTextFile(target)
       watcher.watch(target, hashText(text))
       return { ok: true, path: target, text }
@@ -178,6 +222,18 @@ function registerIpc(): void {
     if (!isAllowed(path)) return { ok: false, error: 'Access to this file was not granted. Use File › Save As.' }
     const target = resolve(path)
     try {
+      if (isFolderProjectPath(target)) {
+        // Several files change: tell the watcher, so our own save isn't reported as someone else's.
+        const hash = folderHash(splitProject(project))
+        watcher.watch(target, hash, true)
+        watcher.pause()
+        try {
+          const { bytes } = await writeProjectFolder(dirname(target), project)
+          return { ok: true, path: target, bytes }
+        } finally {
+          watcher.resume(hash)
+        }
+      }
       // Serialization happens here, in one place, so every save is canonical
       // regardless of what the renderer's in-memory key order looks like.
       const text = serializeProject(project)

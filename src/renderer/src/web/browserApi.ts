@@ -8,6 +8,7 @@ import type {
   SkeinApi,
   WriteResult
 } from '@shared/ipc'
+import { FLOWS_DIR, FOLDER_SUFFIX, PROJECT_FILE, isFolderProjectPath, planWrite, splitProject, type ProjectFiles } from '@shared/projectFiles'
 import { serializeProject } from '@shared/serialize'
 
 /**
@@ -17,9 +18,10 @@ import { serializeProject } from '@shared/serialize'
  * preload for this file and nothing else changes. Projects stay local files:
  *
  *  - Chromium browsers (Chrome, Edge, Arc, Brave) use the File System Access API,
- *    so Open/Save read and write the real file on disk, like the desktop app.
+ *    so Open/Save read and write the real file on disk, like the desktop app,
+ *    and project folders (one file per flow) work too.
  *  - Other browsers (Firefox, Safari) fall back to a file picker for Open and a
- *    download for Save.
+ *    download for Save, so they use single-file projects.
  *
  * Nothing is ever sent to a server. Paths are opaque keys (`<id>/<file name>`)
  * that map to a file handle kept in this tab and, for Recent, in IndexedDB.
@@ -37,6 +39,17 @@ interface FsFileHandle {
   requestPermission?(opts: { mode: PermissionMode }): Promise<PermissionState>
   isSameEntry?(other: FsFileHandle): Promise<boolean>
 }
+interface FsDirHandle {
+  kind: 'directory'
+  name: string
+  getFileHandle(name: string, opts?: { create?: boolean }): Promise<FsFileHandle>
+  getDirectoryHandle(name: string, opts?: { create?: boolean }): Promise<FsDirHandle>
+  removeEntry(name: string): Promise<void>
+  values(): AsyncIterable<FsFileHandle | FsDirHandle>
+  queryPermission?(opts: { mode: PermissionMode }): Promise<PermissionState>
+  requestPermission?(opts: { mode: PermissionMode }): Promise<PermissionState>
+  isSameEntry?(other: FsFileHandle | FsDirHandle): Promise<boolean>
+}
 interface PickerType {
   description: string
   accept: Record<string, string[]>
@@ -44,10 +57,12 @@ interface PickerType {
 interface FsWindow {
   showOpenFilePicker?(opts: { types?: PickerType[]; multiple?: boolean; id?: string }): Promise<FsFileHandle[]>
   showSaveFilePicker?(opts: { suggestedName?: string; types?: PickerType[]; id?: string }): Promise<FsFileHandle>
+  showDirectoryPicker?(opts: { id?: string; mode?: PermissionMode }): Promise<FsDirHandle>
 }
 
 const fsWindow = window as unknown as FsWindow
 const hasFsAccess = typeof fsWindow.showOpenFilePicker === 'function' && typeof fsWindow.showSaveFilePicker === 'function'
+const hasFolders = hasFsAccess && typeof fsWindow.showDirectoryPicker === 'function'
 
 const PROJECT_TYPES: PickerType[] = [{ description: 'Skein Project', accept: { 'application/json': ['.json'] } }]
 const EXPORT_TYPES: PickerType[] = [{ description: 'Game data (JSON)', accept: { 'application/json': ['.json'] } }]
@@ -56,6 +71,8 @@ const EXPORT_TYPES: PickerType[] = [{ description: 'Game data (JSON)', accept: {
 
 /** Files this tab may touch: a picked handle, or (fallback) text read from an upload / a download name. */
 const handles = new Map<string, FsFileHandle>()
+/** Project folders, by key (`<id>/<Name>.skein/project.json`). */
+const folders = new Map<string, FsDirHandle>()
 const uploads = new Map<string, string>()
 const downloads = new Set<string>()
 
@@ -88,7 +105,7 @@ function describe(err: unknown): string {
   return err instanceof Error ? err.message : String(err)
 }
 
-async function ensurePermission(handle: FsFileHandle, mode: PermissionMode): Promise<boolean> {
+async function ensurePermission(handle: FsFileHandle | FsDirHandle, mode: PermissionMode): Promise<boolean> {
   if (!handle.queryPermission || !handle.requestPermission) return true
   if ((await handle.queryPermission({ mode })) === 'granted') return true
   return (await handle.requestPermission({ mode })) === 'granted'
@@ -148,6 +165,63 @@ async function writeText(key: string, text: string): Promise<WriteResult> {
   return { ok: false, error: 'Choose where to save with Save As first.' }
 }
 
+// ---- Project folders ----
+
+/** `<id>/<Name>.skein/project.json`: ends in project.json, like a desktop folder project's path. */
+function folderKey(dir: FsDirHandle): string {
+  return newKey(`${dir.name}/${PROJECT_FILE}`)
+}
+
+async function readFolder(dir: FsDirHandle): Promise<{ files: ProjectFiles; stamp: string }> {
+  const main = await (await dir.getFileHandle(PROJECT_FILE)).getFile()
+  const files: ProjectFiles = { [PROJECT_FILE]: await main.text() }
+  const stamp: string[] = [`${main.lastModified}`]
+  let flows: FsDirHandle | null = null
+  try {
+    flows = await dir.getDirectoryHandle(FLOWS_DIR)
+  } catch {
+    flows = null
+  }
+  if (flows) {
+    const entries: FsFileHandle[] = []
+    for await (const entry of flows.values()) if (entry.kind === 'file' && !entry.name.startsWith('.') && entry.name.toLowerCase().endsWith('.json')) entries.push(entry)
+    for (const entry of entries.sort((a, b) => (a.name < b.name ? -1 : 1))) {
+      const file = await entry.getFile()
+      files[`${FLOWS_DIR}/${entry.name}`] = await file.text()
+      stamp.push(`${entry.name}:${file.lastModified}`)
+    }
+  }
+  return { files, stamp: stamp.join('|') }
+}
+
+async function writeFolder(key: string, dir: FsDirHandle, files: ProjectFiles): Promise<WriteResult> {
+  try {
+    if (!(await ensurePermission(dir, 'readwrite'))) return { ok: false, error: 'Permission to save into this folder was not granted.' }
+    let existing: ProjectFiles = {}
+    try {
+      existing = (await readFolder(dir)).files
+    } catch {
+      existing = {}
+    }
+    const { write, remove } = planWrite(files, existing)
+    const flows = await dir.getDirectoryHandle(FLOWS_DIR, { create: true })
+    // project.json last, so a save that stops part-way never points at flows it doesn't have.
+    const order = Object.keys(write).sort((a, b) => (a === PROJECT_FILE ? 1 : b === PROJECT_FILE ? -1 : a < b ? -1 : 1))
+    for (const path of order) {
+      const target = path === PROJECT_FILE ? dir : flows
+      const handle = await target.getFileHandle(path === PROJECT_FILE ? PROJECT_FILE : path.slice(FLOWS_DIR.length + 1), { create: true })
+      const writable = await handle.createWritable()
+      await writable.write(write[path])
+      await writable.close()
+    }
+    for (const path of remove) await flows.removeEntry(path.slice(FLOWS_DIR.length + 1)).catch(() => undefined)
+    folderStamps.set(key, (await readFolder(dir)).stamp)
+    return { ok: true, path: key, bytes: Object.values(files).reduce((n, t) => n + byteLength(t), 0) }
+  } catch (err) {
+    return { ok: false, error: describe(err) }
+  }
+}
+
 // ---- Recent projects (IndexedDB, so file handles survive a reload) ----
 
 const DB_NAME = 'skein'
@@ -158,7 +232,7 @@ interface StoredRecent {
   path: string
   name: string
   openedAt: string
-  handle: FsFileHandle
+  handle: FsFileHandle | FsDirHandle
 }
 
 function openDb(): Promise<IDBDatabase> {
@@ -195,6 +269,7 @@ async function listStored(): Promise<StoredRecent[]> {
 // ---- External-change detection (polls the open file's modified time) ----
 
 const lastModified = new Map<string, number>()
+const folderStamps = new Map<string, string>()
 const externalListeners = new Set<(change: ExternalChange) => void>()
 let watchedKey: string | null = null
 
@@ -209,6 +284,24 @@ async function rememberModified(key: string, handle: FsFileHandle): Promise<void
 setInterval(() => {
   if (!watchedKey || document.visibilityState !== 'visible') return
   const key = watchedKey
+  const dir = folders.get(key)
+  if (dir) {
+    const known = folderStamps.get(key)
+    readFolder(dir).then(
+      ({ stamp }) => {
+        if (known !== undefined && stamp !== known) {
+          folderStamps.set(key, stamp)
+          externalListeners.forEach((cb) => cb({ path: key, deleted: false }))
+        }
+      },
+      () => {
+        if (!folderStamps.has(key)) return
+        folderStamps.delete(key)
+        externalListeners.forEach((cb) => cb({ path: key, deleted: true }))
+      }
+    )
+    return
+  }
   const handle = handles.get(key)
   const known = lastModified.get(key)
   if (!handle || known === undefined) return
@@ -308,8 +401,61 @@ export const browserApi: SkeinApi = {
     return key
   },
 
-  async saveProjectDialog(suggestedName) {
-    const name = withJsonExtension(suggestedName || 'Untitled.skein.json', '.skein.json')
+  async openProjectFolderDialog() {
+    if (!hasFolders) throw new Error('This browser can’t open folders. Use Chrome, Edge or Arc, or open a single .skein.json file.')
+    let picked: FsDirHandle
+    try {
+      picked = await fsWindow.showDirectoryPicker!({ id: 'skein-project', mode: 'readwrite' })
+    } catch (err) {
+      if (isAbort(err)) return null
+      throw err
+    }
+    // The project folder itself, or a folder holding exactly one project folder.
+    let dir: FsDirHandle | null = null
+    try {
+      await picked.getFileHandle(PROJECT_FILE)
+      dir = picked
+    } catch {
+      const inside: FsDirHandle[] = []
+      for await (const entry of picked.values()) {
+        if (entry.kind !== 'directory') continue
+        try {
+          await entry.getFileHandle(PROJECT_FILE)
+          inside.push(entry)
+        } catch {
+          // not a project
+        }
+      }
+      if (inside.length === 1) dir = inside[0]
+    }
+    if (!dir) throw new Error(`That folder isn't a Skein project: it has no ${PROJECT_FILE}. Pick the “…${FOLDER_SUFFIX}” folder itself.`)
+    const key = folderKey(dir)
+    folders.set(key, dir)
+    return key
+  },
+
+  async saveProjectDialog(suggestedName, layout) {
+    if (layout === 'folder' && hasFolders) {
+      try {
+        const parent = await fsWindow.showDirectoryPicker!({ id: 'skein-project', mode: 'readwrite' })
+        const base = (suggestedName || 'Untitled').replace(/(\.skein)?(\.json)?$/i, '')
+        let dir: FsDirHandle
+        if (parent.name.toLowerCase().endsWith(FOLDER_SUFFIX)) dir = parent // picked an existing project folder
+        else dir = await parent.getDirectoryHandle(`${base}${FOLDER_SUFFIX}`, { create: true })
+        for await (const entry of dir.values()) {
+          if (entry.name.startsWith('.') || entry.name === PROJECT_FILE || entry.name === FLOWS_DIR) continue
+          throw new Error(`${dir.name} already holds other files. Choose a new name, or an existing Skein project folder.`)
+        }
+        const key = folderKey(dir)
+        folders.set(key, dir)
+        return key
+      } catch (err) {
+        if (isAbort(err)) return null
+        throw err
+      }
+    }
+    // Single file (asked for, or the browser can't write folders).
+    const name = withJsonExtension(`${(suggestedName || 'Untitled').replace(/(\.skein)?(\.json)?$/i, '')}.skein.json`, '.skein.json')
     if (hasFsAccess) {
       try {
         const handle = await fsWindow.showSaveFilePicker!({ suggestedName: name, types: PROJECT_TYPES, id: 'skein-project' })
@@ -327,6 +473,18 @@ export const browserApi: SkeinApi = {
   },
 
   async readProject(path): Promise<ReadResult> {
+    const dir = folders.get(path)
+    if (dir) {
+      try {
+        if (!(await ensurePermission(dir, 'readwrite'))) return { ok: false, error: 'Permission to open this folder was not granted.' }
+        const { files, stamp } = await readFolder(dir)
+        folderStamps.set(path, stamp)
+        watchedKey = path
+        return { ok: true, path, files }
+      } catch (err) {
+        return { ok: false, error: describe(err) }
+      }
+    }
     const handle = handles.get(path)
     if (handle) {
       try {
@@ -348,6 +506,19 @@ export const browserApi: SkeinApi = {
   },
 
   async writeProject(path, project) {
+    const dir = folders.get(path)
+    if (dir || isFolderProjectPath(path)) {
+      if (!dir) return { ok: false, error: 'Choose where to save with Save As first.' }
+      let files: ProjectFiles
+      try {
+        files = splitProject(project)
+      } catch (err) {
+        return { ok: false, error: describe(err) }
+      }
+      const res = await writeFolder(path, dir, files)
+      if (res.ok) watchedKey = path
+      return res
+    }
     let text: string
     try {
       text = serializeProject(project)
@@ -361,18 +532,21 @@ export const browserApi: SkeinApi = {
 
   async listRecent(): Promise<RecentProject[]> {
     const items = await listStored()
-    for (const item of items) handles.set(item.path, item.handle)
+    for (const item of items) {
+      if (item.handle.kind === 'directory') folders.set(item.path, item.handle)
+      else handles.set(item.path, item.handle)
+    }
     return items.map(({ path, name, openedAt }) => ({ path, name, openedAt, exists: true }))
   },
 
   async touchRecent(path, name) {
-    const handle = handles.get(path)
+    const handle = handles.get(path) ?? folders.get(path)
     if (!handle) return // Uploads/downloads can't be reopened later, so they don't go in Recent.
     try {
       const existing = await listStored()
       // One entry per file: drop older keys that point at the same file.
       for (const item of existing) {
-        if (item.path !== path && (await item.handle.isSameEntry?.(handle))) {
+        if (item.path !== path && item.handle.kind === handle.kind && (await item.handle.isSameEntry?.(handle as never))) {
           await withStore('readwrite', (s) => s.delete(item.path))
         }
       }

@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { closeProject, newProject, openProject, saveProject, saveProjectAs } from '../lib/projectIO'
+import { closeProject, newProject, openProject, openProjectFolder, saveProject, saveProjectAs } from '../lib/projectIO'
 import { selectDirty, useProjectStore } from '../store/projectStore'
 import { useUi } from '../store/ui'
 
@@ -34,11 +34,17 @@ export function useAppCommands(): void {
         case 'open':
           void openProject()
           break
+        case 'open-folder':
+          void openProjectFolder()
+          break
         case 'save':
           if (hasProject) void saveProject()
           break
         case 'save-as':
-          if (hasProject) void saveProjectAs()
+          if (hasProject) void saveProjectAs('folder')
+          break
+        case 'save-as-file':
+          if (hasProject) void saveProjectAs('file')
           break
         case 'close-project':
           if (hasProject) void closeProject()
