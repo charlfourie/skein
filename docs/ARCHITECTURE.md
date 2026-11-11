@@ -22,6 +22,8 @@ src/
     expr/runtime.ts    Reference semantics: evaluate, execute, advance time, run rules
     expr/sites.ts      Every expression in a project, and rename-following
     expr/usage.ts      Where each piece of state is used
+    play/explore.ts    Path explorer: every sequence of choices and dice through a flow
+    play/storyTests.ts Story tests: scenarios, recorded routes, every-path checks
     export/            Game export: format types, builder, reference runtime
     factory.ts     Constructors for new projects, flows and folders
     ipc.ts         IPC channel names and the typed `window.api` contract
@@ -80,12 +82,24 @@ Reload is disabled in production builds so Ctrl+R can't silently discard work.
   "folders": { "<uuid>": { "id", "name", "order", "parentId", "section" } },
   "format": "skein.project",
   "meta": { "createdAt", "description", "id", "name" },
-  "schemaVersion": 5,
+  "scenarios": {   // v6, optional: named starting states for testing
+    "<uuid>": { "id", "name": "Only 1 coin", "order": 0, "setup": "Player.Coins = 1", "day": 2, "phaseId": "<uuid>", "seed": 42 }
+  },
+  "schemaVersion": 6,
   "state": {
     "relationships": { "<uuid>": { "fromTemplateId", "toTemplateId", "technicalName": "Trust", "type": "number", "min": -5, "max": 5 } },
     "rules": { "<uuid>": { "trigger": "phase", "phaseId": "<night>", "forEachTemplateId": "<character>", "condition": "", "effects": "self.Energy -= 1" } },
     "time": { "phases": { "<uuid>": { "label": "Dawn", "order": 0, "technicalName": "Dawn" } }, "startDay": 1, "startPhaseId": "<uuid>" },
     "variables": { "<uuid>": { "namespace": "World", "technicalName": "StormRaging", "type": "boolean", "defaultValue": true } }
+  },
+  "tests": {   // v6, optional: story tests (see docs/PLAY.md)
+    "<uuid>": {
+      "id", "name", "order", "flowId": "<uuid>", "scenarioId": "<uuid> | null", "kind": "play",
+      "route": [{ "choose": "<node uuid>" }, { "dice": 0 }],   // play: in order, so an array
+      "stopsAt": "<node uuid>", "ends": true,
+      "checks": "Player.Coins == 1"                               // conditions, one per line
+    },
+    "<uuid>": { "...": "", "kind": "explore", "allEnd": true, "allReached": true, "reach": ["<node uuid>"], "checks": "" }
   },
   "templates": {   // properties may carry "mutable": true (changes during play)
     "<uuid>": {

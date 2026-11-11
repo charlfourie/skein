@@ -44,6 +44,7 @@ It's built for:
 | 🧠 **Real game state** | World variables, character stats, one-way relationships (who trusts whom), dice, and a clock where actions take time. Expressions are checked as you type, with "did you mean…?" suggestions. |
 | ▶️ **Play mode** | Click through any flow exactly as the game will run it, with live state, a transcript, and a HUD for values like coins. Choices you can't afford show as locked, with the reason. |
 | 🔍 **Explore every path** | Plays every combination of choices and reports endings, unreachable nodes, loops with no way out, and where numbers end up. |
+| 🧪 **Story tests** | Save a play-through or an every-path check, with conditions that must hold. Tests re-run after every edit and in your build pipeline, so a change that breaks the story shows up straight away. |
 | 📦 **Engine export** | Clean, deterministic JSON with every condition pre-compiled, plus ready-made runtimes for **TypeScript**, **C#** (Unity, Godot .NET, .NET) and **Unity components**. |
 | 🔒 **Yours, on your disk** | No accounts, no server. Files are written atomically, repaired after messy merges, and watched for `git pull` changes. |
 | 🌐 **Desktop or browser** | An Electron desktop app, or the same editor [in your browser](https://skein-mocha.vercel.app). |
@@ -166,7 +167,7 @@ runtimes. The next ones make it something any team can ship a game with, in any 
 | --- | --- | --- |
 | ✅ | **1–5 · The editor:** storage, templates and entities, flowcharts, state and time, engine export | Done |
 | ✅ | **6 · First runtimes:** C# (Unity, Godot .NET, .NET) and Unity components, checked against the reference by a conformance suite | Done |
-| 🟡 | **7 · Play and analysis:** Play, Explore, start states and replays are done; saved scenarios and story tests that re-check after edits are in progress | In progress |
+| 🟡 | **7 · Play and analysis:** Play, Explore, start states and replays, plus saved scenarios and story tests that re-check after every edit | In review |
 | ⬜ | **8 · Format foundations:** one file per flow, line IDs, variables inside lines, comments on nodes, a versioning policy, a published JSON Schema and a shared conformance kit for every runtime | Planned |
 | ⬜ | **9 · Unity, production-ready:** an installable Unity package, an importer that checks exports, configurable components and a sample scene | Planned |
 | ⬜ | **10 · Shipping the editor:** desktop installers and releases, so writers don't need Node | Planned |

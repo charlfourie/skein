@@ -2,6 +2,30 @@
 
 What's new in Skein, newest first. Dates are when the work landed on `main`.
 
+## Unreleased (on `next`)
+
+### Added
+- **Scenarios:** save a start state under a name and share it through the
+  project file. Load, update or delete them in **Start state**.
+- **Story tests** that re-run after every edit. **Save as test** in Play keeps a
+  play-through (its choices, its dice and where it stops) with checks such as
+  `Player.Coins == 1`; **Check every path** makes sure every path ends, every node
+  is reached, given endings are reachable and conditions hold at every ending.
+  Failures say why in plain words, with Show and Replay. See [docs/PLAY.md](docs/PLAY.md).
+- The status bar shows how the tests are doing, and the Play panel has a **Tests** tab.
+- `npm run test:story -- story.skein.json` runs a project's tests in a build
+  pipeline (exits with 1 when one needs attention).
+- Both demos come with scenarios and tests.
+
+### Changed
+- **Project format v6** adds optional `scenarios` and `tests` sections. Older
+  projects open as before and only change when you add one.
+- Deleting a flow deletes its tests too (the confirmation says how many).
+- `npm run make:demos` produces the same ids every time, so regenerating a demo
+  only changes what actually changed.
+- The roadmap has a new order (Unity first, format foundations before more
+  runtimes) and states plainly that Skein has no cloud and no sign-in.
+
 ## 2026-11-11
 
 ### Added
