@@ -1,0 +1,308 @@
+{
+  "$id": "https://raw.githubusercontent.com/charlfourie/skein/main/schemas/skein.flow.v7.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "description": "One flow of a project folder (flows/<name>.<id>.json), with the story tests for it. Project format version 7.",
+  "properties": {
+    "comments": {
+      "additionalProperties": {
+        "additionalProperties": true,
+        "properties": {
+          "author": {
+            "default": "",
+            "type": "string"
+          },
+          "createdAt": {
+            "default": "",
+            "type": "string"
+          },
+          "id": {
+            "$ref": "#/properties/id"
+          },
+          "nodeId": {
+            "$ref": "#/properties/id"
+          },
+          "parentId": {
+            "$ref": "#/properties/id"
+          },
+          "resolved": {
+            "type": "boolean"
+          },
+          "text": {
+            "default": "",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nodeId"
+        ],
+        "type": "object"
+      },
+      "type": "object"
+    },
+    "edges": {
+      "additionalProperties": {
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "$ref": "#/properties/id"
+          },
+          "order": {
+            "$ref": "#/properties/order"
+          },
+          "source": {
+            "$ref": "#/properties/id"
+          },
+          "sourceHandle": {
+            "default": null,
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "target": {
+            "$ref": "#/properties/id"
+          },
+          "targetHandle": {
+            "default": null,
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "source",
+          "target"
+        ],
+        "type": "object"
+      },
+      "default": {},
+      "type": "object"
+    },
+    "folderId": {
+      "anyOf": [
+        {
+          "$ref": "#/properties/id"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "format": {
+      "const": "skein.flow",
+      "type": "string"
+    },
+    "frames": {
+      "additionalProperties": {
+        "additionalProperties": true,
+        "properties": {
+          "color": {
+            "type": "string"
+          },
+          "height": {
+            "exclusiveMinimum": 0,
+            "type": "number"
+          },
+          "id": {
+            "$ref": "#/properties/id"
+          },
+          "label": {
+            "default": "",
+            "type": "string"
+          },
+          "position": {
+            "$ref": "#/properties/nodes/additionalProperties/properties/position"
+          },
+          "width": {
+            "exclusiveMinimum": 0,
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "position",
+          "width",
+          "height"
+        ],
+        "type": "object"
+      },
+      "type": "object"
+    },
+    "id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "linePrefix": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "nodes": {
+      "additionalProperties": {
+        "additionalProperties": true,
+        "properties": {
+          "data": {
+            "additionalProperties": {},
+            "default": {},
+            "type": "object"
+          },
+          "id": {
+            "$ref": "#/properties/id"
+          },
+          "position": {
+            "additionalProperties": false,
+            "properties": {
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "x",
+              "y"
+            ],
+            "type": "object"
+          },
+          "type": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "position"
+        ],
+        "type": "object"
+      },
+      "default": {},
+      "type": "object"
+    },
+    "order": {
+      "default": 0,
+      "type": "number"
+    },
+    "tests": {
+      "additionalProperties": {
+        "additionalProperties": true,
+        "properties": {
+          "allEnd": {
+            "type": "boolean"
+          },
+          "allReached": {
+            "type": "boolean"
+          },
+          "checks": {
+            "default": "",
+            "type": "string"
+          },
+          "ends": {
+            "type": "boolean"
+          },
+          "flowId": {
+            "$ref": "#/properties/id"
+          },
+          "id": {
+            "$ref": "#/properties/id"
+          },
+          "kind": {
+            "enum": [
+              "play",
+              "explore"
+            ],
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "order": {
+            "$ref": "#/properties/order",
+            "default": 0
+          },
+          "reach": {
+            "items": {
+              "$ref": "#/properties/id"
+            },
+            "type": "array"
+          },
+          "route": {
+            "items": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "choose": {
+                      "$ref": "#/properties/id"
+                    }
+                  },
+                  "required": [
+                    "choose"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "dice": {
+                      "minimum": 0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "dice"
+                  ],
+                  "type": "object"
+                }
+              ]
+            },
+            "type": "array"
+          },
+          "scenarioId": {
+            "anyOf": [
+              {
+                "$ref": "#/properties/id"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "stopsAt": {
+            "anyOf": [
+              {
+                "$ref": "#/properties/id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "flowId",
+          "kind"
+        ],
+        "type": "object"
+      },
+      "type": "object"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "format"
+  ],
+  "title": "Skein flow file",
+  "type": "object"
+}

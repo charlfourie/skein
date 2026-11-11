@@ -1,7 +1,7 @@
 {
   "name": "skein",
   "productName": "Skein",
-  "version": "0.1.0",
+  "version": "0.8.0",
   "description": "Local-first, node-based narrative design editor. Projects are deterministic JSON files on disk.",
   "private": true,
   "license": "Apache-2.0",
@@ -18,7 +18,8 @@
     "make:example": "tsx scripts/make-example.ts",
     "make:demos": "tsx scripts/make-demos.ts",
     "export": "tsx scripts/export.ts",
-    "test:story": "tsx scripts/test-story.ts"
+    "test:story": "tsx scripts/test-story.ts",
+    "make:schemas": "tsx scripts/make-schemas.ts"
   },
   "dependencies": {
     "@dagrejs/dagre": "^1.1.4",
@@ -38,6 +39,7 @@
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
+    "ajv": "^8.20.0",
     "autoprefixer": "^10.4.20",
     "electron": "^33.2.1",
     "electron-vite": "^2.3.0",
@@ -46,6 +48,7 @@
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "vite": "^5.4.11",
-    "vitest": "^2.1.8"
+    "vitest": "^2.1.8",
+    "zod-to-json-schema": "^3.25.2"
   }
 }

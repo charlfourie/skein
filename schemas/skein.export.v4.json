@@ -1,0 +1,1078 @@
+{
+  "$id": "https://raw.githubusercontent.com/charlfourie/skein/main/schemas/skein.export.v4.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "description": "The file games read (format \"skein.export\", versions 1 to 4). See docs/EXPORT.md for how a story runs.",
+  "properties": {
+    "entities": {
+      "additionalProperties": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "template": {
+            "type": "string"
+          },
+          "values": {
+            "additionalProperties": {
+              "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/default"
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "template",
+          "values"
+        ],
+        "type": "object"
+      },
+      "type": "object"
+    },
+    "flows": {
+      "additionalProperties": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nodes": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "activity": {
+                      "type": "string"
+                    },
+                    "count": {
+                      "const": true,
+                      "type": "boolean"
+                    },
+                    "effects": {
+                      "$ref": "#/properties/state/properties/rules/items/properties/effects"
+                    },
+                    "end": {
+                      "const": true,
+                      "type": "boolean"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "line": {
+                      "type": "string"
+                    },
+                    "menuLine": {
+                      "type": "string"
+                    },
+                    "menuText": {
+                      "type": "string"
+                    },
+                    "next": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "requires": {
+                      "$ref": "#/properties/state/properties/rules/items/properties/when"
+                    },
+                    "speaker": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "start": {
+                      "const": true,
+                      "type": "boolean"
+                    },
+                    "tag": {
+                      "type": "string"
+                    },
+                    "takes": {
+                      "type": "number"
+                    },
+                    "text": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "const": "dialogue",
+                      "type": "string"
+                    },
+                    "vars": {
+                      "additionalProperties": {
+                        "$ref": "#/properties/state/properties/rules/items/properties/when/properties/expr"
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "type",
+                    "speaker",
+                    "text",
+                    "next"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "activity": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/activity"
+                    },
+                    "condition": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/properties/state/properties/rules/items/properties/when"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "count": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/count"
+                    },
+                    "effects": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/effects"
+                    },
+                    "end": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/end"
+                    },
+                    "id": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/id"
+                    },
+                    "onFalse": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "onTrue": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "requires": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/requires"
+                    },
+                    "start": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/start"
+                    },
+                    "tag": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/tag"
+                    },
+                    "takes": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/takes"
+                    },
+                    "type": {
+                      "const": "condition",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "type",
+                    "condition",
+                    "onTrue",
+                    "onFalse"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "activity": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/activity"
+                    },
+                    "count": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/count"
+                    },
+                    "effects": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/effects"
+                    },
+                    "end": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/end"
+                    },
+                    "id": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/id"
+                    },
+                    "instruction": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/properties/state/properties/rules/items/properties/effects"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "next": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "requires": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/requires"
+                    },
+                    "start": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/start"
+                    },
+                    "tag": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/tag"
+                    },
+                    "takes": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/takes"
+                    },
+                    "type": {
+                      "const": "instruction",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "type",
+                    "instruction",
+                    "next"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "activity": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/activity"
+                    },
+                    "count": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/count"
+                    },
+                    "effects": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/effects"
+                    },
+                    "end": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/end"
+                    },
+                    "id": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/id"
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "next": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "requires": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/requires"
+                    },
+                    "start": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/start"
+                    },
+                    "tag": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/tag"
+                    },
+                    "takes": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/takes"
+                    },
+                    "type": {
+                      "const": "hub",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "type",
+                    "label",
+                    "next"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "activity": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/activity"
+                    },
+                    "count": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/count"
+                    },
+                    "effects": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/effects"
+                    },
+                    "end": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/end"
+                    },
+                    "id": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/id"
+                    },
+                    "jumpFlow": {
+                      "type": "string"
+                    },
+                    "jumpTo": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "requires": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/requires"
+                    },
+                    "start": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/start"
+                    },
+                    "tag": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/tag"
+                    },
+                    "takes": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/takes"
+                    },
+                    "type": {
+                      "const": "jump",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "type",
+                    "jumpTo"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "activity": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/activity"
+                    },
+                    "count": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/count"
+                    },
+                    "effects": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/effects"
+                    },
+                    "end": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/end"
+                    },
+                    "flow": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "id": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/id"
+                    },
+                    "next": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "requires": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/requires"
+                    },
+                    "start": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/start"
+                    },
+                    "tag": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/tag"
+                    },
+                    "takes": {
+                      "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/takes"
+                    },
+                    "type": {
+                      "const": "call",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "type",
+                    "flow",
+                    "next"
+                  ],
+                  "type": "object"
+                }
+              ]
+            },
+            "type": "object"
+          },
+          "start": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "start",
+          "nodes"
+        ],
+        "type": "object"
+      },
+      "type": "object"
+    },
+    "format": {
+      "const": "skein.export",
+      "type": "string"
+    },
+    "project": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "type": "object"
+    },
+    "state": {
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "additionalProperties": {
+            "additionalProperties": false,
+            "properties": {
+              "default": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/default"
+              },
+              "from": {
+                "type": "string"
+              },
+              "integer": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/integer"
+              },
+              "labels": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/labels"
+              },
+              "max": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/max"
+              },
+              "min": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/min"
+              },
+              "name": {
+                "type": "string"
+              },
+              "options": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/options"
+              },
+              "template": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/template"
+              },
+              "to": {
+                "type": "string"
+              },
+              "type": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/type"
+              },
+              "values": {
+                "additionalProperties": {
+                  "additionalProperties": {
+                    "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/default"
+                  },
+                  "type": "object"
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "type",
+              "default",
+              "name",
+              "from",
+              "to",
+              "values"
+            ],
+            "type": "object"
+          },
+          "type": "object"
+        },
+        "rules": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "effects": {
+                "additionalProperties": false,
+                "properties": {
+                  "do": {
+                    "items": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "op": {
+                              "enum": [
+                                "=",
+                                "+=",
+                                "-="
+                              ],
+                              "type": "string"
+                            },
+                            "set": {
+                              "$ref": "#/properties/state/properties/rules/items/properties/when/properties/expr/anyOf/1"
+                            },
+                            "value": {
+                              "$ref": "#/properties/state/properties/rules/items/properties/when/properties/expr"
+                            }
+                          },
+                          "required": [
+                            "set",
+                            "op",
+                            "value"
+                          ],
+                          "type": "object"
+                        },
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "advance": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "advance"
+                          ],
+                          "type": "object"
+                        },
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "advanceTo": {
+                              "type": "string"
+                            },
+                            "stay": {
+                              "const": true,
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "advanceTo"
+                          ],
+                          "type": "object"
+                        },
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "pass": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "pass"
+                          ],
+                          "type": "object"
+                        }
+                      ]
+                    },
+                    "type": "array"
+                  },
+                  "source": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "do"
+                ],
+                "type": "object"
+              },
+              "flow": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "forEach": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "phase": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "trigger": {
+                "enum": [
+                  "phase",
+                  "day"
+                ],
+                "type": "string"
+              },
+              "when": {
+                "additionalProperties": false,
+                "properties": {
+                  "expr": {
+                    "anyOf": [
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "lit": {
+                            "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/default"
+                          }
+                        },
+                        "required": [
+                          "lit"
+                        ],
+                        "type": "object"
+                      },
+                      {
+                        "anyOf": [
+                          {
+                            "additionalProperties": false,
+                            "properties": {
+                              "get": {
+                                "const": "var",
+                                "type": "string"
+                              },
+                              "var": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "get",
+                              "var"
+                            ],
+                            "type": "object"
+                          },
+                          {
+                            "additionalProperties": false,
+                            "properties": {
+                              "entity": {
+                                "type": "string"
+                              },
+                              "get": {
+                                "const": "prop",
+                                "type": "string"
+                              },
+                              "prop": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "get",
+                              "entity",
+                              "prop"
+                            ],
+                            "type": "object"
+                          },
+                          {
+                            "additionalProperties": false,
+                            "properties": {
+                              "from": {
+                                "type": "string"
+                              },
+                              "get": {
+                                "const": "rel",
+                                "type": "string"
+                              },
+                              "rel": {
+                                "type": "string"
+                              },
+                              "to": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "get",
+                              "rel",
+                              "from",
+                              "to"
+                            ],
+                            "type": "object"
+                          },
+                          {
+                            "additionalProperties": false,
+                            "properties": {
+                              "field": {
+                                "enum": [
+                                  "day",
+                                  "phase",
+                                  "hour",
+                                  "minute"
+                                ],
+                                "type": "string"
+                              },
+                              "get": {
+                                "const": "time",
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "get",
+                              "field"
+                            ],
+                            "type": "object"
+                          },
+                          {
+                            "additionalProperties": false,
+                            "properties": {
+                              "get": {
+                                "const": "visit",
+                                "type": "string"
+                              },
+                              "node": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "get",
+                              "node"
+                            ],
+                            "type": "object"
+                          }
+                        ]
+                      },
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "not": {
+                            "$ref": "#/properties/state/properties/rules/items/properties/when/properties/expr"
+                          }
+                        },
+                        "required": [
+                          "not"
+                        ],
+                        "type": "object"
+                      },
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "neg": {
+                            "$ref": "#/properties/state/properties/rules/items/properties/when/properties/expr"
+                          }
+                        },
+                        "required": [
+                          "neg"
+                        ],
+                        "type": "object"
+                      },
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "chance": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "chance"
+                        ],
+                        "type": "object"
+                      },
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "roll": {
+                            "items": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "number"
+                              }
+                            ],
+                            "maxItems": 2,
+                            "minItems": 2,
+                            "type": "array"
+                          }
+                        },
+                        "required": [
+                          "roll"
+                        ],
+                        "type": "object"
+                      },
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "a": {
+                            "$ref": "#/properties/state/properties/rules/items/properties/when/properties/expr"
+                          },
+                          "b": {
+                            "$ref": "#/properties/state/properties/rules/items/properties/when/properties/expr"
+                          },
+                          "op": {
+                            "enum": [
+                              "and",
+                              "or",
+                              "==",
+                              "!=",
+                              "<",
+                              "<=",
+                              ">",
+                              ">=",
+                              "phase<",
+                              "phase<=",
+                              "phase>",
+                              "phase>=",
+                              "+",
+                              "-",
+                              "*",
+                              "/"
+                            ],
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "op",
+                          "a",
+                          "b"
+                        ],
+                        "type": "object"
+                      }
+                    ]
+                  },
+                  "source": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "expr"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "trigger",
+              "phase",
+              "forEach",
+              "effects"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "time": {
+          "additionalProperties": false,
+          "properties": {
+            "dayStart": {
+              "type": "number"
+            },
+            "labels": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "minutes": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "phases": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "start": {
+              "additionalProperties": false,
+              "properties": {
+                "day": {
+                  "type": "number"
+                },
+                "minute": {
+                  "type": "number"
+                },
+                "phase": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "day",
+                "phase"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "phases",
+            "labels",
+            "start"
+          ],
+          "type": "object"
+        },
+        "variables": {
+          "additionalProperties": {
+            "additionalProperties": false,
+            "properties": {
+              "default": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/default"
+              },
+              "hud": {
+                "const": true,
+                "type": "boolean"
+              },
+              "integer": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/integer"
+              },
+              "labels": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/labels"
+              },
+              "max": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/max"
+              },
+              "min": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/min"
+              },
+              "options": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/options"
+              },
+              "template": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/template"
+              },
+              "type": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/type"
+              }
+            },
+            "required": [
+              "type",
+              "default"
+            ],
+            "type": "object"
+          },
+          "type": "object"
+        }
+      },
+      "required": [
+        "variables",
+        "relationships",
+        "time",
+        "rules"
+      ],
+      "type": "object"
+    },
+    "templates": {
+      "additionalProperties": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "properties": {
+            "additionalProperties": {
+              "additionalProperties": false,
+              "properties": {
+                "default": {
+                  "type": [
+                    "number",
+                    "boolean",
+                    "string",
+                    "null"
+                  ]
+                },
+                "integer": {
+                  "const": true,
+                  "type": "boolean"
+                },
+                "labels": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "max": {
+                  "type": "number"
+                },
+                "min": {
+                  "type": "number"
+                },
+                "options": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "state": {
+                  "const": true,
+                  "type": "boolean"
+                },
+                "template": {
+                  "type": "string"
+                },
+                "type": {
+                  "enum": [
+                    "text",
+                    "number",
+                    "boolean",
+                    "enum",
+                    "entity",
+                    "color"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type",
+                "default"
+              ],
+              "type": "object"
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "properties"
+        ],
+        "type": "object"
+      },
+      "type": "object"
+    },
+    "version": {
+      "maximum": 4,
+      "minimum": 1,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "format",
+    "version",
+    "project",
+    "templates",
+    "entities",
+    "state",
+    "flows"
+  ],
+  "title": "Skein game export",
+  "type": "object"
+}

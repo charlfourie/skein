@@ -1,0 +1,936 @@
+{
+  "$id": "https://raw.githubusercontent.com/charlfourie/skein/main/schemas/skein.project.v7.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "description": "A Skein project (format \"skein.project\", version 7): a single .skein.json file, or the project.json of a project folder (whose flows are in flows/*.json).",
+  "properties": {
+    "entities": {
+      "additionalProperties": {
+        "additionalProperties": true,
+        "properties": {
+          "folderId": {
+            "$ref": "#/properties/flows/additionalProperties/properties/folderId"
+          },
+          "id": {
+            "$ref": "#/properties/meta/properties/id"
+          },
+          "name": {
+            "$ref": "#/properties/flows/additionalProperties/properties/name"
+          },
+          "order": {
+            "$ref": "#/properties/flows/additionalProperties/properties/order"
+          },
+          "relations": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/defaultValue"
+              },
+              "type": "object"
+            },
+            "type": "object"
+          },
+          "technicalName": {
+            "default": "",
+            "type": "string"
+          },
+          "templateId": {
+            "$ref": "#/properties/meta/properties/id"
+          },
+          "values": {
+            "additionalProperties": {
+              "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/defaultValue"
+            },
+            "default": {},
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "templateId"
+        ],
+        "type": "object"
+      },
+      "default": {},
+      "type": "object"
+    },
+    "flows": {
+      "additionalProperties": {
+        "additionalProperties": true,
+        "properties": {
+          "comments": {
+            "additionalProperties": {
+              "additionalProperties": true,
+              "properties": {
+                "author": {
+                  "default": "",
+                  "type": "string"
+                },
+                "createdAt": {
+                  "default": "",
+                  "type": "string"
+                },
+                "id": {
+                  "$ref": "#/properties/meta/properties/id"
+                },
+                "nodeId": {
+                  "$ref": "#/properties/meta/properties/id"
+                },
+                "parentId": {
+                  "$ref": "#/properties/meta/properties/id"
+                },
+                "resolved": {
+                  "type": "boolean"
+                },
+                "text": {
+                  "default": "",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "nodeId"
+              ],
+              "type": "object"
+            },
+            "type": "object"
+          },
+          "edges": {
+            "additionalProperties": {
+              "additionalProperties": true,
+              "properties": {
+                "id": {
+                  "$ref": "#/properties/meta/properties/id"
+                },
+                "order": {
+                  "$ref": "#/properties/folders/additionalProperties/properties/order"
+                },
+                "source": {
+                  "$ref": "#/properties/meta/properties/id"
+                },
+                "sourceHandle": {
+                  "default": null,
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "target": {
+                  "$ref": "#/properties/meta/properties/id"
+                },
+                "targetHandle": {
+                  "default": null,
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "source",
+                "target"
+              ],
+              "type": "object"
+            },
+            "default": {},
+            "type": "object"
+          },
+          "folderId": {
+            "anyOf": [
+              {
+                "$ref": "#/properties/meta/properties/id"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "frames": {
+            "additionalProperties": {
+              "additionalProperties": true,
+              "properties": {
+                "color": {
+                  "type": "string"
+                },
+                "height": {
+                  "exclusiveMinimum": 0,
+                  "type": "number"
+                },
+                "id": {
+                  "$ref": "#/properties/meta/properties/id"
+                },
+                "label": {
+                  "default": "",
+                  "type": "string"
+                },
+                "position": {
+                  "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/properties/position"
+                },
+                "width": {
+                  "exclusiveMinimum": 0,
+                  "type": "number"
+                }
+              },
+              "required": [
+                "id",
+                "position",
+                "width",
+                "height"
+              ],
+              "type": "object"
+            },
+            "type": "object"
+          },
+          "id": {
+            "$ref": "#/properties/meta/properties/id"
+          },
+          "linePrefix": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nodes": {
+            "additionalProperties": {
+              "additionalProperties": true,
+              "properties": {
+                "data": {
+                  "additionalProperties": {},
+                  "default": {},
+                  "type": "object"
+                },
+                "id": {
+                  "$ref": "#/properties/meta/properties/id"
+                },
+                "position": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "x": {
+                      "type": "number"
+                    },
+                    "y": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y"
+                  ],
+                  "type": "object"
+                },
+                "type": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "type",
+                "position"
+              ],
+              "type": "object"
+            },
+            "default": {},
+            "type": "object"
+          },
+          "order": {
+            "$ref": "#/properties/folders/additionalProperties/properties/order",
+            "default": 0
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "type": "object"
+      },
+      "default": {},
+      "type": "object"
+    },
+    "folders": {
+      "additionalProperties": {
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "$ref": "#/properties/meta/properties/id"
+          },
+          "name": {
+            "type": "string"
+          },
+          "order": {
+            "default": 0,
+            "type": "number"
+          },
+          "parentId": {
+            "anyOf": [
+              {
+                "$ref": "#/properties/meta/properties/id"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "section": {
+            "enum": [
+              "flows",
+              "entities",
+              "templates"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "section"
+        ],
+        "type": "object"
+      },
+      "default": {},
+      "type": "object"
+    },
+    "format": {
+      "const": "skein.project",
+      "type": "string"
+    },
+    "meta": {
+      "additionalProperties": true,
+      "properties": {
+        "createdAt": {
+          "type": "string"
+        },
+        "description": {
+          "default": "",
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "createdAt"
+      ],
+      "type": "object"
+    },
+    "scenarios": {
+      "additionalProperties": {
+        "additionalProperties": true,
+        "properties": {
+          "day": {
+            "type": "integer"
+          },
+          "id": {
+            "$ref": "#/properties/meta/properties/id"
+          },
+          "name": {
+            "type": "string"
+          },
+          "order": {
+            "$ref": "#/properties/folders/additionalProperties/properties/order",
+            "default": 0
+          },
+          "phaseId": {
+            "anyOf": [
+              {
+                "$ref": "#/properties/meta/properties/id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "seed": {
+            "type": "integer"
+          },
+          "setup": {
+            "default": "",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "type": "object"
+      },
+      "type": "object"
+    },
+    "schemaVersion": {
+      "const": 7,
+      "type": "number"
+    },
+    "state": {
+      "additionalProperties": true,
+      "default": {},
+      "properties": {
+        "relationships": {
+          "additionalProperties": {
+            "additionalProperties": true,
+            "properties": {
+              "defaultValue": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/defaultValue"
+              },
+              "description": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/description"
+              },
+              "fromTemplateId": {
+                "$ref": "#/properties/meta/properties/id"
+              },
+              "id": {
+                "$ref": "#/properties/meta/properties/id"
+              },
+              "integer": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/integer"
+              },
+              "max": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/max"
+              },
+              "min": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/min"
+              },
+              "mutable": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/mutable"
+              },
+              "name": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/name"
+              },
+              "options": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/options"
+              },
+              "order": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/order"
+              },
+              "referenceTemplateId": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/referenceTemplateId"
+              },
+              "technicalName": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/technicalName"
+              },
+              "toTemplateId": {
+                "$ref": "#/properties/meta/properties/id"
+              },
+              "type": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/type"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "type",
+              "fromTemplateId",
+              "toTemplateId"
+            ],
+            "type": "object"
+          },
+          "default": {},
+          "type": "object"
+        },
+        "rules": {
+          "additionalProperties": {
+            "additionalProperties": true,
+            "properties": {
+              "condition": {
+                "default": "",
+                "type": "string"
+              },
+              "effects": {
+                "default": "",
+                "type": "string"
+              },
+              "enabled": {
+                "default": true,
+                "type": "boolean"
+              },
+              "flowId": {
+                "anyOf": [
+                  {
+                    "$ref": "#/properties/meta/properties/id"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "forEachTemplateId": {
+                "anyOf": [
+                  {
+                    "$ref": "#/properties/meta/properties/id"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "id": {
+                "$ref": "#/properties/meta/properties/id"
+              },
+              "name": {
+                "type": "string"
+              },
+              "order": {
+                "$ref": "#/properties/folders/additionalProperties/properties/order",
+                "default": 0
+              },
+              "phaseId": {
+                "anyOf": [
+                  {
+                    "$ref": "#/properties/meta/properties/id"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "trigger": {
+                "default": "phase",
+                "enum": [
+                  "phase",
+                  "day"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ],
+            "type": "object"
+          },
+          "default": {},
+          "type": "object"
+        },
+        "time": {
+          "additionalProperties": true,
+          "default": {},
+          "properties": {
+            "activities": {
+              "additionalProperties": {
+                "additionalProperties": true,
+                "properties": {
+                  "id": {
+                    "$ref": "#/properties/meta/properties/id"
+                  },
+                  "minutes": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "order": {
+                    "$ref": "#/properties/folders/additionalProperties/properties/order",
+                    "default": 0
+                  }
+                },
+                "required": [
+                  "id",
+                  "name",
+                  "minutes"
+                ],
+                "type": "object"
+              },
+              "type": "object"
+            },
+            "dayStart": {
+              "maximum": 1439,
+              "minimum": 0,
+              "type": "number"
+            },
+            "phases": {
+              "additionalProperties": {
+                "additionalProperties": true,
+                "properties": {
+                  "id": {
+                    "$ref": "#/properties/meta/properties/id"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "minutes": {
+                    "exclusiveMinimum": 0,
+                    "type": "number"
+                  },
+                  "order": {
+                    "$ref": "#/properties/folders/additionalProperties/properties/order",
+                    "default": 0
+                  },
+                  "technicalName": {
+                    "default": "",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "label"
+                ],
+                "type": "object"
+              },
+              "default": {},
+              "type": "object"
+            },
+            "speakingRate": {
+              "minimum": 0,
+              "type": "number"
+            },
+            "startDay": {
+              "default": 1,
+              "type": "integer"
+            },
+            "startMinute": {
+              "minimum": 0,
+              "type": "number"
+            },
+            "startPhaseId": {
+              "anyOf": [
+                {
+                  "$ref": "#/properties/meta/properties/id"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            }
+          },
+          "type": "object"
+        },
+        "variables": {
+          "additionalProperties": {
+            "additionalProperties": true,
+            "properties": {
+              "defaultValue": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/defaultValue"
+              },
+              "description": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/description"
+              },
+              "id": {
+                "$ref": "#/properties/meta/properties/id"
+              },
+              "integer": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/integer"
+              },
+              "max": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/max"
+              },
+              "min": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/min"
+              },
+              "mutable": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/mutable"
+              },
+              "name": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/name"
+              },
+              "namespace": {
+                "default": "World",
+                "type": "string"
+              },
+              "options": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/options"
+              },
+              "order": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/order"
+              },
+              "referenceTemplateId": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/referenceTemplateId"
+              },
+              "showInPlay": {
+                "type": "boolean"
+              },
+              "technicalName": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/technicalName"
+              },
+              "type": {
+                "$ref": "#/properties/templates/additionalProperties/properties/properties/additionalProperties/properties/type"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "type"
+            ],
+            "type": "object"
+          },
+          "default": {},
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "templates": {
+      "additionalProperties": {
+        "additionalProperties": true,
+        "properties": {
+          "color": {
+            "default": "#818cf8",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "type": "string"
+          },
+          "folderId": {
+            "$ref": "#/properties/flows/additionalProperties/properties/folderId"
+          },
+          "icon": {
+            "default": "box",
+            "type": "string"
+          },
+          "id": {
+            "$ref": "#/properties/meta/properties/id"
+          },
+          "name": {
+            "$ref": "#/properties/flows/additionalProperties/properties/name"
+          },
+          "order": {
+            "$ref": "#/properties/flows/additionalProperties/properties/order"
+          },
+          "properties": {
+            "additionalProperties": {
+              "additionalProperties": true,
+              "properties": {
+                "defaultValue": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "description": {
+                  "default": "",
+                  "type": "string"
+                },
+                "id": {
+                  "$ref": "#/properties/meta/properties/id"
+                },
+                "integer": {
+                  "type": "boolean"
+                },
+                "max": {
+                  "type": "number"
+                },
+                "min": {
+                  "type": "number"
+                },
+                "mutable": {
+                  "type": "boolean"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "options": {
+                  "additionalProperties": {
+                    "additionalProperties": true,
+                    "properties": {
+                      "id": {
+                        "$ref": "#/properties/meta/properties/id"
+                      },
+                      "label": {
+                        "type": "string"
+                      },
+                      "order": {
+                        "$ref": "#/properties/folders/additionalProperties/properties/order",
+                        "default": 0
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "label"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "object"
+                },
+                "order": {
+                  "$ref": "#/properties/folders/additionalProperties/properties/order",
+                  "default": 0
+                },
+                "referenceTemplateId": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/properties/meta/properties/id"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "technicalName": {
+                  "default": "",
+                  "type": "string"
+                },
+                "type": {
+                  "enum": [
+                    "text",
+                    "longText",
+                    "number",
+                    "boolean",
+                    "enum",
+                    "reference",
+                    "color"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "type"
+              ],
+              "type": "object"
+            },
+            "default": {},
+            "type": "object"
+          },
+          "technicalName": {
+            "default": "",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "type": "object"
+      },
+      "default": {},
+      "type": "object"
+    },
+    "tests": {
+      "additionalProperties": {
+        "additionalProperties": true,
+        "properties": {
+          "allEnd": {
+            "type": "boolean"
+          },
+          "allReached": {
+            "type": "boolean"
+          },
+          "checks": {
+            "default": "",
+            "type": "string"
+          },
+          "ends": {
+            "type": "boolean"
+          },
+          "flowId": {
+            "$ref": "#/properties/meta/properties/id"
+          },
+          "id": {
+            "$ref": "#/properties/meta/properties/id"
+          },
+          "kind": {
+            "enum": [
+              "play",
+              "explore"
+            ],
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "order": {
+            "$ref": "#/properties/folders/additionalProperties/properties/order",
+            "default": 0
+          },
+          "reach": {
+            "items": {
+              "$ref": "#/properties/meta/properties/id"
+            },
+            "type": "array"
+          },
+          "route": {
+            "items": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "choose": {
+                      "$ref": "#/properties/meta/properties/id"
+                    }
+                  },
+                  "required": [
+                    "choose"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "dice": {
+                      "minimum": 0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "dice"
+                  ],
+                  "type": "object"
+                }
+              ]
+            },
+            "type": "array"
+          },
+          "scenarioId": {
+            "anyOf": [
+              {
+                "$ref": "#/properties/meta/properties/id"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "stopsAt": {
+            "anyOf": [
+              {
+                "$ref": "#/properties/meta/properties/id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "flowId",
+          "kind"
+        ],
+        "type": "object"
+      },
+      "type": "object"
+    }
+  },
+  "required": [
+    "format",
+    "schemaVersion",
+    "meta"
+  ],
+  "title": "Skein project",
+  "type": "object"
+}

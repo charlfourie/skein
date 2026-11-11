@@ -4,6 +4,7 @@ import { sortedTests } from '@shared/play/storyTests'
 import { isFolderProjectPath } from '@shared/projectFiles'
 import { dirname } from '../../lib/platform'
 import { SCHEMA_VERSION, type Project } from '@shared/schema'
+import { SKEIN_VERSION } from '@shared/version'
 import { usePlay } from '../../store/play'
 import { selectDirty, useProjectStore } from '../../store/projectStore'
 import { useTests } from '../../store/tests'
@@ -53,7 +54,9 @@ export function StatusBar() {
         {Object.keys(project.flows).length} flows · {Object.keys(project.entities).length} entities ·{' '}
         {Object.keys(project.state.variables).length} world variables
       </span>
-      <span className="font-mono text-faint">v{SCHEMA_VERSION}</span>
+      <span className="font-mono text-faint" title={`Skein ${SKEIN_VERSION}, project format v${SCHEMA_VERSION}`}>
+        {SKEIN_VERSION} · format v{SCHEMA_VERSION}
+      </span>
     </footer>
   )
 }

@@ -168,7 +168,7 @@ export interface ExportFlow {
 
 export interface ExportFile {
   format: typeof EXPORT_FORMAT
-  version: 1 | 2 | 3
+  version: 1 | 2 | 3 | 4
   project: { id: string; name: string }
   templates: Record<string, ExportTemplate>
   entities: Record<string, ExportEntity>
