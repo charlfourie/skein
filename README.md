@@ -159,23 +159,28 @@ The format is fully specified in [docs/EXPORT.md](docs/EXPORT.md).
 
 ## 🗺️ Roadmap
 
-Skein is built in reviewed phases. Phases 1 to 5 built the editor. The next ones turn it
-into a tool any team can adopt.
+Skein is built in reviewed phases. Phases 1 to 6 built the editor and its first
+runtimes. The next ones make it something any team can ship a game with, in any engine.
 
 | | Phase | Status |
 | --- | --- | --- |
 | ✅ | **1–5 · The editor:** storage, templates and entities, flowcharts, state and time, engine export | Done |
-| 🟡 | **6 · Engine runtimes:** C# and Unity are done; a native Godot (GDScript) add-on is next | In progress |
-| 🟡 | **7 · Play and analysis:** Play, Explore, start states and replays are done; saved test runs that re-check after edits are next | In progress |
-| ⬜ | **8 · Collaboration:** one file per flow for fewer conflicts, GitHub sign-in, comments on nodes | Planned |
-| ⬜ | **9 · Localisation and voice-over:** line IDs, translator export and import, recording scripts | Planned |
-| ⬜ | **10 · Extensibility:** custom node types, event nodes, variables inside lines, plugins | Planned |
-| ⬜ | **11 · Interchange:** import from ink, Yarn Spinner and Twine; templates beyond games | Planned |
-| ⬜ | **12 · Adoption:** published JSON Schema, a CLI, a docs site, more samples | Planned |
+| ✅ | **6 · First runtimes:** C# (Unity, Godot .NET, .NET) and Unity components, checked against the reference by a conformance suite | Done |
+| 🟡 | **7 · Play and analysis:** Play, Explore, start states and replays are done; saved scenarios and story tests that re-check after edits are in progress | In progress |
+| ⬜ | **8 · Format foundations:** one file per flow, line IDs, variables inside lines, comments on nodes, a versioning policy, a published JSON Schema and a shared conformance kit for every runtime | Planned |
+| ⬜ | **9 · Unity, production-ready:** an installable Unity package, an importer that checks exports, configurable components and a sample scene | Planned |
+| ⬜ | **10 · Shipping the editor:** desktop installers and releases, so writers don't need Node | Planned |
+| ⬜ | **11 · Localisation and voice-over:** translator export and import, recording scripts, Unity Localization support | Planned |
+| ⬜ | **12 · Godot:** a native GDScript runtime and add-on | Planned |
+| ⬜ | **13 · Extensibility:** event nodes and custom node types that every runtime hands to the game, and plugins | Planned |
+| ⬜ | **14 · Unreal, interchange and adoption:** a C++ runtime and Unreal plugin, import from ink, Yarn Spinner and Twine, a CLI and a docs site | Planned |
 
 Through every phase Skein stays **local-first** (it always works offline, with files you
 own), keeps **deterministic files** that diff cleanly, and has **one source of truth** for
 story logic that every runtime is tested against.
+
+**No cloud, ever.** Skein has no accounts, no sign-in and no server. Teams share projects
+however they like (git, a shared drive, email), and nothing on the roadmap changes that.
 
 See what's changed recently in the [changelog](CHANGELOG.md).
 
