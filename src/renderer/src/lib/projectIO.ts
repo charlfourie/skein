@@ -1,5 +1,6 @@
 import { createEmptyProject } from '@shared/factory'
 import { parseProject } from '@shared/parse'
+import type { Demo } from '../demos'
 import { selectDirty, useProjectStore } from '../store/projectStore'
 import { basename, suggestedFileName } from './platform'
 import { toast } from './toast'
@@ -43,6 +44,22 @@ export async function openProject(path?: string): Promise<boolean> {
   const target = path ?? (await window.api.openProjectDialog())
   if (!target) return false
   return loadFrom(target)
+}
+
+/**
+ * Open a bundled demo. It opens like a new, unsaved project, so saving asks
+ * where to put a copy and the bundled original is never touched.
+ */
+export async function openDemo(demo: Demo): Promise<boolean> {
+  if (!(await guardUnsaved())) return false
+  const parsed = parseProject(demo.text)
+  if (!parsed.ok) {
+    toast.error(`Couldn't open ${demo.title}`, parsed.error)
+    return false
+  }
+  store().loadProject(parsed.project, null)
+  toast.success(`Opened ${demo.title}`, 'This is a demo copy. Use Save As to keep your changes.')
+  return true
 }
 
 export async function reloadFromDisk(): Promise<boolean> {

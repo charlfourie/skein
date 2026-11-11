@@ -15,6 +15,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "make:example": "tsx scripts/make-example.ts",
+    "make:demos": "tsx scripts/make-demos.ts",
     "export": "tsx scripts/export.ts"
   },
   "dependencies": {

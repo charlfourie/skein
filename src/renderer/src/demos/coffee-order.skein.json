@@ -1,0 +1,384 @@
+{
+  "entities": {
+    "7f64b6c3-84e1-4981-b5db-1f40a3bc1232": {
+      "folderId": null,
+      "id": "7f64b6c3-84e1-4981-b5db-1f40a3bc1232",
+      "name": "You",
+      "order": 1,
+      "technicalName": "You",
+      "templateId": "f292c737-8e8c-480c-a172-65625672df28",
+      "values": {}
+    },
+    "89661055-3329-4643-bc4c-429537950ed7": {
+      "folderId": null,
+      "id": "89661055-3329-4643-bc4c-429537950ed7",
+      "name": "Pip the Barista",
+      "order": 0,
+      "technicalName": "Pip",
+      "templateId": "f292c737-8e8c-480c-a172-65625672df28",
+      "values": {
+        "917e7fe7-2d7b-477a-92f5-145ff6a089a8": "Runs the tiniest café in town. Takes foam art very seriously."
+      }
+    }
+  },
+  "flows": {
+    "e9b257cf-28bc-47d4-a4f0-1e62687e6d5b": {
+      "edges": {
+        "0539e010-d1ea-4643-8b5b-65bc708682b1": {
+          "id": "0539e010-d1ea-4643-8b5b-65bc708682b1",
+          "source": "64b66e95-eecc-498e-bc7a-6e7425ae19e8",
+          "sourceHandle": "out",
+          "target": "cbeb1dc6-59ba-44e8-aa07-96838dde4a64",
+          "targetHandle": "in"
+        },
+        "0766f755-9179-4e71-a53a-89751e381fcb": {
+          "id": "0766f755-9179-4e71-a53a-89751e381fcb",
+          "source": "c197c3dd-c4ba-4b18-8b72-29410a5cd349",
+          "sourceHandle": "out",
+          "target": "d9939ab5-b97d-4d9b-b841-dad5e75363ab",
+          "targetHandle": "in"
+        },
+        "0ffa6b03-a7b1-43e0-9f81-6d65bfe0e018": {
+          "id": "0ffa6b03-a7b1-43e0-9f81-6d65bfe0e018",
+          "source": "bcf16bee-05d1-4f66-a4e5-96acd34fbca0",
+          "sourceHandle": "out",
+          "target": "64b66e95-eecc-498e-bc7a-6e7425ae19e8",
+          "targetHandle": "in"
+        },
+        "27c1d86f-61c3-4218-becb-8a3f12d5c757": {
+          "id": "27c1d86f-61c3-4218-becb-8a3f12d5c757",
+          "source": "68f0e83a-c011-4292-885c-ef9f4cc1f21d",
+          "sourceHandle": "false",
+          "target": "4910f236-73b4-44fe-89e9-5b60a7d4a091",
+          "targetHandle": "in"
+        },
+        "37057225-2d5a-4e1d-ba67-22d21879f8f4": {
+          "id": "37057225-2d5a-4e1d-ba67-22d21879f8f4",
+          "source": "88192375-372e-4ce1-938b-0f82e3c91554",
+          "sourceHandle": "out",
+          "target": "d9939ab5-b97d-4d9b-b841-dad5e75363ab",
+          "targetHandle": "in"
+        },
+        "4e47a377-f478-48b0-8a1f-1c76b2f35b2d": {
+          "id": "4e47a377-f478-48b0-8a1f-1c76b2f35b2d",
+          "source": "c5f1739f-b5d6-4cde-9e99-26a977c8d2e4",
+          "sourceHandle": "out",
+          "target": "d9939ab5-b97d-4d9b-b841-dad5e75363ab",
+          "targetHandle": "in"
+        },
+        "87d95fe2-9d74-465c-b9fd-5f33e1f8f1bd": {
+          "id": "87d95fe2-9d74-465c-b9fd-5f33e1f8f1bd",
+          "source": "64b66e95-eecc-498e-bc7a-6e7425ae19e8",
+          "sourceHandle": "out",
+          "target": "0e251d4e-92ec-4b99-b5ea-22dd1d1ad6f0",
+          "targetHandle": "in"
+        },
+        "9208fff2-df99-4a02-b540-6b83b413a3d3": {
+          "id": "9208fff2-df99-4a02-b540-6b83b413a3d3",
+          "source": "4910f236-73b4-44fe-89e9-5b60a7d4a091",
+          "sourceHandle": "out",
+          "target": "6010985e-a766-48ea-b776-8dfac6b9b9be",
+          "targetHandle": "in"
+        },
+        "bb3c20dc-1a04-48cf-832b-60a5a2f34dde": {
+          "id": "bb3c20dc-1a04-48cf-832b-60a5a2f34dde",
+          "source": "68f0e83a-c011-4292-885c-ef9f4cc1f21d",
+          "sourceHandle": "true",
+          "target": "0011bf11-5978-4ab3-b908-5d4fb3ea124b",
+          "targetHandle": "in"
+        },
+        "c3552c58-a0df-495e-85a0-1260ca465622": {
+          "id": "c3552c58-a0df-495e-85a0-1260ca465622",
+          "source": "027f9095-cd4c-4c8c-8ae0-646eea649687",
+          "sourceHandle": "out",
+          "target": "68f0e83a-c011-4292-885c-ef9f4cc1f21d",
+          "targetHandle": "in"
+        },
+        "e74527c6-df24-4939-a56e-eead7f3f108a": {
+          "id": "e74527c6-df24-4939-a56e-eead7f3f108a",
+          "source": "0e251d4e-92ec-4b99-b5ea-22dd1d1ad6f0",
+          "sourceHandle": "out",
+          "target": "c5f1739f-b5d6-4cde-9e99-26a977c8d2e4",
+          "targetHandle": "in"
+        },
+        "ed2deeea-6a72-455d-a81a-aa57fbd2abd6": {
+          "id": "ed2deeea-6a72-455d-a81a-aa57fbd2abd6",
+          "source": "cbeb1dc6-59ba-44e8-aa07-96838dde4a64",
+          "sourceHandle": "out",
+          "target": "88192375-372e-4ce1-938b-0f82e3c91554",
+          "targetHandle": "in"
+        },
+        "ee19fc6f-d068-4a03-ae8e-606dd120b96f": {
+          "id": "ee19fc6f-d068-4a03-ae8e-606dd120b96f",
+          "source": "64b66e95-eecc-498e-bc7a-6e7425ae19e8",
+          "sourceHandle": "out",
+          "target": "027f9095-cd4c-4c8c-8ae0-646eea649687",
+          "targetHandle": "in"
+        },
+        "fc68ec89-bb14-4246-b539-661f9799a5f3": {
+          "id": "fc68ec89-bb14-4246-b539-661f9799a5f3",
+          "source": "0011bf11-5978-4ab3-b908-5d4fb3ea124b",
+          "sourceHandle": "out",
+          "target": "c197c3dd-c4ba-4b18-8b72-29410a5cd349",
+          "targetHandle": "in"
+        }
+      },
+      "folderId": null,
+      "id": "e9b257cf-28bc-47d4-a4f0-1e62687e6d5b",
+      "name": "The Order",
+      "nodes": {
+        "0011bf11-5978-4ab3-b908-5d4fb3ea124b": {
+          "data": {
+            "note": "Instructions change state.",
+            "script": "Player.Coins -= 4"
+          },
+          "id": "0011bf11-5978-4ab3-b908-5d4fb3ea124b",
+          "position": {
+            "x": 0,
+            "y": 840
+          },
+          "type": "instruction"
+        },
+        "027f9095-cd4c-4c8c-8ae0-646eea649687": {
+          "data": {
+            "menuText": "A flat white (4 coins)",
+            "speakerId": "7f64b6c3-84e1-4981-b5db-1f40a3bc1232",
+            "text": "A flat white, please."
+          },
+          "id": "027f9095-cd4c-4c8c-8ae0-646eea649687",
+          "position": {
+            "x": 160,
+            "y": 424
+          },
+          "type": "dialogue"
+        },
+        "0e251d4e-92ec-4b99-b5ea-22dd1d1ad6f0": {
+          "data": {
+            "menuText": "Just water",
+            "speakerId": "7f64b6c3-84e1-4981-b5db-1f40a3bc1232",
+            "text": "Just water, thanks."
+          },
+          "id": "0e251d4e-92ec-4b99-b5ea-22dd1d1ad6f0",
+          "position": {
+            "x": 952,
+            "y": 840
+          },
+          "type": "dialogue"
+        },
+        "4910f236-73b4-44fe-89e9-5b60a7d4a091": {
+          "data": {
+            "speakerId": "89661055-3329-4643-bc4c-429537950ed7",
+            "text": "Ah, you're a little short for that one. Anything else?"
+          },
+          "id": "4910f236-73b4-44fe-89e9-5b60a7d4a091",
+          "position": {
+            "x": 320,
+            "y": 840
+          },
+          "type": "dialogue"
+        },
+        "6010985e-a766-48ea-b776-8dfac6b9b9be": {
+          "data": {
+            "note": "A jump continues the flow somewhere else: here, back to the menu.",
+            "targetId": "64b66e95-eecc-498e-bc7a-6e7425ae19e8"
+          },
+          "id": "6010985e-a766-48ea-b776-8dfac6b9b9be",
+          "position": {
+            "x": 320,
+            "y": 1048
+          },
+          "type": "jump"
+        },
+        "64b66e95-eecc-498e-bc7a-6e7425ae19e8": {
+          "data": {
+            "label": "The menu",
+            "note": "A hub is a meeting point. With several outputs it offers the player a choice. The jump below loops back to it."
+          },
+          "id": "64b66e95-eecc-498e-bc7a-6e7425ae19e8",
+          "position": {
+            "x": 632,
+            "y": 208
+          },
+          "type": "hub"
+        },
+        "68f0e83a-c011-4292-885c-ef9f4cc1f21d": {
+          "data": {
+            "expression": "Player.Coins >= 4",
+            "note": "Conditions branch automatically: green is true, red is false."
+          },
+          "id": "68f0e83a-c011-4292-885c-ef9f4cc1f21d",
+          "position": {
+            "x": 160,
+            "y": 632
+          },
+          "type": "condition"
+        },
+        "88192375-372e-4ce1-938b-0f82e3c91554": {
+          "data": {
+            "speakerId": "89661055-3329-4643-bc4c-429537950ed7",
+            "text": "Marshmallow tower, coming right up."
+          },
+          "id": "88192375-372e-4ce1-938b-0f82e3c91554",
+          "position": {
+            "x": 632,
+            "y": 1048
+          },
+          "type": "dialogue"
+        },
+        "bcf16bee-05d1-4f66-a4e5-96acd34fbca0": {
+          "data": {
+            "isStart": true,
+            "note": "Start here.",
+            "speakerId": "89661055-3329-4643-bc4c-429537950ed7",
+            "text": "Morning! What can I get you?"
+          },
+          "id": "bcf16bee-05d1-4f66-a4e5-96acd34fbca0",
+          "position": {
+            "x": 632,
+            "y": 0
+          },
+          "type": "dialogue"
+        },
+        "c197c3dd-c4ba-4b18-8b72-29410a5cd349": {
+          "data": {
+            "speakerId": "89661055-3329-4643-bc4c-429537950ed7",
+            "text": "Four coins. One flat white, with a fern on top."
+          },
+          "id": "c197c3dd-c4ba-4b18-8b72-29410a5cd349",
+          "position": {
+            "x": 0,
+            "y": 1048
+          },
+          "type": "dialogue"
+        },
+        "c5f1739f-b5d6-4cde-9e99-26a977c8d2e4": {
+          "data": {
+            "speakerId": "89661055-3329-4643-bc4c-429537950ed7",
+            "text": "On the house!"
+          },
+          "id": "c5f1739f-b5d6-4cde-9e99-26a977c8d2e4",
+          "position": {
+            "x": 952,
+            "y": 1048
+          },
+          "type": "dialogue"
+        },
+        "cbeb1dc6-59ba-44e8-aa07-96838dde4a64": {
+          "data": {
+            "effects": "Player.Coins -= 3",
+            "menuText": "Hot chocolate (3 coins)",
+            "note": "Effects change state as the story passes through.",
+            "speakerId": "7f64b6c3-84e1-4981-b5db-1f40a3bc1232",
+            "text": "Hot chocolate. Extra marshmallows."
+          },
+          "id": "cbeb1dc6-59ba-44e8-aa07-96838dde4a64",
+          "position": {
+            "x": 632,
+            "y": 840
+          },
+          "type": "dialogue"
+        },
+        "d9939ab5-b97d-4d9b-b841-dad5e75363ab": {
+          "data": {
+            "isEnd": true,
+            "speakerId": "89661055-3329-4643-bc4c-429537950ed7",
+            "text": "Enjoy! See you tomorrow."
+          },
+          "id": "d9939ab5-b97d-4d9b-b841-dad5e75363ab",
+          "position": {
+            "x": 632,
+            "y": 1264
+          },
+          "type": "dialogue"
+        }
+      },
+      "order": 0
+    }
+  },
+  "folders": {},
+  "format": "skein.project",
+  "meta": {
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "description": "A tiny branching conversation. Shows dialogue, a player choice, a condition, an instruction that spends coins, and a jump that loops back. You start with 3 coins, so ordering the flat white shows the loop back to the menu.",
+    "id": "c7b22a7c-8c16-4a13-9581-4d9d28950016",
+    "name": "Demo · The Coffee Order"
+  },
+  "schemaVersion": 5,
+  "state": {
+    "relationships": {},
+    "rules": {},
+    "time": {
+      "dayStart": 300,
+      "phases": {
+        "192c1b41-2415-4f40-a0bf-b9dc39ca19b1": {
+          "id": "192c1b41-2415-4f40-a0bf-b9dc39ca19b1",
+          "label": "Dusk",
+          "minutes": 120,
+          "order": 2,
+          "technicalName": "Dusk"
+        },
+        "cab93cab-3e6e-4186-9824-644f4fdd6544": {
+          "id": "cab93cab-3e6e-4186-9824-644f4fdd6544",
+          "label": "Dawn",
+          "minutes": 120,
+          "order": 0,
+          "technicalName": "Dawn"
+        },
+        "e926ef1c-48ea-4ce9-974b-fb49cd8eff42": {
+          "id": "e926ef1c-48ea-4ce9-974b-fb49cd8eff42",
+          "label": "Day",
+          "minutes": 660,
+          "order": 1,
+          "technicalName": "Day"
+        },
+        "f46476cc-43b6-4bd0-80d1-39dd3c69c19a": {
+          "id": "f46476cc-43b6-4bd0-80d1-39dd3c69c19a",
+          "label": "Night",
+          "minutes": 540,
+          "order": 3,
+          "technicalName": "Night"
+        }
+      },
+      "speakingRate": 150,
+      "startDay": 1,
+      "startPhaseId": "cab93cab-3e6e-4186-9824-644f4fdd6544"
+    },
+    "variables": {
+      "5a4023ce-e864-42dd-99e8-c2cc5c5e9754": {
+        "defaultValue": 3,
+        "description": "Money in your pocket. Raise it to 4 or more under State and the flat white goes through.",
+        "id": "5a4023ce-e864-42dd-99e8-c2cc5c5e9754",
+        "integer": true,
+        "max": 20,
+        "min": 0,
+        "name": "Coins",
+        "namespace": "Player",
+        "order": 0,
+        "technicalName": "Coins",
+        "type": "number"
+      }
+    }
+  },
+  "templates": {
+    "f292c737-8e8c-480c-a172-65625672df28": {
+      "color": "#818cf8",
+      "description": "",
+      "folderId": null,
+      "icon": "user",
+      "id": "f292c737-8e8c-480c-a172-65625672df28",
+      "name": "Character",
+      "order": 0,
+      "properties": {
+        "917e7fe7-2d7b-477a-92f5-145ff6a089a8": {
+          "description": "",
+          "id": "917e7fe7-2d7b-477a-92f5-145ff6a089a8",
+          "name": "Bio",
+          "order": 0,
+          "technicalName": "Bio",
+          "type": "longText"
+        }
+      },
+      "technicalName": "Character"
+    }
+  }
+}

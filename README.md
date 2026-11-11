@@ -23,7 +23,13 @@ npm install
 npm run dev          # launch the app with hot reload
 ```
 
-Then use **Open project…** and pick `examples/lighthouse-v2.skein.json` to see a sample.
+Then pick a demo under **Try a demo** on the Welcome screen:
+
+- **The Coffee Order** (simple): one flow with a choice, a condition, coins to spend and a loop back to the menu.
+- **The Midnight Museum Heist** (advanced): three flows with items, trust, character state, time phases, rules and four endings.
+
+Demos open as unsaved copies, so **Save As** keeps your changes and the bundled originals stay untouched.
+You can also use **Open project…** and pick `examples/lighthouse-v2.skein.json`.
 
 | Script | What it does |
 | --- | --- |
@@ -33,6 +39,7 @@ Then use **Open project…** and pick `examples/lighthouse-v2.skein.json` to see
 | `npm run typecheck` | Type-check main/preload/shared and renderer |
 | `npm test` | Storage-engine tests (serializer, parser, repairs) |
 | `npm run make:example` | Regenerate the sample project |
+| `npm run make:demos` | Regenerate the Welcome-screen demos in `src/renderer/src/demos/` |
 | `npm run export -- <in> <out> [--compact] [--no-source]` | Export for a game engine from the command line, for build pipelines. Exits non-zero on errors. |
 
 ## Using it

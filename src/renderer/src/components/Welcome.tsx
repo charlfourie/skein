@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion'
-import { FilePlus2, FileWarning, FolderOpen, X } from 'lucide-react'
+import { Coffee, FilePlus2, FileWarning, FolderOpen, Gem, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { RecentProject } from '@shared/ipc'
-import { newProject, openProject } from '../lib/projectIO'
+import { DEMOS, type Demo } from '../demos'
+import { newProject, openDemo, openProject } from '../lib/projectIO'
 import { dirname, shortcut } from '../lib/platform'
 import { Logo } from './ui/Logo'
 
@@ -64,6 +65,15 @@ export function Welcome() {
             delay={0.1}
           />
         </div>
+
+        <section className="mt-8">
+          <h2 className="mb-2 text-2xs font-semibold uppercase tracking-wider text-faint">Try a demo</h2>
+          <div className="grid grid-cols-2 gap-3">
+            {DEMOS.map((demo, i) => (
+              <DemoCard key={demo.id} demo={demo} delay={0.15 + i * 0.05} />
+            ))}
+          </div>
+        </section>
 
         <section className="mt-8">
           <h2 className="mb-2 text-2xs font-semibold uppercase tracking-wider text-faint">Recent</h2>
@@ -148,6 +158,31 @@ function ActionCard({
         <span className="font-medium text-fg">{title}</span>
         <kbd className="rounded bg-bg px-1.5 py-0.5 font-mono text-2xs text-faint">{hint}</kbd>
       </span>
+    </motion.button>
+  )
+}
+
+const DEMO_ICONS: Record<string, typeof Coffee> = { 'coffee-order': Coffee, 'museum-heist': Gem }
+
+function DemoCard({ demo, delay }: { demo: Demo; delay: number }) {
+  const Icon = DEMO_ICONS[demo.id] ?? Gem
+  return (
+    <motion.button
+      type="button"
+      onClick={() => void openDemo(demo)}
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, type: 'spring', stiffness: 400, damping: 30 }}
+      whileHover={{ y: -2 }}
+      whileTap={{ scale: 0.98 }}
+      className="group flex flex-col gap-2 rounded-xl border border-dashed border-line bg-panel/50 p-4 text-left transition-colors hover:border-accent/50 hover:bg-raised/70 focus-visible:ring-2 focus-visible:ring-accent/60"
+    >
+      <span className="flex items-center justify-between">
+        <Icon size={18} strokeWidth={1.6} className="text-accent transition-transform group-hover:scale-110" />
+        <span className="rounded bg-bg px-1.5 py-0.5 text-2xs text-faint">{demo.level}</span>
+      </span>
+      <span className="font-medium text-fg">{demo.title}</span>
+      <span className="text-xs leading-snug text-muted">{demo.blurb}</span>
     </motion.button>
   )
 }

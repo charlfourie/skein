@@ -1,0 +1,1480 @@
+{
+  "entities": {
+    "09b9d236-1de9-4b95-ba51-e4e953f0bed9": {
+      "folderId": "ee6f379b-ff9b-4a2a-8d37-74e192431624",
+      "id": "09b9d236-1de9-4b95-ba51-e4e953f0bed9",
+      "name": "The Jade Monkey",
+      "order": 8,
+      "technicalName": "JadeMonkey",
+      "templateId": "ae20b552-f3f4-406e-871b-ac4d5353e960",
+      "values": {
+        "6d94dccb-8554-4c93-b73b-f0070e65f262": 100000,
+        "f47167e6-2531-4133-8b2f-96f4d5d71abd": "A small jade statue. Priceless, and slightly smug-looking."
+      }
+    },
+    "12d726b1-63a7-4591-90bb-bcfa4f1cad32": {
+      "folderId": "ee6f379b-ff9b-4a2a-8d37-74e192431624",
+      "id": "12d726b1-63a7-4591-90bb-bcfa4f1cad32",
+      "name": "Cat Treats",
+      "order": 7,
+      "technicalName": "CatTreats",
+      "templateId": "ae20b552-f3f4-406e-871b-ac4d5353e960",
+      "values": {
+        "6d94dccb-8554-4c93-b73b-f0070e65f262": 2,
+        "f47167e6-2531-4133-8b2f-96f4d5d71abd": "Salmon flavour. Irresistible to cats."
+      }
+    },
+    "32e344b8-836a-4b2f-9dea-66db1301f859": {
+      "folderId": "7eb78762-8bf3-4294-bd6f-cb8ab656fc50",
+      "id": "32e344b8-836a-4b2f-9dea-66db1301f859",
+      "name": "The Getaway Van",
+      "order": 12,
+      "technicalName": "GetawayVan",
+      "templateId": "839af59d-9605-4cc8-a756-f67c8d85933b",
+      "values": {
+        "160a1e55-9d30-4312-bf37-6550aa26e65c": "Painted to look like a flower delivery."
+      }
+    },
+    "53d488a1-2cf9-4360-9b9c-01a9d87e6db6": {
+      "folderId": "7eb78762-8bf3-4294-bd6f-cb8ab656fc50",
+      "id": "53d488a1-2cf9-4360-9b9c-01a9d87e6db6",
+      "name": "Museum Roof",
+      "order": 10,
+      "technicalName": "MuseumRoof",
+      "templateId": "839af59d-9605-4cc8-a756-f67c8d85933b",
+      "values": {
+        "160a1e55-9d30-4312-bf37-6550aa26e65c": "Pigeons, skylights and a very good view."
+      }
+    },
+    "54b61a3e-9210-4d11-84e0-6537f3016a22": {
+      "folderId": "8da24fe7-cc23-44eb-8273-96f992e41f06",
+      "id": "54b61a3e-9210-4d11-84e0-6537f3016a22",
+      "name": "Rook",
+      "order": 0,
+      "technicalName": "Rook",
+      "templateId": "dae92b2a-e33b-4ee9-9786-7b44fa016c54",
+      "values": {
+        "925711db-4055-4e82-9a68-8835e88cbcdc": "df15d86b-9bf1-4cd7-a874-4deee888bae7",
+        "945f86b3-dc4b-4c44-9905-6a405d9c8ef3": "The planner. That is you."
+      }
+    },
+    "6ef6ff23-2368-4478-8e74-5dace86edc40": {
+      "folderId": "8da24fe7-cc23-44eb-8273-96f992e41f06",
+      "id": "6ef6ff23-2368-4478-8e74-5dace86edc40",
+      "name": "Juniper \"Juni\" Vale",
+      "order": 1,
+      "technicalName": "Juni",
+      "templateId": "dae92b2a-e33b-4ee9-9786-7b44fa016c54",
+      "values": {
+        "4a136ecd-28c3-4dd6-b7a7-2c90378996c0": 2,
+        "925711db-4055-4e82-9a68-8835e88cbcdc": "df15d86b-9bf1-4cd7-a874-4deee888bae7",
+        "945f86b3-dc4b-4c44-9905-6a405d9c8ef3": "Hacker. Can open anything with a keypad.",
+        "db98d9d0-02b3-44b4-ac76-6afdfdff51fd": "#2dd4bf"
+      }
+    },
+    "770d634a-c94a-4478-ad48-37f89bb16400": {
+      "folderId": "ee6f379b-ff9b-4a2a-8d37-74e192431624",
+      "id": "770d634a-c94a-4478-ad48-37f89bb16400",
+      "name": "Museum Blueprints",
+      "order": 5,
+      "technicalName": "Blueprints",
+      "templateId": "ae20b552-f3f4-406e-871b-ac4d5353e960",
+      "values": {
+        "6d94dccb-8554-4c93-b73b-f0070e65f262": 0,
+        "f47167e6-2531-4133-8b2f-96f4d5d71abd": "Shows the air vent above the Grand Gallery."
+      }
+    },
+    "78a95fae-4bd8-4063-a883-f539ae0e3234": {
+      "folderId": "ee6f379b-ff9b-4a2a-8d37-74e192431624",
+      "id": "78a95fae-4bd8-4063-a883-f539ae0e3234",
+      "name": "Lockpick Set",
+      "order": 6,
+      "technicalName": "Lockpicks",
+      "templateId": "ae20b552-f3f4-406e-871b-ac4d5353e960",
+      "values": {
+        "6d94dccb-8554-4c93-b73b-f0070e65f262": 15,
+        "f47167e6-2531-4133-8b2f-96f4d5d71abd": "Bruno's grandmother's. Do not lose them."
+      }
+    },
+    "7c727ba6-cfed-4612-83c2-da192cb36931": {
+      "folderId": "8da24fe7-cc23-44eb-8273-96f992e41f06",
+      "id": "7c727ba6-cfed-4612-83c2-da192cb36931",
+      "name": "Gustav",
+      "order": 4,
+      "technicalName": "Gustav",
+      "templateId": "dae92b2a-e33b-4ee9-9786-7b44fa016c54",
+      "values": {
+        "925711db-4055-4e82-9a68-8835e88cbcdc": "d419602d-19d9-4564-83ad-eaef06d14c66",
+        "945f86b3-dc4b-4c44-9905-6a405d9c8ef3": "Night guard. Owns a very nosy cat called Biscuit.",
+        "db98d9d0-02b3-44b4-ac76-6afdfdff51fd": "#60a5fa"
+      }
+    },
+    "ba810061-166e-4bed-a20c-6114e80f778f": {
+      "folderId": "8da24fe7-cc23-44eb-8273-96f992e41f06",
+      "id": "ba810061-166e-4bed-a20c-6114e80f778f",
+      "name": "Bruno",
+      "order": 2,
+      "technicalName": "Bruno",
+      "templateId": "dae92b2a-e33b-4ee9-9786-7b44fa016c54",
+      "values": {
+        "925711db-4055-4e82-9a68-8835e88cbcdc": "df15d86b-9bf1-4cd7-a874-4deee888bae7",
+        "945f86b3-dc4b-4c44-9905-6a405d9c8ef3": "Driver. Gentle giant. Hates loud noises.",
+        "db98d9d0-02b3-44b4-ac76-6afdfdff51fd": "#fb923c"
+      }
+    },
+    "c130a0b9-67ed-4552-8012-86c970dec0fc": {
+      "folderId": "7eb78762-8bf3-4294-bd6f-cb8ab656fc50",
+      "id": "c130a0b9-67ed-4552-8012-86c970dec0fc",
+      "name": "The Grand Gallery",
+      "order": 11,
+      "technicalName": "GrandGallery",
+      "templateId": "839af59d-9605-4cc8-a756-f67c8d85933b",
+      "values": {
+        "160a1e55-9d30-4312-bf37-6550aa26e65c": "Marble, moonlight, and one jade monkey on a plinth."
+      }
+    },
+    "c636510f-056b-4fb3-b411-19ddcde537ec": {
+      "folderId": "7eb78762-8bf3-4294-bd6f-cb8ab656fc50",
+      "id": "c636510f-056b-4fb3-b411-19ddcde537ec",
+      "name": "The Safehouse",
+      "order": 9,
+      "technicalName": "Safehouse",
+      "templateId": "839af59d-9605-4cc8-a756-f67c8d85933b",
+      "values": {
+        "160a1e55-9d30-4312-bf37-6550aa26e65c": "A flat above a laundrette. Smells of fabric softener."
+      }
+    },
+    "fbd7486a-9fe2-4307-bb33-d9814aa0ebda": {
+      "folderId": "8da24fe7-cc23-44eb-8273-96f992e41f06",
+      "id": "fbd7486a-9fe2-4307-bb33-d9814aa0ebda",
+      "name": "Madame Vex",
+      "order": 3,
+      "relations": {
+        "9a864215-f7b3-41e5-aebd-d69f5fb23259": {
+          "54b61a3e-9210-4d11-84e0-6537f3016a22": -1
+        }
+      },
+      "technicalName": "Vex",
+      "templateId": "dae92b2a-e33b-4ee9-9786-7b44fa016c54",
+      "values": {
+        "925711db-4055-4e82-9a68-8835e88cbcdc": "8cd2576d-2030-46e2-a363-2bf43c2cb0da",
+        "945f86b3-dc4b-4c44-9905-6a405d9c8ef3": "Collector of rare things. Wants the Jade Monkey back.",
+        "db98d9d0-02b3-44b4-ac76-6afdfdff51fd": "#c084fc"
+      }
+    }
+  },
+  "flows": {
+    "188d2e77-8db9-47e2-9710-428f07a72f91": {
+      "edges": {
+        "071d2a5c-b8b3-4ccf-854e-e71578a5636f": {
+          "id": "071d2a5c-b8b3-4ccf-854e-e71578a5636f",
+          "source": "63578d48-799e-4043-a91f-a213dbd635d6",
+          "sourceHandle": "out",
+          "target": "562b4389-2701-45dd-b971-ea9638418205",
+          "targetHandle": "in"
+        },
+        "1618a1a7-1819-4702-a903-aa101092784d": {
+          "id": "1618a1a7-1819-4702-a903-aa101092784d",
+          "source": "0a31fc81-9e0e-444c-aad3-d020adc32e38",
+          "sourceHandle": "true",
+          "target": "4523df7d-c281-45df-8299-b676d5303b41",
+          "targetHandle": "in"
+        },
+        "1b6abcb3-ab22-46d8-ad4d-1b429e82a1a6": {
+          "id": "1b6abcb3-ab22-46d8-ad4d-1b429e82a1a6",
+          "source": "0a31fc81-9e0e-444c-aad3-d020adc32e38",
+          "sourceHandle": "false",
+          "target": "f0ea2f5f-a1b8-4c7a-85e1-b9d709c30609",
+          "targetHandle": "in"
+        },
+        "2134f313-354f-4b25-a98e-6b9f0f19135a": {
+          "id": "2134f313-354f-4b25-a98e-6b9f0f19135a",
+          "source": "63578d48-799e-4043-a91f-a213dbd635d6",
+          "sourceHandle": "out",
+          "target": "42049d61-8162-4664-a397-5b0b45eea20f",
+          "targetHandle": "in"
+        },
+        "286b1034-8dd1-465c-91aa-d2b035d72a72": {
+          "id": "286b1034-8dd1-465c-91aa-d2b035d72a72",
+          "source": "98d7b389-6008-4477-9d35-3c820cb0e7d6",
+          "sourceHandle": "out",
+          "target": "f8a8e67e-cf7b-4307-9561-bd3a67c02303",
+          "targetHandle": "in"
+        },
+        "3e0a03df-34d9-44c9-888b-c61931418dbf": {
+          "id": "3e0a03df-34d9-44c9-888b-c61931418dbf",
+          "source": "8329f44e-1497-4368-91c2-6b062accdedd",
+          "sourceHandle": "out",
+          "target": "4aa2d7a6-1702-4189-aa6a-aa5932fc5004",
+          "targetHandle": "in"
+        },
+        "60a0bde1-c7f4-4fd5-bcbf-bd12855fa22f": {
+          "id": "60a0bde1-c7f4-4fd5-bcbf-bd12855fa22f",
+          "source": "63578d48-799e-4043-a91f-a213dbd635d6",
+          "sourceHandle": "out",
+          "target": "a4600add-c9d9-4e96-97d7-d28ab0255623",
+          "targetHandle": "in"
+        },
+        "82081442-fad1-4452-9d43-d841d444aa8e": {
+          "id": "82081442-fad1-4452-9d43-d841d444aa8e",
+          "source": "a4600add-c9d9-4e96-97d7-d28ab0255623",
+          "sourceHandle": "out",
+          "target": "62393e2e-06a9-4b46-816f-f3e9c0f99e94",
+          "targetHandle": "in"
+        },
+        "85d3bee5-2ea6-4981-a05f-a55425e055c3": {
+          "id": "85d3bee5-2ea6-4981-a05f-a55425e055c3",
+          "source": "f8a8e67e-cf7b-4307-9561-bd3a67c02303",
+          "sourceHandle": "out",
+          "target": "39652895-bc5d-461a-9206-4f8960caf977",
+          "targetHandle": "in"
+        },
+        "89299b95-832e-4385-b8d9-642dcbd8f847": {
+          "id": "89299b95-832e-4385-b8d9-642dcbd8f847",
+          "source": "562b4389-2701-45dd-b971-ea9638418205",
+          "sourceHandle": "out",
+          "target": "73ac7de3-e6e6-4acd-90a9-69234d150ac6",
+          "targetHandle": "in"
+        },
+        "8d737d8f-9166-40d3-a6ff-f89696055d1c": {
+          "id": "8d737d8f-9166-40d3-a6ff-f89696055d1c",
+          "source": "42049d61-8162-4664-a397-5b0b45eea20f",
+          "sourceHandle": "out",
+          "target": "59f2b5de-a20e-4c72-81e5-4575bfa50f85",
+          "targetHandle": "in"
+        },
+        "8f62b18e-5c55-445d-8dad-87ecf3283494": {
+          "id": "8f62b18e-5c55-445d-8dad-87ecf3283494",
+          "source": "73ac7de3-e6e6-4acd-90a9-69234d150ac6",
+          "sourceHandle": "out",
+          "target": "d8b98b8d-93c8-40fa-b7dc-548ac95b9e74",
+          "targetHandle": "in"
+        },
+        "906dc89b-3c13-434f-88c1-572696c0301a": {
+          "id": "906dc89b-3c13-434f-88c1-572696c0301a",
+          "source": "4aa2d7a6-1702-4189-aa6a-aa5932fc5004",
+          "sourceHandle": "out",
+          "target": "377ac3c6-3f06-4c78-ae7d-6c38a1e35d45",
+          "targetHandle": "in"
+        },
+        "908356a9-3577-4f0c-ad57-b43a351b333c": {
+          "id": "908356a9-3577-4f0c-ad57-b43a351b333c",
+          "source": "63578d48-799e-4043-a91f-a213dbd635d6",
+          "sourceHandle": "out",
+          "target": "2ae57f85-6777-4bd5-b422-94513e8a4960",
+          "targetHandle": "in"
+        },
+        "948c947a-9e7d-4a1d-84e1-4a28150cb335": {
+          "id": "948c947a-9e7d-4a1d-84e1-4a28150cb335",
+          "source": "8f9b43c4-ec8b-4691-ba00-c33be064b501",
+          "sourceHandle": "out",
+          "target": "63578d48-799e-4043-a91f-a213dbd635d6",
+          "targetHandle": "in"
+        },
+        "9aa52165-e58b-42fa-9661-36904affe189": {
+          "id": "9aa52165-e58b-42fa-9661-36904affe189",
+          "source": "4523df7d-c281-45df-8299-b676d5303b41",
+          "sourceHandle": "out",
+          "target": "263ff2f2-ff78-4448-8dea-f110784b69c3",
+          "targetHandle": "in"
+        },
+        "9cd58cd3-8f26-4042-b8f4-6f8b1f9024fd": {
+          "id": "9cd58cd3-8f26-4042-b8f4-6f8b1f9024fd",
+          "source": "f0c4e903-8df2-4c28-b792-308a1b80a8dc",
+          "sourceHandle": "out",
+          "target": "8f9b43c4-ec8b-4691-ba00-c33be064b501",
+          "targetHandle": "in"
+        },
+        "c1da3933-341d-4e5e-b33f-78c514b51412": {
+          "id": "c1da3933-341d-4e5e-b33f-78c514b51412",
+          "source": "59f2b5de-a20e-4c72-81e5-4575bfa50f85",
+          "sourceHandle": "out",
+          "target": "c173a033-4c20-43c0-b29c-fd489046208f",
+          "targetHandle": "in"
+        },
+        "cc4a079d-988c-49bd-9a11-3bc877e1f2c9": {
+          "id": "cc4a079d-988c-49bd-9a11-3bc877e1f2c9",
+          "source": "63578d48-799e-4043-a91f-a213dbd635d6",
+          "sourceHandle": "out",
+          "target": "8329f44e-1497-4368-91c2-6b062accdedd",
+          "targetHandle": "in"
+        },
+        "e1942f65-2aca-4292-8bad-8f7d221e8114": {
+          "id": "e1942f65-2aca-4292-8bad-8f7d221e8114",
+          "source": "63578d48-799e-4043-a91f-a213dbd635d6",
+          "sourceHandle": "out",
+          "target": "98d7b389-6008-4477-9d35-3c820cb0e7d6",
+          "targetHandle": "in"
+        },
+        "fa7c0479-423e-4f6b-b392-90cdec3aa491": {
+          "id": "fa7c0479-423e-4f6b-b392-90cdec3aa491",
+          "source": "2ae57f85-6777-4bd5-b422-94513e8a4960",
+          "sourceHandle": "out",
+          "target": "0a31fc81-9e0e-444c-aad3-d020adc32e38",
+          "targetHandle": "in"
+        },
+        "fbaef581-9b7b-4cce-86f5-28deddfe0cf3": {
+          "id": "fbaef581-9b7b-4cce-86f5-28deddfe0cf3",
+          "source": "f0ea2f5f-a1b8-4c7a-85e1-b9d709c30609",
+          "sourceHandle": "out",
+          "target": "6338ef64-37b1-49e0-a35b-27ab6967acca",
+          "targetHandle": "in"
+        }
+      },
+      "folderId": "2aac1402-a7ae-47a6-8636-9abe4b6874d7",
+      "id": "188d2e77-8db9-47e2-9710-428f07a72f91",
+      "name": "1 · The Plan",
+      "nodes": {
+        "0a31fc81-9e0e-444c-aad3-d020adc32e38": {
+          "data": {
+            "expression": "Heist.HasBlueprints and Heist.HasLockpicks",
+            "note": "You need both the blueprints and the lockpicks to leave."
+          },
+          "id": "0a31fc81-9e0e-444c-aad3-d020adc32e38",
+          "position": {
+            "x": 160,
+            "y": 840
+          },
+          "type": "condition"
+        },
+        "263ff2f2-ff78-4448-8dea-f110784b69c3": {
+          "data": {
+            "isEnd": true,
+            "note": "Continue with 2 · The Heist.",
+            "speakerId": "ba810061-166e-4bed-a20c-6114e80f778f",
+            "text": "Seatbelts, everyone. Next stop: the museum roof."
+          },
+          "id": "263ff2f2-ff78-4448-8dea-f110784b69c3",
+          "position": {
+            "x": 0,
+            "y": 1264
+          },
+          "type": "dialogue"
+        },
+        "2ae57f85-6777-4bd5-b422-94513e8a4960": {
+          "data": {
+            "menuText": "We’re ready. Let’s go.",
+            "speakerId": "54b61a3e-9210-4d11-84e0-6537f3016a22",
+            "text": "Right. Everyone in the van."
+          },
+          "id": "2ae57f85-6777-4bd5-b422-94513e8a4960",
+          "position": {
+            "x": 160,
+            "y": 632
+          },
+          "type": "dialogue"
+        },
+        "377ac3c6-3f06-4c78-ae7d-6c38a1e35d45": {
+          "data": {
+            "targetId": "63578d48-799e-4043-a91f-a213dbd635d6"
+          },
+          "id": "377ac3c6-3f06-4c78-ae7d-6c38a1e35d45",
+          "position": {
+            "x": 952,
+            "y": 1048
+          },
+          "type": "jump"
+        },
+        "39652895-bc5d-461a-9206-4f8960caf977": {
+          "data": {
+            "targetId": "63578d48-799e-4043-a91f-a213dbd635d6"
+          },
+          "id": "39652895-bc5d-461a-9206-4f8960caf977",
+          "position": {
+            "x": 1584,
+            "y": 1048
+          },
+          "type": "jump"
+        },
+        "42049d61-8162-4664-a397-5b0b45eea20f": {
+          "data": {
+            "menuText": "Ask Juni for the blueprints",
+            "requires": "not Heist.HasBlueprints",
+            "speakerId": "54b61a3e-9210-4d11-84e0-6537f3016a22",
+            "text": "Juni, can you get us into the museum’s plans?"
+          },
+          "id": "42049d61-8162-4664-a397-5b0b45eea20f",
+          "position": {
+            "x": 632,
+            "y": 632
+          },
+          "type": "dialogue"
+        },
+        "4523df7d-c281-45df-8299-b676d5303b41": {
+          "data": {
+            "note": "Time moves only through advance.",
+            "script": "advance to Night"
+          },
+          "id": "4523df7d-c281-45df-8299-b676d5303b41",
+          "position": {
+            "x": 0,
+            "y": 1048
+          },
+          "type": "instruction"
+        },
+        "4aa2d7a6-1702-4189-aa6a-aa5932fc5004": {
+          "data": {
+            "speakerId": "6ef6ff23-2368-4478-8e74-5dace86edc40",
+            "text": "Okay. You’re officially my favourite criminal."
+          },
+          "id": "4aa2d7a6-1702-4189-aa6a-aa5932fc5004",
+          "position": {
+            "x": 952,
+            "y": 840
+          },
+          "type": "dialogue"
+        },
+        "562b4389-2701-45dd-b971-ea9638418205": {
+          "data": {
+            "menuText": "Ask Bruno for lockpicks",
+            "requires": "not Heist.HasLockpicks",
+            "speakerId": "54b61a3e-9210-4d11-84e0-6537f3016a22",
+            "text": "Bruno, we’ll need your lockpicks."
+          },
+          "id": "562b4389-2701-45dd-b971-ea9638418205",
+          "position": {
+            "x": 1264,
+            "y": 632
+          },
+          "type": "dialogue"
+        },
+        "59f2b5de-a20e-4c72-81e5-4575bfa50f85": {
+          "data": {
+            "effects": "Heist.HasBlueprints = true\nJuni->Rook.Trust += 1",
+            "speakerId": "6ef6ff23-2368-4478-8e74-5dace86edc40",
+            "text": "Already done. There’s an air vent right above the Grand Gallery."
+          },
+          "id": "59f2b5de-a20e-4c72-81e5-4575bfa50f85",
+          "position": {
+            "x": 632,
+            "y": 840
+          },
+          "type": "dialogue"
+        },
+        "62393e2e-06a9-4b46-816f-f3e9c0f99e94": {
+          "data": {
+            "targetId": "63578d48-799e-4043-a91f-a213dbd635d6"
+          },
+          "id": "62393e2e-06a9-4b46-816f-f3e9c0f99e94",
+          "position": {
+            "x": 1896,
+            "y": 840
+          },
+          "type": "jump"
+        },
+        "6338ef64-37b1-49e0-a35b-27ab6967acca": {
+          "data": {
+            "targetId": "63578d48-799e-4043-a91f-a213dbd635d6"
+          },
+          "id": "6338ef64-37b1-49e0-a35b-27ab6967acca",
+          "position": {
+            "x": 320,
+            "y": 1264
+          },
+          "type": "jump"
+        },
+        "63578d48-799e-4043-a91f-a213dbd635d6": {
+          "data": {
+            "label": "Get ready",
+            "note": "Each option has a Requires, so it disappears once done. The jumps loop back here."
+          },
+          "id": "63578d48-799e-4043-a91f-a213dbd635d6",
+          "position": {
+            "x": 1104,
+            "y": 424
+          },
+          "type": "hub"
+        },
+        "73ac7de3-e6e6-4acd-90a9-69234d150ac6": {
+          "data": {
+            "effects": "Heist.HasLockpicks = true",
+            "speakerId": "ba810061-166e-4bed-a20c-6114e80f778f",
+            "text": "Grandma’s set. Bring them back, or she’ll find you. She always finds you."
+          },
+          "id": "73ac7de3-e6e6-4acd-90a9-69234d150ac6",
+          "position": {
+            "x": 1264,
+            "y": 840
+          },
+          "type": "dialogue"
+        },
+        "8329f44e-1497-4368-91c2-6b062accdedd": {
+          "data": {
+            "effects": "Player.Cash -= 1\nJuni->Rook.Trust += 1",
+            "menuText": "Buy Juni a coffee (1 cash)",
+            "requires": "Juni->Rook.Trust < 2 and Player.Cash >= 1",
+            "speakerId": "54b61a3e-9210-4d11-84e0-6537f3016a22",
+            "text": "Flat white, extra shot. You’ve earned it."
+          },
+          "id": "8329f44e-1497-4368-91c2-6b062accdedd",
+          "position": {
+            "x": 952,
+            "y": 632
+          },
+          "type": "dialogue"
+        },
+        "8f9b43c4-ec8b-4691-ba00-c33be064b501": {
+          "data": {
+            "speakerId": "54b61a3e-9210-4d11-84e0-6537f3016a22",
+            "text": "Leave it with us, Madame Vex."
+          },
+          "id": "8f9b43c4-ec8b-4691-ba00-c33be064b501",
+          "position": {
+            "x": 1104,
+            "y": 208
+          },
+          "type": "dialogue"
+        },
+        "98d7b389-6008-4477-9d35-3c820cb0e7d6": {
+          "data": {
+            "menuText": "Give Bruno a pep talk",
+            "requires": "Bruno.Nerve < 4",
+            "speakerId": "54b61a3e-9210-4d11-84e0-6537f3016a22",
+            "text": "Bruno. Best driver in the city. Tonight is going to be easy."
+          },
+          "id": "98d7b389-6008-4477-9d35-3c820cb0e7d6",
+          "position": {
+            "x": 1584,
+            "y": 632
+          },
+          "type": "dialogue"
+        },
+        "a4600add-c9d9-4e96-97d7-d28ab0255623": {
+          "data": {
+            "effects": "Player.Cash -= 2\nHeist.HasCatTreats = true",
+            "menuText": "Buy cat treats (2 cash)",
+            "requires": "not Heist.HasCatTreats and Player.Cash >= 2",
+            "speakerId": "54b61a3e-9210-4d11-84e0-6537f3016a22",
+            "text": "The guard has a cat, apparently. One packet of salmon treats, please."
+          },
+          "id": "a4600add-c9d9-4e96-97d7-d28ab0255623",
+          "position": {
+            "x": 1896,
+            "y": 632
+          },
+          "type": "dialogue"
+        },
+        "c173a033-4c20-43c0-b29c-fd489046208f": {
+          "data": {
+            "targetId": "63578d48-799e-4043-a91f-a213dbd635d6"
+          },
+          "id": "c173a033-4c20-43c0-b29c-fd489046208f",
+          "position": {
+            "x": 632,
+            "y": 1048
+          },
+          "type": "jump"
+        },
+        "d8b98b8d-93c8-40fa-b7dc-548ac95b9e74": {
+          "data": {
+            "targetId": "63578d48-799e-4043-a91f-a213dbd635d6"
+          },
+          "id": "d8b98b8d-93c8-40fa-b7dc-548ac95b9e74",
+          "position": {
+            "x": 1264,
+            "y": 1048
+          },
+          "type": "jump"
+        },
+        "f0c4e903-8df2-4c28-b792-308a1b80a8dc": {
+          "data": {
+            "isStart": true,
+            "speakerId": "fbd7486a-9fe2-4307-bb33-d9814aa0ebda",
+            "text": "The Jade Monkey was mine before the museum \"found\" it. Bring it back by dawn, and you never pay rent again."
+          },
+          "id": "f0c4e903-8df2-4c28-b792-308a1b80a8dc",
+          "position": {
+            "x": 1104,
+            "y": 0
+          },
+          "type": "dialogue"
+        },
+        "f0ea2f5f-a1b8-4c7a-85e1-b9d709c30609": {
+          "data": {
+            "speakerId": "6ef6ff23-2368-4478-8e74-5dace86edc40",
+            "text": "Without the blueprints and the lockpicks? Bold. Also no."
+          },
+          "id": "f0ea2f5f-a1b8-4c7a-85e1-b9d709c30609",
+          "position": {
+            "x": 320,
+            "y": 1048
+          },
+          "type": "dialogue"
+        },
+        "f8a8e67e-cf7b-4307-9561-bd3a67c02303": {
+          "data": {
+            "effects": "Bruno.Nerve += 1\nBruno->Rook.Trust += 1",
+            "speakerId": "ba810061-166e-4bed-a20c-6114e80f778f",
+            "text": "…Yeah. Yeah! Easy!"
+          },
+          "id": "f8a8e67e-cf7b-4307-9561-bd3a67c02303",
+          "position": {
+            "x": 1584,
+            "y": 840
+          },
+          "type": "dialogue"
+        }
+      },
+      "order": 0
+    },
+    "49b12e7c-5cb0-4330-bb2e-a5a4953368c0": {
+      "edges": {
+        "021e3316-a25e-47d6-8f9a-0fc4111dfafb": {
+          "id": "021e3316-a25e-47d6-8f9a-0fc4111dfafb",
+          "source": "b22f5491-e121-42e8-ade2-db05b03d09b2",
+          "sourceHandle": "out",
+          "target": "a461c4b0-edf1-4379-8821-2f09c0744228",
+          "targetHandle": "in"
+        },
+        "0cc401f0-0c27-4112-9d77-64ccde72f963": {
+          "id": "0cc401f0-0c27-4112-9d77-64ccde72f963",
+          "source": "503e8814-b857-4d9f-815f-77df6cc615f3",
+          "sourceHandle": "out",
+          "target": "33e6433e-5864-4de5-b47c-ca0f59d3d7fa",
+          "targetHandle": "in"
+        },
+        "0d0bdf8d-7096-4946-8d4f-8f8e62a01fe8": {
+          "id": "0d0bdf8d-7096-4946-8d4f-8f8e62a01fe8",
+          "source": "ebc1096c-91b6-4f83-bdac-cead97414e86",
+          "sourceHandle": "out",
+          "target": "af78e8c6-08c5-458b-9493-92732c95af06",
+          "targetHandle": "in"
+        },
+        "17587b5b-51d5-46e9-b0d8-866da8ba9be3": {
+          "id": "17587b5b-51d5-46e9-b0d8-866da8ba9be3",
+          "source": "a14210cd-501e-4433-9e23-db1e628fc2ad",
+          "sourceHandle": "true",
+          "target": "503e8814-b857-4d9f-815f-77df6cc615f3",
+          "targetHandle": "in"
+        },
+        "198916fc-6819-4829-8351-9d42d592ed98": {
+          "id": "198916fc-6819-4829-8351-9d42d592ed98",
+          "source": "516b7087-2315-4961-b807-27aea93f86e3",
+          "sourceHandle": "out",
+          "target": "33600886-423c-4ba2-a365-940cb94dd03c",
+          "targetHandle": "in"
+        },
+        "2864cf17-2892-4604-9c26-c4943d57c9de": {
+          "id": "2864cf17-2892-4604-9c26-c4943d57c9de",
+          "source": "33600886-423c-4ba2-a365-940cb94dd03c",
+          "sourceHandle": "out",
+          "target": "b22f5491-e121-42e8-ade2-db05b03d09b2",
+          "targetHandle": "in"
+        },
+        "3ba94ad9-b712-4a24-afdd-5d1a3093961a": {
+          "id": "3ba94ad9-b712-4a24-afdd-5d1a3093961a",
+          "source": "a14210cd-501e-4433-9e23-db1e628fc2ad",
+          "sourceHandle": "false",
+          "target": "ebc1096c-91b6-4f83-bdac-cead97414e86",
+          "targetHandle": "in"
+        },
+        "a224b110-f0b1-46a2-a268-88d499721b5b": {
+          "id": "a224b110-f0b1-46a2-a268-88d499721b5b",
+          "source": "2d135602-4ad0-4770-bcfa-421e50a3fff2",
+          "sourceHandle": "false",
+          "target": "516b7087-2315-4961-b807-27aea93f86e3",
+          "targetHandle": "in"
+        },
+        "a7830fc0-2b6e-4bbf-8e8a-728652b9e49a": {
+          "id": "a7830fc0-2b6e-4bbf-8e8a-728652b9e49a",
+          "source": "3887f07c-c416-4d0c-90e6-fd753e8459a2",
+          "sourceHandle": "out",
+          "target": "a14210cd-501e-4433-9e23-db1e628fc2ad",
+          "targetHandle": "in"
+        },
+        "b837fd6b-ee59-407f-8775-d28f965518ba": {
+          "id": "b837fd6b-ee59-407f-8775-d28f965518ba",
+          "source": "2d135602-4ad0-4770-bcfa-421e50a3fff2",
+          "sourceHandle": "true",
+          "target": "3887f07c-c416-4d0c-90e6-fd753e8459a2",
+          "targetHandle": "in"
+        },
+        "dd738392-e18d-418b-ad7c-83a0f7b6eb86": {
+          "id": "dd738392-e18d-418b-ad7c-83a0f7b6eb86",
+          "source": "33600886-423c-4ba2-a365-940cb94dd03c",
+          "sourceHandle": "out",
+          "target": "0a947cf1-0c4d-4590-8073-aa21c829ea91",
+          "targetHandle": "in"
+        },
+        "e44d1587-9180-4d4c-bc2f-bb37b884b360": {
+          "id": "e44d1587-9180-4d4c-bc2f-bb37b884b360",
+          "source": "0a947cf1-0c4d-4590-8073-aa21c829ea91",
+          "sourceHandle": "out",
+          "target": "c69b8789-7e98-458d-a3c8-ed30e59e2b5d",
+          "targetHandle": "in"
+        }
+      },
+      "folderId": "2aac1402-a7ae-47a6-8636-9abe4b6874d7",
+      "id": "49b12e7c-5cb0-4330-bb2e-a5a4953368c0",
+      "name": "3 · The Getaway",
+      "nodes": {
+        "0a947cf1-0c4d-4590-8073-aa21c829ea91": {
+          "data": {
+            "effects": "Vex->Rook.Trust += 3\nPlayer.Cash += 50",
+            "menuText": "Hand it to Madame Vex",
+            "speakerId": "54b61a3e-9210-4d11-84e0-6537f3016a22",
+            "text": "A deal’s a deal."
+          },
+          "id": "0a947cf1-0c4d-4590-8073-aa21c829ea91",
+          "position": {
+            "x": 632,
+            "y": 632
+          },
+          "type": "dialogue"
+        },
+        "2d135602-4ad0-4770-bcfa-421e50a3fff2": {
+          "data": {
+            "expression": "Heist.Alarm >= 3",
+            "isStart": true,
+            "note": "Three or more alarm points and the sirens start.",
+            "requires": "Heist.HasJadeMonkey"
+          },
+          "id": "2d135602-4ad0-4770-bcfa-421e50a3fff2",
+          "position": {
+            "x": 472,
+            "y": 0
+          },
+          "type": "condition"
+        },
+        "33600886-423c-4ba2-a365-940cb94dd03c": {
+          "data": {
+            "speakerId": "fbd7486a-9fe2-4307-bb33-d9814aa0ebda",
+            "text": "The Jade Monkey. Hand it over, darling, and the rent is gone forever."
+          },
+          "id": "33600886-423c-4ba2-a365-940cb94dd03c",
+          "position": {
+            "x": 792,
+            "y": 424
+          },
+          "type": "dialogue"
+        },
+        "33e6433e-5864-4de5-b47c-ca0f59d3d7fa": {
+          "data": {
+            "isEnd": true,
+            "note": "Ending 1 of 4.",
+            "text": "CLOSE SHAVE. The van smells of soap and victory. You deliver the Jade Monkey at sunrise."
+          },
+          "id": "33e6433e-5864-4de5-b47c-ca0f59d3d7fa",
+          "position": {
+            "x": 0,
+            "y": 840
+          },
+          "type": "dialogue"
+        },
+        "3887f07c-c416-4d0c-90e6-fd753e8459a2": {
+          "data": {
+            "speakerId": "ba810061-166e-4bed-a20c-6114e80f778f",
+            "text": "Sirens! Why is it always sirens?"
+          },
+          "id": "3887f07c-c416-4d0c-90e6-fd753e8459a2",
+          "position": {
+            "x": 160,
+            "y": 208
+          },
+          "type": "dialogue"
+        },
+        "503e8814-b857-4d9f-815f-77df6cc615f3": {
+          "data": {
+            "effects": "advance to Dawn",
+            "speakerId": "ba810061-166e-4bed-a20c-6114e80f778f",
+            "text": "Hold on to something! Left, right, through the car wash… and we’re clear!"
+          },
+          "id": "503e8814-b857-4d9f-815f-77df6cc615f3",
+          "position": {
+            "x": 0,
+            "y": 632
+          },
+          "type": "dialogue"
+        },
+        "516b7087-2315-4961-b807-27aea93f86e3": {
+          "data": {
+            "effects": "advance to Dawn",
+            "speakerId": "6ef6ff23-2368-4478-8e74-5dace86edc40",
+            "text": "Not a single siren. We’re ghosts."
+          },
+          "id": "516b7087-2315-4961-b807-27aea93f86e3",
+          "position": {
+            "x": 792,
+            "y": 208
+          },
+          "type": "dialogue"
+        },
+        "a14210cd-501e-4433-9e23-db1e628fc2ad": {
+          "data": {
+            "expression": "Bruno.Nerve >= 4",
+            "note": "Bruno’s nerve decides the chase. A pep talk in The Plan helps."
+          },
+          "id": "a14210cd-501e-4433-9e23-db1e628fc2ad",
+          "position": {
+            "x": 160,
+            "y": 424
+          },
+          "type": "condition"
+        },
+        "a461c4b0-edf1-4379-8821-2f09c0744228": {
+          "data": {
+            "isEnd": true,
+            "note": "Ending 4 of 4.",
+            "text": "ROBIN HOOD. The Jade Monkey is back on its plinth by Monday. Gustav swears he saw Biscuit wink."
+          },
+          "id": "a461c4b0-edf1-4379-8821-2f09c0744228",
+          "position": {
+            "x": 952,
+            "y": 840
+          },
+          "type": "dialogue"
+        },
+        "af78e8c6-08c5-458b-9493-92732c95af06": {
+          "data": {
+            "isEnd": true,
+            "note": "Ending 2 of 4.",
+            "text": "CAUGHT. The van stalls outside the museum. Biscuit watches from the window, deeply satisfied."
+          },
+          "id": "af78e8c6-08c5-458b-9493-92732c95af06",
+          "position": {
+            "x": 320,
+            "y": 840
+          },
+          "type": "dialogue"
+        },
+        "b22f5491-e121-42e8-ade2-db05b03d09b2": {
+          "data": {
+            "menuText": "Return it to the museum",
+            "note": "Only offered if Gustav fell for the bluff.",
+            "requires": "Gustav->Rook.Trust >= 1",
+            "speakerId": "54b61a3e-9210-4d11-84e0-6537f3016a22",
+            "text": "Actually… the museum is free on Sundays. Everyone should get to see it."
+          },
+          "id": "b22f5491-e121-42e8-ade2-db05b03d09b2",
+          "position": {
+            "x": 952,
+            "y": 632
+          },
+          "type": "dialogue"
+        },
+        "c69b8789-7e98-458d-a3c8-ed30e59e2b5d": {
+          "data": {
+            "isEnd": true,
+            "note": "Ending 3 of 4.",
+            "text": "CLEAN GETAWAY. No rent, ever again. Bruno buys everyone pancakes."
+          },
+          "id": "c69b8789-7e98-458d-a3c8-ed30e59e2b5d",
+          "position": {
+            "x": 632,
+            "y": 840
+          },
+          "type": "dialogue"
+        },
+        "ebc1096c-91b6-4f83-bdac-cead97414e86": {
+          "data": {
+            "effects": "Bruno.Nerve -= 1",
+            "speakerId": "ba810061-166e-4bed-a20c-6114e80f778f",
+            "text": "I can’t, I can’t, I CAN’T—"
+          },
+          "id": "ebc1096c-91b6-4f83-bdac-cead97414e86",
+          "position": {
+            "x": 320,
+            "y": 632
+          },
+          "type": "dialogue"
+        }
+      },
+      "order": 2
+    },
+    "7d570631-28e3-46c4-bdd0-25086bc77af2": {
+      "edges": {
+        "0c7f402a-f5bf-44db-8ef1-6b14679a8c01": {
+          "id": "0c7f402a-f5bf-44db-8ef1-6b14679a8c01",
+          "source": "2d50cdb1-ca18-40e4-b025-c086dcc141c2",
+          "sourceHandle": "out",
+          "target": "5ba1975c-51db-4345-9212-bf3c5337cb10",
+          "targetHandle": "in"
+        },
+        "1fcd925d-02d2-4a57-ae5f-a7ec00ed7657": {
+          "id": "1fcd925d-02d2-4a57-ae5f-a7ec00ed7657",
+          "source": "89dc7f1b-ae7c-4c19-b6f2-073a1adb3455",
+          "sourceHandle": "false",
+          "target": "7b5d1c9e-43fc-4f18-8d13-8b942e3095bd",
+          "targetHandle": "in"
+        },
+        "47775ad1-5c90-40e2-b45d-72854947e94f": {
+          "id": "47775ad1-5c90-40e2-b45d-72854947e94f",
+          "source": "5ba1975c-51db-4345-9212-bf3c5337cb10",
+          "sourceHandle": "out",
+          "target": "e5eb08d5-0d1f-433d-8d5d-0e34cfa26ed7",
+          "targetHandle": "in"
+        },
+        "700c772a-dfa9-4cae-b522-41d09b9bcb95": {
+          "id": "700c772a-dfa9-4cae-b522-41d09b9bcb95",
+          "source": "a77fe3a3-7c19-406e-a331-52c023921009",
+          "sourceHandle": "out",
+          "target": "524d16c8-4364-4cdc-a039-f0070b789e77",
+          "targetHandle": "in"
+        },
+        "896cedc3-4b29-44ca-98a1-1249038d89fb": {
+          "id": "896cedc3-4b29-44ca-98a1-1249038d89fb",
+          "source": "524d16c8-4364-4cdc-a039-f0070b789e77",
+          "sourceHandle": "out",
+          "target": "89dc7f1b-ae7c-4c19-b6f2-073a1adb3455",
+          "targetHandle": "in"
+        },
+        "a3dbb1b0-3349-4a67-bd92-79e8fc2a6398": {
+          "id": "a3dbb1b0-3349-4a67-bd92-79e8fc2a6398",
+          "source": "2f489daa-2c06-4de1-babd-49ea9dffa987",
+          "sourceHandle": "out",
+          "target": "a8e9a55b-09e7-465c-8e43-9aa58527b67b",
+          "targetHandle": "in"
+        },
+        "aa21eac4-4124-4753-b0fa-ee97f5891dfa": {
+          "id": "aa21eac4-4124-4753-b0fa-ee97f5891dfa",
+          "source": "89dc7f1b-ae7c-4c19-b6f2-073a1adb3455",
+          "sourceHandle": "true",
+          "target": "07e8706e-77e2-40d7-b0f0-1425c4fe997a",
+          "targetHandle": "in"
+        },
+        "ad7e4562-3903-41de-93c2-8cf2d02592d5": {
+          "id": "ad7e4562-3903-41de-93c2-8cf2d02592d5",
+          "source": "07e8706e-77e2-40d7-b0f0-1425c4fe997a",
+          "sourceHandle": "out",
+          "target": "3d3c321d-abc0-4684-be13-4c904823ae36",
+          "targetHandle": "in"
+        },
+        "c049ca75-c870-4854-b0dd-6421c780ad4b": {
+          "id": "c049ca75-c870-4854-b0dd-6421c780ad4b",
+          "source": "e5eb08d5-0d1f-433d-8d5d-0e34cfa26ed7",
+          "sourceHandle": "out",
+          "target": "c6643971-6424-4a7f-99cc-3a2a84b83a13",
+          "targetHandle": "in"
+        },
+        "c50a586b-746e-4667-b753-e9cbd7ac7cd1": {
+          "id": "c50a586b-746e-4667-b753-e9cbd7ac7cd1",
+          "source": "a77fe3a3-7c19-406e-a331-52c023921009",
+          "sourceHandle": "out",
+          "target": "2d50cdb1-ca18-40e4-b025-c086dcc141c2",
+          "targetHandle": "in"
+        },
+        "c8b702a6-c546-457b-bfae-66cfb9408c25": {
+          "id": "c8b702a6-c546-457b-bfae-66cfb9408c25",
+          "source": "8086cb3a-a236-49a3-bebf-9e5cbe682a20",
+          "sourceHandle": "out",
+          "target": "a77fe3a3-7c19-406e-a331-52c023921009",
+          "targetHandle": "in"
+        },
+        "d1c96f99-d30d-497d-8d2e-b36f3e40766e": {
+          "id": "d1c96f99-d30d-497d-8d2e-b36f3e40766e",
+          "source": "3d3c321d-abc0-4684-be13-4c904823ae36",
+          "sourceHandle": "out",
+          "target": "e5eb08d5-0d1f-433d-8d5d-0e34cfa26ed7",
+          "targetHandle": "in"
+        },
+        "de160141-351d-401a-a47a-f58f54f916b4": {
+          "id": "de160141-351d-401a-a47a-f58f54f916b4",
+          "source": "a8e9a55b-09e7-465c-8e43-9aa58527b67b",
+          "sourceHandle": "out",
+          "target": "e5eb08d5-0d1f-433d-8d5d-0e34cfa26ed7",
+          "targetHandle": "in"
+        },
+        "e881957c-fe80-449a-a134-c6dd59e9f4ec": {
+          "id": "e881957c-fe80-449a-a134-c6dd59e9f4ec",
+          "source": "68015de4-7767-40fa-b641-3ed11e33c5ed",
+          "sourceHandle": "out",
+          "target": "8086cb3a-a236-49a3-bebf-9e5cbe682a20",
+          "targetHandle": "in"
+        },
+        "f67d646f-61c5-4b54-8c1d-3cdd69f76d27": {
+          "id": "f67d646f-61c5-4b54-8c1d-3cdd69f76d27",
+          "source": "7b5d1c9e-43fc-4f18-8d13-8b942e3095bd",
+          "sourceHandle": "out",
+          "target": "e5eb08d5-0d1f-433d-8d5d-0e34cfa26ed7",
+          "targetHandle": "in"
+        },
+        "fcf54474-c4c5-4fc2-bc4a-caa0cb515eaf": {
+          "id": "fcf54474-c4c5-4fc2-bc4a-caa0cb515eaf",
+          "source": "a77fe3a3-7c19-406e-a331-52c023921009",
+          "sourceHandle": "out",
+          "target": "2f489daa-2c06-4de1-babd-49ea9dffa987",
+          "targetHandle": "in"
+        }
+      },
+      "folderId": "2aac1402-a7ae-47a6-8636-9abe4b6874d7",
+      "id": "7d570631-28e3-46c4-bdd0-25086bc77af2",
+      "name": "2 · The Heist",
+      "nodes": {
+        "07e8706e-77e2-40d7-b0f0-1425c4fe997a": {
+          "data": {
+            "speakerId": "6ef6ff23-2368-4478-8e74-5dace86edc40",
+            "text": "Very dangerous monkey. We’ll take it from here, sir."
+          },
+          "id": "07e8706e-77e2-40d7-b0f0-1425c4fe997a",
+          "position": {
+            "x": 632,
+            "y": 1048
+          },
+          "type": "dialogue"
+        },
+        "2d50cdb1-ca18-40e4-b025-c086dcc141c2": {
+          "data": {
+            "menuText": "Tiptoe past Biscuit",
+            "speakerId": "54b61a3e-9210-4d11-84e0-6537f3016a22",
+            "text": "Easy… easy…"
+          },
+          "id": "2d50cdb1-ca18-40e4-b025-c086dcc141c2",
+          "position": {
+            "x": 320,
+            "y": 1048
+          },
+          "type": "dialogue"
+        },
+        "2f489daa-2c06-4de1-babd-49ea9dffa987": {
+          "data": {
+            "effects": "Heist.HasCatTreats = false",
+            "menuText": "Roll a cat treat across the floor",
+            "requires": "Heist.HasCatTreats",
+            "speakerId": "54b61a3e-9210-4d11-84e0-6537f3016a22",
+            "text": "Here, Biscuit. Salmon. Your favourite."
+          },
+          "id": "2f489daa-2c06-4de1-babd-49ea9dffa987",
+          "position": {
+            "x": 0,
+            "y": 1048
+          },
+          "type": "dialogue"
+        },
+        "3d3c321d-abc0-4684-be13-4c904823ae36": {
+          "data": {
+            "effects": "Gustav->Rook.Trust += 1",
+            "speakerId": "7c727ba6-cfed-4612-83c2-da192cb36931",
+            "text": "Oh! Right. Mind Biscuit, she bites."
+          },
+          "id": "3d3c321d-abc0-4684-be13-4c904823ae36",
+          "position": {
+            "x": 632,
+            "y": 1264
+          },
+          "type": "dialogue"
+        },
+        "524d16c8-4364-4cdc-a039-f0070b789e77": {
+          "data": {
+            "menuText": "Wake Gustav and bluff",
+            "speakerId": "54b61a3e-9210-4d11-84e0-6537f3016a22",
+            "text": "Evening! Pest control. We had reports of a… monkey."
+          },
+          "id": "524d16c8-4364-4cdc-a039-f0070b789e77",
+          "position": {
+            "x": 792,
+            "y": 632
+          },
+          "type": "dialogue"
+        },
+        "5ba1975c-51db-4345-9212-bf3c5337cb10": {
+          "data": {
+            "effects": "Heist.Alarm += 2",
+            "text": "Biscuit yowls. Gustav snorts in his sleep. Somewhere, a light blinks red."
+          },
+          "id": "5ba1975c-51db-4345-9212-bf3c5337cb10",
+          "position": {
+            "x": 320,
+            "y": 1264
+          },
+          "type": "dialogue"
+        },
+        "68015de4-7767-40fa-b641-3ed11e33c5ed": {
+          "data": {
+            "isStart": true,
+            "requires": "Time.Phase is Night",
+            "text": "The museum roof. Pigeons. A skylight. Somewhere below, a cat is purring."
+          },
+          "id": "68015de4-7767-40fa-b641-3ed11e33c5ed",
+          "position": {
+            "x": 320,
+            "y": 0
+          },
+          "type": "dialogue"
+        },
+        "7b5d1c9e-43fc-4f18-8d13-8b942e3095bd": {
+          "data": {
+            "effects": "Heist.Alarm += 3",
+            "speakerId": "7c727ba6-cfed-4612-83c2-da192cb36931",
+            "text": "Pest control? At midnight? I’m calling my supervisor."
+          },
+          "id": "7b5d1c9e-43fc-4f18-8d13-8b942e3095bd",
+          "position": {
+            "x": 952,
+            "y": 1264
+          },
+          "type": "dialogue"
+        },
+        "8086cb3a-a236-49a3-bebf-9e5cbe682a20": {
+          "data": {
+            "speakerId": "6ef6ff23-2368-4478-8e74-5dace86edc40",
+            "text": "The vent’s exactly where the blueprints said. In we go."
+          },
+          "id": "8086cb3a-a236-49a3-bebf-9e5cbe682a20",
+          "position": {
+            "x": 320,
+            "y": 208
+          },
+          "type": "dialogue"
+        },
+        "89dc7f1b-ae7c-4c19-b6f2-073a1adb3455": {
+          "data": {
+            "expression": "Juni->Rook.Trust >= 2",
+            "note": "The bluff only works if Juni trusts you enough to play along. Buying her a coffee in The Plan helps."
+          },
+          "id": "89dc7f1b-ae7c-4c19-b6f2-073a1adb3455",
+          "position": {
+            "x": 792,
+            "y": 840
+          },
+          "type": "condition"
+        },
+        "a77fe3a3-7c19-406e-a331-52c023921009": {
+          "data": {
+            "text": "The Grand Gallery. Gustav dozes in a chair. His cat, Biscuit, sits on the plinth beside the Jade Monkey, staring at you."
+          },
+          "id": "a77fe3a3-7c19-406e-a331-52c023921009",
+          "position": {
+            "x": 320,
+            "y": 424
+          },
+          "type": "dialogue"
+        },
+        "a8e9a55b-09e7-465c-8e43-9aa58527b67b": {
+          "data": {
+            "text": "Biscuit pounces on the treat and forgets you exist. Silent as a shadow."
+          },
+          "id": "a8e9a55b-09e7-465c-8e43-9aa58527b67b",
+          "position": {
+            "x": 0,
+            "y": 1264
+          },
+          "type": "dialogue"
+        },
+        "c6643971-6424-4a7f-99cc-3a2a84b83a13": {
+          "data": {
+            "isEnd": true,
+            "note": "Continue with 3 · The Getaway.",
+            "speakerId": "54b61a3e-9210-4d11-84e0-6537f3016a22",
+            "text": "Got it. Everyone out. Now."
+          },
+          "id": "c6643971-6424-4a7f-99cc-3a2a84b83a13",
+          "position": {
+            "x": 472,
+            "y": 1680
+          },
+          "type": "dialogue"
+        },
+        "e5eb08d5-0d1f-433d-8d5d-0e34cfa26ed7": {
+          "data": {
+            "note": "Advancing to Midnight runs “The midnight patrol”: any alarm at all gets worse.",
+            "script": "Heist.HasJadeMonkey = true\nadvance to Midnight"
+          },
+          "id": "e5eb08d5-0d1f-433d-8d5d-0e34cfa26ed7",
+          "position": {
+            "x": 472,
+            "y": 1472
+          },
+          "type": "instruction"
+        }
+      },
+      "order": 1
+    }
+  },
+  "folders": {
+    "2aac1402-a7ae-47a6-8636-9abe4b6874d7": {
+      "id": "2aac1402-a7ae-47a6-8636-9abe4b6874d7",
+      "name": "The Heist",
+      "order": 0,
+      "parentId": null,
+      "section": "flows"
+    },
+    "7eb78762-8bf3-4294-bd6f-cb8ab656fc50": {
+      "id": "7eb78762-8bf3-4294-bd6f-cb8ab656fc50",
+      "name": "Locations",
+      "order": 2,
+      "parentId": null,
+      "section": "entities"
+    },
+    "8da24fe7-cc23-44eb-8273-96f992e41f06": {
+      "id": "8da24fe7-cc23-44eb-8273-96f992e41f06",
+      "name": "Characters",
+      "order": 0,
+      "parentId": null,
+      "section": "entities"
+    },
+    "ee6f379b-ff9b-4a2a-8d37-74e192431624": {
+      "id": "ee6f379b-ff9b-4a2a-8d37-74e192431624",
+      "name": "Items",
+      "order": 1,
+      "parentId": null,
+      "section": "entities"
+    }
+  },
+  "format": "skein.project",
+  "meta": {
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "description": "A crew plans a heist to win back the Jade Monkey. Shows templates, items, character state, relationships, world variables, time phases with rules, requirements that hide used options, loops, and four endings across three flows. Play 1 · The Plan, then 2 · The Heist, then 3 · The Getaway.",
+    "id": "1269e94d-12e3-4478-ab78-a54a39730ac8",
+    "name": "Demo · The Midnight Museum Heist"
+  },
+  "schemaVersion": 5,
+  "state": {
+    "relationships": {
+      "9a864215-f7b3-41e5-aebd-d69f5fb23259": {
+        "defaultValue": 0,
+        "description": "How much one character trusts another. One-way.",
+        "fromTemplateId": "dae92b2a-e33b-4ee9-9786-7b44fa016c54",
+        "id": "9a864215-f7b3-41e5-aebd-d69f5fb23259",
+        "integer": true,
+        "max": 5,
+        "min": -5,
+        "name": "Trust",
+        "order": 0,
+        "technicalName": "Trust",
+        "toTemplateId": "dae92b2a-e33b-4ee9-9786-7b44fa016c54",
+        "type": "number"
+      }
+    },
+    "rules": {
+      "0bb9053e-38df-42b0-a51c-48713da367b6": {
+        "condition": "",
+        "effects": "self.Nerve -= 1",
+        "enabled": true,
+        "forEachTemplateId": "dae92b2a-e33b-4ee9-9786-7b44fa016c54",
+        "id": "0bb9053e-38df-42b0-a51c-48713da367b6",
+        "name": "Dawn wears everyone down",
+        "order": 1,
+        "phaseId": "cb6ee402-d95f-4cac-9f75-9c16104acacb",
+        "trigger": "phase"
+      },
+      "16833338-f8b9-4f4c-a6dc-5d4e80f929b8": {
+        "condition": "Heist.Alarm > 0",
+        "effects": "Heist.Alarm += 1",
+        "enabled": true,
+        "forEachTemplateId": null,
+        "id": "16833338-f8b9-4f4c-a6dc-5d4e80f929b8",
+        "name": "The midnight patrol",
+        "order": 0,
+        "phaseId": "c9ab2d3d-b047-4665-a72d-9699e17cb85f",
+        "trigger": "phase"
+      }
+    },
+    "time": {
+      "dayStart": 300,
+      "phases": {
+        "53844ae5-ad40-471e-b446-f6a2265849b8": {
+          "id": "53844ae5-ad40-471e-b446-f6a2265849b8",
+          "label": "Evening",
+          "order": 0,
+          "technicalName": "Evening"
+        },
+        "c9ab2d3d-b047-4665-a72d-9699e17cb85f": {
+          "id": "c9ab2d3d-b047-4665-a72d-9699e17cb85f",
+          "label": "Midnight",
+          "order": 2,
+          "technicalName": "Midnight"
+        },
+        "cb6ee402-d95f-4cac-9f75-9c16104acacb": {
+          "id": "cb6ee402-d95f-4cac-9f75-9c16104acacb",
+          "label": "Dawn",
+          "order": 3,
+          "technicalName": "Dawn"
+        },
+        "eb7fab64-1d84-404c-bb3b-e2741fac743c": {
+          "id": "eb7fab64-1d84-404c-bb3b-e2741fac743c",
+          "label": "Night",
+          "order": 1,
+          "technicalName": "Night"
+        }
+      },
+      "speakingRate": 150,
+      "startDay": 1,
+      "startPhaseId": "53844ae5-ad40-471e-b446-f6a2265849b8"
+    },
+    "variables": {
+      "1129d775-a4b3-43d7-b304-a0969096dde9": {
+        "defaultValue": false,
+        "description": "",
+        "id": "1129d775-a4b3-43d7-b304-a0969096dde9",
+        "name": "Has Jade Monkey",
+        "namespace": "Heist",
+        "order": 4,
+        "technicalName": "HasJadeMonkey",
+        "type": "boolean"
+      },
+      "3682c8a6-a26c-42c9-a858-b0a2fe0fa623": {
+        "defaultValue": false,
+        "description": "",
+        "id": "3682c8a6-a26c-42c9-a858-b0a2fe0fa623",
+        "name": "Has Lockpicks",
+        "namespace": "Heist",
+        "order": 2,
+        "technicalName": "HasLockpicks",
+        "type": "boolean"
+      },
+      "4400cd1f-7dec-4f01-8dd0-9bf60a716b09": {
+        "defaultValue": 5,
+        "description": "",
+        "id": "4400cd1f-7dec-4f01-8dd0-9bf60a716b09",
+        "integer": true,
+        "min": 0,
+        "name": "Cash",
+        "namespace": "Player",
+        "order": 5,
+        "technicalName": "Cash",
+        "type": "number"
+      },
+      "65623064-e91a-4e56-9e39-80543d4c6686": {
+        "defaultValue": 0,
+        "description": "How suspicious the museum is. At 3 or more, the sirens start.",
+        "id": "65623064-e91a-4e56-9e39-80543d4c6686",
+        "integer": true,
+        "max": 10,
+        "min": 0,
+        "name": "Alarm",
+        "namespace": "Heist",
+        "order": 0,
+        "technicalName": "Alarm",
+        "type": "number"
+      },
+      "8817ceee-e736-4cc0-9c64-8c49769024dd": {
+        "defaultValue": false,
+        "description": "",
+        "id": "8817ceee-e736-4cc0-9c64-8c49769024dd",
+        "name": "Has Cat Treats",
+        "namespace": "Heist",
+        "order": 3,
+        "technicalName": "HasCatTreats",
+        "type": "boolean"
+      },
+      "ef01ba18-03f0-49d6-98a3-5c9fcf9a6962": {
+        "defaultValue": false,
+        "description": "",
+        "id": "ef01ba18-03f0-49d6-98a3-5c9fcf9a6962",
+        "name": "Has Blueprints",
+        "namespace": "Heist",
+        "order": 1,
+        "technicalName": "HasBlueprints",
+        "type": "boolean"
+      }
+    }
+  },
+  "templates": {
+    "839af59d-9605-4cc8-a756-f67c8d85933b": {
+      "color": "#34d399",
+      "description": "",
+      "folderId": null,
+      "icon": "map",
+      "id": "839af59d-9605-4cc8-a756-f67c8d85933b",
+      "name": "Location",
+      "order": 2,
+      "properties": {
+        "160a1e55-9d30-4312-bf37-6550aa26e65c": {
+          "description": "",
+          "id": "160a1e55-9d30-4312-bf37-6550aa26e65c",
+          "name": "Description",
+          "order": 0,
+          "technicalName": "Description",
+          "type": "longText"
+        }
+      },
+      "technicalName": "Location"
+    },
+    "ae20b552-f3f4-406e-871b-ac4d5353e960": {
+      "color": "#fbbf24",
+      "description": "",
+      "folderId": null,
+      "icon": "gem",
+      "id": "ae20b552-f3f4-406e-871b-ac4d5353e960",
+      "name": "Item",
+      "order": 1,
+      "properties": {
+        "6d94dccb-8554-4c93-b73b-f0070e65f262": {
+          "description": "",
+          "id": "6d94dccb-8554-4c93-b73b-f0070e65f262",
+          "min": 0,
+          "name": "Value",
+          "order": 1,
+          "technicalName": "Value",
+          "type": "number"
+        },
+        "f47167e6-2531-4133-8b2f-96f4d5d71abd": {
+          "description": "",
+          "id": "f47167e6-2531-4133-8b2f-96f4d5d71abd",
+          "name": "Description",
+          "order": 0,
+          "technicalName": "Description",
+          "type": "longText"
+        }
+      },
+      "technicalName": "Item"
+    },
+    "dae92b2a-e33b-4ee9-9786-7b44fa016c54": {
+      "color": "#818cf8",
+      "description": "",
+      "folderId": null,
+      "icon": "user",
+      "id": "dae92b2a-e33b-4ee9-9786-7b44fa016c54",
+      "name": "Character",
+      "order": 0,
+      "properties": {
+        "4a136ecd-28c3-4dd6-b7a7-2c90378996c0": {
+          "defaultValue": 3,
+          "description": "Courage under pressure. Drops at dawn.",
+          "id": "4a136ecd-28c3-4dd6-b7a7-2c90378996c0",
+          "integer": true,
+          "max": 5,
+          "min": 0,
+          "mutable": true,
+          "name": "Nerve",
+          "order": 2,
+          "technicalName": "Nerve",
+          "type": "number"
+        },
+        "925711db-4055-4e82-9a68-8835e88cbcdc": {
+          "description": "",
+          "id": "925711db-4055-4e82-9a68-8835e88cbcdc",
+          "name": "Role",
+          "options": {
+            "8cd2576d-2030-46e2-a363-2bf43c2cb0da": {
+              "id": "8cd2576d-2030-46e2-a363-2bf43c2cb0da",
+              "label": "Client",
+              "order": 1
+            },
+            "d419602d-19d9-4564-83ad-eaef06d14c66": {
+              "id": "d419602d-19d9-4564-83ad-eaef06d14c66",
+              "label": "Guard",
+              "order": 2
+            },
+            "df15d86b-9bf1-4cd7-a874-4deee888bae7": {
+              "id": "df15d86b-9bf1-4cd7-a874-4deee888bae7",
+              "label": "Crew",
+              "order": 0
+            }
+          },
+          "order": 0,
+          "technicalName": "Role",
+          "type": "enum"
+        },
+        "945f86b3-dc4b-4c44-9905-6a405d9c8ef3": {
+          "description": "",
+          "id": "945f86b3-dc4b-4c44-9905-6a405d9c8ef3",
+          "name": "Specialty",
+          "order": 1,
+          "technicalName": "Specialty",
+          "type": "text"
+        },
+        "db98d9d0-02b3-44b4-ac76-6afdfdff51fd": {
+          "defaultValue": "#e4e7ef",
+          "description": "",
+          "id": "db98d9d0-02b3-44b4-ac76-6afdfdff51fd",
+          "name": "Dialogue Colour",
+          "order": 3,
+          "technicalName": "DialogueColour",
+          "type": "color"
+        }
+      },
+      "technicalName": "Character"
+    }
+  }
+}
