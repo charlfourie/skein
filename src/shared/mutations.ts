@@ -101,6 +101,9 @@ export function deleteFlowElements(flow: Flow, nodeIds: Iterable<string>, edgeId
   for (const node of Object.values(flow.nodes)) {
     if (typeof node.data.targetId === 'string' && nodes.has(node.data.targetId)) delete node.data.targetId
   }
+  // Comments go with their node (undo brings both back).
+  for (const [id, c] of Object.entries(flow.comments ?? {})) if (nodes.has(c.nodeId)) delete flow.comments![id]
+  if (flow.comments && Object.keys(flow.comments).length === 0) delete flow.comments
 }
 
 /** Entities that are instances of any of the given templates. */

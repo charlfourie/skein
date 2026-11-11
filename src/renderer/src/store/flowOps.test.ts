@@ -1,5 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createEmptyProject } from '@shared/factory'
+import { openThreadCounts, threadsOf } from '@shared/comments'
+import { splitProject } from '@shared/projectFiles'
+import { addComment, resolveThread } from './ops'
 import { buildExport } from '@shared/export/build'
 import { orderedTargets, startNodes } from '@shared/flowOrder'
 import { addFrame, addNode, autoLayout, computeLayout, connect, deleteElements, duplicateNodes, moveChoice, moveNodes, moveStart, placeFrame, reconnect, updateFrame, updateNodeData } from './flowOps'
@@ -176,5 +179,29 @@ describe('flow operations', () => {
     deleteElements(flowId, [], [], [fr])
     expect(flow().frames).toBeUndefined()
     expect(Object.keys(flow().nodes).sort()).toEqual([a, b, outside].sort())
+  })
+})
+
+describe('comments on nodes', () => {
+  it('threads, replies, resolving, and deleting with the node', () => {
+    const a = addNode(flowId, 'dialogue', { x: 0, y: 0 })!
+    const root = addComment(flowId, a, '  Too long? ', 'Ana')!
+    addComment(flowId, a, 'Cut the second sentence.', 'Ben', root)
+    expect(addComment(flowId, a, '   ', 'Ana')).toBeNull()
+    let threads = threadsOf(flow(), a)
+    expect(threads).toHaveLength(1)
+    expect(threads[0].root).toMatchObject({ author: 'Ana', text: 'Too long?' })
+    expect(threads[0].replies.map((r) => r.author)).toEqual(['Ben'])
+    expect(openThreadCounts(flow()).get(a)).toBe(1)
+    resolveThread(flowId, root, true)
+    expect(openThreadCounts(flow()).get(a)).toBeUndefined()
+    resolveThread(flowId, root, false)
+    expect(flow().comments![root].resolved).toBeUndefined()
+    // The comments live in the flow's own file.
+    const files = splitProject(s().project!)
+    const flowFile = Object.entries(files).find(([k]) => k.startsWith('flows/'))![1]
+    expect(Object.keys(JSON.parse(flowFile).comments)).toHaveLength(2)
+    deleteElements(flowId, [a], [])
+    expect(flow().comments).toBeUndefined()
   })
 })

@@ -16,7 +16,8 @@ import {
   type OnSelectionChangeParams
 } from '@xyflow/react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Activity, AlertTriangle, Frame as FrameIcon, Grid3x3, Maximize, Network, Play, Repeat } from 'lucide-react'
+import { Activity, AlertTriangle, Frame as FrameIcon, Grid3x3, Maximize, MessageSquare, Network, Play, Repeat } from 'lucide-react'
+import { openThreadCounts } from '@shared/comments'
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react'
 import { analyzeFlow, type FlowAnalysis } from '@shared/flowAnalysis'
 import { framesOf, nodesInFrame } from '@shared/frames'
@@ -437,6 +438,12 @@ export function FlowEditor({ flow }: { flow: Flow }) {
   }
 
   const playing = usePlay((s) => s.open && s.flowId === flow.id)
+  const commentCounts = openThreadCounts(flow)
+  // In canvas order (top to bottom, then left to right), so clicking walks the flow.
+  const commentNodes = [...commentCounts.keys()]
+    .filter((id) => flow.nodes[id])
+    .sort((a, b) => flow.nodes[a].position.y - flow.nodes[b].position.y || flow.nodes[a].position.x - flow.nodes[b].position.x)
+  const openThreads = [...commentCounts.values()].reduce((n, c) => n + c, 0)
   const ctx = useMemo(() => ({ flow, animate: animateEdges }), [flow, animateEdges])
   const empty = nodes.length === 0
 
@@ -543,6 +550,16 @@ export function FlowEditor({ flow }: { flow: Flow }) {
                     label={`${analysis.loopEdges.size + analysis.loopJumps.size} loop${analysis.loopEdges.size + analysis.loopJumps.size === 1 ? '' : 's'}`}
                     title="Connections that lead back to an earlier point. Click to visit each."
                     onClick={() => focusNext('loops', [...loopEdgeTargets, ...analysis.loopJumps])}
+                  />
+                )}
+                {commentNodes.length > 0 && (
+                  <IssueChip
+                    key="comments"
+                    tone="accent"
+                    icon={<MessageSquare size={12} />}
+                    label={`${openThreads} open comment${openThreads === 1 ? '' : 's'}`}
+                    title="Comment threads nobody has resolved yet. Click to visit each."
+                    onClick={() => focusNext('comments', commentNodes)}
                   />
                 )}
               </AnimatePresence>
@@ -704,7 +721,7 @@ function IssueChip({
   title,
   onClick
 }: {
-  tone: 'warn' | 'loop'
+  tone: 'warn' | 'loop' | 'accent'
   icon: ReactNode
   label: string
   title: string
@@ -722,7 +739,7 @@ function IssueChip({
       title={title}
       className={cx(
         'flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-medium shadow-pop backdrop-blur',
-        tone === 'warn' ? 'border-warn/40 bg-warn/10 text-warn' : 'border-loop/40 bg-loop/10 text-loop'
+        tone === 'warn' ? 'border-warn/40 bg-warn/10 text-warn' : tone === 'accent' ? 'border-accent/40 bg-accent/10 text-accent' : 'border-loop/40 bg-loop/10 text-loop'
       )}
     >
       {icon}

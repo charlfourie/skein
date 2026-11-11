@@ -11,6 +11,7 @@ import { TECHNICAL_NAME_RE, toTechnicalName } from '@shared/technicalName'
 import { useIssuesFor } from '../../hooks/useIssues'
 import { lineIdOf, menuLineId } from '@shared/lineIds'
 import { ReadOnly } from '../ui/ReadOnly'
+import { Comments } from './Comments'
 import { compareOrder } from '../../lib/tree'
 import { deleteElements, moveChoice, moveStart, updateNodeData } from '../../store/flowOps'
 import { useProjectStore } from '../../store/projectStore'
@@ -225,6 +226,8 @@ export function NodeInspector({ project, flowId, nodeId }: { project: Project; f
       <FieldLabel label="Designer note" hint="never exported">
         <TextArea value={dataString(node, 'note')} rows={2} placeholder="Notes for the team" onCommit={(note) => patch({ note })} />
       </FieldLabel>
+
+      <Comments project={project} flowId={flowId} nodeId={nodeId} />
 
       <div className="flex items-center justify-between">
         <code className="truncate font-mono text-2xs text-faint" title={node.id}>

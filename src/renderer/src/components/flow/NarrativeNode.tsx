@@ -1,6 +1,6 @@
 import { Handle, Position, useConnection, type Node, type NodeProps } from '@xyflow/react'
 import { motion } from 'framer-motion'
-import { AlertTriangle, Flag, Lock, Play, Repeat, XCircle, Zap } from 'lucide-react'
+import { AlertTriangle, Flag, Lock, MessageSquare, Play, Repeat, XCircle, Zap } from 'lucide-react'
 import { memo } from 'react'
 import { canConnect, dataString, INPUT_HANDLE, isEndNode, isKnownNodeType, isStartNode, outputHandles } from '@shared/nodes'
 import type { FlowNode } from '@shared/schema'
@@ -9,6 +9,7 @@ import { cx } from '../../lib/cx'
 import { templateIcon } from '../../lib/meta'
 import { GENERIC_META, NODE_META, useFlowContext } from './flowMeta'
 import { usePlayMark } from '../../store/play'
+import { openThreadCounts } from '@shared/comments'
 import { ExprText } from '../defs/ExprText'
 import { formatDuration, nodeTakes } from '@shared/time'
 import { useProjectStore } from '../../store/projectStore'
@@ -61,6 +62,7 @@ function useConnectionState(): {
 export const NarrativeNode = memo(function NarrativeNode({ id, data, selected }: NodeProps<NarrativeRFNode>) {
   const { flow } = useFlowContext()
   const playMark = usePlayMark(flow.id, id)
+  const openComments = openThreadCounts(flow).get(id) ?? 0
   const conn = useConnectionState()
   const node = data.node
   const baseMeta = isKnownNodeType(node.type) ? NODE_META[node.type] : GENERIC_META
@@ -141,6 +143,14 @@ export const NarrativeNode = memo(function NarrativeNode({ id, data, selected }:
         {node.data.once === true && (
           <span className="rounded bg-raised px-1 py-px text-[10px] font-semibold text-muted" title="Only once: not available again after the story has been here">
             1×
+          </span>
+        )}
+        {openComments > 0 && (
+          <span
+            className="flex items-center gap-0.5 rounded bg-accent/15 px-1 py-px text-[10px] font-semibold text-accent"
+            title={`${openComments} open comment thread${openComments === 1 ? '' : 's'}: select the node to read ${openComments === 1 ? 'it' : 'them'}`}
+          >
+            <MessageSquare size={9} /> {openComments}
           </span>
         )}
         {isEnd && (

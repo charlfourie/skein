@@ -689,6 +689,53 @@ export function setLinePrefix(flowId: string, prefix: string | null, rename: boo
 }
 
 // ---------------------------------------------------------------------------
+// Comments on nodes
+
+/** Start a thread on a node, or reply to one (`parentId`: the thread's first comment). */
+export function addComment(flowId: string, nodeId: string, text: string, author: string, parentId?: string): string | null {
+  const body = text.trim()
+  if (!body) return null
+  const id = newId()
+  const ok = edit(parentId ? 'Reply' : 'Comment', (p) => {
+    const flow = p.flows[flowId]
+    if (!flow?.nodes[nodeId]) return
+    flow.comments = flow.comments ?? {}
+    flow.comments[id] = { id, nodeId, author, text: body, createdAt: new Date().toISOString(), ...(parentId ? { parentId } : {}) }
+  })
+  return ok ? id : null
+}
+
+export function editComment(flowId: string, commentId: string, text: string): void {
+  const body = text.trim()
+  if (!body) return
+  edit('Edit comment', (p) => {
+    const c = p.flows[flowId]?.comments?.[commentId]
+    if (c && c.text !== body) c.text = body
+  })
+}
+
+/** Resolve or reopen a thread. */
+export function resolveThread(flowId: string, rootId: string, resolved: boolean): void {
+  edit(resolved ? 'Resolve comment' : 'Reopen comment', (p) => {
+    const c = p.flows[flowId]?.comments?.[rootId]
+    if (!c) return
+    if (resolved) c.resolved = true
+    else delete c.resolved
+  })
+}
+
+/** Delete a comment; deleting a thread's first comment deletes its replies too. */
+export function deleteComment(flowId: string, commentId: string): void {
+  edit('Delete comment', (p) => {
+    const flow = p.flows[flowId]
+    if (!flow?.comments?.[commentId]) return
+    for (const c of Object.values(flow.comments)) if (c.parentId === commentId) delete flow.comments[c.id]
+    delete flow.comments[commentId]
+    if (Object.keys(flow.comments).length === 0) delete flow.comments
+  })
+}
+
+// ---------------------------------------------------------------------------
 // Scenarios and story tests
 
 export type ScenarioPatch = Partial<Pick<Scenario, 'name' | 'day' | 'phaseId' | 'seed' | 'setup'>>
