@@ -17,7 +17,8 @@
     "test:watch": "vitest",
     "make:example": "tsx scripts/make-example.ts",
     "make:demos": "tsx scripts/make-demos.ts",
-    "export": "tsx scripts/export.ts"
+    "export": "tsx scripts/export.ts",
+    "test:story": "tsx scripts/test-story.ts"
   },
   "dependencies": {
     "@dagrejs/dagre": "^1.1.4",

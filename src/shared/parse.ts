@@ -37,7 +37,10 @@ const MIGRATIONS: Record<number, (raw: Record<string, unknown>) => Record<string
   // (`edge.order`, `node.data.startOrder`) instead of following canvas
   // positions, so moving nodes can no longer reorder a player's choices.
   // The order each flow plays in today is what gets stored.
-  4: migrateV4toV5
+  4: migrateV4toV5,
+  // v5 → v6: saved scenarios and story tests (optional `scenarios` and `tests`
+  // sections). Older files have neither, so nothing needs rewriting.
+  5: (raw) => raw
 }
 
 function migrateV4toV5(raw: Record<string, unknown>): Record<string, unknown> {
@@ -422,6 +425,26 @@ export function repairIntegrity(project: Project): string[] {
         repairs.push(`Flow "${flow.name}": a jump pointed at a node that no longer exists; cleared.`)
         delete node.data.targetId
       }
+    }
+  }
+
+  // 10. Scenarios and story tests (v6). Tests that point at a flow, node or
+  //     scenario that's gone are left alone: the test runner reports them, so
+  //     nobody loses a test without being told.
+  for (const [key, sc] of Object.entries(project.scenarios ?? {})) {
+    if (sc.id !== key) {
+      repairs.push(`Scenario "${sc.name}" had a mismatched id; reset to its key.`)
+      sc.id = key
+    }
+    if (sc.phaseId && !state.time.phases[sc.phaseId]) {
+      repairs.push(`Scenario "${sc.name}" started in a time phase that no longer exists; it now starts in the project's start phase.`)
+      delete sc.phaseId
+    }
+  }
+  for (const [key, t] of Object.entries(project.tests ?? {})) {
+    if (t.id !== key) {
+      repairs.push(`Test "${t.name}" had a mismatched id; reset to its key.`)
+      t.id = key
     }
   }
 

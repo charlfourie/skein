@@ -66,7 +66,7 @@ function load(raw: unknown): Project {
 describe('explicit choice and start order (format v5)', () => {
   it('migrating a v4 project keeps the order it played in (canvas order)', () => {
     const p = load(v4Project())
-    expect(p.schemaVersion).toBe(5)
+    expect(p.schemaVersion).toBeGreaterThanOrEqual(5)
     const f = p.flows.f
     expect(orderedTargets(f, 'hub')).toEqual(['a', 'b', 'c']) // left to right
     expect(orderedTargets(f, 'line')).toEqual(['up', 'lo']) // same x: top to bottom

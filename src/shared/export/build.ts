@@ -40,6 +40,13 @@ export interface ExportProblem {
 export interface ExportResult {
   file: ExportFile
   problems: ExportProblem[]
+  /**
+   * Compile an extra condition against this project, in export form (a story
+   * test's checks). Not part of the file: for tools that run on the export.
+   */
+  compileCondition(source: string, ctx?: CompileContext): { ok: true; expr: ExprNode } | { ok: false; message: string }
+  /** Compile extra actions in export form (a scenario's setup). */
+  compileEffects(source: string, ctx?: CompileContext): { ok: true; statements: Statement[] } | { ok: false; message: string }
 }
 
 /**
@@ -397,7 +404,20 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
     },
     flows
   }
-  return { file, problems }
+  return {
+    file,
+    problems,
+    compileCondition(source, ctx = {}) {
+      const c = compile(project, source, 'condition', ctx)
+      if (!c.ok || !c.condition) return { ok: false, message: c.diagnostics[0]?.message ?? 'Write a condition.' }
+      return { ok: true, expr: expr(c.condition) }
+    },
+    compileEffects(source, ctx = {}) {
+      const c = compile(project, source, 'action', ctx)
+      if (!c.ok) return { ok: false, message: c.diagnostics.find((d) => d.level === 'error')?.message ?? 'invalid' }
+      return { ok: true, statements: c.actions.map(statement) }
+    }
+  }
 }
 
 const TYPE_MAP: Record<PropertyDef['type'], ExportDef['type']> = {

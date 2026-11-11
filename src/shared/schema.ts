@@ -16,7 +16,7 @@ import { z } from 'zod'
  */
 
 export const PROJECT_FORMAT = 'skein.project' as const
-export const SCHEMA_VERSION = 5 as const
+export const SCHEMA_VERSION = 6 as const
 
 export const SECTION_IDS = ['flows', 'entities', 'templates'] as const
 export type SectionId = (typeof SECTION_IDS)[number]
@@ -267,6 +267,67 @@ export const StateSchema = z
   })
   .passthrough()
 
+// ---------------------------------------------------------------------------
+// Story tests (v6)
+//
+// A scenario is a named starting situation ("Day 4, storm, 1 coin"). A story
+// test plays a flow from a scenario and says what must be true. Both live in
+// the project file so the whole team shares them, and both refer to things by
+// id (flows, nodes, phases) or by expression (setup, checks), so renames are
+// followed and deleted nodes are reported, never silently skipped.
+
+export const ScenarioSchema = z
+  .object({
+    id: Id,
+    name: z.string(),
+    order: Order.default(0),
+    /** Day the scenario starts on. Absent: the project's start day. */
+    day: z.number().int().optional(),
+    /** Phase it starts in. Absent: the project's start phase. */
+    phaseId: Id.nullable().optional(),
+    /** Seed for chance() and roll() in Play. Absent: the runtime's default seed. */
+    seed: z.number().int().optional(),
+    /** Actions that set up the situation, one per line (`Player.Coins = 1`). */
+    setup: z.string().default('')
+  })
+  .passthrough()
+
+/** One step of a recorded play-through: a choice (by the node it leads to) or a dice outcome (outcome index). */
+export const RouteStepSchema = z.union([z.object({ choose: Id }), z.object({ dice: z.number().int().min(0) })])
+
+export const TEST_KINDS = ['play', 'explore'] as const
+export type TestKind = (typeof TEST_KINDS)[number]
+
+export const StoryTestSchema = z
+  .object({
+    id: Id,
+    name: z.string(),
+    order: Order.default(0),
+    flowId: Id,
+    /** The scenario it starts from. Null: the project's own starting state. */
+    scenarioId: Id.nullable().default(null),
+    /** play: follow a recorded route. explore: check every path. */
+    kind: z.enum(TEST_KINDS),
+    // --- play ---
+    /** The choices and dice outcomes, in order. An ordered value, so an array. */
+    route: z.array(RouteStepSchema).optional(),
+    /** Where the story should stop once the route is used up: the last node reached. */
+    stopsAt: Id.nullable().optional(),
+    /** Whether the story should have ended there (false: it waits at a choice). */
+    ends: z.boolean().optional(),
+    // --- explore ---
+    /** Every path ends at a node marked End, with no errors or endless loops. */
+    allEnd: z.boolean().optional(),
+    /** Every node in the flow is reached by some path. */
+    allReached: z.boolean().optional(),
+    /** Endings (node ids) that some path must reach. Sorted. */
+    reach: z.array(Id).optional(),
+    // --- both ---
+    /** Conditions, one per line, that must hold where the play-through stops (play) or at the end of every path (explore). */
+    checks: z.string().default('')
+  })
+  .passthrough()
+
 export const ProjectSchema = z
   .object({
     format: z.literal(PROJECT_FORMAT),
@@ -276,7 +337,9 @@ export const ProjectSchema = z
     flows: z.record(FlowSchema).default({}),
     templates: z.record(TemplateSchema).default({}),
     entities: z.record(EntitySchema).default({}),
-    state: StateSchema.default({})
+    state: StateSchema.default({}),
+    scenarios: z.record(ScenarioSchema).optional(),
+    tests: z.record(StoryTestSchema).optional()
   })
   .passthrough()
 
@@ -300,6 +363,9 @@ export type Rule = z.output<typeof RuleSchema>
 export type RuleTrigger = (typeof RULE_TRIGGERS)[number]
 export type ProjectState = z.output<typeof StateSchema>
 export type Project = z.output<typeof ProjectSchema>
+export type Scenario = z.output<typeof ScenarioSchema>
+export type RouteStep = z.output<typeof RouteStepSchema>
+export type StoryTest = z.output<typeof StoryTestSchema>
 
 /** Minimal shape every tree item satisfies, whatever its section. */
 export interface TreeItem {

@@ -26,10 +26,35 @@ export const FIELD_LABELS: Record<string, string> = {
   script: 'Instruction',
   requires: 'Requires',
   effects: 'Effects',
-  condition: 'Condition'
+  condition: 'Condition',
+  setup: 'Setup',
+  checks: 'Checks'
 }
 
-export type SiteOwner = { kind: 'node'; flowId: string; nodeId: string } | { kind: 'rule'; ruleId: string }
+export type SiteOwner =
+  | { kind: 'node'; flowId: string; nodeId: string }
+  | { kind: 'rule'; ruleId: string }
+  | { kind: 'scenario'; scenarioId: string }
+  | { kind: 'test'; testId: string }
+
+/** The id of whatever owns an expression (a node, rule, scenario or test). */
+export function siteOwnerId(owner: SiteOwner): string {
+  switch (owner.kind) {
+    case 'node':
+      return owner.nodeId
+    case 'rule':
+      return owner.ruleId
+    case 'scenario':
+      return owner.scenarioId
+    case 'test':
+      return owner.testId
+  }
+}
+
+/** Scenario setups set the starting state: no time travel (day and phase are their own fields). */
+export const SETUP_CTX: CompileContext = Object.freeze({ allowAdvance: false })
+/** Story test checks are plain conditions, checked once. */
+export const CHECKS_CTX: CompileContext = Object.freeze({})
 
 export interface ExprSite {
   owner: SiteOwner
@@ -40,8 +65,12 @@ export interface ExprSite {
   set(source: string): void
 }
 
-/** Every expression in the project, with a setter for rewriting it in place (works on Immer drafts). */
-export function forEachSite(project: Project, fn: (site: ExprSite) => void): void {
+/**
+ * Every expression in the project, with a setter for rewriting it in place (works on Immer drafts).
+ * Story material (scenario setups and test checks) is only included when asked for: it
+ * follows renames, but it isn't part of the story, so it doesn't count as a use of state.
+ */
+export function forEachSite(project: Project, fn: (site: ExprSite) => void, options: { includeTests?: boolean } = {}): void {
   for (const flow of Object.values(project.flows)) {
     for (const node of Object.values(flow.nodes)) {
       for (const [field, mode] of Object.entries(NODE_EXPR_FIELDS)) {
@@ -62,6 +91,13 @@ export function forEachSite(project: Project, fn: (site: ExprSite) => void): voi
     const ctx: CompileContext = { selfTemplateId: rule.forEachTemplateId, allowAdvance: false }
     if (rule.condition.trim()) fn({ owner: { kind: 'rule', ruleId: rule.id }, field: 'condition', mode: 'condition', source: rule.condition, ctx, set: (s) => (rule.condition = s) })
     if (rule.effects.trim()) fn({ owner: { kind: 'rule', ruleId: rule.id }, field: 'effects', mode: 'action', source: rule.effects, ctx, set: (s) => (rule.effects = s) })
+  }
+  if (!options.includeTests) return
+  for (const sc of Object.values(project.scenarios ?? {})) {
+    if (sc.setup.trim()) fn({ owner: { kind: 'scenario', scenarioId: sc.id }, field: 'setup', mode: 'action', source: sc.setup, ctx: SETUP_CTX, set: (s) => (sc.setup = s) })
+  }
+  for (const t of Object.values(project.tests ?? {})) {
+    if (t.checks.trim()) fn({ owner: { kind: 'test', testId: t.id }, field: 'checks', mode: 'condition', source: t.checks, ctx: CHECKS_CTX, set: (s) => (t.checks = s) })
   }
 }
 
@@ -135,6 +171,6 @@ export function applyRename(project: Project, change: RenameChange): number {
     for (const e of edits.sort((a, b) => b.tok.start - a.tok.start)) out = out.slice(0, e.tok.start) + e.value + out.slice(e.tok.end)
     site.set(out)
     changed++
-  })
+  }, { includeTests: true })
   return changed
 }

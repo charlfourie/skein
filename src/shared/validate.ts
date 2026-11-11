@@ -1,5 +1,5 @@
 import { compile, type StateRef } from './expr/check'
-import { FIELD_LABELS, forEachSite } from './expr/sites'
+import { FIELD_LABELS, forEachSite, siteOwnerId } from './expr/sites'
 import { analyzeFlow } from './flowAnalysis'
 import { dataRef, dataString } from './nodes'
 import type { Project } from './schema'
@@ -151,7 +151,7 @@ export function validateProject(project: Project): IssueMap {
       const id = meterId(project, a.ref, site.ctx.selfTemplateId ?? null)
       if (id) (a.op === '+=' ? raised : lowered).add(id)
     }
-    const ownerId = site.owner.kind === 'node' ? site.owner.nodeId : site.owner.ruleId
+    const ownerId = siteOwnerId(site.owner)
     for (const d of result.diagnostics) {
       add(ownerId, { level: d.level, field: site.field, message: `${FIELD_LABELS[site.field] ?? site.field}: ${d.message}` })
     }

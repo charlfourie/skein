@@ -43,6 +43,8 @@ export interface ExploreOptions {
   maxBeats?: number
   /** Called every so often with the number of paths explored. */
   onProgress?: (paths: number) => void
+  /** Called for every path that reaches an end, with the world as it ended (story tests check it). */
+  onEnding?: (world: SkeinWorld, node: ExportNode | null, example: PathExample) => void
 }
 
 /** Enough to replay a path: its starting state and the pick at each decision (a choice, or a chance()/roll() outcome, in the order they happened). */
@@ -311,6 +313,7 @@ export function explore(file: ExportFile, opts: ExploreOptions): ExploreReport {
       return
     }
     const node = r.ending?.node ?? null
+    opts.onEnding?.(r.world, node, example)
     const key = node?.id ?? '-'
     const ending = endings.get(key) ?? { nodeId: node?.id ?? null, text: nodeText(node), marked: node?.end === true, count: 0, weight: 0, example }
     ending.count++
