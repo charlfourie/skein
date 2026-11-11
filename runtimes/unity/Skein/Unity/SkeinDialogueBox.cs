@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Charl Fourie. See runtimes/LICENSE.
 // Skein for Unity — a ready-to-use dialogue box (no scene setup or prefabs needed).
 //
 // Add it to any GameObject (for example the one with SkeinRunner). It shows the

@@ -1,0 +1,11 @@
+Skein
+Copyright 2026 Charl Fourie
+
+The Skein editor is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+The Skein runtimes, which ship inside games, are licensed under the MIT License
+(see runtimes/LICENSE). They are: everything in runtimes/, plus
+src/shared/export/runtime.ts and src/shared/export/types.ts.
+
+Stories, projects (.skein.json) and exports (.game.json) that you create with
+Skein belong to you. Use, sell and license them under any terms you like.

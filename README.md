@@ -11,6 +11,8 @@ in the spirit of articy:draft, with no accounts and no cloud lock-in.
 
 [![Tests](https://github.com/charlfourie/skein/actions/workflows/ci.yml/badge.svg)](https://github.com/charlfourie/skein/actions/workflows/ci.yml)
 [![Last commit](https://img.shields.io/github/last-commit/charlfourie/skein)](https://github.com/charlfourie/skein/commits/main)
+[![Editor: Apache 2.0](https://img.shields.io/badge/editor-Apache_2.0-blue)](LICENSE)
+[![Runtimes: MIT](https://img.shields.io/badge/runtimes-MIT-green)](runtimes/LICENSE)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6)
 ![Engines](https://img.shields.io/badge/engines-JS%2FTS%20·%20C%23%20·%20Unity%20·%20Godot%20.NET-34d399)
 
@@ -211,9 +213,15 @@ and [Lucide](https://lucide.dev), and takes its cue from
 
 ## 📄 License
 
-A license hasn't been chosen yet, so for now all rights are reserved. Please
-[open an issue](https://github.com/charlfourie/skein/issues) if you'd like to use Skein in
-your project.
+Skein is free and open source, under two licences:
+
+| Part | Licence | In short |
+| --- | --- | --- |
+| **The editor** (everything except the runtimes) | [Apache 2.0](LICENSE) | Use, change and share it, even commercially. Keep the copyright notice and say what you changed. |
+| **The runtimes** that ship inside your game: [`runtimes/`](runtimes), plus [`runtime.ts`](src/shared/export/runtime.ts) and [`types.ts`](src/shared/export/types.ts) | [MIT](runtimes/LICENSE) | Put them in any game, open or closed, free or paid. Just keep the licence notice. |
+
+**Your stories are yours.** Projects, exports and everything you write with Skein belong to
+you, to use, sell and license however you like. The licences above only cover Skein's own code.
 
 ---
 

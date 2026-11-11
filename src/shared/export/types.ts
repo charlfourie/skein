@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Charl Fourie. See runtimes/LICENSE.
 /**
  * The game-engine export format ("skein.export", version 1).
  *

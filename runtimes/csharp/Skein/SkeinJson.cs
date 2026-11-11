@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Charl Fourie. See runtimes/LICENSE.
 // Skein C# runtime — minimal JSON reader/writer.
 // Part of the dependency-free port of src/shared/export/runtime.ts (see docs/EXPORT.md).
 // C# 9 / .NET Standard 2.1, so it runs in Unity, Godot .NET and plain .NET alike.

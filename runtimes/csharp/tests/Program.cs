@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Charl Fourie. See runtimes/LICENSE.
 // Conformance harness: replays exactly the steps of trace() in conformance.ts
 // against the C# runtime, and prints the trace for comparison.
 //

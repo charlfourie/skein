@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Charl Fourie. See runtimes/LICENSE.
 // Skein C# runtime — world state, expressions, time and rules.
 // A line-for-line port of SkeinWorld in src/shared/export/runtime.ts; docs/EXPORT.md
 // describes the same rules in prose. Values are double, bool, string or null, and

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Charl Fourie. See runtimes/LICENSE.
 // Skein for Unity — loads a Skein game export and plays its flows.
 //
 // Setup: export from Skein (File › Export for Game Engine…, saved as a .json file

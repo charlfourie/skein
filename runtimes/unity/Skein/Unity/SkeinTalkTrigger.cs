@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Charl Fourie. See runtimes/LICENSE.
 // Skein for Unity — starts a flow when the player is in range and presses a key.
 //
 // Put it on an object with a trigger collider (Is Trigger ticked). When a collider

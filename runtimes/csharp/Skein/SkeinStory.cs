@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Charl Fourie. See runtimes/LICENSE.
 // Skein C# runtime — plays one flow as a sequence of beats.
 // Port of SkeinStory in src/shared/export/runtime.ts.
 //

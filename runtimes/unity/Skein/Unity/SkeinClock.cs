@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Charl Fourie. See runtimes/LICENSE.
 // Skein for Unity — moves Skein's time forward in real time.
 //
 // Every "Seconds Per Phase" the world advances one phase (Dawn → Day → …), which

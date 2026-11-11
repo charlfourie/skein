@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Charl Fourie. See runtimes/LICENSE.
 // Skein C# runtime — the "skein.export" v1 file as typed C# objects.
 // Format: docs/EXPORT.md. Reference implementation: src/shared/export/runtime.ts.
 //

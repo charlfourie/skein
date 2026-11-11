@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Charl Fourie. See runtimes/LICENSE.
 // Skein for Unity — turns a Skein value into Unity events, with no code.
 //
 // Example: variable "World.BunkerLightOn", and in "On True" switch a Light on.

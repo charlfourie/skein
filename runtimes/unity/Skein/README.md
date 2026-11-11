@@ -67,3 +67,8 @@ skein.ResetWorld();                                   // time loop: back to day 
 repo. `runtimes/csharp/tests` replays seeded synthetic exports (every operator,
 statement, node type and coercion edge case) through both runtimes and checks the
 traces are byte-identical.
+
+## License
+
+MIT (see [`runtimes/LICENSE`](../../LICENSE)). Use these components in any game, open or
+closed, free or paid; just keep the licence notice.

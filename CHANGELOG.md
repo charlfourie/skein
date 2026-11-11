@@ -23,6 +23,8 @@ What's new in Skein, newest first. Dates are when the work landed on `main`.
 - Flows open fitted to the canvas, instead of sometimes at 15% zoom in a corner.
 
 ### Changed
+- **Licensed:** the editor under Apache 2.0, and the runtimes that ship inside games
+  under MIT. Stories and exports made with Skein belong to their authors.
 - The README is now a getting-started guide. The full reference moved to
   [docs/GUIDE.md](docs/GUIDE.md) and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 

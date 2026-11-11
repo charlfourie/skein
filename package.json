@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "description": "Local-first, node-based narrative design editor. Projects are deterministic JSON files on disk.",
   "private": true,
+  "license": "Apache-2.0",
   "main": "./out/main/index.js",
   "scripts": {
     "dev": "electron-vite dev",

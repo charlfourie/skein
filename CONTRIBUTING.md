@@ -48,3 +48,9 @@ A few habits keep Skein dependable:
   [docs/DEMOS.md](docs/DEMOS.md) if a choice matrix changed.
 
 Add a line to [CHANGELOG.md](CHANGELOG.md) for anything a user would notice.
+
+## Licensing your contribution
+
+By contributing, you agree that your work is licensed under the same terms as the part
+of Skein it changes: [Apache 2.0](LICENSE) for the editor, and [MIT](runtimes/LICENSE)
+for the runtimes (files marked `SPDX-License-Identifier: MIT`).
