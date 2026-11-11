@@ -3,6 +3,7 @@ import { create } from 'zustand'
 import type { ExternalChange } from '@shared/ipc'
 import type { Project } from '@shared/schema'
 import { compareOrder } from '../lib/tree'
+import { usePlay } from './play'
 
 export type TreeKind = 'folder' | 'flow' | 'template' | 'entity'
 export type DocKind = 'flow' | 'template' | 'entity' | 'state'
@@ -138,6 +139,7 @@ export const useProjectStore = create<ProjectStore>()((set, get) => ({
   ...initialState,
 
   loadProject: (project, filePath, options) => {
+    usePlay.getState().reset()
     const frozen = produce(project, () => undefined) // freeze, so later edits share structure safely
     set({
       ...initialState,
@@ -149,7 +151,10 @@ export const useProjectStore = create<ProjectStore>()((set, get) => ({
     })
   },
 
-  closeProject: () => set({ ...initialState }),
+  closeProject: () => {
+    usePlay.getState().reset()
+    set({ ...initialState })
+  },
 
   markSaved: (filePath, saved) => set({ filePath, savedProject: saved, externalChange: null }),
 

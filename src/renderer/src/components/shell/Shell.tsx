@@ -1,5 +1,6 @@
 import { useRef, useState, type RefObject } from 'react'
 import { Panel, PanelGroup, type ImperativePanelHandle } from 'react-resizable-panels'
+import { useProjectStore } from '../../store/projectStore'
 import { Inspector } from '../inspector/Inspector'
 import { NavTree } from '../nav/NavTree'
 import { ResizeHandle } from '../ui/ResizeHandle'
@@ -9,6 +10,9 @@ import { StatusBar } from './StatusBar'
 import { TopBar } from './TopBar'
 
 export function Shell() {
+  // After the project closes, this shell stays on screen for its fade-out. Render nothing then:
+  // the panels inside all assume an open project (and would crash on a closed one).
+  const hasProject = useProjectStore((s) => s.project !== null)
   const leftRef = useRef<ImperativePanelHandle>(null)
   const rightRef = useRef<ImperativePanelHandle>(null)
   const [leftOpen, setLeftOpen] = useState(true)
@@ -20,6 +24,8 @@ export function Shell() {
     if (panel.isCollapsed()) panel.expand()
     else panel.collapse()
   }
+
+  if (!hasProject) return null
 
   return (
     <div className="flex h-full flex-col bg-bg text-fg">

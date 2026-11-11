@@ -19,14 +19,14 @@ export const DEMOS: readonly Demo[] = [
     id: 'coffee-order',
     title: 'The Coffee Order',
     level: 'Simple',
-    blurb: 'One flow: a choice, a condition, coins to spend and a loop back to the menu.',
+    blurb: 'Spend 5 coins at a café. What you can’t afford locks, and the menu loops until you leave.',
     text: coffeeOrder
   },
   {
     id: 'museum-heist',
     title: 'The Midnight Museum Heist',
     level: 'Advanced',
-    blurb: 'Three flows, items, trust, time phases, rules and four endings.',
+    blurb: 'Three flows, a coin budget, items, trust, time phases, rules and five endings.',
     text: museumHeist
   }
 ]

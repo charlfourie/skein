@@ -43,9 +43,26 @@ interface PlayState {
   setVary(key: StateKey, spec: string | undefined): void
   setMaxPaths(n: number): void
   setFollow(follow: boolean): void
+  /** Forget the play-through and test settings (a project closed or another one opened). */
+  reset(): void
 }
 
 const EMPTY: ReadonlySet<string> = new Set()
+
+/** Everything about a play-through that belongs to one project (cleared when a project closes or another opens). */
+const PER_PROJECT = {
+  open: false,
+  flowId: null,
+  tab: 'play',
+  current: null,
+  visited: EMPTY,
+  overrides: {},
+  startDay: null,
+  startPhase: null,
+  seed: null,
+  vary: {},
+  session: null
+} as const satisfies Partial<PlayState>
 
 export const usePlay = create<PlayState>((set) => ({
   open: false,
@@ -79,6 +96,7 @@ export const usePlay = create<PlayState>((set) => ({
     }),
   setStartTime: (startDay, startPhase) => set({ startDay, startPhase }),
   setSeed: (seed) => set({ seed }),
+  reset: () => set((s) => ({ ...PER_PROJECT, version: s.version + 1 })),
   resetStart: () => set({ overrides: {}, startDay: null, startPhase: null, seed: null }),
   setVary: (key, spec) =>
     set((s) => {
