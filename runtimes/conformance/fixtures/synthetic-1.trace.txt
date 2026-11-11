@@ -1,0 +1,208 @@
+S0 day=1 phase=Day s=420 false,true,false,4,false,false,0,1,1,true,10,true,false,false,false,false,false,true,false,true,null,0,"0x1f",true
+S1 day=2 phase=Dawn s=0 true,true,false,17,false,false,0,1,2,true,10,true,false,true,false,false,true,true,true,true,null,12,"0x1f",true
+S2 day=2 phase=Dawn s=7515 true,true,false,22,false,false,0,1,2,true,10,true,false,false,false,false,true,true,true,true,null,12,"0x1f",true
+S3 day=2 phase=Dawn s=7515 true,true,false,22,false,false,0,1,2,true,10,true,true,false,false,false,true,true,true,1,null,12,"0x1f",true
+S4 day=2 phase=Dawn s=7515 true,true,false,22,false,false,0,1,2,true,10,true,false,false,false,false,true,true,true,1,null,12,"0x1f",true
+S5 day=2 phase=Dawn s=7515 true,true,false,22,false,false,0,1,2,true,10,true,false,false,false,false,true,true,true,1,null,12,"0x1f",true
+S6 day=2 phase=Dawn s=7515 true,true,false,22,false,false,-1,1,2,true,10,true,false,false,false,false,true,true,true,1,null,12,"0x1f",true
+S7 day=2 phase=Dawn s=7515 true,true,false,22,false,false,0,1,2,true,10,true,false,true,false,false,true,true,true,1,null,12,"0x1f",true
+S8 day=2 phase=Dawn s=7935 true,true,false,29,false,false,0,1,2,true,10,true,false,false,false,false,true,true,true,1,null,12,"0x1f",true
+S9 day=2 phase=Dawn s=7935 true,true,false,29,false,false,0,1,2,true,10,true,false,false,false,false,true,true,true,1,null,12,"0x1f",true
+S10 day=2 phase=Dawn s=7935 true,true,false,29,false,false,0,1,2,true,10,true,true,false,false,false,true,true,true,1,null,12,"0x1f",true
+S11 day=2 phase=Dawn s=7935 true,true,false,29,false,false,0,1,2,true,10,true,false,true,false,false,true,true,true,1,null,12,"0x1f",true
+S12 day=2 phase=Dawn s=7965 true,true,false,29,false,false,-1,1,2,true,10,true,false,true,false,false,true,true,true,1,null,12,"0x1f",false
+S13 day=2 phase=Dusk s=0 false,true,false,51,false,false,0,1,2,true,10,true,false,false,false,false,true,true,false,1,null,20,"0x1f",false
+S14 day=2 phase=Dusk s=0 false,true,false,51,false,false,-1,1,2,true,10,true,true,false,false,false,true,true,false,1,null,20,"0x1f",false
+S15 day=2 phase=Dusk s=0 false,true,false,51,false,false,-1,1,2,true,10,true,true,true,false,false,true,true,false,1,null,20,"0x1f",true
+S16 day=2 phase=Dusk s=0 false,true,false,51,false,false,0,1,2,true,10,true,false,false,false,false,true,true,false,0.5,null,20,"0x1f",true
+S17 day=2 phase=Dusk s=0 false,true,false,51,false,false,-1,2,2,true,10,true,true,false,false,false,true,true,false,0.5,null,20,"0x1f",true
+S18 day=2 phase=Dusk s=0 false,true,false,51,false,false,-1,2,2,true,10,true,true,false,false,false,true,true,false,0.5,null,20,"0x1f",false
+S19 day=2 phase=Dusk s=0 false,true,false,51,false,false,-1,2,2,true,10,true,false,false,false,false,true,true,false,0.5,null,20,"0x1f",true
+S20 day=2 phase=Dusk s=0 false,true,false,51,false,false,0,2,2,true,10,true,false,false,false,false,true,true,false,0.5,null,20,"0x1f",true
+S21 day=2 phase=Dusk s=0 false,true,false,51,false,false,-1,2,2,true,10,true,false,true,false,false,false,true,false,0.5,null,20,"0x1f",false
+S22 day=2 phase=Dusk s=0 false,true,false,51,false,false,0,2,2,true,10,true,true,false,false,false,false,true,false,0.5,null,20,"0x1f",true
+S23 day=2 phase=Dusk s=0 false,true,false,51,false,false,0,2,2,true,10,true,false,false,false,false,false,true,false,0.5,null,20,"0x1f",true
+S24 day=2 phase=Dusk s=0 false,true,false,51,false,false,-1,2,2,true,10,true,false,false,false,false,false,true,false,0.5,null,20,"0x1f",true
+S25 day=2 phase=Dusk s=0 false,true,false,51,false,false,0,2,2,true,10,true,false,false,false,false,false,true,false,0.5,null,20,"0x1f",true
+S26 day=2 phase=Dusk s=0 false,true,false,51,false,false,0,2,2,true,10,true,true,false,false,false,false,true,false,0.5,null,20,"0x1f",true
+S27 day=2 phase=Dusk s=0 false,true,false,51,false,false,0,2,2,true,10,true,false,false,false,false,false,true,false,0.5,null,20,"0x1f",true
+S28 day=2 phase=Dusk s=0 false,true,false,51,false,false,-1,2,2,true,10,true,true,false,false,false,false,true,false,0.5,null,20,"0x1f",true
+S29 day=2 phase=Dusk s=0 false,true,false,51,false,false,0,2,2,true,10,true,false,false,false,false,false,true,false,0.5,null,20,"0x1f",false
+S30 day=2 phase=Dusk s=0 false,true,false,51,false,false,-1,2,2,true,10,true,false,false,false,false,false,true,false,0.5,null,20,"0x1f",true
+S31 day=2 phase=Dusk s=0 false,true,false,51,false,false,0,2,2,true,10,true,false,false,false,false,false,true,false,0.5,null,20,"0x1f",true
+S32 day=2 phase=Dusk s=0 false,true,false,51,false,false,0,2,2,true,10,true,false,false,false,false,false,true,false,0.5,null,20,"0x1f",false
+S33 day=2 phase=Dusk s=0 false,true,false,51,false,false,-1,2,2,true,10,true,false,false,false,false,false,true,false,0.5,null,20,"0x1f",false
+S34 day=2 phase=Dusk s=0 false,true,false,51,false,false,0,2,2,true,10,true,false,true,false,false,false,true,false,0.5,null,20,"0x1f",true
+S35 day=2 phase=Dusk s=0 false,true,false,51,false,false,-1,2,2,true,10,true,false,false,false,false,false,true,false,0.5,null,20,"0x1f",true
+S36 day=2 phase=Dusk s=0 false,true,false,51,false,false,-1,2,2,true,10,true,true,false,false,false,false,true,false,0.5,null,20,"0x1f",true
+S37 day=2 phase=Dusk s=0 false,true,false,51,false,false,0,2,2,true,10,true,true,false,false,false,false,true,false,0.5,null,20,"0x1f",false
+S38 day=2 phase=Dusk s=0 false,true,false,51,false,false,0,2,2,true,10,true,false,false,false,false,false,true,false,0.5,null,20,"0x1f",false
+S39 day=2 phase=Dusk s=0 false,true,false,51,false,false,-1,2,2,true,10,true,true,false,false,false,false,true,false,0.5,null,20,"0x1f",true
+S40 day=2 phase=Dusk s=0 false,true,false,51,false,false,0,2,2,true,10,true,false,false,false,false,false,true,false,0.5,null,20,"0x1f",true
+S41 day=2 phase=Dusk s=0 false,true,false,51,false,false,-1,2,2,true,10,true,false,false,false,false,false,true,false,0.5,null,20,"0x1f",true
+S42 day=2 phase=Dusk s=0 false,true,false,51,false,false,-1,2,2,true,10,true,false,false,false,false,false,true,false,0.5,null,20,"0x1f",true
+S43 day=2 phase=Dusk s=0 false,true,false,51,false,false,0,2,2,true,10,true,false,false,false,false,false,true,false,0.5,null,21,"0x1f",true
+S44 day=2 phase=Dusk s=0 false,true,false,51,false,false,0,2,2,true,10,true,false,false,false,false,false,true,false,0.5,null,21,"0x1f",true
+SAVE {"changes":{"prop:Child.Brave":-14,"prop:Child.Title":-1,"prop:Fisher.Brave":0,"prop:Fisher.Energy":3,"prop:Fisher.Mood":0,"prop:Guild.Power":4,"prop:Keeper.Energy":2,"prop:Keeper.Mood":0,"prop:Watch.Power":9,"rel:Character->Character.Trust:$self:Fisher":0,"rel:Character->Character.Trust:Child:Keeper":4,"rel:Character->Character.Trust:Keeper:Child":1,"rel:Character->Character.Trust:Keeper:Fisher":-1,"rel:Character->Faction.Loyal:Child:Guild":0,"rel:Character->Faction.Loyal:Keeper:Watch":-21,"var:World.Count":true,"var:World.Label":1,"var:World.Missing":-1,"var:World.Ratio":1,"var:World.Storm":0.5},"day":2,"phase":"Dusk","seconds":0,"rng":169118992}
+LOG Time → Day 1, Dusk
+LOG Rule “Rule 2” for Keeper
+LOG Rule “Rule 2” for Child
+LOG Rule “Rule 2” for Fisher
+LOG Rule “Rule 2” for Stranger
+LOG Time → Day 1, Night
+LOG Rule “Rule 2” for Keeper
+LOG Rule “Rule 2” for Child
+LOG Rule “Rule 2” for Fisher
+LOG Rule “Rule 2” for Stranger
+LOG Time → Day 2, Dawn
+LOG Rule “Rule 0”
+LOG Rule “Rule 2” for Keeper
+LOG Rule “Rule 2” for Child
+LOG Rule “Rule 2” for Fisher
+LOG Rule “Rule 2” for Stranger
+LOG Time → Day 2, Day
+LOG Rule “Rule 1” for Keeper
+LOG Rule “Rule 1” for Child
+LOG Rule “Rule 1” for Fisher
+LOG Rule “Rule 1” for Stranger
+LOG Rule “Rule 2” for Keeper
+LOG Rule “Rule 2” for Child
+LOG Rule “Rule 2” for Fisher
+LOG Rule “Rule 2” for Stranger
+LOG Time → Day 2, Dusk
+LOG Rule “Rule 2” for Keeper
+LOG Rule “Rule 2” for Child
+LOG Rule “Rule 2” for Fisher
+LOG Rule “Rule 2” for Stranger
+FLOW flow-0-2c930e5f seed=0
+CHOICE f0n0-6afb762e [0:f0n0-6afb762e:Hub f0n0-6afb762e#- | 1:f0n8-b8c5af4c:Hub f0n8-b8c5af4c#-] playing=flow-0-2c930e5f flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
+CHOICE f0n0-6afb762e [0:f0n0-6afb762e:Hub f0n0-6afb762e#- | 1:f0n8-b8c5af4c:Hub f0n8-b8c5af4c#-] playing=flow-0-2c930e5f flow=flow-0-2c930e5f depth=0 t=1/Dusk/0/5:51
+END f0n8-b8c5af4c playing=- flow=flow-0-2c930e5f depth=0 t=1/Dusk/0/5:51
+SAVE {"changes":{"rel:Character->Faction.Loyal:Keeper:Watch":-4},"day":1,"phase":"Dusk","seconds":0,"rng":24301}
+FLOW flow-0-2c930e5f seed=1
+CHOICE f0n0-6afb762e [0:f0n0-6afb762e:Hub f0n0-6afb762e#- | 1:f0n8-b8c5af4c:Hub f0n8-b8c5af4c#-] playing=flow-0-2c930e5f flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
+END f0n8-b8c5af4c playing=- flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
+SAVE {"changes":{},"day":1,"phase":"Day","seconds":0,"rng":2654435761}
+FLOW flow-0-2c930e5f seed=2
+CHOICE f0n0-6afb762e [0:f0n0-6afb762e:Hub f0n0-6afb762e#- | 1:f0n8-b8c5af4c:Hub f0n8-b8c5af4c#-] playing=flow-0-2c930e5f flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
+CHOICE f0n0-6afb762e [0:f0n0-6afb762e:Hub f0n0-6afb762e#- | 1:f0n8-b8c5af4c:Hub f0n8-b8c5af4c#-] playing=flow-0-2c930e5f flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
+END f0n8-b8c5af4c playing=- flow=flow-0-2c930e5f depth=0 t=1/Dusk/0/5:51
+SAVE {"changes":{"rel:Character->Faction.Loyal:Keeper:Watch":-4},"day":1,"phase":"Dusk","seconds":0,"rng":1013904226}
+FLOW flow-0-2c930e5f seed=3
+CHOICE f0n0-6afb762e [0:f0n0-6afb762e:Hub f0n0-6afb762e#- | 1:f0n8-b8c5af4c:Hub f0n8-b8c5af4c#-] playing=flow-0-2c930e5f flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
+CHOICE f0n8-b8c5af4c [0:f0n6-791fd038:#- | 1:f0n6-791fd038:#-] playing=flow-0-2c930e5f flow=flow-0-2c930e5f depth=0 t=1/Night/0/6:21
+ERROR The flow ran 10,000 automatic steps without reaching a line: check for a loop of conditions, jumps or hubs.
+SAVE {"changes":{"prop:Fisher.Mood":0,"prop:Keeper.Energy":0,"prop:Watch.Power":true,"rel:Character->Faction.Loyal:Keeper:Watch":-159976,"var:World.Missing":-9998,"var:World.Ratio":0.5,"var:World.Storm":-9993,"visit:f0n1-ba98069f":9998,"visit:f0n6-791fd038":2},"day":9999,"phase":"Night","seconds":5715,"rng":1922788217}
+FLOW flow-0-2c930e5f seed=4
+CHOICE f0n0-6afb762e [0:f0n0-6afb762e:Hub f0n0-6afb762e#- | 1:f0n8-b8c5af4c:Hub f0n8-b8c5af4c#-] playing=flow-0-2c930e5f flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
+CHOICE f0n0-6afb762e [0:f0n0-6afb762e:Hub f0n0-6afb762e#- | 1:f0n8-b8c5af4c:Hub f0n8-b8c5af4c#-] playing=flow-0-2c930e5f flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
+END f0n8-b8c5af4c playing=- flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
+SAVE {"changes":{},"day":1,"phase":"Day","seconds":0,"rng":2027808452}
+FLOW flow-0-2c930e5f seed=5
+CHOICE f0n0-6afb762e [0:f0n0-6afb762e:Hub f0n0-6afb762e#- | 1:f0n8-b8c5af4c:Hub f0n8-b8c5af4c#-] playing=flow-0-2c930e5f flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
+END f0n8-b8c5af4c playing=- flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
+SAVE {"changes":{},"day":1,"phase":"Day","seconds":0,"rng":387276917}
+FLOW flow-1-f565837a seed=0
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/180/23:0
+LINE f1n6-d6d69095 - "Line f1n6-d6d69095 " #L_f1n6-d6d69095 [0:f1n1-3546c531:#- | 1:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#- | 2:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/3600/7:21
+LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/3606/7:21
+END f1n8-47f14c77 playing=- flow=flow-1-f565837a depth=0 t=1/Night/3606/7:21
+SAVE {"changes":{"rel:Character->Faction.Loyal:Keeper:Watch":-8,"visit:f1n4-69ccfc4d":1,"visit:f1n6-d6d69095":1,"visit:f1n8-47f14c77":1},"day":1,"phase":"Night","seconds":3606,"rng":1831590114}
+FLOW flow-1-f565837a seed=1
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/180/23:0
+LINE f1n6-d6d69095 - "Line f1n6-d6d69095 " #L_f1n6-d6d69095 [0:f1n1-3546c531:#- | 1:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#- | 2:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/5580/0:30
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10ftrue.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/20190/4:33
+END f1n4-69ccfc4d playing=- flow=flow-1-f565837a depth=0 t=1/Night/0/6:21
+SAVE {"changes":{"rel:Character->Faction.Loyal:Child:Guild":0,"rel:Character->Faction.Loyal:Keeper:Watch":-8,"var:World.Count":true,"var:World.Label":true,"var:World.Ratio":true,"var:World.Storm":0.5,"visit:f1n4-69ccfc4d":2,"visit:f1n6-d6d69095":1},"day":1,"phase":"Night","seconds":0,"rng":3854165904}
+FLOW flow-1-f565837a seed=2
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/180/23:0
+LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/186/23:0
+END f1n8-47f14c77 playing=- flow=flow-1-f565837a depth=0 t=1/Dusk/0/5:51
+SAVE {"changes":{"rel:Character->Faction.Loyal:Keeper:Watch":-4,"visit:f1n4-69ccfc4d":1,"visit:f1n8-47f14c77":1},"day":1,"phase":"Dusk","seconds":0,"rng":2845470039}
+FLOW flow-1-f565837a seed=3
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/180/23:0
+LINE f1n6-d6d69095 - "Line f1n6-d6d69095 " #L_f1n6-d6d69095 [0:f1n1-3546c531:#- | 1:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#- | 2:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/5400/7:51
+LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/5406/7:51
+END f1n8-47f14c77 playing=- flow=flow-1-f565837a depth=0 t=1/Night/5406/7:51
+SAVE {"changes":{"rel:Character->Faction.Loyal:Keeper:Watch":-8,"visit:f1n4-69ccfc4d":1,"visit:f1n6-d6d69095":1,"visit:f1n8-47f14c77":1},"day":1,"phase":"Night","seconds":5406,"rng":1204938504}
+FLOW flow-1-f565837a seed=4
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/180/23:0
+LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/186/23:0
+END f1n8-47f14c77 playing=- flow=flow-1-f565837a depth=0 t=1/Day/186/23:0
+SAVE {"changes":{"visit:f1n4-69ccfc4d":1,"visit:f1n8-47f14c77":1},"day":1,"phase":"Day","seconds":186,"rng":3859374265}
+FLOW flow-1-f565837a seed=5
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/180/23:0
+LINE f1n6-d6d69095 - "Line f1n6-d6d69095 " #L_f1n6-d6d69095 [0:f1n1-3546c531:#- | 1:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#- | 2:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/5580/0:30
+LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/6/6:21
+END f1n8-47f14c77 playing=- flow=flow-1-f565837a depth=0 t=1/Night/6/6:21
+SAVE {"changes":{"rel:Character->Faction.Loyal:Keeper:Watch":-8,"visit:f1n4-69ccfc4d":1,"visit:f1n6-d6d69095":1,"visit:f1n8-47f14c77":1},"day":1,"phase":"Night","seconds":6,"rng":2218842730}
+FLOW flow-2-0bd0748a seed=0
+LINE f2n0-44136ec2 Child "Line f2n0-44136ec2" #L_f2n0-44136ec2 [0:f2n3-cfcf5842:#-] playing=flow-2-0bd0748a flow=flow-2-0bd0748a depth=0 t=1/Day/0/22:57
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Dusk/180/5:54
+LINE f1n6-d6d69095 - "Line f1n6-d6d69095 " #L_f1n6-d6d69095 [0:f1n1-3546c531:#- | 1:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#- | 2:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/3780/7:24
+LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/3786/7:24
+END f1n8-47f14c77 playing=- flow=flow-1-f565837a depth=0 t=2/Dawn/0/13:17
+SAVE {"changes":{"prop:Child.Brave":-16,"prop:Fisher.Energy":3,"prop:Keeper.Energy":2,"prop:Watch.Power":4,"rel:Character->Faction.Loyal:Keeper:Watch":-12,"var:World.Missing":-1,"var:World.Ratio":0.5,"visit:f1n4-69ccfc4d":1,"visit:f1n6-d6d69095":1,"visit:f1n8-47f14c77":1},"day":2,"phase":"Dawn","seconds":0,"rng":3663155927}
+FLOW flow-2-0bd0748a seed=1
+LINE f2n0-44136ec2 Child "Line f2n0-44136ec2" #L_f2n0-44136ec2 [0:f2n3-cfcf5842:#-] playing=flow-2-0bd0748a flow=flow-2-0bd0748a depth=0 t=1/Day/0/22:57
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/180/23:0
+LINE f1n6-d6d69095 - "Line f1n6-d6d69095 " #L_f1n6-d6d69095 [0:f1n1-3546c531:#- | 1:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#- | 2:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/5580/0:30
+LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/6/6:21
+END f1n8-47f14c77 playing=- flow=flow-1-f565837a depth=0 t=1/Night/6/6:21
+SAVE {"changes":{"prop:Child.Brave":-16,"prop:Fisher.Energy":3,"prop:Watch.Power":4,"rel:Character->Faction.Loyal:Keeper:Watch":-8,"visit:f1n4-69ccfc4d":1,"visit:f1n6-d6d69095":1,"visit:f1n8-47f14c77":1},"day":1,"phase":"Night","seconds":6,"rng":191034278}
+FLOW flow-2-0bd0748a seed=2
+LINE f2n0-44136ec2 Child "Line f2n0-44136ec2" #L_f2n0-44136ec2 [0:f2n3-cfcf5842:#-] playing=flow-2-0bd0748a flow=flow-2-0bd0748a depth=0 t=1/Day/0/22:57
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/180/23:0
+LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Dusk/6/5:51
+END f1n8-47f14c77 playing=- flow=flow-1-f565837a depth=0 t=1/Dusk/6/5:51
+SAVE {"changes":{"prop:Child.Brave":-16,"prop:Fisher.Energy":3,"prop:Watch.Power":4,"rel:Character->Faction.Loyal:Keeper:Watch":-4,"visit:f1n4-69ccfc4d":1,"visit:f1n8-47f14c77":1},"day":1,"phase":"Dusk","seconds":6,"rng":2845470039}
+FLOW flow-2-0bd0748a seed=3
+LINE f2n0-44136ec2 Child "Line f2n0-44136ec2" #L_f2n0-44136ec2 [0:f2n3-cfcf5842:#-] playing=flow-2-0bd0748a flow=flow-2-0bd0748a depth=0 t=1/Day/0/22:57
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/180/6:24
+LINE f1n6-d6d69095 - "Line f1n6-d6d69095 " #L_f1n6-d6d69095 [0:f1n1-3546c531:#- | 1:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#- | 2:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/5580/7:54
+LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/5586/7:54
+END f1n8-47f14c77 playing=- flow=flow-1-f565837a depth=0 t=2/Day/0/22:57
+SAVE {"changes":{"prop:Child.Brave":-16,"prop:Fisher.Energy":3,"prop:Fisher.Mood":0,"prop:Keeper.Energy":2,"prop:Watch.Power":4,"rel:Character->Faction.Loyal:Keeper:Watch":-16,"var:World.Missing":-1,"var:World.Ratio":0.5,"visit:f1n4-69ccfc4d":1,"visit:f1n6-d6d69095":1,"visit:f1n8-47f14c77":1},"day":2,"phase":"Day","seconds":0,"rng":3036504317}
+FLOW flow-2-0bd0748a seed=4
+LINE f2n0-44136ec2 Child "Line f2n0-44136ec2" #L_f2n0-44136ec2 [0:f2n3-cfcf5842:#-] playing=flow-2-0bd0748a flow=flow-2-0bd0748a depth=0 t=1/Day/0/22:57
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/180/23:0
+LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/186/23:0
+END f1n8-47f14c77 playing=- flow=flow-1-f565837a depth=0 t=1/Dusk/0/5:51
+SAVE {"changes":{"prop:Child.Brave":-16,"prop:Fisher.Energy":3,"prop:Watch.Power":4,"rel:Character->Faction.Loyal:Keeper:Watch":-4,"visit:f1n4-69ccfc4d":1,"visit:f1n8-47f14c77":1},"day":1,"phase":"Dusk","seconds":0,"rng":3859374265}
+FLOW flow-2-0bd0748a seed=5
+LINE f2n0-44136ec2 Child "Line f2n0-44136ec2" #L_f2n0-44136ec2 [0:f2n3-cfcf5842:#-] playing=flow-2-0bd0748a flow=flow-2-0bd0748a depth=0 t=1/Day/0/22:57
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/180/23:0
+LINE f1n6-d6d69095 - "Line f1n6-d6d69095 " #L_f1n6-d6d69095 [0:f1n1-3546c531:#- | 1:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#- | 2:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/5400/7:51
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10ftrue.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/20010/11:54
+LINE f1n8-47f14c77 - "Line f1n8-47f14c77 truetrue.true." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/20016/11:54
+END f1n8-47f14c77 playing=- flow=flow-1-f565837a depth=0 t=2/Day/0/22:57
+SAVE {"changes":{"prop:Child.Brave":-16,"prop:Fisher.Energy":3,"prop:Fisher.Mood":0,"prop:Watch.Power":4,"rel:Character->Faction.Loyal:Child:Guild":0,"rel:Character->Faction.Loyal:Keeper:Watch":-16,"var:World.Count":true,"var:World.Label":true,"var:World.Missing":-1,"var:World.Ratio":1,"var:World.Storm":0.5,"visit:f1n4-69ccfc4d":2,"visit:f1n6-d6d69095":1,"visit:f1n8-47f14c77":1},"day":2,"phase":"Day","seconds":0,"rng":3418572873}
+FLOW flow-3-4eba5882 seed=0
+LINE f3n4-90ddd5e3 Stranger "Line f3n4-90ddd5e3 0.33 " #- [] playing=flow-3-4eba5882 flow=flow-3-4eba5882 depth=0 t=1/Day/0/22:57
+END f3n4-90ddd5e3 playing=- flow=flow-3-4eba5882 depth=0 t=1/Dusk/0/5:51
+SAVE {"changes":{"rel:Character->Faction.Loyal:Keeper:Watch":-4,"visit:f3n4-90ddd5e3":1},"day":1,"phase":"Dusk","seconds":0,"rng":24301}
+FLOW flow-3-4eba5882 seed=1
+LINE f3n4-90ddd5e3 Stranger "Line f3n4-90ddd5e3 0.33 " #- [] playing=flow-3-4eba5882 flow=flow-3-4eba5882 depth=0 t=1/Day/0/22:57
+END f3n4-90ddd5e3 playing=- flow=flow-3-4eba5882 depth=0 t=1/Day/0/22:57
+SAVE {"changes":{"visit:f3n4-90ddd5e3":1},"day":1,"phase":"Day","seconds":0,"rng":2654435761}
+FLOW flow-3-4eba5882 seed=2
+LINE f3n4-90ddd5e3 Stranger "Line f3n4-90ddd5e3 0.33 " #- [] playing=flow-3-4eba5882 flow=flow-3-4eba5882 depth=0 t=1/Day/0/22:57
+END f3n4-90ddd5e3 playing=- flow=flow-3-4eba5882 depth=0 t=1/Day/0/22:57
+SAVE {"changes":{"visit:f3n4-90ddd5e3":1},"day":1,"phase":"Day","seconds":0,"rng":1013904226}
+FLOW flow-3-4eba5882 seed=3
+LINE f3n4-90ddd5e3 Stranger "Line f3n4-90ddd5e3 0.33 " #- [] playing=flow-3-4eba5882 flow=flow-3-4eba5882 depth=0 t=1/Day/0/22:57
+END f3n4-90ddd5e3 playing=- flow=flow-3-4eba5882 depth=0 t=1/Night/0/6:21
+SAVE {"changes":{"rel:Character->Faction.Loyal:Keeper:Watch":-8,"visit:f3n4-90ddd5e3":1},"day":1,"phase":"Night","seconds":0,"rng":3668339987}
+FLOW flow-3-4eba5882 seed=4
+LINE f3n4-90ddd5e3 Stranger "Line f3n4-90ddd5e3 0.33 " #- [] playing=flow-3-4eba5882 flow=flow-3-4eba5882 depth=0 t=1/Day/0/22:57
+END f3n4-90ddd5e3 playing=- flow=flow-3-4eba5882 depth=0 t=1/Day/0/22:57
+SAVE {"changes":{"visit:f3n4-90ddd5e3":1},"day":1,"phase":"Day","seconds":0,"rng":2027808452}
+FLOW flow-3-4eba5882 seed=5
+LINE f3n4-90ddd5e3 Stranger "Line f3n4-90ddd5e3 0.33 " #- [] playing=flow-3-4eba5882 flow=flow-3-4eba5882 depth=0 t=1/Day/0/22:57
+END f3n4-90ddd5e3 playing=- flow=flow-3-4eba5882 depth=0 t=1/Day/0/22:57
+SAVE {"changes":{"visit:f3n4-90ddd5e3":1},"day":1,"phase":"Day","seconds":0,"rng":387276917}
+RESTORE true false,true,false,51,false,false,0,2,2,true,10,true,false,false,false,false,true,true,false,0.5,null,20,"0x1f",true
+EDGE0 1 Dusk 0 5:51
+DAYS0 4 Night 6270 8:5
+EDGE1 1 Day 24780 5:50
+DAYS1 4 Night 6210 8:4

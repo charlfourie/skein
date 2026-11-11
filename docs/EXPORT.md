@@ -26,8 +26,7 @@ harness replays the same seeded exports through both runtimes and requires
 byte-identical traces:
 
 ```bash
-npx tsx runtimes/csharp/tests/conformance.ts /tmp/skein-conformance
-dotnet run --project runtimes/csharp/tests -- /tmp/skein-conformance
+dotnet run --project runtimes/csharp/tests     # checks the C# runtime against runtimes/conformance/fixtures
 ```
 
 You can also export from the command line, for build pipelines:

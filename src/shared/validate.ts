@@ -1,5 +1,6 @@
 import { compile, type StateRef } from './expr/check'
-import { FIELD_LABELS, forEachSite, siteOwnerId } from './expr/sites'
+import { FIELD_LABELS, forEachSite, siteOwnerId, TEXT_FIELDS } from './expr/sites'
+import { parseTemplate } from './expr/template'
 import { analyzeFlow } from './flowAnalysis'
 import { dataRef, dataString } from './nodes'
 import type { Project } from './schema'
@@ -168,6 +169,18 @@ export function validateProject(project: Project): IssueMap {
       ...(kind === 'prop' ? { propertyId: propId } : {}),
       message: `“${def.name}” goes up and down (+= and -=) but has no minimum or maximum, so it can drift past what your conditions test. Set a range; Explore shows where it ends up.`
     })
+  }
+
+  // Braces in lines that don't make a placeholder (`{` with no `}`).
+  for (const flow of Object.values(project.flows)) {
+    for (const node of Object.values(flow.nodes)) {
+      if (node.type !== 'dialogue') continue
+      for (const field of TEXT_FIELDS) {
+        const text = node.data[field]
+        if (typeof text !== 'string' || !/[{}]/.test(text)) continue
+        for (const p of parseTemplate(text).problems) add(node.id, { level: 'error', field, message: `${FIELD_LABELS[field]}: ${p.message}` })
+      }
+    }
   }
 
   // Node tags (Seen.Tag / Visits.Tag) are project-wide names.

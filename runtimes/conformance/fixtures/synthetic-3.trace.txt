@@ -1,0 +1,108 @@
+S0 day=1 phase=Day s=2955 0,false,true,false,true,false,2,-1,0,false,-1,true,0,1,true,-1,true,-2,true,false,true,false,true,"3",1
+S1 day=1 phase=Day s=2955 0,false,true,false,true,false,2,-1,0,false,-1,true,0,1,true,-1,true,-2,true,false,true,false,true,"3",1
+S2 day=1 phase=Day s=2955 0,false,true,false,true,false,2,-1,0,false,-1,true,0,1,true,-1,true,-2,true,false,true,false,true,"3",1
+S3 day=1 phase=Day s=2955 0,false,true,false,true,false,2,-1,0,false,-1,true,0,1,true,-1,true,-2,true,false,true,false,true,"3",1
+S4 day=1 phase=Day s=2955 0,false,true,false,true,false,2,-1,0,false,-1,true,0,1,true,-1,true,-2,true,false,true,false,true,"3",1
+S5 day=1 phase=Day s=2955 0,false,true,false,true,false,2,-1,0,false,-1,true,0,1,true,-1,true,-2,true,false,true,false,true,"3",1
+S6 day=1 phase=Day s=2955 0,false,true,false,true,false,2,-1,0,false,-1,true,0,1,true,-1,true,-2,true,false,true,false,true,"3",1
+S7 day=1 phase=Night s=0 0,false,true,true,true,false,2,-1,-1,false,-1,true,0,1,true,-1,true,-2,true,false,true,false,true,false,1
+S8 day=1 phase=Night s=0 0,false,true,true,true,false,2,-1,-1,false,-1,true,0,1,true,-1,true,-2,true,false,true,false,true,false,1
+S9 day=1 phase=Night s=0 0,false,true,true,true,false,2,-1,-1,false,-1,true,0,1,true,-1,true,-2,true,false,true,false,true,false,1
+S10 day=1 phase=Night s=30 0,false,true,true,true,false,2,-1,-1,false,-1,true,0,1,true,-1,true,-2,true,false,true,false,true,false,1
+S11 day=1 phase=Night s=30 0,false,true,true,true,false,2,-1,-1,false,-1,true,0,1,true,-1,true,-2,true,false,true,false,true,false,1
+S12 day=1 phase=Night s=30 0,false,true,true,true,false,2,-1,-1,false,-1,true,0,1,true,-1,true,-2,true,false,true,false,true,false,1
+S13 day=1 phase=Night s=30 0,false,true,true,true,false,2,-1,-1,false,-1,true,0,1,true,-1,true,-2,true,false,true,false,true,false,1
+S14 day=1 phase=Night s=30 0,false,true,true,true,false,2,-1,-1,false,-1,true,0,3,true,-1,true,-2,true,false,true,false,true,false,1
+S15 day=1 phase=Night s=30 0,false,true,true,true,false,2,-1,-1,false,-1,true,0,3,true,-1,true,-2,true,false,true,false,true,false,1
+S16 day=1 phase=Night s=30 0,false,true,true,true,false,2,-1,-1,false,-1,true,0,3,true,-1,true,-2,true,false,true,false,true,false,1
+S17 day=1 phase=Night s=30 0,false,true,true,true,false,2,-1,-1,false,-1,true,0,3,true,-1,true,-2,true,false,true,false,true,false,1
+S18 day=1 phase=Night s=450 0,false,true,true,true,false,2,-1,-1,false,-1,true,0,3,true,-1,true,-2,true,false,true,false,true,false,1
+S19 day=1 phase=Night s=450 0,false,true,true,true,false,2,-1,-1,false,-1,true,0,3,true,-1,true,-2,true,false,true,false,true,false,1
+S20 day=1 phase=Night s=450 0,false,true,true,true,false,2,-1,-1,false,-1,true,0,3,true,-1,true,-2,true,false,true,false,true,false,1
+S21 day=1 phase=Night s=450 0,false,true,true,true,false,2,-1,-1,false,-1,true,0,3,true,-1,true,-2,true,false,true,false,true,false,1
+S22 day=1 phase=Night s=450 0,false,true,true,true,false,2,-1,-1,false,-1,true,0,3,true,-1,true,-2,true,false,true,false,true,false,1
+S23 day=1 phase=Night s=450 0,false,true,true,true,false,2,-1,-1,false,-1,true,0,3,true,-1,true,-2,true,false,true,false,true,false,1
+S24 day=1 phase=Night s=450 0,false,true,true,true,false,2,-1,-1,false,-1,true,0,3,true,-1,true,-2,true,false,true,false,true,false,1
+S25 day=1 phase=Night s=450 0,false,true,true,true,false,2,-1,-1,false,-1,true,0,3,true,-1,true,-2,true,false,true,false,true,false,1
+SAVE {"changes":{"prop:Child.Mood":-1,"prop:Child.Title":0,"prop:Fisher.Brave":-2,"prop:Fisher.Energy":0,"prop:Fisher.Title":false,"prop:Stranger.Brave":1,"prop:Stranger.Energy":2,"prop:Stranger.Mood":-1,"prop:Watch.Power":-2,"rel:Character->Faction.Loyal:Child:Guild":true,"rel:Character->Faction.Loyal:Stranger:Watch":1,"var:World.Count":3,"var:World.Label":1,"var:World.Ratio":0.5},"day":1,"phase":"Night","seconds":450,"rng":2207660996}
+LOG Time → Day 1, Dusk
+LOG Rule “Rule 1”
+LOG Time → Day 1, Night
+LOG Rule “Rule 1”
+FLOW flow-0-aea94999 seed=0
+END f0n0-664495de playing=- flow=flow-0-aea94999 depth=0 t=1/Day/2955/8:0
+SAVE {"changes":{},"day":1,"phase":"Day","seconds":2955,"rng":24301}
+FLOW flow-0-aea94999 seed=1
+END f0n0-664495de playing=- flow=flow-0-aea94999 depth=0 t=1/Day/2955/8:0
+SAVE {"changes":{},"day":1,"phase":"Day","seconds":2955,"rng":2654435761}
+FLOW flow-0-aea94999 seed=2
+END f0n0-664495de playing=- flow=flow-0-aea94999 depth=0 t=1/Day/2955/8:0
+SAVE {"changes":{},"day":1,"phase":"Day","seconds":2955,"rng":1013904226}
+FLOW flow-0-aea94999 seed=3
+END f0n0-664495de playing=- flow=flow-0-aea94999 depth=0 t=1/Day/2955/8:0
+SAVE {"changes":{},"day":1,"phase":"Day","seconds":2955,"rng":3668339987}
+FLOW flow-0-aea94999 seed=4
+END f0n0-664495de playing=- flow=flow-0-aea94999 depth=0 t=1/Day/2955/8:0
+SAVE {"changes":{},"day":1,"phase":"Day","seconds":2955,"rng":2027808452}
+FLOW flow-0-aea94999 seed=5
+END f0n0-664495de playing=- flow=flow-0-aea94999 depth=0 t=1/Day/2955/8:0
+SAVE {"changes":{},"day":1,"phase":"Day","seconds":2955,"rng":387276917}
+FLOW flow-1-3c13f0f4 seed=0
+ERROR Call nodes nested 100 deep: check for flows that call each other in a loop.
+SAVE {"changes":{"visit:f1n0-23b9fb66":101},"day":1,"phase":"Day","seconds":2955,"rng":24301}
+FLOW flow-1-3c13f0f4 seed=1
+ERROR Call nodes nested 100 deep: check for flows that call each other in a loop.
+SAVE {"changes":{"visit:f1n0-23b9fb66":101},"day":1,"phase":"Day","seconds":2955,"rng":2654435761}
+FLOW flow-1-3c13f0f4 seed=2
+ERROR Call nodes nested 100 deep: check for flows that call each other in a loop.
+SAVE {"changes":{"visit:f1n0-23b9fb66":101},"day":1,"phase":"Day","seconds":2955,"rng":1013904226}
+FLOW flow-1-3c13f0f4 seed=3
+ERROR Call nodes nested 100 deep: check for flows that call each other in a loop.
+SAVE {"changes":{"visit:f1n0-23b9fb66":101},"day":1,"phase":"Day","seconds":2955,"rng":3668339987}
+FLOW flow-1-3c13f0f4 seed=4
+ERROR Call nodes nested 100 deep: check for flows that call each other in a loop.
+SAVE {"changes":{"visit:f1n0-23b9fb66":101},"day":1,"phase":"Day","seconds":2955,"rng":2027808452}
+FLOW flow-1-3c13f0f4 seed=5
+ERROR Call nodes nested 100 deep: check for flows that call each other in a loop.
+SAVE {"changes":{"visit:f1n0-23b9fb66":101},"day":1,"phase":"Day","seconds":2955,"rng":387276917}
+FLOW flow-2-0f3bcd26 seed=0
+ERROR The flow ran 10,000 automatic steps without reaching a line: check for a loop of conditions, jumps or hubs.
+SAVE {"changes":{"prop:Child.Mood":-3333,"visit:f2n1-d4e89723":3334,"visit:f2n6-f258102a":3333},"day":1,"phase":"Day","seconds":2955,"rng":24301}
+FLOW flow-2-0f3bcd26 seed=1
+ERROR The flow ran 10,000 automatic steps without reaching a line: check for a loop of conditions, jumps or hubs.
+SAVE {"changes":{"prop:Child.Mood":-3333,"visit:f2n1-d4e89723":3334,"visit:f2n6-f258102a":3333},"day":1,"phase":"Day","seconds":2955,"rng":2654435761}
+FLOW flow-2-0f3bcd26 seed=2
+ERROR The flow ran 10,000 automatic steps without reaching a line: check for a loop of conditions, jumps or hubs.
+SAVE {"changes":{"prop:Child.Mood":-3333,"visit:f2n1-d4e89723":3334,"visit:f2n6-f258102a":3333},"day":1,"phase":"Day","seconds":2955,"rng":1013904226}
+FLOW flow-2-0f3bcd26 seed=3
+ERROR The flow ran 10,000 automatic steps without reaching a line: check for a loop of conditions, jumps or hubs.
+SAVE {"changes":{"prop:Child.Mood":-3333,"visit:f2n1-d4e89723":3334,"visit:f2n6-f258102a":3333},"day":1,"phase":"Day","seconds":2955,"rng":3668339987}
+FLOW flow-2-0f3bcd26 seed=4
+ERROR The flow ran 10,000 automatic steps without reaching a line: check for a loop of conditions, jumps or hubs.
+SAVE {"changes":{"prop:Child.Mood":-3333,"visit:f2n1-d4e89723":3334,"visit:f2n6-f258102a":3333},"day":1,"phase":"Day","seconds":2955,"rng":2027808452}
+FLOW flow-2-0f3bcd26 seed=5
+ERROR The flow ran 10,000 automatic steps without reaching a line: check for a loop of conditions, jumps or hubs.
+SAVE {"changes":{"prop:Child.Mood":-3333,"visit:f2n1-d4e89723":3334,"visit:f2n6-f258102a":3333},"day":1,"phase":"Day","seconds":2955,"rng":387276917}
+FLOW flow-3-5a567200 seed=0
+END f3n0-dde553f9 playing=- flow=flow-3-5a567200 depth=0 t=1/Day/2955/8:0
+SAVE {"changes":{"prop:Child.Mood":-1},"day":1,"phase":"Day","seconds":2955,"rng":24301}
+FLOW flow-3-5a567200 seed=1
+END f3n0-dde553f9 playing=- flow=flow-3-5a567200 depth=0 t=1/Day/2955/8:0
+SAVE {"changes":{"prop:Child.Mood":-1},"day":1,"phase":"Day","seconds":2955,"rng":2654435761}
+FLOW flow-3-5a567200 seed=2
+END f3n0-dde553f9 playing=- flow=flow-3-5a567200 depth=0 t=1/Day/2955/8:0
+SAVE {"changes":{"prop:Child.Mood":-1},"day":1,"phase":"Day","seconds":2955,"rng":1013904226}
+FLOW flow-3-5a567200 seed=3
+END f3n0-dde553f9 playing=- flow=flow-3-5a567200 depth=0 t=1/Day/2955/8:0
+SAVE {"changes":{"prop:Child.Mood":-1},"day":1,"phase":"Day","seconds":2955,"rng":3668339987}
+FLOW flow-3-5a567200 seed=4
+END f3n0-dde553f9 playing=- flow=flow-3-5a567200 depth=0 t=1/Day/2955/8:0
+SAVE {"changes":{"prop:Child.Mood":-1},"day":1,"phase":"Day","seconds":2955,"rng":2027808452}
+FLOW flow-3-5a567200 seed=5
+END f3n0-dde553f9 playing=- flow=flow-3-5a567200 depth=0 t=1/Day/2955/8:0
+SAVE {"changes":{"prop:Child.Mood":-1},"day":1,"phase":"Day","seconds":2955,"rng":387276917}
+RESTORE true 0,false,true,true,true,false,2,-1,-1,false,-1,true,0,3,true,-1,true,-2,true,false,true,false,true,null,1
+EDGE0 1 Dusk 0 15:7
+DAYS0 5 Dawn 17430 4:50
+EDGE1 1 Day 28500 15:6
+DAYS1 5 Dawn 17370 4:49

@@ -316,6 +316,74 @@ namespace Skein
             Changed?.Invoke(k, v);
         }
 
+        // --- Variables inside lines (v4) -------------------------------------------
+
+        /// <summary>
+        /// Fill a line's placeholders: {Player.Coins} becomes the value now, {{ and }}
+        /// are literal braces, and a placeholder the export has no value for stays as written.
+        /// </summary>
+        public string Fill(string text, JsonObject vars)
+        {
+            if (text == null) return "";
+            if (text.IndexOf('{') < 0 && text.IndexOf('}') < 0) return text;
+            var sb = new System.Text.StringBuilder();
+            for (int i = 0; i < text.Length; i++)
+            {
+                char c = text[i];
+                if ((c == '{' || c == '}') && i + 1 < text.Length && text[i + 1] == c)
+                {
+                    sb.Append(c);
+                    i++;
+                    continue;
+                }
+                if (c == '{')
+                {
+                    int close = text.IndexOf('}', i + 1);
+                    int open = text.IndexOf('{', i + 1);
+                    if (close >= 0 && (open < 0 || open > close))
+                    {
+                        var source = text.Substring(i + 1, close - i - 1).Trim();
+                        var e = vars?.Obj(source);
+                        sb.Append(e != null ? Format(e, Evaluate(e)) : text.Substring(i, close - i + 1));
+                        i = close;
+                        continue;
+                    }
+                }
+                sb.Append(c);
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// How a value reads in a line: whole numbers as they are, others to 2 decimal places
+        /// (no trailing zeros); an option or entity read straight from state by its label or
+        /// name; empty for nothing.
+        /// </summary>
+        public string Format(JsonObject e, object v)
+        {
+            if (v == null) return "";
+            if (v is bool b) return b ? "true" : "false";
+            if (v is double d)
+            {
+                var r = Math.Floor(d * 100 + 0.5) / 100;
+                if (r == Math.Floor(r)) return SkeinJson.FormatNumber(r);
+                return r.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture).TrimEnd('0');
+            }
+            var str = v as string ?? v.ToString();
+            if (e != null && e.Has("get"))
+            {
+                var kind = e.Str("get");
+                if (kind == "time" && e.Str("field") == "phase") return Data.Time.LabelOf(str);
+                var def = kind == "var" ? Definition("var", e.Str("var"), null, null)
+                    : kind == "rel" ? Definition("rel", e.Str("rel"), null, null)
+                    : kind == "prop" ? Definition("prop", null, e.Str("entity"), e.Str("prop"))
+                    : null;
+                if (def != null && def.Type == "enum") return def.LabelOf(str);
+                if (def != null && def.Type == "entity") return Data.Entities.TryGetValue(str, out var ent) && ent.DisplayName != null ? ent.DisplayName : str;
+            }
+            return str;
+        }
+
         /// <summary>Read a state path ({ "get": … }), with $self bound to <paramref name="self"/>.</summary>
         public object Read(JsonObject path, string self = null)
         {

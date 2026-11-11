@@ -21,8 +21,10 @@ namespace Skein
     {
         public int Index;
         public string Node;
-        /// <summary>What to show the player: the target's choice text, its line, or a hub's label.</summary>
+        /// <summary>What to show the player: the target's choice text, its line, or a hub's label (placeholders filled in).</summary>
         public string Text;
+        /// <summary>The ID of that text, for voice-over and translation (null for a hub's label).</summary>
+        public string LineId;
     }
 
     public enum SkeinBeatKind
@@ -41,8 +43,10 @@ namespace Skein
         public SkeinNode Node;
         /// <summary>Line beats: the speaking entity's technical name, or null for narration.</summary>
         public string Speaker;
-        /// <summary>Line beats: the line.</summary>
+        /// <summary>Line beats: the line, with its placeholders filled in.</summary>
         public string Text;
+        /// <summary>Line beats: the line's ID, for voice-over and translation (null if it has none).</summary>
+        public string LineId;
         public IReadOnlyList<SkeinChoice> Choices = Array.Empty<SkeinChoice>();
 
         /// <summary>True for a line with exactly one way on (show a "continue" prompt).</summary>
@@ -146,16 +150,24 @@ namespace Skein
         {
             var list = new List<SkeinChoice>();
             foreach (var id in ids)
-                if (Available(id)) list.Add(new SkeinChoice { Index = list.Count, Node = id, Text = Label(id) });
+                if (Available(id))
+                {
+                    var (text, lineId) = Label(id);
+                    list.Add(new SkeinChoice { Index = list.Count, Node = id, Text = text, LineId = lineId });
+                }
             return list;
         }
 
-        string Label(string id)
+        (string text, string lineId) Label(string id)
         {
             var n = Flow.Nodes[id];
-            if (n.Type == SkeinNodeType.Dialogue) return string.IsNullOrEmpty(n.MenuText) ? n.Text : n.MenuText;
-            if (n.Type == SkeinNodeType.Hub) return n.Label;
-            return "";
+            if (n.Type == SkeinNodeType.Dialogue)
+            {
+                if (!string.IsNullOrEmpty(n.MenuText)) return (World.Fill(n.MenuText, n.Vars), n.MenuLine);
+                return (World.Fill(n.Text, n.Vars), n.Line);
+            }
+            if (n.Type == SkeinNodeType.Hub) return (n.Label, null);
+            return ("", null);
         }
 
         SkeinBeat End(SkeinNode node)
@@ -191,7 +203,7 @@ namespace Skein
                 {
                     case SkeinNodeType.Dialogue:
                         pending = Choices(node.Next);
-                        return new SkeinBeat { Kind = SkeinBeatKind.Line, Node = node, Speaker = node.Speaker, Text = node.Text, Choices = pending };
+                        return new SkeinBeat { Kind = SkeinBeatKind.Line, Node = node, Speaker = node.Speaker, Text = World.Fill(node.Text, node.Vars), LineId = node.Line, Choices = pending };
                     case SkeinNodeType.Condition:
                         id = World.Check(node.Condition) ? node.OnTrue : node.OnFalse;
                         break;

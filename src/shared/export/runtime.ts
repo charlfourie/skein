@@ -301,6 +301,66 @@ export class SkeinWorld {
     }
   }
 
+  // --- Variables inside lines (v4) -------------------------------------------------
+
+  /**
+   * Fill a line's placeholders: `{Player.Coins}` becomes the value now, `{{` and
+   * `}}` are literal braces, and a placeholder the export has no value for stays
+   * as written.
+   */
+  fill(text: string, vars?: Record<string, ExprNode>): string {
+    if (!text.includes('{') && !text.includes('}')) return text
+    let out = ''
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i]
+      if ((c === '{' || c === '}') && text[i + 1] === c) {
+        out += c
+        i++
+        continue
+      }
+      if (c === '{') {
+        const close = text.indexOf('}', i + 1)
+        const open = text.indexOf('{', i + 1)
+        if (close >= 0 && (open < 0 || open > close)) {
+          const source = text.slice(i + 1, close).trim()
+          const e = vars?.[source]
+          out += e ? this.format(e, this.evaluate(e)) : text.slice(i, close + 1)
+          i = close
+          continue
+        }
+      }
+      out += c
+    }
+    return out
+  }
+
+  /**
+   * How a value reads in a line: whole numbers as they are, others to 2 decimal
+   * places (no trailing zeros); an option or entity read straight from state by
+   * its label or name; empty for nothing.
+   */
+  format(e: ExprNode, v: ExportValue): string {
+    if (v === null) return ''
+    if (typeof v === 'boolean') return v ? 'true' : 'false'
+    if (typeof v === 'number') {
+      const r = Math.floor(v * 100 + 0.5) / 100
+      return Number.isInteger(r) ? String(r) : r.toFixed(2).replace(/0+$/, '')
+    }
+    if ('get' in e) {
+      if (e.get === 'time' && e.field === 'phase') {
+        const i = this.data.state.time.phases.indexOf(v)
+        return this.data.state.time.labels[i] ?? v
+      }
+      const def = this.definition(e)
+      if (def?.type === 'enum') {
+        const i = def.options?.indexOf(v) ?? -1
+        return (i >= 0 ? def.labels?.[i] : undefined) ?? v
+      }
+      if (def?.type === 'entity') return this.data.entities[v]?.name ?? v
+    }
+    return v
+  }
+
   /** A missing condition always holds. */
   check(c: ExportCondition | null | undefined, self?: string): boolean {
     return c ? Boolean(this.evaluate(c.expr, self)) : true
@@ -378,13 +438,16 @@ export class SkeinWorld {
 export interface Choice {
   index: number
   node: string
-  /** What to show the player: the target's choice text, its line, or a hub's label. */
+  /** What to show the player: the target's choice text, its line, or a hub's label (placeholders filled in). */
   text: string
+  /** The ID of that text, for voice-over and translation (null for a hub's label). */
+  lineId: string | null
 }
 
 export type Beat =
   /** A dialogue line. One choice means "continue"; several mean the player picks. */
-  | { kind: 'line'; node: ExportNode & { type: 'dialogue' }; speaker: string | null; text: string; choices: Choice[] }
+  /** `text` has its placeholders filled in; `lineId` names it for voice-over and translation. */
+  | { kind: 'line'; node: ExportNode & { type: 'dialogue' }; speaker: string | null; text: string; lineId: string | null; choices: Choice[] }
   /** A hub with several available paths: the player picks. */
   | { kind: 'choice'; node: ExportNode; choices: Choice[] }
   | { kind: 'end'; node: ExportNode | null }
@@ -468,14 +531,18 @@ export class SkeinStory {
   }
 
   private choices(ids: string[]): Choice[] {
-    return ids.filter((id) => this.available(id)).map((id, index) => ({ index, node: id, text: this.label(id) }))
+    return ids.filter((id) => this.available(id)).map((id, index) => ({ index, node: id, ...this.label(id) }))
   }
 
-  private label(id: string): string {
+  /** What a choice shows: the target's choice text, else its line (filled in), else a hub's label. */
+  private label(id: string): { text: string; lineId: string | null } {
     const n = this.flow.nodes[id]
-    if (n.type === 'dialogue') return n.menuText || n.text
-    if (n.type === 'hub') return n.label
-    return ''
+    if (n.type === 'dialogue') {
+      if (n.menuText) return { text: this.world.fill(n.menuText, n.vars), lineId: n.menuLine ?? null }
+      return { text: this.world.fill(n.text, n.vars), lineId: n.line ?? null }
+    }
+    if (n.type === 'hub') return { text: n.label, lineId: null }
+    return { text: '', lineId: null }
   }
 
   private end(node: ExportNode | null): Beat {
@@ -508,7 +575,7 @@ export class SkeinStory {
       switch (node.type) {
         case 'dialogue':
           this.pending = this.choices(node.next)
-          return { kind: 'line', node, speaker: node.speaker, text: node.text, choices: this.pending }
+          return { kind: 'line', node, speaker: node.speaker, text: this.world.fill(node.text, node.vars), lineId: node.line ?? null, choices: this.pending }
         case 'condition':
           id = this.world.check(node.condition) ? node.onTrue : node.onFalse
           break

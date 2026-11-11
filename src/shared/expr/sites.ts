@@ -1,6 +1,7 @@
 import type { Project } from '../schema'
 import type { CompileContext, Mode } from './check'
 import { tokenize, type Token } from './syntax'
+import { parseTemplate, replacePlaceholder } from './template'
 
 /** Node data fields that hold expressions. */
 export const NODE_EXPR_FIELDS = {
@@ -28,8 +29,16 @@ export const FIELD_LABELS: Record<string, string> = {
   effects: 'Effects',
   condition: 'Condition',
   setup: 'Setup',
-  checks: 'Checks'
+  checks: 'Checks',
+  text: 'Line',
+  menuText: 'Choice text'
 }
+
+/** Dialogue fields that may hold variables inside lines (`{Player.Coins}`). */
+export const TEXT_FIELDS = ['text', 'menuText'] as const
+
+/** Placeholders are shown, not tested, so they're plain values with no dice. */
+export const VALUE_CTX: CompileContext = Object.freeze({})
 
 export type SiteOwner =
   | { kind: 'node'; flowId: string; nodeId: string }
@@ -84,6 +93,25 @@ export function forEachSite(project: Project, fn: (site: ExprSite) => void, opti
           ctx: nodeFieldCtx(field),
           set: (s) => (node.data[field] = s)
         })
+      }
+      if (node.type !== 'dialogue') continue
+      for (const field of TEXT_FIELDS) {
+        const text = node.data[field]
+        if (typeof text !== 'string' || !text.includes('{')) continue
+        let k = 0
+        for (const part of parseTemplate(text).parts) {
+          if (part.kind !== 'expr') continue
+          const index = k++
+          fn({
+            owner: { kind: 'node', flowId: flow.id, nodeId: node.id },
+            field,
+            mode: 'value',
+            source: part.source,
+            ctx: VALUE_CTX,
+            // Placeholders are found again each time, so several renames in one line stay in step.
+            set: (s) => (node.data[field] = replacePlaceholder(String(node.data[field] ?? ''), index, s))
+          })
+        }
       }
     }
   }

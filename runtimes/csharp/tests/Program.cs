@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Charl Fourie. See runtimes/LICENSE.
-// Conformance harness: replays exactly the steps of trace() in conformance.ts
-// against the C# runtime, and prints the trace for comparison.
+// Conformance harness: replays exactly the steps of trace() in
+// runtimes/conformance/generate.ts against the C# runtime, and compares the
+// result with the committed traces in runtimes/conformance/fixtures.
 //
-//   dotnet run --project runtimes/csharp/tests -- <fixtures-dir>
+//   dotnet run --project runtimes/csharp/tests [-- <fixtures-dir>]
 
 using System;
 using System.Collections.Generic;
@@ -28,8 +29,8 @@ static class Program
     static string BeatLine(SkeinBeat b)
     {
         if (b.Kind == SkeinBeatKind.End) return "END " + (b.Node?.Id ?? "-");
-        var choices = string.Join(" | ", b.Choices.Select(c => $"{c.Index}:{c.Node}:{c.Text}"));
-        if (b.Kind == SkeinBeatKind.Line) return $"LINE {b.Node.Id} {b.Speaker ?? "-"} {J(b.Text)} [{choices}]";
+        var choices = string.Join(" | ", b.Choices.Select(c => $"{c.Index}:{c.Node}:{c.Text}#{c.LineId ?? "-"}"));
+        if (b.Kind == SkeinBeatKind.Line) return $"LINE {b.Node.Id} {b.Speaker ?? "-"} {J(b.Text)} #{b.LineId ?? "-"} [{choices}]";
         return $"CHOICE {b.Node.Id} [{choices}]";
     }
 
@@ -101,9 +102,20 @@ static class Program
         return string.Join("\n", lines) + "\n";
     }
 
+    static string FindFixtures()
+    {
+        for (var d = new DirectoryInfo(AppContext.BaseDirectory); d != null; d = d.Parent)
+        {
+            var candidate = Path.Combine(d.FullName, "runtimes", "conformance", "fixtures");
+            if (Directory.Exists(candidate)) return candidate;
+        }
+        return Path.Combine("runtimes", "conformance", "fixtures");
+    }
+
     static int Main(string[] args)
     {
-        var dir = args.Length > 0 ? args[0] : ".";
+        // Default: the committed fixtures (this project lives in runtimes/csharp/tests).
+        var dir = args.Length > 0 ? args[0] : FindFixtures();
         int failed = 0, total = 0;
         foreach (var path in Directory.GetFiles(dir, "*.game.json").OrderBy(p => p, StringComparer.Ordinal))
         {

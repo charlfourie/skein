@@ -159,6 +159,12 @@ namespace Skein
         public string Speaker;
         public string Text;
         public string MenuText;
+        /// <summary>The line's ID for voice-over and translation, or null.</summary>
+        public string Line;
+        /// <summary>The choice text's ID, or null.</summary>
+        public string MenuLine;
+        /// <summary>v4: the placeholders in Text and MenuText, by their source ("Player.Coins"), or null.</summary>
+        public JsonObject Vars;
         // condition
         public JsonObject Condition;
         public string OnTrue;
@@ -193,8 +199,8 @@ namespace Skein
     public sealed class SkeinExport
     {
         public const string Format = "skein.export";
-        /// <summary>The newest format version this runtime reads (1 and 2).</summary>
-        public const int Version = 3;
+        /// <summary>The newest format version this runtime reads (it reads every older one too).</summary>
+        public const int Version = 4;
 
         public string ProjectId;
         public string ProjectName;
@@ -342,6 +348,9 @@ namespace Skein
                     n.Speaker = o.Str("speaker");
                     n.Text = o.Str("text") ?? "";
                     n.MenuText = o.Str("menuText");
+                    n.Line = o.Str("line");
+                    n.MenuLine = o.Str("menuLine");
+                    n.Vars = o.Obj("vars");
                     break;
                 case "condition":
                     n.Type = SkeinNodeType.Condition;

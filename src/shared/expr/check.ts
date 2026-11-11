@@ -43,7 +43,8 @@ export type BoundStatement =
   /** `pass 45m`: let minutes go by on the clock. */
   | { k: 'pass'; minutes: number }
 
-export type Mode = 'condition' | 'action'
+/** condition: true/false. action: statements. value: any value, shown in a line (`{Player.Coins}`). */
+export type Mode = 'condition' | 'action' | 'value'
 
 export interface CompileContext {
   /** Inside a rule that runs for each entity of a template: `self` refers to that entity. */
@@ -332,6 +333,9 @@ class Checker {
   }
 
   private random(e: Extract<Expr, { kind: 'random' }>): { b: Bound; type: VType } {
+    if (this.mode === 'value') {
+      throw new CheckError(`${e.fn}() can’t be used inside a line: the line would show a different number each time it’s read. Roll in an action and show the variable instead.`, e.start, e.end)
+    }
     if (this.mode === 'condition' && !this.ctx.allowRandom) {
       throw new CheckError(
         `${e.fn}() can’t be used in a requirement or a rule’s “only if”: those are checked again and again, so the result would keep changing. Roll in an action (World.Lucky = ${e.fn === 'chance' ? 'chance(30)' : 'roll(1, 6)'}) or branch with a Condition node.`,
@@ -537,14 +541,14 @@ export function compile(project: Project, source: string, mode: Mode, ctx: Compi
   let result: CompileResult
   if (!source.trim()) {
     result = { ok: true, condition: null, actions: [], diagnostics: [], refs: [], empty: true }
-  } else if (mode === 'condition') {
+  } else if (mode === 'condition' || mode === 'value') {
     const parsed = parseCondition(source)
     if (!parsed.ast) result = fail(parsed.diagnostics)
     else {
       const checker = new Checker(env, ctx, mode)
       try {
         const { b, type } = checker.expr(parsed.ast)
-        checker.expectBool(type, parsed.ast)
+        if (mode === 'condition') checker.expectBool(type, parsed.ast)
         result = { ok: true, condition: b, actions: [], diagnostics: checker.warnings, refs: checker.refs, empty: false }
       } catch (e) {
         if (!(e instanceof CheckError)) throw e

@@ -1,5 +1,7 @@
 import { compile, nodeTag, type Bound, type BoundStatement, type CompileContext, type StateRef } from '../expr/check'
-import { CONDITION_NODE_CTX } from '../expr/sites'
+import { CONDITION_NODE_CTX, VALUE_CTX } from '../expr/sites'
+import { placeholderSources } from '../expr/template'
+import { menuLineId } from '../lineIds'
 import { clockOf, nodeTakes, wholeSeconds } from '../time'
 import { dataRef, dataString, isEndNode, isKnownNodeType, isStartNode } from '../nodes'
 import { orderedTargets, startNodes } from '../flowOrder'
@@ -281,13 +283,29 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
       switch (node.type) {
         case 'dialogue': {
           const speakerId = dataRef(node, 'speakerId')
+          const text = dataString(node, 'text')
           const menuText = dataString(node, 'menuText')
+          const line = typeof node.data.lineId === 'string' && node.data.lineId ? node.data.lineId : undefined
+          // Variables inside lines: each placeholder compiled once, by its source.
+          const vars: Record<string, ExprNode> = {}
+          for (const source of [...placeholderSources(text), ...placeholderSources(menuText)]) {
+            if (vars[source]) continue
+            const c = compile(project, source, 'value', VALUE_CTX)
+            if (!c.ok || !c.condition) {
+              problems.push({ level: 'error', message: `${label}: {${source}}: ${c.diagnostics[0]?.message ?? 'invalid'} (shown as written).`, at })
+              continue
+            }
+            vars[source] = expr(c.condition)
+          }
+          if (Object.keys(vars).length) need(4)
           nodes[node.id] = {
             ...base,
             type: 'dialogue',
             speaker: speakerId ? (entityName.get(speakerId) ?? null) : null,
-            text: dataString(node, 'text'),
+            text,
             ...(menuText ? { menuText } : {}),
+            ...(line ? { line, ...(menuText ? { menuLine: menuLineId(line) } : {}) } : {}),
+            ...(Object.keys(vars).length ? { vars } : {}),
             next: outgoing(node.id)
           }
           break

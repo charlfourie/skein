@@ -153,7 +153,7 @@ export class PlaySession {
       const index = available.get(id)
       return {
         nodeId: id,
-        text: label(target),
+        text: label(target, this.world),
         available: index !== undefined,
         ...(index !== undefined ? { index } : {}),
         ...(target?.takes ? { takes: target.takes } : {}),
@@ -291,9 +291,9 @@ export function choicesOf(beat: Beat): Choice[] {
   return beat.kind === 'end' ? [] : beat.choices
 }
 
-function label(node: ExportNode | undefined): string {
+function label(node: ExportNode | undefined, world: SkeinWorld): string {
   if (!node) return '(missing)'
-  if (node.type === 'dialogue') return node.menuText || node.text || '(empty line)'
+  if (node.type === 'dialogue') return world.fill(node.menuText || node.text, node.vars) || '(empty line)'
   if (node.type === 'hub') return node.label || '(hub)'
   return `(${node.type})`
 }

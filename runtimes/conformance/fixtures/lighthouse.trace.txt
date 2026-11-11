@@ -1,0 +1,191 @@
+S0 day=1 phase=Dawn s=0 true,false,true,false
+S1 day=1 phase=Night s=0 true,false,true,false
+S2 day=1 phase=Night s=0 true,false,true,false
+S3 day=1 phase=Night s=0 true,false,true,false
+S4 day=1 phase=Night s=0 true,false,true,false
+S5 day=1 phase=Night s=0 true,false,true,false
+S6 day=1 phase=Night s=0 true,false,true,false
+S7 day=1 phase=Night s=0 true,false,false,false
+SAVE {"changes":{"prop:Keeper.Energy":3,"prop:Keeper.Mood":"Warm","prop:Stranger.Energy":4,"rel:Character->Character.Trust:Keeper:Stranger":0,"var:Player.Reputation":0,"var:World.LighthouseLit":true,"var:World.StormRaging":false},"day":1,"phase":"Night","seconds":0,"rng":24301}
+LOG Time → Day 1, Day
+LOG Time → Day 1, Dusk
+LOG Time → Day 1, Night
+LOG Rule “Night wears everyone down” for Keeper
+LOG Rule “Night wears everyone down” for Stranger
+FLOW 249fa53f-79cc-41d7-bffd-3cafedf6474f seed=0
+LINE 8ea79d1b-b3c1-42d3-a204-a0b32073b5ac Keeper "Trim the wick. Every hour, without fail." #NIGHT_WATCH_8ea79d [0:3e5c1e22-0197-4183-b521-44c7eb990b8d:#-] playing=249fa53f-79cc-41d7-bffd-3cafedf6474f flow=249fa53f-79cc-41d7-bffd-3cafedf6474f depth=0 t=1/Dawn/0/0:0
+LINE af267e29-30cd-428a-85f4-2c1dea3b7d91 Stranger "The light holds." #NIGHT_WATCH_af267e [] playing=249fa53f-79cc-41d7-bffd-3cafedf6474f flow=249fa53f-79cc-41d7-bffd-3cafedf6474f depth=0 t=1/Night/0/18:0
+END af267e29-30cd-428a-85f4-2c1dea3b7d91 playing=- flow=249fa53f-79cc-41d7-bffd-3cafedf6474f depth=0 t=1/Night/0/18:0
+SAVE {"changes":{"prop:Keeper.Energy":4,"prop:Stranger.Energy":4,"var:World.LighthouseLit":true},"day":1,"phase":"Night","seconds":0,"rng":24301}
+FLOW 249fa53f-79cc-41d7-bffd-3cafedf6474f seed=1
+LINE 8ea79d1b-b3c1-42d3-a204-a0b32073b5ac Keeper "Trim the wick. Every hour, without fail." #NIGHT_WATCH_8ea79d [0:3e5c1e22-0197-4183-b521-44c7eb990b8d:#-] playing=249fa53f-79cc-41d7-bffd-3cafedf6474f flow=249fa53f-79cc-41d7-bffd-3cafedf6474f depth=0 t=1/Dawn/0/0:0
+LINE af267e29-30cd-428a-85f4-2c1dea3b7d91 Stranger "The light holds." #NIGHT_WATCH_af267e [] playing=249fa53f-79cc-41d7-bffd-3cafedf6474f flow=249fa53f-79cc-41d7-bffd-3cafedf6474f depth=0 t=1/Night/0/18:0
+END af267e29-30cd-428a-85f4-2c1dea3b7d91 playing=- flow=249fa53f-79cc-41d7-bffd-3cafedf6474f depth=0 t=1/Night/0/18:0
+SAVE {"changes":{"prop:Keeper.Energy":4,"prop:Stranger.Energy":4,"var:World.LighthouseLit":true},"day":1,"phase":"Night","seconds":0,"rng":2654435761}
+FLOW 249fa53f-79cc-41d7-bffd-3cafedf6474f seed=2
+LINE 8ea79d1b-b3c1-42d3-a204-a0b32073b5ac Keeper "Trim the wick. Every hour, without fail." #NIGHT_WATCH_8ea79d [0:3e5c1e22-0197-4183-b521-44c7eb990b8d:#-] playing=249fa53f-79cc-41d7-bffd-3cafedf6474f flow=249fa53f-79cc-41d7-bffd-3cafedf6474f depth=0 t=1/Dawn/0/0:0
+LINE af267e29-30cd-428a-85f4-2c1dea3b7d91 Stranger "The light holds." #NIGHT_WATCH_af267e [] playing=249fa53f-79cc-41d7-bffd-3cafedf6474f flow=249fa53f-79cc-41d7-bffd-3cafedf6474f depth=0 t=1/Night/0/18:0
+END af267e29-30cd-428a-85f4-2c1dea3b7d91 playing=- flow=249fa53f-79cc-41d7-bffd-3cafedf6474f depth=0 t=2/Dawn/0/0:0
+SAVE {"changes":{"prop:Keeper.Energy":4,"prop:Stranger.Energy":4,"var:World.LighthouseLit":true},"day":2,"phase":"Dawn","seconds":0,"rng":1013904226}
+FLOW 249fa53f-79cc-41d7-bffd-3cafedf6474f seed=3
+LINE 8ea79d1b-b3c1-42d3-a204-a0b32073b5ac Keeper "Trim the wick. Every hour, without fail." #NIGHT_WATCH_8ea79d [0:3e5c1e22-0197-4183-b521-44c7eb990b8d:#-] playing=249fa53f-79cc-41d7-bffd-3cafedf6474f flow=249fa53f-79cc-41d7-bffd-3cafedf6474f depth=0 t=1/Dawn/0/0:0
+LINE af267e29-30cd-428a-85f4-2c1dea3b7d91 Stranger "The light holds." #NIGHT_WATCH_af267e [] playing=249fa53f-79cc-41d7-bffd-3cafedf6474f flow=249fa53f-79cc-41d7-bffd-3cafedf6474f depth=0 t=1/Night/0/18:0
+END af267e29-30cd-428a-85f4-2c1dea3b7d91 playing=- flow=249fa53f-79cc-41d7-bffd-3cafedf6474f depth=0 t=1/Night/0/18:0
+SAVE {"changes":{"prop:Keeper.Energy":4,"prop:Stranger.Energy":4,"var:World.LighthouseLit":true},"day":1,"phase":"Night","seconds":0,"rng":3668339987}
+FLOW 249fa53f-79cc-41d7-bffd-3cafedf6474f seed=4
+LINE 8ea79d1b-b3c1-42d3-a204-a0b32073b5ac Keeper "Trim the wick. Every hour, without fail." #NIGHT_WATCH_8ea79d [0:3e5c1e22-0197-4183-b521-44c7eb990b8d:#-] playing=249fa53f-79cc-41d7-bffd-3cafedf6474f flow=249fa53f-79cc-41d7-bffd-3cafedf6474f depth=0 t=1/Dawn/0/0:0
+LINE af267e29-30cd-428a-85f4-2c1dea3b7d91 Stranger "The light holds." #NIGHT_WATCH_af267e [] playing=249fa53f-79cc-41d7-bffd-3cafedf6474f flow=249fa53f-79cc-41d7-bffd-3cafedf6474f depth=0 t=1/Night/0/18:0
+END af267e29-30cd-428a-85f4-2c1dea3b7d91 playing=- flow=249fa53f-79cc-41d7-bffd-3cafedf6474f depth=0 t=1/Night/0/18:0
+SAVE {"changes":{"prop:Keeper.Energy":4,"prop:Stranger.Energy":4,"var:World.LighthouseLit":true},"day":1,"phase":"Night","seconds":0,"rng":2027808452}
+FLOW 249fa53f-79cc-41d7-bffd-3cafedf6474f seed=5
+LINE 8ea79d1b-b3c1-42d3-a204-a0b32073b5ac Keeper "Trim the wick. Every hour, without fail." #NIGHT_WATCH_8ea79d [0:3e5c1e22-0197-4183-b521-44c7eb990b8d:#-] playing=249fa53f-79cc-41d7-bffd-3cafedf6474f flow=249fa53f-79cc-41d7-bffd-3cafedf6474f depth=0 t=1/Dawn/0/0:0
+LINE af267e29-30cd-428a-85f4-2c1dea3b7d91 Stranger "The light holds." #NIGHT_WATCH_af267e [] playing=249fa53f-79cc-41d7-bffd-3cafedf6474f flow=249fa53f-79cc-41d7-bffd-3cafedf6474f depth=0 t=1/Night/0/18:0
+END af267e29-30cd-428a-85f4-2c1dea3b7d91 playing=- flow=249fa53f-79cc-41d7-bffd-3cafedf6474f depth=0 t=2/Day/0/6:0
+SAVE {"changes":{"prop:Keeper.Energy":4,"prop:Stranger.Energy":4,"var:World.LighthouseLit":true},"day":2,"phase":"Day","seconds":0,"rng":387276917}
+FLOW 6237725b-5e2b-47fd-9730-538af764c311 seed=0
+LINE 27b3e23b-421a-4e41-b2ca-064496305bb9 Keeper "Another ship lost to the fog…" #ARRIVAL_27b3e2 [0:e5c5b9bd-01a6-46c2-9244-b8819a1da1f8:I need shelter for the night.#ARRIVAL_e5c5b9] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dawn/0/0:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Day/0/6:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Day/0/6:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Day/0/6:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dusk/0/12:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dusk/0/12:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dusk/0/12:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Night/0/18:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Night/0/18:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Night/0/18:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dawn/0/0:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dawn/0/0:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dawn/0/0:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Day/0/6:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Day/0/6:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Day/0/6:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dusk/0/12:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dusk/0/12:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dusk/0/12:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Night/0/18:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Night/0/18:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Night/0/18:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=3/Dawn/0/0:0
+END a07a449b-3e08-41c3-8a1a-ba370d708f63 playing=- flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=3/Dawn/0/0:0
+SAVE {"changes":{"prop:Keeper.Energy":3,"prop:Keeper.Mood":"Wary","prop:Stranger.Energy":3,"var:Player.Reputation":0,"var:World.StormRaging":false},"day":3,"phase":"Dawn","seconds":0,"rng":24301}
+FLOW 6237725b-5e2b-47fd-9730-538af764c311 seed=1
+LINE 27b3e23b-421a-4e41-b2ca-064496305bb9 Keeper "Another ship lost to the fog…" #ARRIVAL_27b3e2 [0:e5c5b9bd-01a6-46c2-9244-b8819a1da1f8:I need shelter for the night.#ARRIVAL_e5c5b9] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dawn/0/0:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dawn/0/0:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dawn/0/0:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dusk/0/12:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dusk/0/12:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dusk/0/12:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dawn/0/0:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dawn/0/0:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dawn/0/0:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dusk/0/12:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dusk/0/12:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dusk/0/12:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=3/Dawn/0/0:0
+END a07a449b-3e08-41c3-8a1a-ba370d708f63 playing=- flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=3/Dawn/0/0:0
+SAVE {"changes":{"prop:Keeper.Energy":3,"prop:Keeper.Mood":"Wary","prop:Stranger.Energy":3,"var:Player.Reputation":0,"var:World.StormRaging":false},"day":3,"phase":"Dawn","seconds":0,"rng":2654435761}
+FLOW 6237725b-5e2b-47fd-9730-538af764c311 seed=2
+LINE 27b3e23b-421a-4e41-b2ca-064496305bb9 Keeper "Another ship lost to the fog…" #ARRIVAL_27b3e2 [0:e5c5b9bd-01a6-46c2-9244-b8819a1da1f8:I need shelter for the night.#ARRIVAL_e5c5b9] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dawn/0/0:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dawn/0/0:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Day/0/6:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Day/0/6:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Day/0/6:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dusk/0/12:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dusk/0/12:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dusk/0/12:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Night/0/18:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Night/0/18:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Night/0/18:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dawn/0/0:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dawn/0/0:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dawn/0/0:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Day/0/6:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Day/0/6:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Day/0/6:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dusk/0/12:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dusk/0/12:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dusk/0/12:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Night/0/18:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Night/0/18:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Night/0/18:0
+END a07a449b-3e08-41c3-8a1a-ba370d708f63 playing=- flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=3/Dawn/0/0:0
+SAVE {"changes":{"prop:Keeper.Energy":3,"prop:Keeper.Mood":"Wary","prop:Stranger.Energy":3,"var:Player.Reputation":0,"var:World.StormRaging":false},"day":3,"phase":"Dawn","seconds":0,"rng":1013904226}
+FLOW 6237725b-5e2b-47fd-9730-538af764c311 seed=3
+LINE 27b3e23b-421a-4e41-b2ca-064496305bb9 Keeper "Another ship lost to the fog…" #ARRIVAL_27b3e2 [0:e5c5b9bd-01a6-46c2-9244-b8819a1da1f8:I need shelter for the night.#ARRIVAL_e5c5b9] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dawn/0/0:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dusk/0/12:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dusk/0/12:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dusk/0/12:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dawn/0/0:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dawn/0/0:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dawn/0/0:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dusk/0/12:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dusk/0/12:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dusk/0/12:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=3/Dawn/0/0:0
+END a07a449b-3e08-41c3-8a1a-ba370d708f63 playing=- flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=3/Dawn/0/0:0
+SAVE {"changes":{"prop:Keeper.Energy":3,"prop:Keeper.Mood":"Wary","prop:Stranger.Energy":3,"var:Player.Reputation":0,"var:World.StormRaging":false},"day":3,"phase":"Dawn","seconds":0,"rng":3668339987}
+FLOW 6237725b-5e2b-47fd-9730-538af764c311 seed=4
+LINE 27b3e23b-421a-4e41-b2ca-064496305bb9 Keeper "Another ship lost to the fog…" #ARRIVAL_27b3e2 [0:e5c5b9bd-01a6-46c2-9244-b8819a1da1f8:I need shelter for the night.#ARRIVAL_e5c5b9] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dawn/0/0:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dawn/0/0:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dawn/0/0:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Day/0/6:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Day/0/6:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Day/0/6:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dusk/0/12:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dusk/0/12:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dusk/0/12:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Night/0/18:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Night/0/18:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Night/0/18:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dawn/0/0:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dawn/0/0:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dawn/0/0:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Day/0/6:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Day/0/6:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Day/0/6:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dusk/0/12:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dusk/0/12:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dusk/0/12:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Night/0/18:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Night/0/18:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Night/0/18:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=3/Dawn/0/0:0
+END a07a449b-3e08-41c3-8a1a-ba370d708f63 playing=- flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=3/Dawn/0/0:0
+SAVE {"changes":{"prop:Keeper.Energy":3,"prop:Keeper.Mood":"Wary","prop:Stranger.Energy":3,"var:Player.Reputation":0,"var:World.StormRaging":false},"day":3,"phase":"Dawn","seconds":0,"rng":2027808452}
+FLOW 6237725b-5e2b-47fd-9730-538af764c311 seed=5
+LINE 27b3e23b-421a-4e41-b2ca-064496305bb9 Keeper "Another ship lost to the fog…" #ARRIVAL_27b3e2 [0:e5c5b9bd-01a6-46c2-9244-b8819a1da1f8:I need shelter for the night.#ARRIVAL_e5c5b9] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dawn/0/0:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dawn/0/0:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dusk/0/12:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dusk/0/12:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=1/Dusk/0/12:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dawn/0/0:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dawn/0/0:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dawn/0/0:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dusk/0/12:0
+LINE e5c5b9bd-01a6-46c2-9244-b8819a1da1f8 Stranger "I need shelter for the night." #ARRIVAL_e5c5b9 [0:43161192-4a30-4376-96e3-6d8262192bc4:#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dusk/0/12:0
+LINE a97751f1-aa20-4ff3-97ea-2b8fe540ae8b Keeper "The mainland is that way." #ARRIVAL_a97751 [0:93ff37d7-3870-4876-950c-43a0fe880fbb:Plead again#-] playing=6237725b-5e2b-47fd-9730-538af764c311 flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=2/Dusk/0/12:0
+END a07a449b-3e08-41c3-8a1a-ba370d708f63 playing=- flow=6237725b-5e2b-47fd-9730-538af764c311 depth=0 t=3/Dawn/0/0:0
+SAVE {"changes":{"prop:Keeper.Energy":3,"prop:Keeper.Mood":"Wary","prop:Stranger.Energy":3,"var:Player.Reputation":0,"var:World.StormRaging":false},"day":3,"phase":"Dawn","seconds":0,"rng":387276917}
+FLOW 665a7a47-59bf-45a7-9c00-c8df3e3a7608 seed=0
+END - playing=- flow=665a7a47-59bf-45a7-9c00-c8df3e3a7608 depth=0 t=1/Dawn/0/0:0
+SAVE {"changes":{},"day":1,"phase":"Dawn","seconds":0,"rng":24301}
+FLOW 665a7a47-59bf-45a7-9c00-c8df3e3a7608 seed=1
+END - playing=- flow=665a7a47-59bf-45a7-9c00-c8df3e3a7608 depth=0 t=1/Dawn/0/0:0
+SAVE {"changes":{},"day":1,"phase":"Dawn","seconds":0,"rng":2654435761}
+FLOW 665a7a47-59bf-45a7-9c00-c8df3e3a7608 seed=2
+END - playing=- flow=665a7a47-59bf-45a7-9c00-c8df3e3a7608 depth=0 t=1/Dawn/0/0:0
+SAVE {"changes":{},"day":1,"phase":"Dawn","seconds":0,"rng":1013904226}
+FLOW 665a7a47-59bf-45a7-9c00-c8df3e3a7608 seed=3
+END - playing=- flow=665a7a47-59bf-45a7-9c00-c8df3e3a7608 depth=0 t=1/Dawn/0/0:0
+SAVE {"changes":{},"day":1,"phase":"Dawn","seconds":0,"rng":3668339987}
+FLOW 665a7a47-59bf-45a7-9c00-c8df3e3a7608 seed=4
+END - playing=- flow=665a7a47-59bf-45a7-9c00-c8df3e3a7608 depth=0 t=1/Dawn/0/0:0
+SAVE {"changes":{},"day":1,"phase":"Dawn","seconds":0,"rng":2027808452}
+FLOW 665a7a47-59bf-45a7-9c00-c8df3e3a7608 seed=5
+END - playing=- flow=665a7a47-59bf-45a7-9c00-c8df3e3a7608 depth=0 t=1/Dawn/0/0:0
+SAVE {"changes":{},"day":1,"phase":"Dawn","seconds":0,"rng":387276917}
+RESTORE true true,false,false,false
+EDGE0 1 Day 0 6:0
+DAYS0 4 Day 1050 6:17
+EDGE1 1 Dawn 21540 5:59
+DAYS1 4 Day 990 6:16

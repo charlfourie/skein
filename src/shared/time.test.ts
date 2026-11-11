@@ -66,6 +66,6 @@ describe('advance to / advance until', () => {
 
   it('a runtime refuses a file from a newer format', () => {
     const { file } = buildExport(project(''))
-    expect(() => new SkeinWorld({ ...file, version: 4 as never })).toThrow(/version 4/)
+    expect(() => new SkeinWorld({ ...file, version: 5 as never })).toThrow(/version 5/)
   })
 })

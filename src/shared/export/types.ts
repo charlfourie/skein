@@ -11,7 +11,7 @@
 
 export const EXPORT_FORMAT = 'skein.export' as const
 /** The newest format version this exporter writes. Each file carries the lowest version that can read it. */
-export const EXPORT_VERSION = 3 as const
+export const EXPORT_VERSION = 4 as const
 
 export type ExportValue = number | boolean | string | null
 
@@ -136,7 +136,20 @@ interface NodeBase {
 }
 
 export type ExportNode =
-  | (NodeBase & { type: 'dialogue'; speaker: string | null; text: string; menuText?: string; next: string[] })
+  | (NodeBase & {
+      type: 'dialogue'
+      speaker: string | null
+      /** The line as written. With `vars` (v4), `{Player.Coins}` placeholders are filled in when it plays; `{{` and `}}` are literal braces. */
+      text: string
+      menuText?: string
+      next: string[]
+      /** The line's ID, for voice-over and translation ("ORDER_3f9a2c"). Optional extra: older runtimes ignore it. */
+      line?: string
+      /** The choice text's ID ("ORDER_3f9a2c_M"), when the line has choice text. */
+      menuLine?: string
+      /** v4: the placeholders in `text` and `menuText`, by their source (`"Player.Coins"`). */
+      vars?: Record<string, ExprNode>
+    })
   | (NodeBase & { type: 'condition'; condition: ExportCondition | null; onTrue: string | null; onFalse: string | null })
   | (NodeBase & { type: 'instruction'; instruction: ExportEffects | null; next: string[] })
   | (NodeBase & { type: 'hub'; label: string; next: string[] })

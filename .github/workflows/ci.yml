@@ -7,6 +7,7 @@ on:
 
 jobs:
   test:
+    name: Editor (type-check, tests, web build)
     runs-on: ubuntu-latest
     env:
       ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
@@ -20,3 +21,26 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npx vite build --config vite.web.config.ts
+
+  runtimes:
+    name: Runtimes (conformance)
+    runs-on: ubuntu-latest
+    env:
+      ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+      DOTNET_NOLOGO: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - run: npm ci
+      # The committed fixtures must match what the reference runtime does now.
+      - run: npx tsx runtimes/conformance/generate.ts --check
+      # Every port must reproduce them exactly.
+      - name: C# runtime
+        run: dotnet run --project runtimes/csharp/tests

@@ -80,6 +80,7 @@
         },
         "8ea79d1b-b3c1-42d3-a204-a0b32073b5ac": {
           "id": "8ea79d1b-b3c1-42d3-a204-a0b32073b5ac",
+          "line": "NIGHT_WATCH_8ea79d",
           "next": [
             "3e5c1e22-0197-4183-b521-44c7eb990b8d"
           ],
@@ -91,6 +92,7 @@
         "af267e29-30cd-428a-85f4-2c1dea3b7d91": {
           "end": true,
           "id": "af267e29-30cd-428a-85f4-2c1dea3b7d91",
+          "line": "NIGHT_WATCH_af267e",
           "next": [],
           "requires": {
             "expr": {
@@ -114,6 +116,7 @@
       "nodes": {
         "27b3e23b-421a-4e41-b2ca-064496305bb9": {
           "id": "27b3e23b-421a-4e41-b2ca-064496305bb9",
+          "line": "ARRIVAL_27b3e2",
           "next": [
             "e5c5b9bd-01a6-46c2-9244-b8819a1da1f8"
           ],
@@ -197,6 +200,7 @@
             "source": "Keeper.Mood = Wary\nPlayer.Reputation -= 1"
           },
           "id": "a97751f1-aa20-4ff3-97ea-2b8fe540ae8b",
+          "line": "ARRIVAL_a97751",
           "next": [
             "93ff37d7-3870-4876-950c-43a0fe880fbb"
           ],
@@ -235,6 +239,7 @@
           },
           "end": true,
           "id": "ccaf6439-2f6f-49b3-8c86-ca4940d2e186",
+          "line": "ARRIVAL_ccaf64",
           "next": [],
           "speaker": "Keeper",
           "text": "Come in, then. Mind the stairs.",
@@ -242,6 +247,7 @@
         },
         "e5c5b9bd-01a6-46c2-9244-b8819a1da1f8": {
           "id": "e5c5b9bd-01a6-46c2-9244-b8819a1da1f8",
+          "line": "ARRIVAL_e5c5b9",
           "next": [
             "43161192-4a30-4376-96e3-6d8262192bc4"
           ],

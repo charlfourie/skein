@@ -1,24 +1,26 @@
 /**
- * Conformance fixtures for ports of the reference runtime (src/shared/export/runtime.ts).
+ * The shared conformance kit for every Skein runtime (see README.md here).
  *
- * Writes, into the given directory:
+ * Writes, into runtimes/conformance/fixtures (or the directory given):
  *   - <name>.game.json  an export (the Lighthouse example, plus seeded synthetic exports
  *                       that exercise every operator, statement, node type and coercion edge)
- *   - <name>.trace.txt  what the reference runtime does with it
+ *   - <name>.trace.txt  what the reference runtime (src/shared/export/runtime.ts) does with it
  *
- * A port is conformant when it produces byte-identical traces from the same exports.
- * The C# harness (Program.cs) does exactly the steps in `trace()` below.
+ * A port is conformant when it produces byte-identical traces from the same exports,
+ * by doing exactly the steps in `trace()` below. The fixtures are committed, so a port
+ * needs nothing but these files. With --check, nothing is written: it fails if the
+ * committed fixtures are out of date (CI runs this).
  *
- *   npx tsx runtimes/csharp/tests/conformance.ts <out-dir>
+ *   npx tsx runtimes/conformance/generate.ts [out-dir] [--check]
  */
-import { mkdirSync, readFileSync, writeFileSync } from 'fs'
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'fs'
 import { join } from 'path'
-import { SkeinStory, SkeinWorld, type Beat } from '../../../src/shared/export/runtime'
-import type { ExportFile, ExportNode, ExprNode, StatePath, Statement } from '../../../src/shared/export/types'
+import { SkeinStory, SkeinWorld, type Beat } from '../../src/shared/export/runtime'
+import type { ExportFile, ExportNode, ExprNode, StatePath, Statement } from '../../src/shared/export/types'
 
-const out = process.argv[2]
-if (!out) throw new Error('usage: conformance.ts <out-dir>')
-mkdirSync(out, { recursive: true })
+const args = process.argv.slice(2)
+const check = args.includes('--check')
+const out = args.find((a) => !a.startsWith('--')) ?? join(__dirname, 'fixtures')
 
 // ---- Deterministic PRNG (generation only; the harness itself uses no randomness) ----
 function rng(seed: number) {
@@ -43,11 +45,11 @@ function synth(seed: number): ExportFile {
   for (const name of chars)
     entities[name] = {
       id: hex(),
-      name,
+      name: `${name} (shown)`,
       template: 'Character',
       values: { Mood: pick(['Calm', 'Wary', 'Warm']), Energy: int(6), Title: pick(['', 'Sir', '3', 'Dusk']), Brave: r() < 0.5, Ally: pick([...factions, null]) }
     }
-  for (const name of factions) entities[name] = { id: hex(), name, template: 'Faction', values: { Power: int(10) - 3 } }
+  for (const name of factions) entities[name] = { id: hex(), name: `The ${name}`, template: 'Faction', values: { Power: int(10) - 3 } }
 
   const lits: ExprNode[] = [
     ...[-2, -1, 0, 0.5, 1, 2, 3, 10, 0.1, 7].map((v) => ({ lit: v })),
@@ -97,6 +99,23 @@ function synth(seed: number): ExportFile {
   }
   const effects = (n: number, allowTime: boolean) => ({ do: Array.from({ length: n }, () => statement(allowTime)) })
 
+  // v4: values a line can show. Options show their label, entities their name, the phase its label.
+  const placeholderPool: Record<string, () => ExprNode> = {
+    Count: () => ({ get: 'var', var: 'World.Count' }),
+    Ratio: () => ({ op: '*', a: { get: 'var', var: 'World.Ratio' }, b: { lit: pick([1, 0.3333, -2.5, 1.005, 7]) } }),
+    Third: () => ({ op: '/', a: { get: 'var', var: 'World.Count' }, b: { lit: 3 } }),
+    Label: () => ({ get: 'var', var: 'World.Label' }),
+    Storm: () => ({ get: 'var', var: 'World.Storm' }),
+    Missing: () => ({ get: 'var', var: 'World.Missing' }),
+    Mood: () => ({ get: 'prop', entity: pick(chars), prop: 'Mood' }),
+    Ally: () => ({ get: 'prop', entity: pick(chars), prop: 'Ally' }),
+    Trust: () => ({ get: 'rel', rel: 'Character->Character.Trust', from: pick(chars), to: pick(chars) }),
+    Phase: () => ({ get: 'time', field: 'phase' }),
+    Day: () => ({ get: 'time', field: 'day' }),
+    Clock: () => ({ op: '+', a: { get: 'time', field: 'hour' }, b: { op: '/', a: { get: 'time', field: 'minute' }, b: { lit: 60 } } }),
+    Text: () => ({ lit: pick(['plain', '{braces}', '']) })
+  }
+
   // Flows: random graphs. Conditions/jumps may loop; the runtimes must then agree on the error.
   const flows: ExportFile['flows'] = {}
   for (let f = 0; f < 4; f++) {
@@ -117,8 +136,32 @@ function synth(seed: number): ExportFile {
         ...(r() < 0.35 ? { takes: pick([4 / 60, 0.1, 3, 20, 90, 240.5, 700]) } : {})
       }
       const t = r()
-      if (t < 0.45)
-        nodes[id] = { ...base, type: 'dialogue', speaker: pick([...chars, null]), text: `Line ${id}`, ...(r() < 0.3 ? { menuText: r() < 0.2 ? '' : `Choose ${id}` } : {}), next: refs() }
+      if (t < 0.45) {
+        // v4: line IDs, and variables inside lines (with escapes, unknown and stray braces).
+        const vars: Record<string, ExprNode> = {}
+        const fill = (base: string) => {
+          let text = base
+          for (let k = int(4); k > 0; k--) {
+            const key = pick(Object.keys(placeholderPool))
+            vars[key] = placeholderPool[key]()
+            text += pick([` {${key}}`, ` { ${key} }`, `{${key}}.`])
+          }
+          if (r() < 0.25) text += pick([' {{literal}}', ' }} and {{', ' {Nope}', ' stray } here', ' open { here', ' {}'])
+          return text
+        }
+        const text = fill(`Line ${id}`)
+        const menu = r() < 0.3 ? (r() < 0.2 ? '' : fill(`Choose ${id}`)) : undefined
+        nodes[id] = {
+          ...base,
+          type: 'dialogue',
+          speaker: pick([...chars, null]),
+          text,
+          ...(menu !== undefined ? { menuText: menu } : {}),
+          ...(r() < 0.8 ? { line: `L_${id}`, ...(menu ? { menuLine: `L_${id}_M` } : {}) } : {}),
+          ...(Object.keys(vars).length ? { vars } : {}),
+          next: refs()
+        }
+      }
       else if (t < 0.6) nodes[id] = { ...base, type: 'condition', condition: r() < 0.1 ? null : { expr: expr(3) }, onTrue: ref(), onFalse: ref() }
       else if (t < 0.75) nodes[id] = { ...base, type: 'instruction', instruction: r() < 0.1 ? null : effects(1 + int(3), true), next: refs() }
       else if (t < 0.85) nodes[id] = { ...base, type: 'hub', label: `Hub ${id}`, next: refs() }
@@ -144,7 +187,7 @@ function synth(seed: number): ExportFile {
 
   return {
     format: 'skein.export',
-    version: 3,
+    version: 4,
     project: { id: hex(), name: `Synthetic ${seed}` },
     templates: {
       Character: {
@@ -178,7 +221,7 @@ function synth(seed: number): ExportFile {
       // v3 clock: uneven phase lengths (sometimes absent: the even split), a day start, a start minute.
       time: {
         phases,
-        labels: phases,
+        labels: phases.map((p) => `${p} time`),
         start: { day: 1, phase: pick(phases), ...(r() < 0.5 ? { minute: int(90) + 0.25 } : {}) },
         ...(r() < 0.8 ? { minutes: phases.map(() => 30 + int(600) + (r() < 0.3 ? 0.5 : 0)) } : {}),
         ...(r() < 0.8 ? { dayStart: int(1440) } : {})
@@ -209,8 +252,8 @@ function collect(file: ExportFile) {
 
 function beatLine(b: Beat): string {
   if (b.kind === 'end') return `END ${b.node?.id ?? '-'}`
-  const choices = b.choices.map((c) => `${c.index}:${c.node}:${c.text}`).join(' | ')
-  if (b.kind === 'line') return `LINE ${b.node.id} ${b.speaker ?? '-'} ${json(b.text)} [${choices}]`
+  const choices = b.choices.map((c) => `${c.index}:${c.node}:${c.text}#${c.lineId ?? '-'}`).join(' | ')
+  if (b.kind === 'line') return `LINE ${b.node.id} ${b.speaker ?? '-'} ${json(b.text)} #${b.lineId ?? '-'} [${choices}]`
   return `CHOICE ${b.node.id} [${choices}]`
 }
 
@@ -274,12 +317,27 @@ function trace(file: ExportFile): string {
 }
 
 const fixtures: Record<string, ExportFile> = {
-  lighthouse: JSON.parse(readFileSync(join(__dirname, '../../../examples/lighthouse-v2.game.json'), 'utf8'))
+  lighthouse: JSON.parse(readFileSync(join(__dirname, '../../examples/lighthouse-v2.game.json'), 'utf8'))
 }
 for (const seed of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]) fixtures[`synthetic-${seed}`] = synth(seed)
 
+const files: Record<string, string> = {}
 for (const [name, file] of Object.entries(fixtures)) {
-  writeFileSync(join(out, `${name}.game.json`), JSON.stringify(file, null, 2) + '\n')
-  writeFileSync(join(out, `${name}.trace.txt`), trace(file))
+  files[`${name}.game.json`] = JSON.stringify(file, null, 2) + '\n'
+  files[`${name}.trace.txt`] = trace(file)
 }
-console.log(`Wrote ${Object.keys(fixtures).length} fixtures to ${out}`)
+
+if (check) {
+  const stale = Object.entries(files).filter(([f, text]) => !existsSync(join(out, f)) || readFileSync(join(out, f), 'utf8') !== text)
+  const extra = existsSync(out) ? readdirSync(out).filter((f) => /\.(game\.json|trace\.txt)$/.test(f) && !(f in files)) : []
+  if (stale.length || extra.length) {
+    console.error(`Conformance fixtures are out of date (${[...stale.map(([f]) => f), ...extra].join(', ')}).`)
+    console.error('Run: npx tsx runtimes/conformance/generate.ts, and commit the result.')
+    process.exit(1)
+  }
+  console.log(`${Object.keys(fixtures).length} conformance fixtures are up to date.`)
+} else {
+  mkdirSync(out, { recursive: true })
+  for (const [f, text] of Object.entries(files)) writeFileSync(join(out, f), text)
+  console.log(`Wrote ${Object.keys(fixtures).length} fixtures to ${out}`)
+}

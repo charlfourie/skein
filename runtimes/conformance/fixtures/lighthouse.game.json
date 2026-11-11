@@ -1,0 +1,511 @@
+{
+  "entities": {
+    "Keeper": {
+      "id": "0d92f65d-f466-489b-8166-129cfd3c4dc2",
+      "name": "Keeper",
+      "template": "Character",
+      "values": {
+        "Age": 61,
+        "Biography": "Has kept the light for forty winters. Lost his son to the same fog.",
+        "DialogueColour": "#fbbf24",
+        "Energy": 5,
+        "IsAlive": true,
+        "MemberOf": "LighthouseWatch",
+        "Mood": "Calm",
+        "Role": "Ally"
+      }
+    },
+    "LighthouseWatch": {
+      "id": "7230cd35-4816-42d0-ad85-bdc274d8a770",
+      "name": "Lighthouse Watch",
+      "template": "Faction",
+      "values": {
+        "Motto": "The light does not go out."
+      }
+    },
+    "StormLantern": {
+      "id": "122418be-675d-4f39-9b2b-b7c697844b04",
+      "name": "Storm Lantern",
+      "template": "Item",
+      "values": {
+        "Rarity": "Rare",
+        "Weight": 1.5
+      }
+    },
+    "Stranger": {
+      "id": "98a07297-e770-44f2-8633-83192ce1fedc",
+      "name": "Stranger",
+      "template": "Character",
+      "values": {
+        "Age": null,
+        "Biography": "",
+        "DialogueColour": "#e4e7ef",
+        "Energy": 5,
+        "IsAlive": true,
+        "MemberOf": null,
+        "Mood": "Calm",
+        "Role": "Protagonist"
+      }
+    }
+  },
+  "flows": {
+    "249fa53f-79cc-41d7-bffd-3cafedf6474f": {
+      "id": "249fa53f-79cc-41d7-bffd-3cafedf6474f",
+      "name": "Night Watch",
+      "nodes": {
+        "3e5c1e22-0197-4183-b521-44c7eb990b8d": {
+          "id": "3e5c1e22-0197-4183-b521-44c7eb990b8d",
+          "instruction": {
+            "do": [
+              {
+                "op": "=",
+                "set": {
+                  "get": "var",
+                  "var": "World.LighthouseLit"
+                },
+                "value": {
+                  "lit": true
+                }
+              },
+              {
+                "advanceTo": "Night"
+              }
+            ],
+            "source": "World.LighthouseLit = true\nadvance to Night"
+          },
+          "next": [
+            "af267e29-30cd-428a-85f4-2c1dea3b7d91"
+          ],
+          "type": "instruction"
+        },
+        "8ea79d1b-b3c1-42d3-a204-a0b32073b5ac": {
+          "id": "8ea79d1b-b3c1-42d3-a204-a0b32073b5ac",
+          "line": "NIGHT_WATCH_8ea79d",
+          "next": [
+            "3e5c1e22-0197-4183-b521-44c7eb990b8d"
+          ],
+          "speaker": "Keeper",
+          "start": true,
+          "text": "Trim the wick. Every hour, without fail.",
+          "type": "dialogue"
+        },
+        "af267e29-30cd-428a-85f4-2c1dea3b7d91": {
+          "end": true,
+          "id": "af267e29-30cd-428a-85f4-2c1dea3b7d91",
+          "line": "NIGHT_WATCH_af267e",
+          "next": [],
+          "requires": {
+            "expr": {
+              "get": "var",
+              "var": "World.LighthouseLit"
+            },
+            "source": "World.LighthouseLit"
+          },
+          "speaker": "Stranger",
+          "text": "The light holds.",
+          "type": "dialogue"
+        }
+      },
+      "start": [
+        "8ea79d1b-b3c1-42d3-a204-a0b32073b5ac"
+      ]
+    },
+    "6237725b-5e2b-47fd-9730-538af764c311": {
+      "id": "6237725b-5e2b-47fd-9730-538af764c311",
+      "name": "Arrival",
+      "nodes": {
+        "27b3e23b-421a-4e41-b2ca-064496305bb9": {
+          "id": "27b3e23b-421a-4e41-b2ca-064496305bb9",
+          "line": "ARRIVAL_27b3e2",
+          "next": [
+            "e5c5b9bd-01a6-46c2-9244-b8819a1da1f8"
+          ],
+          "speaker": "Keeper",
+          "start": true,
+          "text": "Another ship lost to the fog…",
+          "type": "dialogue"
+        },
+        "43161192-4a30-4376-96e3-6d8262192bc4": {
+          "condition": {
+            "expr": {
+              "a": {
+                "a": {
+                  "from": "Keeper",
+                  "get": "rel",
+                  "rel": "Character->Character.Trust",
+                  "to": "Stranger"
+                },
+                "b": {
+                  "lit": 1
+                },
+                "op": ">="
+              },
+              "b": {
+                "a": {
+                  "get": "var",
+                  "var": "Player.Reputation"
+                },
+                "b": {
+                  "lit": 2
+                },
+                "op": ">="
+              },
+              "op": "or"
+            },
+            "source": "Keeper->Stranger.Trust >= 1 or Player.Reputation >= 2"
+          },
+          "id": "43161192-4a30-4376-96e3-6d8262192bc4",
+          "onFalse": "a97751f1-aa20-4ff3-97ea-2b8fe540ae8b",
+          "onTrue": "ccaf6439-2f6f-49b3-8c86-ca4940d2e186",
+          "type": "condition"
+        },
+        "93ff37d7-3870-4876-950c-43a0fe880fbb": {
+          "id": "93ff37d7-3870-4876-950c-43a0fe880fbb",
+          "label": "Plead again",
+          "next": [
+            "a07a449b-3e08-41c3-8a1a-ba370d708f63"
+          ],
+          "type": "hub"
+        },
+        "a07a449b-3e08-41c3-8a1a-ba370d708f63": {
+          "id": "a07a449b-3e08-41c3-8a1a-ba370d708f63",
+          "jumpTo": "e5c5b9bd-01a6-46c2-9244-b8819a1da1f8",
+          "type": "jump"
+        },
+        "a97751f1-aa20-4ff3-97ea-2b8fe540ae8b": {
+          "effects": {
+            "do": [
+              {
+                "op": "=",
+                "set": {
+                  "entity": "Keeper",
+                  "get": "prop",
+                  "prop": "Mood"
+                },
+                "value": {
+                  "lit": "Wary"
+                }
+              },
+              {
+                "op": "-=",
+                "set": {
+                  "get": "var",
+                  "var": "Player.Reputation"
+                },
+                "value": {
+                  "lit": 1
+                }
+              }
+            ],
+            "source": "Keeper.Mood = Wary\nPlayer.Reputation -= 1"
+          },
+          "id": "a97751f1-aa20-4ff3-97ea-2b8fe540ae8b",
+          "line": "ARRIVAL_a97751",
+          "next": [
+            "93ff37d7-3870-4876-950c-43a0fe880fbb"
+          ],
+          "speaker": "Keeper",
+          "text": "The mainland is that way.",
+          "type": "dialogue"
+        },
+        "ccaf6439-2f6f-49b3-8c86-ca4940d2e186": {
+          "effects": {
+            "do": [
+              {
+                "op": "=",
+                "set": {
+                  "entity": "Keeper",
+                  "get": "prop",
+                  "prop": "Mood"
+                },
+                "value": {
+                  "lit": "Warm"
+                }
+              },
+              {
+                "op": "+=",
+                "set": {
+                  "from": "Keeper",
+                  "get": "rel",
+                  "rel": "Character->Character.Trust",
+                  "to": "Stranger"
+                },
+                "value": {
+                  "lit": 1
+                }
+              }
+            ],
+            "source": "Keeper.Mood = Warm\nKeeper->Stranger.Trust += 1"
+          },
+          "end": true,
+          "id": "ccaf6439-2f6f-49b3-8c86-ca4940d2e186",
+          "line": "ARRIVAL_ccaf64",
+          "next": [],
+          "speaker": "Keeper",
+          "text": "Come in, then. Mind the stairs.",
+          "type": "dialogue"
+        },
+        "e5c5b9bd-01a6-46c2-9244-b8819a1da1f8": {
+          "id": "e5c5b9bd-01a6-46c2-9244-b8819a1da1f8",
+          "line": "ARRIVAL_e5c5b9",
+          "next": [
+            "43161192-4a30-4376-96e3-6d8262192bc4"
+          ],
+          "requires": {
+            "expr": {
+              "get": "var",
+              "var": "World.StormRaging"
+            },
+            "source": "World.StormRaging"
+          },
+          "speaker": "Stranger",
+          "text": "I need shelter for the night.",
+          "type": "dialogue"
+        }
+      },
+      "start": [
+        "27b3e23b-421a-4e41-b2ca-064496305bb9"
+      ]
+    },
+    "665a7a47-59bf-45a7-9c00-c8df3e3a7608": {
+      "id": "665a7a47-59bf-45a7-9c00-c8df3e3a7608",
+      "name": "Prologue",
+      "nodes": {},
+      "start": []
+    }
+  },
+  "format": "skein.export",
+  "project": {
+    "id": "87911e96-0a26-435c-a400-28e3f02b950c",
+    "name": "The Lighthouse Keeper"
+  },
+  "state": {
+    "relationships": {
+      "Character->Character.Trust": {
+        "default": 0,
+        "from": "Character",
+        "integer": true,
+        "max": 5,
+        "min": -5,
+        "name": "Trust",
+        "to": "Character",
+        "type": "number",
+        "values": {
+          "Keeper": {
+            "Stranger": -1
+          }
+        }
+      }
+    },
+    "rules": [
+      {
+        "effects": {
+          "do": [
+            {
+              "op": "-=",
+              "set": {
+                "entity": "$self",
+                "get": "prop",
+                "prop": "Energy"
+              },
+              "value": {
+                "lit": 1
+              }
+            }
+          ],
+          "source": "self.Energy -= 1"
+        },
+        "forEach": "Character",
+        "id": "35f5e47f-ce5d-414e-8d9c-67bba0cc527d",
+        "name": "Night wears everyone down",
+        "phase": "Night",
+        "trigger": "phase"
+      },
+      {
+        "effects": {
+          "do": [
+            {
+              "op": "=",
+              "set": {
+                "get": "var",
+                "var": "World.StormRaging"
+              },
+              "value": {
+                "lit": false
+              }
+            }
+          ],
+          "source": "World.StormRaging = false"
+        },
+        "forEach": null,
+        "id": "1ca807df-a9d9-4c89-9833-746f3a1ffa22",
+        "name": "The storm blows over",
+        "phase": null,
+        "trigger": "day",
+        "when": {
+          "expr": {
+            "a": {
+              "field": "day",
+              "get": "time"
+            },
+            "b": {
+              "lit": 3
+            },
+            "op": ">="
+          },
+          "source": "Time.Day >= 3"
+        }
+      }
+    ],
+    "time": {
+      "dayStart": 0,
+      "labels": [
+        "Dawn",
+        "Day",
+        "Dusk",
+        "Night"
+      ],
+      "minutes": [
+        360,
+        360,
+        360,
+        360
+      ],
+      "phases": [
+        "Dawn",
+        "Day",
+        "Dusk",
+        "Night"
+      ],
+      "start": {
+        "day": 1,
+        "phase": "Dawn"
+      }
+    },
+    "variables": {
+      "Player.Reputation": {
+        "default": 1,
+        "integer": true,
+        "max": 10,
+        "min": 0,
+        "type": "number"
+      },
+      "World.LighthouseLit": {
+        "default": false,
+        "type": "boolean"
+      },
+      "World.StormRaging": {
+        "default": true,
+        "type": "boolean"
+      }
+    }
+  },
+  "templates": {
+    "Character": {
+      "id": "89ad611e-60f7-4b64-958a-103f266f80d7",
+      "name": "Character",
+      "properties": {
+        "Age": {
+          "default": null,
+          "integer": true,
+          "max": 150,
+          "min": 0,
+          "type": "number"
+        },
+        "Biography": {
+          "default": "",
+          "type": "text"
+        },
+        "DialogueColour": {
+          "default": "#e4e7ef",
+          "type": "color"
+        },
+        "Energy": {
+          "default": 5,
+          "integer": true,
+          "max": 5,
+          "min": 0,
+          "state": true,
+          "type": "number"
+        },
+        "IsAlive": {
+          "default": true,
+          "state": true,
+          "type": "boolean"
+        },
+        "MemberOf": {
+          "default": null,
+          "template": "Faction",
+          "type": "entity"
+        },
+        "Mood": {
+          "default": "Calm",
+          "labels": [
+            "Calm",
+            "Wary",
+            "Warm"
+          ],
+          "options": [
+            "Calm",
+            "Wary",
+            "Warm"
+          ],
+          "state": true,
+          "type": "enum"
+        },
+        "Role": {
+          "default": null,
+          "labels": [
+            "Protagonist",
+            "Ally",
+            "Antagonist",
+            "Bystander"
+          ],
+          "options": [
+            "Protagonist",
+            "Ally",
+            "Antagonist",
+            "Bystander"
+          ],
+          "type": "enum"
+        }
+      }
+    },
+    "Faction": {
+      "id": "db0a97dc-84fb-4e01-b558-d35e4ac51259",
+      "name": "Faction",
+      "properties": {
+        "Motto": {
+          "default": "",
+          "type": "text"
+        }
+      }
+    },
+    "Item": {
+      "id": "053b2be3-8bf2-41d5-9751-aaaf41a643e6",
+      "name": "Item",
+      "properties": {
+        "Rarity": {
+          "default": null,
+          "labels": [
+            "Common",
+            "Rare",
+            "Legendary"
+          ],
+          "options": [
+            "Common",
+            "Rare",
+            "Legendary"
+          ],
+          "type": "enum"
+        },
+        "Weight": {
+          "default": null,
+          "min": 0,
+          "type": "number"
+        }
+      }
+    }
+  },
+  "version": 1
+}
