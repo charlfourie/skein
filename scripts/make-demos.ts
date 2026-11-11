@@ -139,7 +139,7 @@ function coffeeOrder(): Project {
   const flat = buy('A flat white', 'A flat white, please.', p.flatWhite, 'One flat white, with a fern on top.')
   const cocoa = buy('Hot chocolate', 'Hot chocolate. Extra marshmallows.', p.hotChocolate, 'Marshmallow tower, coming right up.')
   const biscuit = buy('A ginger biscuit', 'And one of those ginger biscuits.', p.biscuit, 'Last one in the jar. Lucky you.')
-  const water = n('dialogue', { speakerId: you.id, menuText: 'Just water (free)', text: 'Just water, thanks.', note: 'Always available, so you are never stuck with nothing to pick.' })
+  const water = n('dialogue', { speakerId: you.id, menuText: 'Just water (free)', text: 'Just water, thanks.', once: true, note: 'Free, so you are never stuck with nothing to pick. Only once: after a glass it leaves the menu, so every path ends (Explore checks this).' })
   const waterYes = n('dialogue', { speakerId: pip.id, text: 'On the house!' })
   const done = n('dialogue', { speakerId: you.id, menuText: "That's everything", text: "That's everything, thanks." })
   const again = n('dialogue', { speakerId: pip.id, text: 'Anything else?' })

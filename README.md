@@ -1,365 +1,226 @@
-# Skein
+<div align="center">
 
-A local-first, node-based narrative design editor (in the spirit of articy:draft X).
-No accounts, no cloud: a project is one deterministic JSON file on your disk that
-your team shares through git, a shared drive, or email.
+# 🧶 Skein
 
-**Status: Phase 5** adds game-engine export, built on the earlier phases:
+**Write branching stories as flowcharts, test every path, and ship them to your game.**
 
-| Phase | Adds |
+A free, local-first narrative design editor for game writers and designers,
+in the spirit of articy:draft, with no accounts and no cloud lock-in.
+
+[![Try it in your browser](https://img.shields.io/badge/try_it-in_your_browser-818cf8?style=for-the-badge)](https://skein-mocha.vercel.app)
+
+[![Tests](https://github.com/charlfourie/skein/actions/workflows/ci.yml/badge.svg)](https://github.com/charlfourie/skein/actions/workflows/ci.yml)
+[![Last commit](https://img.shields.io/github/last-commit/charlfourie/skein)](https://github.com/charlfourie/skein/commits/main)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6)
+![Engines](https://img.shields.io/badge/engines-JS%2FTS%20·%20C%23%20·%20Unity%20·%20Godot%20.NET-34d399)
+
+<img src="docs/images/demo.gif" alt="Opening the Coffee Order demo and playing it: buying a flat white spends 4 of 5 coins, and the pricier menu items lock" width="860">
+
+</div>
+
+## What is Skein?
+
+Skein is a node-based editor for **interactive dialogue and branching narrative**. You
+lay out conversations as a flowchart, give your world state (coins, trust, time of day),
+and Skein checks your logic as you type. Then you **play the story right in the editor**
+and let it **explore every possible path** before a single line ships.
+
+It's built for:
+
+- 🎮 **Game writers and narrative designers** who want articy-style structure without the price tag or the lock-in.
+- 🛠️ **Indie developers** who need dialogue, quests and state that drop straight into Unity, Godot or a JS game.
+- 🤝 **Small teams** who share work through git: a project is one tidy JSON file that diffs and merges cleanly.
+
+> **Not sure it fits?** If your story branches, remembers things, or runs on a clock, Skein
+> is for you. If it's a straight line of text, a word processor will do.
+
+## ✨ Features
+
+| | |
 | --- | --- |
-| 5 | Game-engine export, with a reference runtime |
-| 4 | World variables, character state, relationships, time and rules, with a checked expression language |
-| 3 | The flowchart editor |
-| 2 | Templates and entities |
-| 1 | The storage engine and workspace |
+| 🗺️ **Flowchart editor** | Dialogue, conditions, hubs, jumps and reusable scenes on an infinite canvas, with auto-layout, frames and live warnings for dead ends and orphans. |
+| 🧠 **Real game state** | World variables, character stats, one-way relationships (who trusts whom), dice, and a clock where actions take time. Expressions are checked as you type, with "did you mean…?" suggestions. |
+| ▶️ **Play mode** | Click through any flow exactly as the game will run it, with live state, a transcript, and a HUD for values like coins. Choices you can't afford show as locked, with the reason. |
+| 🔍 **Explore every path** | Plays every combination of choices and reports endings, unreachable nodes, loops with no way out, and where numbers end up. |
+| 📦 **Engine export** | Clean, deterministic JSON with every condition pre-compiled, plus ready-made runtimes for **TypeScript**, **C#** (Unity, Godot .NET, .NET) and **Unity components**. |
+| 🔒 **Yours, on your disk** | No accounts, no server. Files are written atomically, repaired after messy merges, and watched for `git pull` changes. |
+| 🌐 **Desktop or browser** | An Electron desktop app, or the same editor [in your browser](https://skein-mocha.vercel.app). |
 
-## Getting started
+## 🚀 Quick start
 
-Requires Node.js 20+.
+### Fastest: in your browser
+
+Open **[skein-mocha.vercel.app](https://skein-mocha.vercel.app)** and pick a demo under
+**Try a demo**. Nothing to install. Chrome, Edge, Brave and Arc read and save files in
+place; Firefox and Safari open by upload and save by download. See [docs/WEB.md](docs/WEB.md).
+
+### Desktop app
+
+Requires [Node.js](https://nodejs.org) 20 or newer.
 
 ```bash
+git clone https://github.com/charlfourie/skein.git
+cd skein
 npm install
-npm run dev          # launch the app with hot reload
+npm run dev
 ```
 
-Then pick a demo under **Try a demo** on the Welcome screen:
+The app opens on the Welcome screen. Pick a demo, or **New project** to start your own.
 
-- **The Coffee Order** (simple): one flow with a menu, coins to spend, choices that lock when you can't afford them, a loop back to the menu and a tip-jar condition.
-- **The Midnight Museum Heist** (advanced): three flows with a coin budget, items, trust, character state, time phases, rules and five endings.
+## 🎬 A five-minute tour
 
-Both track `Player.Coins`, shown live at the top of the Play panel. [docs/DEMOS.md](docs/DEMOS.md) has the full choice matrix for each coin amount.
-Use **Home** at the top left to return to the Welcome screen.
+The two built-in demos have nothing to do with any particular game, so they're a safe
+place to poke around. Demos open as unsaved copies, so experiment freely. **Home** (top
+left) takes you back to the Welcome screen at any time.
 
-Demos open as unsaved copies, so **Save As** keeps your changes and the bundled originals stay untouched.
-You can also use **Open project…** and pick `examples/lighthouse-v2.skein.json`.
+<img src="docs/images/welcome.png" alt="The Skein Welcome screen with New project, Open project, and two demo cards: The Coffee Order and The Midnight Museum Heist" width="860">
 
-| Script | What it does |
-| --- | --- |
-| `npm run dev` | Electron + Vite dev server with HMR |
-| `npm run build` | Production build into `out/` |
-| `npm start` | Run the production build |
-| `npm run typecheck` | Type-check main/preload/shared and renderer |
-| `npm test` | Storage-engine tests (serializer, parser, repairs) |
-| `npm run make:example` | Regenerate the sample project |
-| `npm run make:demos` | Regenerate the Welcome-screen demos in `src/renderer/src/demos/` |
-| `npm run export -- <in> <out> [--compact] [--no-source]` | Export for a game engine from the command line, for build pipelines. Exits non-zero on errors. |
+**1. ☕ The Coffee Order (simple).** You have 5 coins at Pip's café. Open the flow, press
+**Play** (top right of the canvas) and order something. Your coins tick down in the HUD,
+and anything you can no longer afford stays on the menu, locked, showing what it needs.
 
-## Using it
+<img src="docs/images/play-locked.png" alt="The Play panel after buying a flat white: Coins 1 of 20, with the flat white and hot chocolate locked and showing their coin requirements" width="860">
 
-**Templates** define a data structure, such as *Character* with Role, Age, Is Alive and Faction.
-Create one under **Templates** in the explorer. The designer opens in the centre:
+**2. 🔍 Explore it.** Switch to the **Explore** tab and press **Explore all paths**. Skein
+plays every possible order and tells you where each one ends, whether any node is
+unreachable, and how low your coins can go.
 
-- add properties of seven types: text, long text, number, yes/no, choice, entity link, colour;
-- drag the handle to reorder them;
-- expand a property to set its default, description, number limits, choice options, or which
-  template a link may point to.
+<img src="docs/images/explore.png" alt="The Explore tab reporting 98 paths, every node reachable, every path ending, and the share of paths for each of the three endings" width="860">
 
-Colour, icon and description live in the inspector on the right.
+**3. 💎 The Midnight Museum Heist (advanced).** Three linked scenes: plan the job, pull it
+off, then make the getaway. It shows items, trust between characters, a stat that
+drops at dawn, time phases with rules, and five endings. With 5 coins you can afford
+cat treats **or** a bribe for the guard, but not both.
 
-**Entities** are instances of a template. Use **+** under **Entities** (or **New entity** in a
-template) and pick the template. The entity sheet shows every property:
+**4. 🧮 Look under the hood.** Open **State › World variables** to see how `Player.Coins`
+is defined. **Show in Play** is what puts it in the HUD.
 
-- a blue dot means the value is set on this entity;
-- a grey dot means it is inherited from the template default;
-- ↺ resets a value to the default.
+<img src="docs/images/state.png" alt="The World variables page with Coins expanded: technical name, starting value 5, namespace Player, the Show in Play switch turned on, and a 0 to 20 range" width="860">
 
-Duplicate an entity with Ctrl+D. Entities that link to the open one are listed at the bottom.
+The full coin matrix for both demos (what's offered at every coin amount) is in
+[docs/DEMOS.md](docs/DEMOS.md).
 
-**Technical names** (e.g. `IsAlive`) are the identifiers scripts and game engines will use. They
-are derived from the display name and follow renames, until you edit one by hand. Duplicates and
-invalid identifiers are flagged in red.
+## ✍️ Writing logic
 
-**Flows** are edited on the canvas. Six node types:
-
-| Node | What it does |
-| --- | --- |
-| **Dialogue** | A line spoken by a character |
-| **Condition** | Branches true / false |
-| **Instruction** | Changes game state |
-| **Hub** | A meeting point that paths merge into |
-| **Jump** | Continues at another node, or hands off to another flow's start |
-| **Play flow** | Plays another flow (a reusable scene), then carries on from here |
-
-- **Adding nodes:** drag from the palette, click a palette entry, or double-click or
-  right-click the canvas.
-- **Frames:** select some nodes and press **Frame** (or Ctrl+G) to box them as a
-  labelled scene. Drag the title bar to move the frame with everything in it,
-  double-click it to rename it, and pick a colour on hover. Frames are only there to
-  help you read the canvas: they're never exported. Auto-layout refits them.
-- **Connecting:** drag from an output (bottom) to an input (top). While you drag:
-  - inputs that can take the connection glow green;
-  - nodes that can't take it fade back;
-  - the line snaps onto a valid input once you're within about 40px.
-- **Quick-add:** drop a connection on empty canvas to create the next node there,
-  already connected.
-- **Edges:** particles show which way the story runs. Condition branches are green
-  (true) and red (false). A connection that leads back to an earlier point is purple
-  and dashed, with a ↺ loop badge.
-- **Warnings:** orphans (nothing leads in, and the node isn't a start) and dead ends
-  (nothing follows, and it isn't an end) pulse amber. Errors pulse red.
-- **Finding problems:** the chips at the top right count problems and loops; click
-  one to visit each in turn.
-- **Inspector:** select a node to write its line, choose a speaker from your entities,
-  set condition or instruction text, pick a jump target, mark start or end, or add a
-  designer note.
-- **Keys:** Delete removes, Ctrl+D duplicates, Shift+drag box-selects.
-- **Auto-layout and preferences:** auto-layout (dagre, undoable) tidies the flow. Snap
-  to grid and edge animation are per-machine preferences.
-
-**State** is everything that changes during play. It's under **State** in the explorer.
-
-| Kind | Example | Where it's defined |
-| --- | --- | --- |
-| World variables | `World.StormRaging`, `Player.Reputation` | **State › World variables**, grouped by namespace |
-| Character & thing state | `Keeper.Mood`, `Stranger.Energy` | Template properties with **Changes during play** switched on. Each entity's value is its starting state. |
-| Relationships (one-way) | `Keeper->Stranger.Trust` | **State › Relationships** (e.g. Character → Character). Starting values are set on each entity's sheet. |
-| Time | `Time.Day`, `Time.Phase` | **State › Time & rules**: a day counter plus named phases (Dawn, Day, Dusk, Night by default) |
-| Rules | "When Night begins, for each Character: `self.Energy -= 1`" | **State › Time & rules** |
-
-Nodes use state in three places:
-
-- **Condition nodes** branch on an expression.
-- **Instruction nodes** change state.
-- **Every node** can also have **Requires** (it's only available while this holds) and
-  **Effects** (applied when the story passes through).
-
-A number that actions push both up and down (a meter, like Strain or Trust) is flagged until it has a min and max.
-
-Expressions are checked as you type. Mistakes are explained with a suggestion
-("no property “Mod”. Did you mean “Mood”?"), and nodes with broken expressions turn
-red on the canvas. Conditions show whether they are true at game start. Renaming an
-entity, property, variable or relationship rewrites the expressions that use it.
-
-### Expression language
+Conditions and actions use a small, checked language:
 
 ```text
 # Conditions: one true/false expression
+Player.Coins >= 4
 Keeper->Stranger.Trust >= 2 and not World.StormRaging
-Keeper.Mood is Wary                 # enum options, phases and entities by name
-Time.Phase >= Dusk or Time.Day > 3  # phases are ordered
-(Player.Reputation + 1) * 2 > 5
-Seen.AskedAboutLight                # true once a node tagged AskedAboutLight has played
-Visits.Lamp >= 3                    # how many times it has played
+Time.Phase is Night or Time.Day > 3
+Seen.AskedAboutLight                  # true once a tagged node has played
 
-# Actions: one change per line (or separated by ;)
+# Actions: one change per line
+Player.Coins -= 4
 Keeper.Mood = Warm
-Keeper->Stranger.Trust += 1
-Player.Reputation -= 1
-advance                             # one phase;  advance 2
-advance until Night                 # make it Night (stays put if it already is)
-advance to Night                    # the next Night: a whole day on if it's Night now
-World.Weather = roll(1, 3)          # dice: a whole number from 1 to 3
-World.Lucky = chance(30)            # true 30% of the time
-pass 1h 30m                         # let time go by (rolls into the next phase as needed)
-Time.Hour >= 22                     # the time of day: Time.Hour, Time.Minute
+World.Lucky = chance(30)              # dice, seeded and explorable
+pass 1h 30m                           # let time go by
+advance until Night
 ```
 
-**Time passes by itself.** Each phase has a length (Night = 9h) and the day starts at a
-time you set. Activities take time: name them in **Time & rules** ("Repair the radio:
-2h") and give a node an activity, or type how long it takes. Spoken lines take as long
-as they take to say, at a speaking rate you choose. When time runs past the end of a
-phase, the next one begins and its rules run. Play shows the clock and what each choice
-costs, and the canvas marks nodes that take time.
+Rename a variable and every expression that uses it follows along. The
+[user guide](docs/GUIDE.md) covers everything.
 
-Dice (`chance(30)`, `roll(1, 6)`) work in actions and in Condition nodes, where each
-visit rolls once. Requirements can't use them, since they are checked whenever choices
-are listed. Play rolls from a seed you can set in **Start state**. Explore tries every
-outcome and weights the endings by the odds.
+## 🎮 Using it in your game
 
-Give a node a **Tag** in its inspector to refer to it with `Seen.Tag` / `Visits.Tag`
-from any flow. **Only once** hides a choice after it has been picked. A rule can be
-limited to **While playing** one flow, so it doesn't run during other scenes.
+Press **Ctrl+E** (or **File › Export for Game Engine…**) for a clean JSON file, or export
+from a build pipeline:
 
-Operators: `and or not` (or `&& || !`), `== != < <= > >=`, `is`, `is not`, and
-`+ - * /`. `#` starts a comment.
-
-Numbers are clamped to their limits when changed during play. Only state can be
-changed: properties marked "Changes during play", world variables and relationships.
-
-Time advances only through `advance`. Each phase that begins runs its rules, in
-listed order. A new day runs day rules first, then phase rules. Rules can't advance
-time themselves.
-
-**Export for game engines:** **File › Export for Game Engine…** (Ctrl+E, or the package
-icon in the top bar). It writes a clean JSON file:
-
-- no positions, colours, folders or notes;
-- everything named by its technical name, and entity values with defaults applied;
-- every condition and action pre-compiled to a small JSON tree, so the game needs no parser.
-
-Exports are deterministic, so they diff cleanly. The dialog:
-
-- lists any broken expressions and links to each one;
-- exports them safely if you choose to export anyway (a broken condition becomes
-  "always false", a broken action becomes "no change");
-- offers compact output and stripping the expression text.
-
-**Play and Explore:** press **Play** on any flow to click through it exactly as a game
-would, with live state, time and rule activity, from any starting state you set up.
-**Explore** plays every path at once and reports unreachable nodes, endings, loops with
-no way out and where numbers end up. See [`docs/PLAY.md`](docs/PLAY.md).
-
-For engine developers:
-
-- [`docs/EXPORT.md`](docs/EXPORT.md) specifies the format and exactly how flows, time
-  and rules run.
-- `src/shared/export/runtime.ts` is a dependency-free reference runtime: `SkeinWorld`
-  for state, time and rules, and `SkeinStory` to play a flow beat by beat. Use it as-is
-  in a JS/TS game, or port it.
-- `runtimes/csharp` is a C# port (Unity, Godot .NET, plain .NET) that matches the reference
-  byte for byte; `runtimes/unity` adds ready-made Unity components.
-- `examples/lighthouse-v2.game.json` is a sample export.
-
-**Undo / redo:** Ctrl+Z and Ctrl+Y (or Ctrl+Shift+Z), or the arrows in the top bar. Inside a text
-field these undo typing; elsewhere they step through project changes. That includes deletes,
-which is why most deletes only ask for confirmation when something else depends on them.
-
-## Architecture
-
-```
-src/
-  shared/        Pure TypeScript used by every process — no Electron, no DOM
-    schema.ts      File format (zod): the single source of truth for the JSON shape
-    serialize.ts   Canonical, deterministic JSON writer
-    parse.ts       Load pipeline: conflict-marker check → JSON → migrate → validate → repair
-    values.ts      Property value semantics: defaults, type checks, conversions
-    mutations.ts   Cascading changes that keep references consistent (deletes, type changes)
-    validate.ts    Live warnings and errors (technical names, ranges, flows, missing references)
-    nodes.ts       Flow node types, handles, and the connection rules
-    flowAnalysis.ts  Orphans, dead ends, open branches and loop detection (deterministic DFS)
-    technicalName.ts  Identifier generation and uniqueness
-    expr/syntax.ts     State language: tokenizer and parser (conditions and actions)
-    expr/check.ts      Name resolution, type checking, suggestions → bound tree
-    expr/runtime.ts    Reference semantics: evaluate, execute, advance time, run rules
-    expr/sites.ts      Every expression in a project, and rename-following
-    expr/usage.ts      Where each piece of state is used
-    export/            Game export: format types, builder, reference runtime
-    factory.ts     Constructors for new projects, flows and folders
-    ipc.ts         IPC channel names and the typed `window.api` contract
-  main/          Electron main process — the only code that touches the disk
-    index.ts       Window, native dialogs, IPC handlers, unsaved-changes guard on close
-    storage.ts     Atomic writes (temp file + fsync + rename, with Windows lock retries)
-    watcher.ts     Detects edits to the open file made outside Skein (git pull, etc.)
-    recent.ts      Recent-projects list (stored in the user-data folder, not the project)
-    menu.ts        Native menu and shortcuts
-  preload/       Narrow, typed bridge exposed as `window.api` (context-isolated, sandboxed)
-  renderer/      React UI
-    store/projectStore.ts   Zustand store: immutable project snapshots, undo/redo history, UI state
-    store/ops.ts            Every edit to the document, each one undoable step
-    store/flowOps.ts        Canvas edits: add/move/connect/delete nodes, auto-layout
-    components/flow/        The canvas: custom nodes, animated edges, connection line
-    components/state/       World variables, relationships, time & rules documents
-    components/defs/        Shared definition cards and the live-checked expression field
-    lib/projectIO.ts        New / Open / Save / Save As / Reload flows
-    components/             Shell, NavTree, Workspace (React Flow), Inspector, Welcome
+```bash
+npm run export -- story.skein.json build/story.game.json
 ```
 
-**Data flow.** The renderer holds the project in a Zustand store. On save it sends
-the project object to the main process, which serializes it canonically and writes
-it atomically. On open, the main process reads the text and the renderer runs it
-through `parseProject`. Serialization lives in exactly one place, so every save is
-canonical no matter how the in-memory object was built.
+Then play it with a runtime. In **Unity**:
 
-**Security.** `contextIsolation`, `sandbox` and no `nodeIntegration`. The renderer
-can only read or write paths the user chose in a native dialog (or chose in an
-earlier session, via the recent list). The production build ships a strict CSP.
-Reload is disabled in production builds so Ctrl+R can't silently discard work.
+```csharp
+using Skein.Unity;
 
-## The project file
+var skein = SkeinRunner.Instance;
+skein.Play("The Order");                       // a flow, by name
+skein.BeatChanged += beat => ShowLine(beat.Speaker, beat.Text, beat.Choices);
+skein.Choose(0);
 
-```jsonc
-{
-  "entities": {
-    "<uuid>": {
-      "folderId": null, "id": "<uuid>", "name": "Keeper", "order": 0,
-      "technicalName": "Keeper",
-      "templateId": "<template uuid>",
-      "values": { "<property uuid>": 61 },   // only values set on this entity
-      "relations": { "<relationship uuid>": { "<other entity uuid>": -1 } }   // starting values, one-way
-    }
-  },
-  "flows": {
-    "<uuid>": {
-      "edges": { "<uuid>": { "id", "source", "target", "sourceHandle", "targetHandle", "order" } },   // order: choice order on that output
-      "folderId": "<uuid> | null",
-      "id": "<uuid>",
-      "name": "Arrival",
-      "nodes": { "<uuid>": { "data": { "speakerId", "text", "isStart", "startOrder" }, "id", "position": { "x", "y" }, "type": "dialogue" } },
-      "order": 0
-    }
-  },
-  "folders": { "<uuid>": { "id", "name", "order", "parentId", "section" } },
-  "format": "skein.project",
-  "meta": { "createdAt", "description", "id", "name" },
-  "schemaVersion": 5,
-  "state": {
-    "relationships": { "<uuid>": { "fromTemplateId", "toTemplateId", "technicalName": "Trust", "type": "number", "min": -5, "max": 5 } },
-    "rules": { "<uuid>": { "trigger": "phase", "phaseId": "<night>", "forEachTemplateId": "<character>", "condition": "", "effects": "self.Energy -= 1" } },
-    "time": { "phases": { "<uuid>": { "label": "Dawn", "order": 0, "technicalName": "Dawn" } }, "startDay": 1, "startPhaseId": "<uuid>" },
-    "variables": { "<uuid>": { "namespace": "World", "technicalName": "StormRaging", "type": "boolean", "defaultValue": true } }
-  },
-  "templates": {   // properties may carry "mutable": true (changes during play)
-    "<uuid>": {
-      "color": "#818cf8", "description": "", "folderId": null, "icon": "user",
-      "id": "<uuid>", "name": "Character", "order": 0, "technicalName": "Character",
-      "properties": {
-        "<uuid>": {
-          "description": "", "id": "<uuid>", "name": "Age", "order": 0,
-          "technicalName": "Age", "type": "number",
-          "min": 0, "max": 150, "integer": true            // type-specific, only when set
-        }
-      }
-    }
-  }
-}
+int coins = (int)skein.World.GetNumber("Player.Coins");
+PlayerPrefs.SetString("save", skein.SaveToJson());
 ```
 
-### Why it merges cleanly
+| Runtime | Where | Use it for |
+| --- | --- | --- |
+| TypeScript reference | [`src/shared/export/runtime.ts`](src/shared/export/runtime.ts) | Web and JS/TS games, or as the spec to port from |
+| C# | [`runtimes/csharp`](runtimes/csharp) | Unity, Godot .NET, plain .NET. Checked against the reference by a conformance suite. |
+| Unity components | [`runtimes/unity`](runtimes/unity/Skein/README.md) | Drop-in runner, talk triggers, dialogue box, clock and variable events |
 
-- **Every collection is a dictionary keyed by UUID**, never an array. Two people
-  adding nodes add lines in different places; nobody renumbers anything.
-- **Keys are sorted at every depth.** The output is two-space indented, with LF
-  line endings and a trailing newline. Saving an unchanged project is
-  byte-for-byte identical.
-- **Entity values are keyed by property id and only stored when set.** Renaming a
-  property touches one line, and changing a template default doesn't rewrite every entity.
-- **Node positions are whole pixels**, and node data only stores fields that are set.
-- **Hierarchy is by reference** (`parentId`, `folderId`), not nesting. Moving an
-  item into a folder changes one line.
-- **No volatile data in the file.** There are no "last saved" timestamps,
-  viewport/zoom, selection, panel sizes or expanded folders. Those live in the
-  app's local storage per machine.
-- **Unknown fields are preserved.** A file touched by a newer build doesn't lose
-  data when an older build re-saves it. Files from a newer schema version are
-  refused with a clear message rather than being mangled.
+The format is fully specified in [docs/EXPORT.md](docs/EXPORT.md).
 
-### When a merge goes wrong
+## 🗺️ Roadmap
 
-On open, Skein:
+Skein is built in reviewed phases. Phases 1 to 5 built the editor. The next ones turn it
+into a tool any team can adopt.
 
-- detects leftover git conflict markers and tells you the line number;
-- reports JSON syntax errors with line and column;
-- validates the structure and names the offending path.
+| | Phase | Status |
+| --- | --- | --- |
+| ✅ | **1–5 · The editor:** storage, templates and entities, flowcharts, state and time, engine export | Done |
+| 🟡 | **6 · Engine runtimes:** C# and Unity are done; a native Godot (GDScript) add-on is next | In progress |
+| 🟡 | **7 · Play and analysis:** Play, Explore, start states and replays are done; saved test runs that re-check after edits are next | In progress |
+| ⬜ | **8 · Collaboration:** one file per flow for fewer conflicts, GitHub sign-in, comments on nodes | Planned |
+| ⬜ | **9 · Localisation and voice-over:** line IDs, translator export and import, recording scripts | Planned |
+| ⬜ | **10 · Extensibility:** custom node types, event nodes, variables inside lines, plugins | Planned |
+| ⬜ | **11 · Interchange:** import from ink, Yarn Spinner and Twine; templates beyond games | Planned |
+| ⬜ | **12 · Adoption:** published JSON Schema, a CLI, a docs site, more samples | Planned |
 
-It also repairs referential damage a hand-merge can cause, and lists each fix:
+Through every phase Skein stays **local-first** (it always works offline, with files you
+own), keeps **deterministic files** that diff cleanly, and has **one source of truth** for
+story logic that every runtime is tested against.
 
-- dictionary keys that don't match their `id`;
-- folders whose parent is missing;
-- folder loops;
-- items in deleted folders;
-- connections to deleted nodes.
+See what's changed recently in the [changelog](CHANGELOG.md).
 
-The repaired project opens marked unsaved, so the next save writes the fix.
+## 📚 Documentation
 
-While a project is open, Skein watches the file. If it changes on disk, for
-example after a `git pull`, a banner offers **Reload from disk** or **Keep my
-version**.
+| Doc | What's in it |
+| --- | --- |
+| [User guide](docs/GUIDE.md) | Templates, entities, flows, state, the expression language, time, export |
+| [Play and Explore](docs/PLAY.md) | Testing flows, start states, path exploration |
+| [Demos](docs/DEMOS.md) | The two demos and their full choice matrices |
+| [Export format](docs/EXPORT.md) | The game export, and exactly how a story runs |
+| [Architecture](docs/ARCHITECTURE.md) | Code layout, the project file, and why it merges cleanly |
+| [Web build](docs/WEB.md) | Running Skein in a browser and deploying it |
 
-### Recommended git setup
+## 🤝 Contributing
 
-Add to the repository that holds your `.skein.json` files:
+Skein is young and contributions are very welcome, whether that's a bug report, a demo
+idea, docs, or code. Read [CONTRIBUTING.md](CONTRIBUTING.md) to get set up; the short
+version:
 
-```gitattributes
-*.skein.json text eol=lf
+```bash
+npm install
+npm run typecheck && npm test   # before you open a pull request
 ```
+
+Found a bug or have an idea? [Open an issue](https://github.com/charlfourie/skein/issues).
+
+## 💜 Acknowledgements
+
+Skein is created and maintained by [Charl Fourie](https://github.com/charlfourie), with
+help from Claude. It stands on the shoulders of
+[React Flow](https://reactflow.dev), [dagre](https://github.com/dagrejs/dagre),
+[Electron](https://www.electronjs.org), [Zod](https://zod.dev),
+[Zustand](https://github.com/pmndrs/zustand), [Immer](https://immerjs.github.io/immer/)
+and [Lucide](https://lucide.dev), and takes its cue from
+[articy:draft](https://www.articy.com).
+
+## 📄 License
+
+A license hasn't been chosen yet, so for now all rights are reserved. Please
+[open an issue](https://github.com/charlfourie/skein/issues) if you'd like to use Skein in
+your project.
+
+---
+
+<div align="center">
+
+**Ready to write something that branches?**
+
+[**Try Skein in your browser**](https://skein-mocha.vercel.app) · ⭐ **Star the repo** to follow along · 🤝 **[Contribute](CONTRIBUTING.md)**
+
+</div>

@@ -300,6 +300,29 @@ export function FlowEditor({ flow }: { flow: Flow }) {
     addNode(flow.id, type, { x: p.x - DROP_OFFSET.x, y: p.y - DROP_OFFSET.y })
   }
 
+  // Keep the flow fitted to the canvas until the designer pans or zooms. The first fit can run
+  // before the panels around the canvas have their final size (which left a flow at 15% zoom,
+  // tucked into a corner), so refit whenever the canvas resizes, as long as nobody has moved it.
+  const userMoved = useRef(false)
+  useEffect(() => {
+    userMoved.current = false
+    const el = wrapper.current
+    if (!el || typeof ResizeObserver === 'undefined') return
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const observer = new ResizeObserver(() => {
+      if (userMoved.current) return
+      clearTimeout(timer)
+      timer = setTimeout(() => {
+        if (!userMoved.current) void rf.fitView({ padding: 0.3, maxZoom: 1 })
+      }, 80)
+    })
+    observer.observe(el)
+    return () => {
+      clearTimeout(timer)
+      observer.disconnect()
+    }
+  }, [flow.id, rf])
+
   const runAutoLayout = () => {
     const sizes = Object.fromEntries(
       rf.getNodes().map((n) => [n.id, { width: n.measured?.width ?? 260, height: n.measured?.height ?? 100 }])
@@ -472,6 +495,9 @@ export function FlowEditor({ flow }: { flow: Flow }) {
           colorMode="dark"
           fitView
           fitViewOptions={{ padding: 0.3, maxZoom: 1 }}
+          onMoveStart={(event) => {
+            if (event) userMoved.current = true // a real pan or zoom, not a programmatic fit
+          }}
           minZoom={0.15}
           maxZoom={2}
         >

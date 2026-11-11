@@ -214,7 +214,7 @@ function PlayTab({
         <IconButton size="sm" icon={RotateCcw} label="Restart from the starting state" onClick={restart} />
       </div>
 
-      <Hud session={session} />
+      <Hud project={project} session={session} />
 
       {stale && (
         <button type="button" onClick={restart} className="rounded-md border border-accent/40 bg-accent/10 px-2.5 py-1.5 text-left text-2xs text-accent">
@@ -368,8 +368,12 @@ function PlayTab({
  * Variables marked "Show in Play" (State › World variables), pinned like a game HUD.
  * A value that has changed since the start is highlighted, with where it began.
  */
-function Hud({ session }: { session: PlaySession }) {
-  const shown = Object.entries(session.file.state.variables).filter(([, def]) => def.hud)
+function Hud({ project, session }: { project: Project; session: PlaySession }) {
+  // In the order the designer listed them under State › World variables.
+  const position = new Map(Object.values(project.state.variables).map((v) => [`${v.namespace}.${v.technicalName}`, v.order]))
+  const shown = Object.entries(session.file.state.variables)
+    .filter(([, def]) => def.hud)
+    .sort(([a], [b]) => (position.get(a) ?? 0) - (position.get(b) ?? 0) || (a < b ? -1 : 1))
   if (shown.length === 0) return null
   return (
     <div className="flex flex-wrap gap-1.5" aria-label="Shown in Play">

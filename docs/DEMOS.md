@@ -15,11 +15,12 @@ Regenerate the demos with `npm run make:demos`.
 ## The Coffee Order (simple)
 
 You start with **5 coins**. After each order Pip asks "Anything else?" and the flow loops back
-to the menu, so you can keep buying until the coins run out.
+to the menu, so you can keep buying until the coins run out. Water is free but **Only once**, so every
+path through the café reaches an ending (Explore confirms there are no endless loops).
 
 **Menu, by coins in your pocket** (✓ offered, 🔒 shown locked)
 
-| Coins | Flat white (4) | Hot chocolate (3) | Ginger biscuit (1) | Just water (free) | That's everything |
+| Coins | Flat white (4) | Hot chocolate (3) | Ginger biscuit (1) | Just water (free, once) | That's everything |
 | --- | --- | --- | --- | --- | --- |
 | 5 | ✓ | ✓ | ✓ | ✓ | ✓ |
 | 4 | ✓ | ✓ | ✓ | ✓ | ✓ |

@@ -1,0 +1,200 @@
+# Skein user guide
+
+The full reference for working in Skein. New here? Start with the
+[README](../README.md) and the two demos on the Welcome screen, then come back
+for the details.
+
+**Contents:** [Templates](#templates) · [Entities](#entities) · [Flows](#flows) ·
+[State](#state) · [Expression language](#expression-language) · [Time](#time) ·
+[Export](#export-for-game-engines) · [Play and Explore](#play-and-explore) · [Undo](#undo-and-redo)
+
+## Templates
+
+**Templates** define a data structure, such as *Character* with Role, Age, Is Alive and Faction.
+Create one under **Templates** in the explorer. The designer opens in the centre:
+
+- add properties of seven types: text, long text, number, yes/no, choice, entity link, colour;
+- drag the handle to reorder them;
+- expand a property to set its default, description, number limits, choice options, or which
+  template a link may point to.
+
+Colour, icon and description live in the inspector on the right.
+
+## Entities
+
+**Entities** are instances of a template. Use **+** under **Entities** (or **New entity** in a
+template) and pick the template. The entity sheet shows every property:
+
+- a blue dot means the value is set on this entity;
+- a grey dot means it is inherited from the template default;
+- ↺ resets a value to the default.
+
+Duplicate an entity with Ctrl+D. Entities that link to the open one are listed at the bottom.
+
+**Technical names** (e.g. `IsAlive`) are the identifiers scripts and game engines will use. They
+are derived from the display name and follow renames, until you edit one by hand. Duplicates and
+invalid identifiers are flagged in red.
+
+## Flows
+
+**Flows** are edited on the canvas. Six node types:
+
+| Node | What it does |
+| --- | --- |
+| **Dialogue** | A line spoken by a character |
+| **Condition** | Branches true / false |
+| **Instruction** | Changes game state |
+| **Hub** | A meeting point that paths merge into |
+| **Jump** | Continues at another node, or hands off to another flow's start |
+| **Play flow** | Plays another flow (a reusable scene), then carries on from here |
+
+- **Adding nodes:** drag from the palette, click a palette entry, or double-click or
+  right-click the canvas.
+- **Frames:** select some nodes and press **Frame** (or Ctrl+G) to box them as a
+  labelled scene. Drag the title bar to move the frame with everything in it,
+  double-click it to rename it, and pick a colour on hover. Frames are only there to
+  help you read the canvas: they're never exported. Auto-layout refits them.
+- **Connecting:** drag from an output (bottom) to an input (top). While you drag:
+  - inputs that can take the connection glow green;
+  - nodes that can't take it fade back;
+  - the line snaps onto a valid input once you're within about 40px.
+- **Quick-add:** drop a connection on empty canvas to create the next node there,
+  already connected.
+- **Edges:** particles show which way the story runs. Condition branches are green
+  (true) and red (false). A connection that leads back to an earlier point is purple
+  and dashed, with a ↺ loop badge.
+- **Warnings:** orphans (nothing leads in, and the node isn't a start) and dead ends
+  (nothing follows, and it isn't an end) pulse amber. Errors pulse red.
+- **Finding problems:** the chips at the top right count problems and loops; click
+  one to visit each in turn.
+- **Inspector:** select a node to write its line, choose a speaker from your entities,
+  set condition or instruction text, pick a jump target, mark start or end, or add a
+  designer note.
+- **Keys:** Delete removes, Ctrl+D duplicates, Shift+drag box-selects.
+- **Auto-layout and preferences:** auto-layout (dagre, undoable) tidies the flow. Snap
+  to grid and edge animation are per-machine preferences.
+
+## State
+
+**State** is everything that changes during play. It's under **State** in the explorer.
+
+| Kind | Example | Where it's defined |
+| --- | --- | --- |
+| World variables | `World.StormRaging`, `Player.Reputation` | **State › World variables**, grouped by namespace |
+| Character & thing state | `Keeper.Mood`, `Stranger.Energy` | Template properties with **Changes during play** switched on. Each entity's value is its starting state. |
+| Relationships (one-way) | `Keeper->Stranger.Trust` | **State › Relationships** (e.g. Character → Character). Starting values are set on each entity's sheet. |
+| Time | `Time.Day`, `Time.Phase` | **State › Time & rules**: a day counter plus named phases (Dawn, Day, Dusk, Night by default) |
+| Rules | "When Night begins, for each Character: `self.Energy -= 1`" | **State › Time & rules** |
+
+Nodes use state in three places:
+
+- **Condition nodes** branch on an expression.
+- **Instruction nodes** change state.
+- **Every node** can also have **Requires** (it's only available while this holds) and
+  **Effects** (applied when the story passes through).
+
+A number that actions push both up and down (a meter, like Strain or Trust) is flagged until it has a min and max.
+
+Expressions are checked as you type. Mistakes are explained with a suggestion
+("no property “Mod”. Did you mean “Mood”?"), and nodes with broken expressions turn
+red on the canvas. Conditions show whether they are true at game start. Renaming an
+entity, property, variable or relationship rewrites the expressions that use it.
+
+### Show in Play
+
+Switch on **Show in Play** for a world variable (State › World variables, expand the
+variable) to pin its live value at the top of the Play panel, like a game's HUD:
+coins, health, time left. The export marks it with `hud: true` so your game knows it's
+meant to be shown. Both demos use it for `Player.Coins`.
+
+## Expression language
+
+```text
+# Conditions: one true/false expression
+Keeper->Stranger.Trust >= 2 and not World.StormRaging
+Keeper.Mood is Wary                 # enum options, phases and entities by name
+Time.Phase >= Dusk or Time.Day > 3  # phases are ordered
+(Player.Reputation + 1) * 2 > 5
+Seen.AskedAboutLight                # true once a node tagged AskedAboutLight has played
+Visits.Lamp >= 3                    # how many times it has played
+
+# Actions: one change per line (or separated by ;)
+Keeper.Mood = Warm
+Keeper->Stranger.Trust += 1
+Player.Reputation -= 1
+advance                             # one phase;  advance 2
+advance until Night                 # make it Night (stays put if it already is)
+advance to Night                    # the next Night: a whole day on if it's Night now
+World.Weather = roll(1, 3)          # dice: a whole number from 1 to 3
+World.Lucky = chance(30)            # true 30% of the time
+pass 1h 30m                         # let time go by (rolls into the next phase as needed)
+Time.Hour >= 22                     # the time of day: Time.Hour, Time.Minute
+```
+
+## Time
+
+**Time passes by itself.** Each phase has a length (Night = 9h) and the day starts at a
+time you set. Activities take time: name them in **Time & rules** ("Repair the radio:
+2h") and give a node an activity, or type how long it takes. Spoken lines take as long
+as they take to say, at a speaking rate you choose. When time runs past the end of a
+phase, the next one begins and its rules run. Play shows the clock and what each choice
+costs, and the canvas marks nodes that take time.
+
+Dice (`chance(30)`, `roll(1, 6)`) work in actions and in Condition nodes, where each
+visit rolls once. Requirements can't use them, since they are checked whenever choices
+are listed. Play rolls from a seed you can set in **Start state**. Explore tries every
+outcome and weights the endings by the odds.
+
+Give a node a **Tag** in its inspector to refer to it with `Seen.Tag` / `Visits.Tag`
+from any flow. **Only once** hides a choice after it has been picked. A rule can be
+limited to **While playing** one flow, so it doesn't run during other scenes.
+
+Operators: `and or not` (or `&& || !`), `== != < <= > >=`, `is`, `is not`, and
+`+ - * /`. `#` starts a comment.
+
+Numbers are clamped to their limits when changed during play. Only state can be
+changed: properties marked "Changes during play", world variables and relationships.
+
+Time advances only through `advance`. Each phase that begins runs its rules, in
+listed order. A new day runs day rules first, then phase rules. Rules can't advance
+time themselves.
+
+## Export for game engines
+
+**Export for game engines:** **File › Export for Game Engine…** (Ctrl+E, or the package
+icon in the top bar). It writes a clean JSON file:
+
+- no positions, colours, folders or notes;
+- everything named by its technical name, and entity values with defaults applied;
+- every condition and action pre-compiled to a small JSON tree, so the game needs no parser.
+
+Exports are deterministic, so they diff cleanly. The dialog:
+
+- lists any broken expressions and links to each one;
+- exports them safely if you choose to export anyway (a broken condition becomes
+  "always false", a broken action becomes "no change");
+- offers compact output and stripping the expression text.
+
+## Play and Explore
+
+**Play and Explore:** press **Play** on any flow to click through it exactly as a game
+would, with live state, time and rule activity, from any starting state you set up.
+**Explore** plays every path at once and reports unreachable nodes, endings, loops with
+no way out and where numbers end up. See [`PLAY.md`](PLAY.md).
+
+For engine developers:
+
+- [`EXPORT.md`](EXPORT.md) specifies the format and exactly how flows, time
+  and rules run.
+- `src/shared/export/runtime.ts` is a dependency-free reference runtime: `SkeinWorld`
+  for state, time and rules, and `SkeinStory` to play a flow beat by beat. Use it as-is
+  in a JS/TS game, or port it.
+- `runtimes/csharp` is a C# port (Unity, Godot .NET, plain .NET) that matches the reference
+  byte for byte; `runtimes/unity` adds ready-made Unity components.
+- `examples/lighthouse-v2.game.json` is a sample export.
+
+## Undo and redo
+
+**Undo / redo:** Ctrl+Z and Ctrl+Y (or Ctrl+Shift+Z), or the arrows in the top bar. Inside a text
+field these undo typing; elsewhere they step through project changes. That includes deletes,
+which is why most deletes only ask for confirmation when something else depends on them.
