@@ -160,15 +160,15 @@ The format is fully specified in [docs/EXPORT.md](docs/EXPORT.md).
 
 ## 🗺️ Roadmap
 
-Skein is built in reviewed phases. Phases 1 to 6 built the editor and its first
-runtimes. The next ones make it something any team can ship a game with, in any engine.
+Skein is built in reviewed phases. Phases 1 to 7 built the editor, its first
+runtimes, and the tools to play and test a story. The next ones make it something any team can ship a game with, in any engine.
 
 | | Phase | Status |
 | --- | --- | --- |
 | ✅ | **1–5 · The editor:** storage, templates and entities, flowcharts, state and time, engine export | Done |
 | ✅ | **6 · First runtimes:** C# (Unity, Godot .NET, .NET) and Unity components, checked against the reference by a conformance suite | Done |
-| 🟡 | **7 · Play and analysis:** Play, Explore, start states and replays, plus saved scenarios and story tests that re-check after every edit | In review |
-| ⬜ | **8 · Format foundations:** one file per flow, line IDs, variables inside lines, comments on nodes, a versioning policy, a published JSON Schema and a shared conformance kit for every runtime | Planned |
+| ✅ | **7 · Play and analysis:** Play, Explore, start states and replays, plus saved scenarios and story tests that re-check after every edit | Done |
+| 🟡 | **8 · Format foundations:** one file per flow, line IDs, variables inside lines, comments on nodes, a versioning policy, a published JSON Schema and a shared conformance kit for every runtime | Next |
 | ⬜ | **9 · Unity, production-ready:** an installable Unity package, an importer that checks exports, configurable components and a sample scene | Planned |
 | ⬜ | **10 · Shipping the editor:** desktop installers and releases, so writers don't need Node | Planned |
 | ⬜ | **11 · Localisation and voice-over:** translator export and import, recording scripts, Unity Localization support | Planned |

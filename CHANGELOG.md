@@ -2,7 +2,7 @@
 
 What's new in Skein, newest first. Dates are when the work landed on `main`.
 
-## Unreleased (on `next`)
+## 2026-11-11 · Phase 7: scenarios and story tests
 
 ### Added
 - **Scenarios:** save a start state under a name and share it through the
