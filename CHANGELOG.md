@@ -2,7 +2,7 @@
 
 What's new in Skein, newest first. Dates are when the work landed on `main`.
 
-## Unreleased (on `next`) · Phase 8: format foundations
+## 2026-11-11 · 0.8.0 · Phase 8: format foundations
 
 ### Added
 - **Project folders.** A project saves as `<Name>.skein/`, with `project.json` and one

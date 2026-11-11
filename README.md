@@ -168,16 +168,16 @@ read which files, so a game never breaks when the editor updates.
 
 ## 🗺️ Roadmap
 
-Skein is built in reviewed phases. Phases 1 to 7 built the editor, its first
-runtimes, and the tools to play and test a story. The next ones make it something any team can ship a game with, in any engine.
+Skein is built in reviewed phases. Phases 1 to 8 built the editor, its first
+runtimes, the tools to play and test a story, and a format ready for teams, voice and translation. The next ones make it something any team can ship a game with, in any engine.
 
 | | Phase | Status |
 | --- | --- | --- |
 | ✅ | **1–5 · The editor:** storage, templates and entities, flowcharts, state and time, engine export | Done |
 | ✅ | **6 · First runtimes:** C# (Unity, Godot .NET, .NET) and Unity components, checked against the reference by a conformance suite | Done |
 | ✅ | **7 · Play and analysis:** Play, Explore, start states and replays, plus saved scenarios and story tests that re-check after every edit | Done |
-| 🟡 | **8 · Format foundations:** one file per flow, line IDs, variables inside lines, comments on nodes, a versioning policy, a published JSON Schema and a shared conformance kit for every runtime | In review |
-| ⬜ | **9 · Unity, production-ready:** an installable Unity package, an importer that checks exports, configurable components and a sample scene | Planned |
+| ✅ | **8 · Format foundations:** one file per flow, line IDs, variables inside lines, comments on nodes, a versioning policy, a published JSON Schema and a shared conformance kit for every runtime | Done |
+| 🟡 | **9 · Unity, production-ready:** an installable Unity package, an importer that checks exports, configurable components and a sample scene | Next |
 | ⬜ | **10 · Localisation and voice-over:** translator export and import, recording scripts, Unity Localization support | Planned |
 | ⬜ | **11 · Godot:** a native GDScript runtime and add-on | Planned |
 | ⬜ | **12 · Extensibility:** event nodes and custom node types that every runtime hands to the game, and plugins | Planned |
