@@ -23,6 +23,16 @@ npm run dev                                   # desktop app with hot reload
 npx vite --config vite.web.config.ts          # or the web version
 ```
 
+## Branches
+
+- **`main` is production.** It is what [skein-mocha.vercel.app](https://skein-mocha.vercel.app)
+  serves, so everything on it should be ready for users.
+- **`next` is where the next phase is built.** Vercel deploys every push to `next` as a
+  preview. Merge `next` into `main` when a piece of work is reviewed and ready to ship.
+- Small fixes to production can go straight to `main`; merge `main` back into `next`
+  afterwards so the two don't drift apart.
+- Open pull requests against `next` unless you're fixing something that's broken on `main`.
+
 ## Before you open a pull request
 
 ```bash
