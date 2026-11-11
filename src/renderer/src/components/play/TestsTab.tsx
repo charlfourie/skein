@@ -71,7 +71,8 @@ export function TestsTab({
             project={project}
             build={build}
             test={t}
-            result={fresh ? results[t.id] : undefined}
+            result={results[t.id]}
+            stale={!fresh}
             onReplay={onReplay}
             onPlayRoute={onPlayRoute}
           />
@@ -100,6 +101,7 @@ function TestCard({
   build,
   test: t,
   result,
+  stale,
   onReplay,
   onPlayRoute
 }: {
@@ -107,6 +109,8 @@ function TestCard({
   build: ExportResult
   test: StoryTest
   result: TestResult | undefined
+  /** The result is from before the latest edit (the tests are re-running). */
+  stale: boolean
   onReplay(example: PathExample): void
   onPlayRoute(flowId: string, scenarioId: string | null, route: RouteStep[]): void
 }) {
@@ -129,7 +133,9 @@ function TestCard({
       )}
     >
       <div className="flex items-center gap-1.5">
-        <TestStatusIcon status={status} />
+        <span className={cx('transition-opacity', stale && 'opacity-40')} title={stale ? 'Re-checking after your edit…' : undefined}>
+          <TestStatusIcon status={status} />
+        </span>
         <div className="min-w-0 flex-1">
           <TextInput value={t.name} required placeholder="Test name" onCommit={(name) => updateTest(t.id, { name })} className="h-7 border-transparent bg-transparent px-1 py-0.5 text-xs font-medium hover:border-line" />
         </div>
@@ -147,7 +153,7 @@ function TestCard({
       </p>
 
       {result && result.failures.length > 0 && (
-        <ul className="flex flex-col gap-1">
+        <ul className={cx('flex flex-col gap-1 transition-opacity', stale && 'opacity-60')}>
           {result.failures.map((f, i) => (
             <li key={i} className={cx('text-2xs leading-relaxed', status === 'broken' ? 'text-warn' : 'text-danger')}>
               {f.message}

@@ -69,14 +69,21 @@ function TestSummary({ project }: { project: Project }) {
     useProjectStore.setState({ activeDoc: { kind: 'flow', id: first.flowId } })
     usePlay.getState().openFor(first.flowId, 'tests')
   }
-  const status = !fresh ? 'pending' : bad.some((t) => results[t.id].status === 'fail') ? 'fail' : bad.length ? 'broken' : 'pass'
-  const label = !fresh
+  // While re-checking after an edit, keep showing the last results (dimmed) rather than flickering.
+  const known = tests.every((t) => results[t.id])
+  const status = !known ? 'pending' : bad.some((t) => results[t.id].status === 'fail') ? 'fail' : bad.length ? 'broken' : 'pass'
+  const label = !known
     ? `Checking ${tests.length} test${tests.length === 1 ? '' : 's'}…`
     : bad.length
       ? `${bad.length} of ${tests.length} test${tests.length === 1 ? '' : 's'} need${bad.length === 1 ? 's' : ''} attention`
       : `${tests.length} test${tests.length === 1 ? '' : 's'} passing`
   return (
-    <button type="button" onClick={open} className="flex items-center gap-1.5 transition-colors hover:text-fg" title="Story tests (they re-run after every edit)">
+    <button
+      type="button"
+      onClick={open}
+      className={`flex items-center gap-1.5 transition-[color,opacity] hover:text-fg ${!fresh && known ? 'opacity-50' : ''}`}
+      title={!fresh ? 'Re-checking the story tests after your edit…' : 'Story tests (they re-run after every edit)'}
+    >
       <TestStatusIcon status={status} size={11} />
       <span className={status === 'fail' ? 'text-danger' : status === 'broken' ? 'text-warn' : undefined}>{label}</span>
     </button>
