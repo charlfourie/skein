@@ -67,7 +67,10 @@ describe('variables inside lines', () => {
   })
 
   it('exports line IDs on lines and choices, without raising the format version', () => {
-    const { file } = buildExport(coffee())
+    const plain = produce(coffee(), (d) => {
+      for (const n of Object.values(flowOf(d as Project).nodes)) if (typeof n.data.text === 'string') n.data.text = n.data.text.replace(/\{[^}]*\}/g, 'some')
+    })
+    const { file } = buildExport(plain)
     expect(file.version).toBeLessThan(4)
     const nodes = Object.values(Object.values(file.flows)[0].nodes)
     const pick = nodes.find((n) => n.type === 'dialogue' && n.menuText?.startsWith('A flat white'))!

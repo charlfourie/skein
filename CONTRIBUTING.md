@@ -50,8 +50,12 @@ A few habits keep Skein dependable:
 - **Keep files deterministic.** Never add timestamps, viewport state or anything else
   that changes on every save to the project format. See
   [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
-- **Format changes need a migration.** Bump `SCHEMA_VERSION` and teach `parse.ts` to
-  read older files.
+- **Format changes need a migration.** Bump `SCHEMA_VERSION`, teach `parse.ts` to
+  read older files, run `npm run make:schemas`, and follow [docs/VERSIONING.md](docs/VERSIONING.md).
+- **Runtime changes land everywhere at once.** If you change how a story plays in
+  `src/shared/export/runtime.ts`, regenerate the conformance fixtures
+  (`npx tsx runtimes/conformance/generate.ts`) and update the C# runtime in the same
+  pull request; `dotnet run --project runtimes/csharp/tests` must pass.
 - **Edits are undoable.** Change the project through `store/ops.ts` or `store/flowOps.ts`,
   so every change is one undo step.
 - **Changing a demo?** Edit `scripts/make-demos.ts`, run `npm run make:demos`, and update

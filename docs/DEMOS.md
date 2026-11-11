@@ -14,7 +14,7 @@ Regenerate the demos with `npm run make:demos`.
 
 ## The Coffee Order (simple)
 
-You start with **5 coins**. After each order Pip asks "Anything else?" and the flow loops back
+You start with **5 coins**. After each order Pip asks "Anything else?" (and tells you how many coins you have left, with `{Player.Coins}` in the line) and the flow loops back
 to the menu, so you can keep buying until the coins run out. Water is free but **Only once**, so every
 path through the café reaches an ending (Explore confirms there are no endless loops).
 

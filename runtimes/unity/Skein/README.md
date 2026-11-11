@@ -53,7 +53,7 @@ skein.World.SetVar("World.BunkerLightOn", true);
 skein.World.AdvanceTo("Night");              // runs Skein's rules for each phase passed
 string day = $"Day {skein.World.Day}, {skein.World.PhaseLabel}";
 
-skein.BeatChanged += beat => { /* your own dialogue UI: beat.Speaker, beat.Text, beat.Choices */ };
+skein.BeatChanged += beat => { /* your own dialogue UI: beat.Speaker, beat.Text, beat.Choices; beat.LineId names the voice line */ };
 skein.Choose(0);
 
 PlayerPrefs.SetString("save", skein.SaveToJson());   // or SaveToPlayerPrefs()

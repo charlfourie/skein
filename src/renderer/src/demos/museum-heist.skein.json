@@ -298,6 +298,7 @@
         "0843e874-ebfd-4fb5-8a49-72671b33bde1": {
           "data": {
             "isEnd": true,
+            "lineId": "F3_GETAWAY_0843e8",
             "note": "Ending 5 of 5.",
             "text": "HIDDEN IN PLAIN SUDS. The police roar past the car wash. You stroll out at dawn, very clean, Jade Monkey in hand."
           },
@@ -310,6 +311,7 @@
         },
         "0ce28de2-3145-4d50-b65c-a4e270af1bfe": {
           "data": {
+            "lineId": "F3_GETAWAY_0ce28d",
             "speakerId": "96a2234b-bf98-404d-a174-e4a1419802fe",
             "text": "The Jade Monkey. Hand it over, darling, and the rent is gone forever."
           },
@@ -323,6 +325,7 @@
         "2afc2aef-2f80-46d3-a5b8-2f53501a0961": {
           "data": {
             "isEnd": true,
+            "lineId": "F3_GETAWAY_2afc2a",
             "note": "Ending 1 of 5.",
             "text": "CLOSE SHAVE. The van smells of soap and victory. You deliver the Jade Monkey at sunrise."
           },
@@ -336,6 +339,7 @@
         "2f3a03dc-35ae-4e03-aea8-51933922d693": {
           "data": {
             "isEnd": true,
+            "lineId": "F3_GETAWAY_2f3a03",
             "note": "Ending 4 of 5.",
             "text": "ROBIN HOOD. The Jade Monkey is back on its plinth by Monday. Gustav swears he saw Biscuit wink."
           },
@@ -349,6 +353,7 @@
         "38001fe7-e5f9-4781-9596-92d01fdcf16d": {
           "data": {
             "effects": "advance to Dawn",
+            "lineId": "F3_GETAWAY_38001f",
             "speakerId": "9689abd7-c9fe-45f0-80ea-ac96a4d0afc0",
             "text": "Not a single siren. We’re ghosts."
           },
@@ -362,6 +367,7 @@
         "4219c179-fc11-4eb7-82fb-df5936ad468e": {
           "data": {
             "effects": "Vex->Rook.Trust += 3\nPlayer.Coins += 50",
+            "lineId": "F3_GETAWAY_4219c1",
             "menuText": "Hand it to Madame Vex",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
             "text": "A deal’s a deal."
@@ -376,6 +382,7 @@
         "5035a631-209f-467e-9f0a-4422d1b195cc": {
           "data": {
             "effects": "Player.Coins -= 2\nadvance to Dawn",
+            "lineId": "F3_GETAWAY_5035a6",
             "menuText": "Pay the car wash (2 coins)",
             "note": "Only offered with 2+ coins: a guaranteed escape.",
             "requires": "Player.Coins >= 2",
@@ -391,6 +398,7 @@
         },
         "61c79284-723b-4c4d-87b4-46d52360c7c7": {
           "data": {
+            "lineId": "F3_GETAWAY_61c792",
             "menuText": "Floor it, Bruno",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
             "text": "No time. Floor it!"
@@ -404,6 +412,7 @@
         },
         "62e161ad-15e1-4fa0-b5f5-fcb745f060aa": {
           "data": {
+            "lineId": "F3_GETAWAY_62e161",
             "speakerId": "db66151e-2a0f-48d1-b65d-5eae5d50e1f9",
             "text": "Sirens! Why is it always sirens?"
           },
@@ -431,6 +440,7 @@
         "7fc754b1-84a7-4c5d-88f4-b3f532c1efde": {
           "data": {
             "effects": "Bruno.Nerve -= 1",
+            "lineId": "F3_GETAWAY_7fc754",
             "speakerId": "db66151e-2a0f-48d1-b65d-5eae5d50e1f9",
             "text": "I can’t, I can’t, I CAN’T—"
           },
@@ -444,6 +454,7 @@
         "90bb3bf9-84c3-4e1a-a32a-03637a46c842": {
           "data": {
             "effects": "advance to Dawn",
+            "lineId": "F3_GETAWAY_90bb3b",
             "speakerId": "db66151e-2a0f-48d1-b65d-5eae5d50e1f9",
             "text": "Hold on to something! Left, right, through the car wash… and we’re clear!"
           },
@@ -457,6 +468,7 @@
         "aff98a60-3df9-44b8-8838-925c1768d25c": {
           "data": {
             "isEnd": true,
+            "lineId": "F3_GETAWAY_aff98a",
             "note": "Ending 3 of 5.",
             "text": "CLEAN GETAWAY. No rent, ever again. Bruno buys everyone pancakes."
           },
@@ -469,6 +481,7 @@
         },
         "d7fdf78a-c338-406e-b548-c1f4152c8232": {
           "data": {
+            "lineId": "F3_GETAWAY_d7fdf7",
             "speakerId": "9689abd7-c9fe-45f0-80ea-ac96a4d0afc0",
             "text": "There’s a car wash on the corner. For a couple of coins they’ll hide us in the tunnel."
           },
@@ -482,6 +495,7 @@
         "f51b5d5b-dd45-45a5-a37f-105b0df882f1": {
           "data": {
             "isEnd": true,
+            "lineId": "F3_GETAWAY_f51b5d",
             "note": "Ending 2 of 5.",
             "text": "CAUGHT. The van stalls outside the museum. Biscuit watches from the window, deeply satisfied."
           },
@@ -494,6 +508,7 @@
         },
         "fa0b2d9d-3ce2-4a9a-8bac-d76fe0f06c81": {
           "data": {
+            "lineId": "F3_GETAWAY_fa0b2d",
             "menuText": "Return it to the museum",
             "note": "Only offered if Gustav fell for the bluff.",
             "requires": "Gustav->Rook.Trust >= 1",
@@ -664,6 +679,7 @@
         },
         "253a8301-8d01-4cf9-bc11-f0c918023e98": {
           "data": {
+            "lineId": "F2_HEIST_253a83",
             "text": "Biscuit pounces on the treat and forgets you exist. Silent as a shadow."
           },
           "id": "253a8301-8d01-4cf9-bc11-f0c918023e98",
@@ -675,6 +691,7 @@
         },
         "2c9d4e3c-4792-4f33-8085-0da5c49e8d6b": {
           "data": {
+            "lineId": "F2_HEIST_2c9d4e",
             "speakerId": "9689abd7-c9fe-45f0-80ea-ac96a4d0afc0",
             "text": "Very dangerous monkey. We’ll take it from here, sir."
           },
@@ -688,6 +705,7 @@
         "3d97013e-ed89-40a7-b64e-516ce14bf160": {
           "data": {
             "effects": "Heist.Alarm += 2",
+            "lineId": "F2_HEIST_3d9701",
             "text": "Biscuit yowls. Gustav snorts in his sleep. Somewhere, a light blinks red."
           },
           "id": "3d97013e-ed89-40a7-b64e-516ce14bf160",
@@ -700,6 +718,7 @@
         "48513551-0309-4f73-bcc7-27f33decbfae": {
           "data": {
             "effects": "Heist.HasCatTreats = false",
+            "lineId": "F2_HEIST_485135",
             "menuText": "Roll a cat treat across the floor",
             "requires": "Heist.HasCatTreats",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
@@ -726,6 +745,7 @@
         },
         "54b3ab18-0ee0-48de-adf2-ec4bfe6fa135": {
           "data": {
+            "lineId": "F2_HEIST_54b3ab",
             "speakerId": "9689abd7-c9fe-45f0-80ea-ac96a4d0afc0",
             "text": "The vent’s exactly where the blueprints said. In we go."
           },
@@ -739,6 +759,7 @@
         "6c88dbba-67a2-4390-acb3-e5d850c56867": {
           "data": {
             "effects": "Gustav->Rook.Trust += 1",
+            "lineId": "F2_HEIST_6c88db",
             "speakerId": "42223f68-1ab1-4ec4-ba6c-88d2ab3d8007",
             "text": "Oh! Right. Mind Biscuit, she bites."
           },
@@ -752,6 +773,7 @@
         "89d5a225-dbfc-4d7c-af5c-fd93ceb779fb": {
           "data": {
             "effects": "Heist.Alarm += 3",
+            "lineId": "F2_HEIST_89d5a2",
             "speakerId": "42223f68-1ab1-4ec4-ba6c-88d2ab3d8007",
             "text": "Pest control? At midnight? I’m calling my supervisor."
           },
@@ -764,6 +786,7 @@
         },
         "94731954-a15a-415e-89ea-13ade2298f3a": {
           "data": {
+            "lineId": "F2_HEIST_947319",
             "text": "The Grand Gallery. Gustav dozes in a chair. His cat, Biscuit, sits on the plinth beside the Jade Monkey, staring at you."
           },
           "id": "94731954-a15a-415e-89ea-13ade2298f3a",
@@ -776,6 +799,7 @@
         "a8e99060-a375-4ff6-bead-7113d38db743": {
           "data": {
             "effects": "Gustav->Rook.Trust += 1",
+            "lineId": "F2_HEIST_a8e990",
             "speakerId": "42223f68-1ab1-4ec4-ba6c-88d2ab3d8007",
             "text": "Tea break. Twenty minutes. I saw nothing. Biscuit saw nothing."
           },
@@ -788,6 +812,7 @@
         },
         "b4080e83-24bd-4e80-b706-859d5b21eb3c": {
           "data": {
+            "lineId": "F2_HEIST_b4080e",
             "menuText": "Tiptoe past Biscuit",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
             "text": "Easy… easy…"
@@ -802,6 +827,7 @@
         "b9b53d17-a963-489a-a1b3-dac71d39d781": {
           "data": {
             "effects": "Player.Coins -= 4",
+            "lineId": "F2_HEIST_b9b53d",
             "menuText": "Slip Gustav a bribe (4 coins)",
             "note": "Only offered with 4+ coins. With 5 to start, buying treats or coffee in The Plan makes this unaffordable.",
             "requires": "Player.Coins >= 4",
@@ -818,6 +844,7 @@
         "d933c514-8888-4178-884c-8b7084d9e61d": {
           "data": {
             "isEnd": true,
+            "lineId": "F2_HEIST_d933c5",
             "note": "Continue with 3 · The Getaway.",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
             "text": "Got it. Everyone out. Now."
@@ -832,6 +859,7 @@
         "fa3d7867-ac40-4476-9e64-b24f57920668": {
           "data": {
             "isStart": true,
+            "lineId": "F2_HEIST_fa3d78",
             "requires": "Time.Phase is Night",
             "text": "The museum roof. Pigeons. A skylight. Somewhere below, a cat is purring."
           },
@@ -844,6 +872,7 @@
         },
         "fe82a37d-4af8-4f4a-abc6-7276c651e311": {
           "data": {
+            "lineId": "F2_HEIST_fe82a3",
             "menuText": "Wake Gustav and bluff",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
             "text": "Evening! Pest control. We had reports of a… monkey."
@@ -1033,6 +1062,7 @@
         },
         "07eebdce-f31a-4c3d-aa9d-eade8593147c": {
           "data": {
+            "lineId": "F1_PLAN_07eebd",
             "speakerId": "9689abd7-c9fe-45f0-80ea-ac96a4d0afc0",
             "text": "Okay. You’re officially my favourite criminal."
           },
@@ -1045,6 +1075,7 @@
         },
         "0f836bd5-7794-456a-97fb-a989753241ff": {
           "data": {
+            "lineId": "F1_PLAN_0f836b",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
             "text": "Leave it with us, Madame Vex."
           },
@@ -1068,6 +1099,7 @@
         },
         "1a78a0b6-c0b2-4ae0-bb30-490e2c0c143f": {
           "data": {
+            "lineId": "F1_PLAN_1a78a0",
             "menuText": "Give Bruno a pep talk",
             "requires": "Bruno.Nerve < 4",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
@@ -1105,6 +1137,7 @@
         },
         "297fb645-2f74-4c95-8c41-fc5b7169df92": {
           "data": {
+            "lineId": "F1_PLAN_297fb6",
             "menuText": "Ask Juni for the blueprints",
             "requires": "not Heist.HasBlueprints",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
@@ -1130,6 +1163,7 @@
         },
         "461dae9f-6a2d-4887-b5dc-f2a45018148c": {
           "data": {
+            "lineId": "F1_PLAN_461dae",
             "menuText": "Ask Bruno for lockpicks",
             "requires": "not Heist.HasLockpicks",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
@@ -1145,6 +1179,7 @@
         "47708234-6393-42d6-8f85-3876cd7aa588": {
           "data": {
             "effects": "Bruno.Nerve += 1\nBruno->Rook.Trust += 1",
+            "lineId": "F1_PLAN_477082",
             "speakerId": "db66151e-2a0f-48d1-b65d-5eae5d50e1f9",
             "text": "…Yeah. Yeah! Easy!"
           },
@@ -1158,6 +1193,7 @@
         "5d032d8a-abba-4a29-be6e-ab7dce702c7b": {
           "data": {
             "isEnd": true,
+            "lineId": "F1_PLAN_5d032d",
             "note": "Continue with 2 · The Heist.",
             "speakerId": "db66151e-2a0f-48d1-b65d-5eae5d50e1f9",
             "text": "Seatbelts, everyone. Next stop: the museum roof."
@@ -1182,6 +1218,7 @@
         },
         "88c4482d-881a-4134-8d98-da8ca25c17b7": {
           "data": {
+            "lineId": "F1_PLAN_88c448",
             "menuText": "We’re ready. Let’s go.",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
             "text": "Right. Everyone in the van."
@@ -1196,6 +1233,7 @@
         "951fe188-0852-49a5-aca8-d9a65717876a": {
           "data": {
             "effects": "Player.Coins -= 2\nHeist.HasCatTreats = true",
+            "lineId": "F1_PLAN_951fe1",
             "menuText": "Buy cat treats (2 coins)",
             "requires": "not Heist.HasCatTreats and Player.Coins >= 2",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
@@ -1211,6 +1249,7 @@
         "adc771b1-83a5-4fe8-9322-902d25c24dc7": {
           "data": {
             "effects": "Heist.HasBlueprints = true\nJuni->Rook.Trust += 1",
+            "lineId": "F1_PLAN_adc771",
             "speakerId": "9689abd7-c9fe-45f0-80ea-ac96a4d0afc0",
             "text": "Already done. There’s an air vent right above the Grand Gallery."
           },
@@ -1245,6 +1284,7 @@
         },
         "db0254fd-21f3-4f91-8326-1e3cade22bb6": {
           "data": {
+            "lineId": "F1_PLAN_db0254",
             "speakerId": "9689abd7-c9fe-45f0-80ea-ac96a4d0afc0",
             "text": "Without the blueprints and the lockpicks? Bold. Also no."
           },
@@ -1258,6 +1298,7 @@
         "e10f3651-2114-4182-9b90-81aca0bd8de5": {
           "data": {
             "isStart": true,
+            "lineId": "F1_PLAN_e10f36",
             "speakerId": "96a2234b-bf98-404d-a174-e4a1419802fe",
             "text": "The Jade Monkey was mine before the museum \"found\" it. Bring it back by dawn, and you never pay rent again."
           },
@@ -1271,6 +1312,7 @@
         "eb737cc0-2e71-4784-8627-074f1a4fa4f1": {
           "data": {
             "effects": "Heist.HasLockpicks = true",
+            "lineId": "F1_PLAN_eb737c",
             "speakerId": "db66151e-2a0f-48d1-b65d-5eae5d50e1f9",
             "text": "Grandma’s set. Bring them back, or she’ll find you. She always finds you."
           },
@@ -1284,6 +1326,7 @@
         "f8e3a665-12c0-4b43-80f1-7cd5b31d7019": {
           "data": {
             "effects": "Player.Coins -= 1\nJuni->Rook.Trust += 1",
+            "lineId": "F1_PLAN_f8e3a6",
             "menuText": "Buy Juni a coffee (1 coin)",
             "requires": "Juni->Rook.Trust < 2 and Player.Coins >= 1",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
@@ -1363,7 +1406,7 @@
       "setup": "Heist.HasJadeMonkey = true\nHeist.Alarm = 3"
     }
   },
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "state": {
     "relationships": {
       "f8ccc4e9-1fd1-4118-ad75-416a18d9526d": {

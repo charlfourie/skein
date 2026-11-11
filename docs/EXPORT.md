@@ -1,4 +1,4 @@
-# Skein game export — format `skein.export` v3
+# Skein game export — format `skein.export` v4
 
 **File › Export for Game Engine… (Ctrl+E)** writes a JSON file for your game. It has
 everything the game needs and nothing the editor needs. There are no canvas positions,
@@ -21,9 +21,11 @@ everything below. Use it directly in a JS/TS game, or port it. Its tests check t
 behaves exactly like the editor.
 
 A C# port for Unity, Godot .NET and plain .NET lives in `runtimes/csharp/Skein`
-(C# 9, no dependencies), with Unity components in `runtimes/unity`. Its conformance
-harness replays the same seeded exports through both runtimes and requires
-byte-identical traces:
+(C# 9, no dependencies), with Unity components in `runtimes/unity`. Every runtime is
+checked against the shared [conformance kit](../runtimes/conformance): committed
+exports, and the exact trace the reference runtime produces for each. The format is
+also published as a JSON Schema, [`schemas/skein.export.v4.json`](../schemas), and
+[VERSIONING.md](VERSIONING.md) says what each version promises.
 
 ```bash
 dotnet run --project runtimes/csharp/tests     # checks the C# runtime against runtimes/conformance/fixtures
@@ -44,18 +46,19 @@ use a newer feature keeps loading in older runtimes.
 | --- | --- |
 | 1 | Everything not listed below |
 | 2 | Visit counts (`{ "get": "visit" }`, node `count` / `tag`), flow-scoped rules (rule `flow`), `advanceTo` with `stay`, dice (`chance`, `roll`), `call` nodes and `jumpFlow` |
-
 | 3 | The clock: node `takes` / `activity`, `{ "pass": m }`, `Time.Hour` / `Time.Minute` reads, a start `minute` |
+| 4 | Variables inside lines: dialogue `vars`, filled into `text` and `menuText` |
 
 A runtime should refuse a file whose `version` is higher than it knows. (`time.minutes`
-and `time.dayStart` are written in every file; older runtimes ignore them.)
+and `time.dayStart` are written in every file, and line IDs, `line` and `menuLine`, in
+every file that has them; older runtimes ignore them.)
 
 ## Top level
 
 ```jsonc
 {
   "format": "skein.export",
-  "version": 3,                     // the lowest version that reads this file
+  "version": 4,                     // the lowest version that reads this file
   "project": { "id": "…", "name": "The Lighthouse Keeper" },
   "templates": { "<Template>": … },
   "entities":  { "<Entity>": … },
@@ -296,7 +299,7 @@ Node types:
 
 | `type` | Fields | Behaviour |
 | --- | --- | --- |
-| `dialogue` | `speaker` (entity name or null), `text`, `menuText?`, `next: [ids]` | Shows a line. One available `next` = continue. Several = the player chooses (show each target's `menuText`, else its `text`). None = this flow ends after the line: call `choose(0)` to get the end beat (or, inside a Call, the beat after it). |
+| `dialogue` | `speaker` (entity name or null), `text`, `menuText?`, `next: [ids]`, `line?`, `menuLine?`, `vars?` | Shows a line. One available `next` = continue. Several = the player chooses (show each target's `menuText`, else its `text`). None = this flow ends after the line: call `choose(0)` to get the end beat (or, inside a Call, the beat after it). |
 | `condition` | `condition`, `onTrue`, `onFalse` (ids or null) | Evaluates and follows a branch automatically. |
 | `instruction` | `instruction` (effects), `next` | Runs `instruction`, then follows the first available `next`. |
 | `hub` | `label`, `next` | A meeting point. One available path is followed automatically; several are offered as a choice. |
@@ -333,7 +336,47 @@ Calls (v2):
 - Stop with an error past 100 nested calls (a flow that keeps calling itself).
 
 The reference `SkeinStory` returns *beats*: `line`, `choice` or `end`. Call `choose(i)`
-to continue.
+to continue. A line beat carries its filled-in `text` and its `lineId`; each choice
+carries its filled-in `text` and the `lineId` of that text (null for a hub's label).
+
+### Line IDs
+
+`line` is the line's stable ID, for voice-over and translation (`"ORDER_3f9a2c"`).
+`menuLine` is the ID of its choice text (`"ORDER_3f9a2c_M"`), present when the line
+has `menuText`. They never change when the text is edited, so a game can look up a
+recording or a translation by them. They're optional extras: a runtime that doesn't
+know them just ignores them, so they don't raise the file's version.
+
+### Variables inside lines (v4)
+
+`text` and `menuText` are exported as written. When they contain placeholders,
+`vars` maps each placeholder's source (trimmed) to a compiled expression:
+
+```jsonc
+"text": "Anything else? You've got {Player.Coins} left.",
+"vars": { "Player.Coins": { "get": "var", "var": "Player.Coins" } }
+```
+
+To show the text, scan it left to right:
+
+- `{{` and `}}` are a literal `{` and `}`.
+- `{` followed by a `}` with no other `{` in between is a placeholder. Trim what's
+  inside; if `vars` has it, evaluate the expression **now** and show it formatted (below).
+  If not, show the placeholder exactly as written.
+- Any other character, including a lone `{` or `}`, is shown as it is.
+
+Formatting a value:
+
+- `null` shows as nothing; `true` / `false` as `true` / `false`.
+- A number is rounded to two decimal places, halves up (`floor(n × 100 + 0.5) / 100`),
+  then shown without trailing zeros: `3`, `2.5`, `0.33`, `-1.23`.
+- A text value read straight from state (the expression is a `get`) shows its display
+  name: an `enum` option its label, an `entity` the entity's `name`, `Time.Phase` the
+  phase's label. Anything else shows as it is.
+
+The text is filled in when the beat is made (a line when the story reaches it, a choice
+when it's listed), so it shows the state at that moment. Translations can keep the same
+placeholders: the game fills them the same way.
 
 ## Save games
 

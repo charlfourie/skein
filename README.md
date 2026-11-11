@@ -31,7 +31,7 @@ It's built for:
 
 - 🎮 **Game writers and narrative designers** who want articy-style structure without the price tag or the lock-in.
 - 🛠️ **Indie developers** who need dialogue, quests and state that drop straight into Unity, Godot or a JS game.
-- 🤝 **Small teams** who share work through git: a project is one tidy JSON file that diffs and merges cleanly.
+- 🤝 **Small teams** who share work through git: a project is a folder with one tidy JSON file per flow, so it diffs and merges cleanly.
 
 > **Not sure it fits?** If your story branches, remembers things, or runs on a clock, Skein
 > is for you. If it's a straight line of text, a word processor will do.
@@ -46,6 +46,8 @@ It's built for:
 | 🔍 **Explore every path** | Plays every combination of choices and reports endings, unreachable nodes, loops with no way out, and where numbers end up. |
 | 🧪 **Story tests** | Save a play-through or an every-path check, with conditions that must hold. Tests re-run after every edit and in your build pipeline, so a change that breaks the story shows up straight away. |
 | 📦 **Engine export** | Clean, deterministic JSON with every condition pre-compiled, plus ready-made runtimes for **TypeScript**, **C#** (Unity, Godot .NET, .NET) and **Unity components**. |
+| 🎙️ **Ready for voice and translation** | Every line has a stable line ID, and lines can show live values: `You've got {Player.Coins} left.` |
+| 💬 **Made for teams** | Comment threads on any node, and one file per flow, so people working on different scenes never collide in git. |
 | 🔒 **Yours, on your disk** | No accounts, no server. Files are written atomically, repaired after messy merges, and watched for `git pull` changes. |
 | 🌐 **Desktop or browser** | An Electron desktop app, or the same editor [in your browser](https://skein-mocha.vercel.app). |
 
@@ -122,6 +124,9 @@ Keeper.Mood = Warm
 World.Lucky = chance(30)              # dice, seeded and explorable
 pass 1h 30m                           # let time go by
 advance until Night
+
+# Lines: show a value as the line plays
+You've got {Player.Coins} left.
 ```
 
 Rename a variable and every expression that uses it follows along. The
@@ -133,7 +138,8 @@ Press **Ctrl+E** (or **File › Export for Game Engine…**) for a clean JSON fi
 from a build pipeline:
 
 ```bash
-npm run export -- story.skein.json build/story.game.json
+npm run export -- Story.skein build/story.game.json       # a project folder or a .skein.json
+npm run test:story -- Story.skein                         # fail the build if a story test fails
 ```
 
 Then play it with a runtime. In **Unity**:
@@ -143,7 +149,7 @@ using Skein.Unity;
 
 var skein = SkeinRunner.Instance;
 skein.Play("The Order");                       // a flow, by name
-skein.BeatChanged += beat => ShowLine(beat.Speaker, beat.Text, beat.Choices);
+skein.BeatChanged += beat => ShowLine(beat.Speaker, beat.Text, beat.Choices); // beat.LineId names the recording
 skein.Choose(0);
 
 int coins = (int)skein.World.GetNumber("Player.Coins");
@@ -153,10 +159,12 @@ PlayerPrefs.SetString("save", skein.SaveToJson());
 | Runtime | Where | Use it for |
 | --- | --- | --- |
 | TypeScript reference | [`src/shared/export/runtime.ts`](src/shared/export/runtime.ts) | Web and JS/TS games, or as the spec to port from |
-| C# | [`runtimes/csharp`](runtimes/csharp) | Unity, Godot .NET, plain .NET. Checked against the reference by a conformance suite. |
+| C# | [`runtimes/csharp`](runtimes/csharp) | Unity, Godot .NET, plain .NET. Checked against the reference by the [conformance kit](runtimes/conformance) on every push. |
 | Unity components | [`runtimes/unity`](runtimes/unity/Skein/README.md) | Drop-in runner, talk triggers, dialogue box, clock and variable events |
 
-The format is fully specified in [docs/EXPORT.md](docs/EXPORT.md).
+The format is fully specified in [docs/EXPORT.md](docs/EXPORT.md) and published as a
+[JSON Schema](schemas). [docs/VERSIONING.md](docs/VERSIONING.md) says which versions
+read which files, so a game never breaks when the editor updates.
 
 ## 🗺️ Roadmap
 
@@ -168,7 +176,7 @@ runtimes, and the tools to play and test a story. The next ones make it somethin
 | ✅ | **1–5 · The editor:** storage, templates and entities, flowcharts, state and time, engine export | Done |
 | ✅ | **6 · First runtimes:** C# (Unity, Godot .NET, .NET) and Unity components, checked against the reference by a conformance suite | Done |
 | ✅ | **7 · Play and analysis:** Play, Explore, start states and replays, plus saved scenarios and story tests that re-check after every edit | Done |
-| 🟡 | **8 · Format foundations:** one file per flow, line IDs, variables inside lines, comments on nodes, a versioning policy, a published JSON Schema and a shared conformance kit for every runtime | Next |
+| 🟡 | **8 · Format foundations:** one file per flow, line IDs, variables inside lines, comments on nodes, a versioning policy, a published JSON Schema and a shared conformance kit for every runtime | In review |
 | ⬜ | **9 · Unity, production-ready:** an installable Unity package, an importer that checks exports, configurable components and a sample scene | Planned |
 | ⬜ | **10 · Shipping the editor:** desktop installers and releases, so writers don't need Node | Planned |
 | ⬜ | **11 · Localisation and voice-over:** translator export and import, recording scripts, Unity Localization support | Planned |
@@ -193,7 +201,9 @@ See what's changed recently in the [changelog](CHANGELOG.md).
 | [Play and Explore](docs/PLAY.md) | Testing flows, start states, path exploration |
 | [Demos](docs/DEMOS.md) | The two demos and their full choice matrices |
 | [Export format](docs/EXPORT.md) | The game export, and exactly how a story runs |
-| [Architecture](docs/ARCHITECTURE.md) | Code layout, the project file, and why it merges cleanly |
+| [Architecture](docs/ARCHITECTURE.md) | Code layout, project folders and files, and why they merge cleanly |
+| [Versions](docs/VERSIONING.md) | Editor, project and export versions, and what each one promises |
+| [Conformance kit](runtimes/conformance/README.md) | How every runtime is checked, and how to port one |
 | [Web build](docs/WEB.md) | Running Skein in a browser and deploying it |
 
 ## 🤝 Contributing

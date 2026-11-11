@@ -70,6 +70,20 @@ invalid identifiers are flagged in red.
 - **Inspector:** select a node to write its line, choose a speaker from your entities,
   set condition or instruction text, pick a jump target, mark start or end, or add a
   designer note.
+- **Values in lines:** put an expression in braces to show its value as the line plays:
+  `You've got {Player.Coins} left.` Options show their label and entities their name.
+  Placeholders are checked as you type and follow renames. Write `{{` or `}}` for a
+  literal brace. Play shows the filled-in line.
+- **Line IDs:** every line has a stable ID for voice-over and translation, shown (with a
+  copy button) under the line in the inspector: `ORDER_3f9a2c`, and `ORDER_3f9a2c_M` for
+  its choice text. The ID never changes when you edit the text, move the node or rename
+  the flow. The prefix comes from the flow's name; change it under **Line IDs** in the
+  flow's inspector (new lines use it; **Rename them** moves existing lines over too).
+- **Comments:** leave a comment for the team at the bottom of any node's inspector,
+  reply, and resolve the thread when it's done. Your name is set the first time you
+  comment and stays on your computer (there are no accounts). Nodes with open threads
+  show a 💬 badge, and the **open comments** chip at the top right visits each one.
+  Comments travel with the project file and are never exported.
 - **Keys:** Delete removes, Ctrl+D duplicates, Shift+drag box-selects.
 - **Auto-layout and preferences:** auto-layout (dagre, undoable) tidies the flow. Snap
   to grid and edge animation are per-machine preferences.
@@ -158,6 +172,26 @@ changed: properties marked "Changes during play", world variables and relationsh
 Time advances only through `advance`. Each phase that begins runs its rules, in
 listed order. A new day runs day rules first, then phase rules. Rules can't advance
 time themselves.
+
+## Saving: project folders
+
+Skein saves a project as a **folder**, with one file per flow:
+
+```
+Atlantic Frequency.skein/
+  project.json                         templates, entities, state, scenarios
+  flows/
+    distribution-rack.3f9a2c.json      one flow, with its comments and story tests
+```
+
+People editing different flows never touch the same file, so merges stay simple.
+**File › Open Project Folder…** opens one (picking its `project.json` with **Open
+Project…** works too). **Save As** makes a new folder; **Save As Single File** writes one
+`.skein.json` instead. Older single-file projects open as before, and the first time
+you save one, Skein offers to convert it (the old file is left where it was).
+
+In the browser, Chrome, Edge and Arc read and write project folders. Firefox and Safari
+use single files.
 
 ## Export for game engines
 

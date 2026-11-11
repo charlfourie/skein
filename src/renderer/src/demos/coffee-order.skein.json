@@ -23,6 +23,23 @@
   },
   "flows": {
     "ced87b88-daaf-445d-b4da-e4db7d994a39": {
+      "comments": {
+        "95c68fc0-fab0-4604-a848-676b8cae6457": {
+          "author": "Alex",
+          "createdAt": "2026-01-01T00:00:00.000Z",
+          "id": "95c68fc0-fab0-4604-a848-676b8cae6457",
+          "nodeId": "9e67e600-8a8f-40ad-a9fb-3cbf250027cf",
+          "parentId": "c811c3ba-8a09-4348-a013-254891dd5abf",
+          "text": "Keep it at the end: it only shows up when you have a coin left."
+        },
+        "c811c3ba-8a09-4348-a013-254891dd5abf": {
+          "author": "Sam",
+          "createdAt": "2026-01-01T00:00:00.000Z",
+          "id": "c811c3ba-8a09-4348-a013-254891dd5abf",
+          "nodeId": "9e67e600-8a8f-40ad-a9fb-3cbf250027cf",
+          "text": "Should Pip mention the jar before you order instead?"
+        }
+      },
       "edges": {
         "01d9c28a-c954-4c7c-951a-bee15e2e08bc": {
           "id": "01d9c28a-c954-4c7c-951a-bee15e2e08bc",
@@ -185,6 +202,7 @@
       "nodes": {
         "0741fc17-fbf7-4546-9dd8-1806b89c4027": {
           "data": {
+            "lineId": "ORDER_0741fc",
             "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
             "text": "One flat white, with a fern on top."
           },
@@ -210,6 +228,7 @@
         "1567adc0-af36-4602-8819-8cf8352fafa9": {
           "data": {
             "isEnd": true,
+            "lineId": "ORDER_1567ad",
             "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
             "text": "Enjoy! See you tomorrow."
           },
@@ -223,6 +242,7 @@
         "24cb6ec4-a792-48c8-81ec-242f19fc1142": {
           "data": {
             "isStart": true,
+            "lineId": "ORDER_24cb6e",
             "note": "Start here. Open Play (the triangle in the toolbar) and watch Coins at the top of the panel.",
             "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
             "text": "Morning! What can I get you?"
@@ -236,8 +256,10 @@
         },
         "2c5fa18f-ae51-40ba-a613-c71cdd3e4354": {
           "data": {
+            "lineId": "ORDER_2c5fa1",
+            "note": "Braces show a value in the line as it plays: {Player.Coins} becomes the coins you have now. Try it in Play.",
             "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
-            "text": "Anything else?"
+            "text": "Anything else? You’ve got {Player.Coins} left."
           },
           "id": "2c5fa18f-ae51-40ba-a613-c71cdd3e4354",
           "position": {
@@ -249,6 +271,7 @@
         "3e650e41-25fe-4d23-8e47-869ff26e6d86": {
           "data": {
             "effects": "Player.Coins -= 1\nPlayer.ItemsBought += 1",
+            "lineId": "ORDER_3e650e",
             "menuText": "A ginger biscuit (1 coin)",
             "note": "Only offered with 1+ coins. Effects spend the coins as the story passes through.",
             "requires": "Player.Coins >= 1",
@@ -264,6 +287,7 @@
         },
         "46c3984d-a437-44b2-becf-1277d4851c32": {
           "data": {
+            "lineId": "ORDER_46c398",
             "menuText": "That's everything",
             "speakerId": "0a1943b8-de62-44b6-b829-ef96c400b453",
             "text": "That's everything, thanks."
@@ -290,6 +314,7 @@
         "8ae4d8b2-498c-4e27-ae8b-dc9c1250a20a": {
           "data": {
             "effects": "Player.Coins -= 3\nPlayer.ItemsBought += 1",
+            "lineId": "ORDER_8ae4d8",
             "menuText": "Hot chocolate (3 coins)",
             "note": "Only offered with 3+ coins. Effects spend the coins as the story passes through.",
             "requires": "Player.Coins >= 3",
@@ -305,6 +330,7 @@
         },
         "916ac652-a47d-41fd-9d07-24379b63b5e7": {
           "data": {
+            "lineId": "ORDER_916ac6",
             "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
             "text": "On the house!"
           },
@@ -329,6 +355,7 @@
         },
         "9e67e600-8a8f-40ad-a9fb-3cbf250027cf": {
           "data": {
+            "lineId": "ORDER_9e67e6",
             "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
             "text": "There's a tip jar by the till, if you like."
           },
@@ -342,6 +369,7 @@
         "a3e0130b-9c9b-404e-a07f-66eb02ccad37": {
           "data": {
             "effects": "Player.Coins -= 1",
+            "lineId": "ORDER_a3e013",
             "menuText": "Drop a coin in the jar (1 coin)",
             "requires": "Player.Coins >= 1",
             "speakerId": "0a1943b8-de62-44b6-b829-ef96c400b453",
@@ -356,6 +384,7 @@
         },
         "a618af6a-5bd7-45ac-9037-ec7684c68a42": {
           "data": {
+            "lineId": "ORDER_a618af",
             "menuText": "Just water (free)",
             "note": "Free, so you are never stuck with nothing to pick. Only once: after a glass it leaves the menu, so every path ends (Explore checks this).",
             "once": true,
@@ -372,6 +401,7 @@
         "a7302af5-cc64-4a50-8f55-05c1e757de17": {
           "data": {
             "isEnd": true,
+            "lineId": "ORDER_a7302a",
             "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
             "text": "You're a star. Next foam fern is extra leafy."
           },
@@ -384,6 +414,7 @@
         },
         "ab47bb16-3c0b-4623-8346-43d31c58ee54": {
           "data": {
+            "lineId": "ORDER_ab47bb",
             "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
             "text": "Marshmallow tower, coming right up."
           },
@@ -396,6 +427,7 @@
         },
         "afb64551-5847-43ec-9c32-cb5984340cf2": {
           "data": {
+            "lineId": "ORDER_afb645",
             "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
             "text": "Last one in the jar. Lucky you."
           },
@@ -409,6 +441,7 @@
         "cacd8530-4099-4fdd-9deb-00f2f5862ed7": {
           "data": {
             "effects": "Player.Coins -= 4\nPlayer.ItemsBought += 1",
+            "lineId": "ORDER_cacd85",
             "menuText": "A flat white (4 coins)",
             "note": "Only offered with 4+ coins. Effects spend the coins as the story passes through.",
             "requires": "Player.Coins >= 4",
@@ -425,6 +458,7 @@
         "dc6e8651-7f34-4c45-8662-bc41389d3413": {
           "data": {
             "isEnd": true,
+            "lineId": "ORDER_dc6e86",
             "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
             "text": "Pockets empty? Come back tomorrow, I'll save you a biscuit."
           },
@@ -437,6 +471,7 @@
         },
         "eb600423-06c3-4d2d-b908-5ff1e7c41b7a": {
           "data": {
+            "lineId": "ORDER_eb6004",
             "menuText": "Not today",
             "speakerId": "0a1943b8-de62-44b6-b829-ef96c400b453",
             "text": "Not today, sorry."
@@ -461,14 +496,14 @@
     "name": "Demo · The Coffee Order"
   },
   "scenarios": {
-    "c811c3ba-8a09-4348-a013-254891dd5abf": {
-      "id": "c811c3ba-8a09-4348-a013-254891dd5abf",
+    "1169b66a-9af9-4a68-9084-50078bb7155b": {
+      "id": "1169b66a-9af9-4a68-9084-50078bb7155b",
       "name": "Only 1 coin",
       "order": 0,
       "setup": "Player.Coins = 1"
     }
   },
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "state": {
     "relationships": {},
     "rules": {},
@@ -561,22 +596,22 @@
     }
   },
   "tests": {
-    "1169b66a-9af9-4a68-9084-50078bb7155b": {
+    "42292677-ed92-40ca-8d6b-dc4910ee64fd": {
       "allEnd": true,
       "allReached": true,
       "checks": "Player.Coins >= 0",
       "flowId": "ced87b88-daaf-445d-b4da-e4db7d994a39",
-      "id": "1169b66a-9af9-4a68-9084-50078bb7155b",
+      "id": "42292677-ed92-40ca-8d6b-dc4910ee64fd",
       "kind": "explore",
       "name": "Every order ends, nothing is unreachable",
       "order": 1,
       "scenarioId": null
     },
-    "95c68fc0-fab0-4604-a848-676b8cae6457": {
+    "a215bbd7-fce7-4eae-bcc9-7e2763140510": {
       "checks": "Player.Coins == 1\nPlayer.ItemsBought == 1",
       "ends": true,
       "flowId": "ced87b88-daaf-445d-b4da-e4db7d994a39",
-      "id": "95c68fc0-fab0-4604-a848-676b8cae6457",
+      "id": "a215bbd7-fce7-4eae-bcc9-7e2763140510",
       "kind": "play",
       "name": "A flat white, no tip",
       "order": 0,
@@ -594,18 +629,18 @@
       "scenarioId": null,
       "stopsAt": "1567adc0-af36-4602-8819-8cf8352fafa9"
     },
-    "a215bbd7-fce7-4eae-bcc9-7e2763140510": {
+    "c151a40b-d27e-49fd-90ef-2dda3b88a00c": {
       "allEnd": true,
       "checks": "Player.ItemsBought <= 1",
       "flowId": "ced87b88-daaf-445d-b4da-e4db7d994a39",
-      "id": "a215bbd7-fce7-4eae-bcc9-7e2763140510",
+      "id": "c151a40b-d27e-49fd-90ef-2dda3b88a00c",
       "kind": "explore",
       "name": "With 1 coin you can still tip",
       "order": 2,
       "reach": [
         "a7302af5-cc64-4a50-8f55-05c1e757de17"
       ],
-      "scenarioId": "c811c3ba-8a09-4348-a013-254891dd5abf"
+      "scenarioId": "1169b66a-9af9-4a68-9084-50078bb7155b"
     }
   }
 }

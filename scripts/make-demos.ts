@@ -22,6 +22,7 @@ import {
 } from '../src/shared/factory'
 import { analyzeFlow } from '../src/shared/flowAnalysis'
 import { newId } from '../src/shared/ids'
+import { assignLineIds } from '../src/shared/lineIds'
 import type { Flow, Project, PropertyDef } from '../src/shared/schema'
 import { serializeProject } from '../src/shared/serialize'
 
@@ -99,6 +100,12 @@ function layout(flow: Flow) {
   }
 }
 
+/** Every line gets its line ID, as the editor gives them. */
+function withLineIds(project: Project): Project {
+  assignLineIds(project)
+  return project
+}
+
 function newDemo(name: string, description: string): Project {
   const project = createEmptyProject(name)
   project.meta.description = description
@@ -162,7 +169,11 @@ function coffeeOrder(): Project {
   const water = n('dialogue', { speakerId: you.id, menuText: 'Just water (free)', text: 'Just water, thanks.', once: true, note: 'Free, so you are never stuck with nothing to pick. Only once: after a glass it leaves the menu, so every path ends (Explore checks this).' })
   const waterYes = n('dialogue', { speakerId: pip.id, text: 'On the house!' })
   const done = n('dialogue', { speakerId: you.id, menuText: "That's everything", text: "That's everything, thanks." })
-  const again = n('dialogue', { speakerId: pip.id, text: 'Anything else?' })
+  const again = n('dialogue', {
+    speakerId: pip.id,
+    text: 'Anything else? You’ve got {Player.Coins} left.',
+    note: 'Braces show a value in the line as it plays: {Player.Coins} becomes the coins you have now. Try it in Play.'
+  })
   const loop = n('jump', { targetId: menu, note: 'A jump continues the flow somewhere else: here, back to the menu, so you can keep ordering until the coins run out.' })
   const canTip = n('condition', { expression: `Player.Coins >= ${p.tip}`, note: 'Conditions branch automatically: green is true, red is false.' })
   const tipAsk = n('dialogue', { speakerId: pip.id, text: 'There\'s a tip jar by the till, if you like.' })
@@ -185,6 +196,13 @@ function coffeeOrder(): Project {
   chain(tip, tipThanks)
   chain(noTip, bye)
   layout(flow)
+  // A comment thread, as a teammate might leave one (select the tip-jar line to read it).
+  const c1 = newId()
+  const c2 = newId()
+  flow.comments = {
+    [c1]: { id: c1, nodeId: tipAsk, author: 'Sam', text: 'Should Pip mention the jar before you order instead?', createdAt: CREATED },
+    [c2]: { id: c2, nodeId: tipAsk, parentId: c1, author: 'Alex', text: 'Keep it at the end: it only shows up when you have a coin left.', createdAt: CREATED }
+  }
   project.flows[flow.id] = flow
 
   // Story tests: open the Play panel's Tests tab to see them. They re-run after every edit.
@@ -461,7 +479,7 @@ function museumHeist(): Project {
 
 mkdirSync(OUT, { recursive: true })
 seedIds(1)
-writeFileSync(`${OUT}/coffee-order.skein.json`, serializeProject(coffeeOrder()))
+writeFileSync(`${OUT}/coffee-order.skein.json`, serializeProject(withLineIds(coffeeOrder())))
 seedIds(2)
-writeFileSync(`${OUT}/museum-heist.skein.json`, serializeProject(museumHeist()))
+writeFileSync(`${OUT}/museum-heist.skein.json`, serializeProject(withLineIds(museumHeist())))
 console.log(`Wrote ${OUT}/coffee-order.skein.json and ${OUT}/museum-heist.skein.json`)

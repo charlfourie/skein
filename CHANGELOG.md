@@ -2,6 +2,38 @@
 
 What's new in Skein, newest first. Dates are when the work landed on `main`.
 
+## Unreleased (on `next`) · Phase 8: format foundations
+
+### Added
+- **Project folders.** A project saves as `<Name>.skein/`, with `project.json` and one
+  file per flow in `flows/` (each carrying its comments and story tests), so people
+  editing different flows never touch the same file. **Open Project Folder…** and
+  **Save As Single File…** are in the File menu. In the browser, Chrome, Edge and Arc
+  support folders; Firefox and Safari keep using single files.
+- **Line IDs** on every line (`ORDER_3f9a2c`, and `…_M` for choice text), for voice-over
+  and translation. Stable through edits, moves and flow renames, and merge-safe. Shown
+  with a copy button in the inspector; set a flow's prefix in its inspector.
+- **Variables inside lines:** `You've got {Player.Coins} left.` Checked as you type,
+  followed through renames, filled in by Play and by every runtime.
+- **Comments on nodes:** threads, replies, resolve and reopen, a badge on commented
+  nodes and an **open comments** chip that visits each one. Signed with a name kept on
+  your computer; never exported.
+- **Export v4:** dialogue `vars` (and `line` / `menuLine` IDs, which don't raise the
+  version). Runtimes expose `lineId` on lines and choices.
+- **[docs/VERSIONING.md](docs/VERSIONING.md):** what the editor, project and export
+  versions each promise.
+- **JSON Schemas** for projects, flow files and exports in [`schemas/`](schemas),
+  generated from the code and checked by the tests.
+- **[Conformance kit](runtimes/conformance):** committed fixtures any runtime port can
+  run, now covering line IDs and variables in lines. CI runs it against the C# runtime.
+- The status bar shows the editor version (0.8.0) and project format.
+- `npm run export` and `npm run test:story` accept a project folder.
+
+### Changed
+- **Project format v7.** Older projects open as before; saving a single-file project
+  offers to convert it to a folder (the old file is kept).
+- The C# runtime reads export v4 and fills placeholders exactly like the reference.
+
 ## 2026-11-11 · Phase 7: scenarios and story tests
 
 ### Added

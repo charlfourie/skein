@@ -11,6 +11,9 @@ src/
     schema.ts      File format (zod): the single source of truth for the JSON shape
     serialize.ts   Canonical, deterministic JSON writer
     parse.ts       Load pipeline: conflict-marker check → JSON → migrate → validate → repair
+    projectFiles.ts  Project folders: split a project into files, put it back together
+    lineIds.ts     Line IDs for voice-over and translation
+    comments.ts    Comment threads on nodes
     values.ts      Property value semantics: defaults, type checks, conversions
     mutations.ts   Cascading changes that keep references consistent (deletes, type changes)
     validate.ts    Live warnings and errors (technical names, ranges, flows, missing references)
@@ -22,6 +25,7 @@ src/
     expr/runtime.ts    Reference semantics: evaluate, execute, advance time, run rules
     expr/sites.ts      Every expression in a project, and rename-following
     expr/usage.ts      Where each piece of state is used
+    expr/template.ts   Variables inside lines ({Player.Coins})
     play/explore.ts    Path explorer: every sequence of choices and dice through a flow
     play/storyTests.ts Story tests: scenarios, recorded routes, every-path checks
     export/            Game export: format types, builder, reference runtime
@@ -30,7 +34,8 @@ src/
   main/          Electron main process — the only code that touches the disk
     index.ts       Window, native dialogs, IPC handlers, unsaved-changes guard on close
     storage.ts     Atomic writes (temp file + fsync + rename, with Windows lock retries)
-    watcher.ts     Detects edits to the open file made outside Skein (git pull, etc.)
+    projectStorage.ts  Reading and writing project folders
+    watcher.ts     Detects edits to the open project made outside Skein (git pull, etc.)
     recent.ts      Recent-projects list (stored in the user-data folder, not the project)
     menu.ts        Native menu and shortcuts
   preload/       Narrow, typed bridge exposed as `window.api` (context-isolated, sandboxed)
@@ -56,6 +61,21 @@ can only read or write paths the user chose in a native dialog (or chose in an
 earlier session, via the recent list). The production build ships a strict CSP.
 Reload is disabled in production builds so Ctrl+R can't silently discard work.
 
+## Project folders
+
+A project is saved as a folder, `<Name>.skein/`, holding `project.json` (everything
+except flows) and `flows/<name>.<id>.json` (one flow each, with its comments and the
+story tests for it). In memory it's the same `Project` either way: only
+`projectFiles.ts` knows about files. Each file is written by the canonical serializer
+below, only when its contents changed, atomically, with `project.json` last.
+Renaming a flow renames its file; deleting a flow deletes it. The watcher follows the
+whole folder and tells its own saves from anyone else's by a hash of every file.
+
+Loading checks each file separately, so a leftover conflict marker or a JSON error is
+reported with the file's name. A flow file copied by mistake (the same flow twice) is
+left out, and the repair report says which file to delete. A single `.skein.json` holds
+exactly the same object in one file.
+
 ## The project file
 
 ```jsonc
@@ -75,7 +95,9 @@ Reload is disabled in production builds so Ctrl+R can't silently discard work.
       "folderId": "<uuid> | null",
       "id": "<uuid>",
       "name": "Arrival",
-      "nodes": { "<uuid>": { "data": { "speakerId", "text", "isStart", "startOrder" }, "id", "position": { "x", "y" }, "type": "dialogue" } },
+      "nodes": { "<uuid>": { "data": { "speakerId", "text", "lineId": "ARRIVAL_3f9a2c", "isStart", "startOrder" }, "id", "position": { "x", "y" }, "type": "dialogue" } },
+      "linePrefix": "ARRIVAL",   // v7, optional: start of new lines' IDs
+      "comments": { "<uuid>": { "id", "nodeId", "parentId"?, "author": "Sam", "text", "createdAt": "<ISO date>", "resolved"? } },   // v7
       "order": 0
     }
   },
@@ -85,7 +107,7 @@ Reload is disabled in production builds so Ctrl+R can't silently discard work.
   "scenarios": {   // v6, optional: named starting states for testing
     "<uuid>": { "id", "name": "Only 1 coin", "order": 0, "setup": "Player.Coins = 1", "day": 2, "phaseId": "<uuid>", "seed": 42 }
   },
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "state": {
     "relationships": { "<uuid>": { "fromTemplateId", "toTemplateId", "technicalName": "Trust", "type": "number", "min": -5, "max": 5 } },
     "rules": { "<uuid>": { "trigger": "phase", "phaseId": "<night>", "forEachTemplateId": "<character>", "condition": "", "effects": "self.Energy -= 1" } },
@@ -119,6 +141,8 @@ Reload is disabled in production builds so Ctrl+R can't silently discard work.
 
 ### Why it merges cleanly
 
+- **One file per flow** (in a project folder), so work on different flows never
+  touches the same file.
 - **Every collection is a dictionary keyed by UUID**, never an array. Two people
   adding nodes add lines in different places; nobody renumbers anything.
 - **Keys are sorted at every depth.** The output is two-space indented, with LF
