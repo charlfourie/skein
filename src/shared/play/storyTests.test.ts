@@ -3,7 +3,7 @@ import { produce } from 'immer'
 import { describe, expect, it } from 'vitest'
 import { applyRename } from '../expr/sites'
 import { parseProject } from '../parse'
-import type { Project, StoryTest } from '../schema'
+import { SCHEMA_VERSION, type Project, type StoryTest } from '../schema'
 import { serializeCanonical } from '../serialize'
 import { runStoryTests } from './storyTests'
 
@@ -186,6 +186,6 @@ describe('story tests: broken tests and renames', () => {
     expect(back.repairs).toEqual([])
     expect(back.project.tests).toEqual(p.tests)
     expect(back.project.scenarios).toEqual(p.scenarios)
-    expect(back.project.schemaVersion).toBe(6)
+    expect(back.project.schemaVersion).toBe(SCHEMA_VERSION)
   })
 })

@@ -55,8 +55,8 @@ describe('parseProject', () => {
     const folderId = 'f-1'
     project.folders[folderId] = createFolder(folderId, 'Act I', 'flows', null, 0)
     project.flows['flow-2'] = createFlow('flow-2', 'Intro', folderId, 0)
-    project.flows['flow-2'].nodes['n1'] = { id: 'n1', type: 'dialogue', position: { x: 10, y: 20 }, data: { text: 'Hi' } }
-    project.flows['flow-2'].nodes['n2'] = { id: 'n2', type: 'dialogue', position: { x: 10, y: 120 }, data: {} }
+    project.flows['flow-2'].nodes['n1'] = { id: 'n1', type: 'dialogue', position: { x: 10, y: 20 }, data: { text: 'Hi', lineId: 'INTRO_n1' } }
+    project.flows['flow-2'].nodes['n2'] = { id: 'n2', type: 'dialogue', position: { x: 10, y: 120 }, data: { lineId: 'INTRO_n2' } }
     project.flows['flow-2'].edges['e1'] = { id: 'e1', source: 'n1', target: 'n2', sourceHandle: null, targetHandle: null }
 
     const first = serializeProject(project)

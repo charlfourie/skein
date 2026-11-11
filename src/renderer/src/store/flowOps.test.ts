@@ -18,8 +18,8 @@ describe('flow operations', () => {
   it('the first node becomes the start; positions are whole pixels', () => {
     const a = addNode(flowId, 'dialogue', { x: 10.6, y: 20.2 })!
     const b = addNode(flowId, 'dialogue', { x: 10, y: 200 })!
-    expect(flow().nodes[a].data).toEqual({ isStart: true, startOrder: 0 })
-    expect(flow().nodes[b].data).toEqual({})
+    expect(flow().nodes[a].data).toEqual({ isStart: true, startOrder: 0, lineId: `MAIN_${a.replace(/-/g, '').slice(0, 6)}` })
+    expect(flow().nodes[b].data).toEqual({ lineId: `MAIN_${b.replace(/-/g, '').slice(0, 6)}` })
     expect(flow().nodes[a].position).toEqual({ x: 11, y: 20 })
     moveNodes(flowId, { [b]: { x: 33.3, y: 44.9 } })
     expect(flow().nodes[b].position).toEqual({ x: 33, y: 45 })
@@ -49,7 +49,18 @@ describe('flow operations', () => {
     const a = addNode(flowId, 'dialogue', { x: 0, y: 0 })!
     updateNodeData(flowId, a, { text: 'Hi', isEnd: true })
     updateNodeData(flowId, a, { text: '', isStart: false })
-    expect(flow().nodes[a].data).toEqual({ isEnd: true })
+    expect(flow().nodes[a].data).toEqual({ isEnd: true, lineId: expect.stringMatching(/^MAIN_/) })
+  })
+
+  it('every line gets its own line ID, and copies get new ones', () => {
+    const a = addNode(flowId, 'dialogue', { x: 0, y: 0 })!
+    const h = addNode(flowId, 'hub', { x: 0, y: 100 })!
+    expect(flow().nodes[h].data.lineId).toBeUndefined()
+    const [copy] = duplicateNodes(flowId, [a])
+    const ids = [flow().nodes[a].data.lineId, flow().nodes[copy].data.lineId]
+    expect(ids[0]).toMatch(/^MAIN_[0-9a-f]{6}$/)
+    expect(ids[1]).toMatch(/^MAIN_[0-9a-f]{6,}$/)
+    expect(ids[0]).not.toBe(ids[1])
   })
 
   it('delete is one undo step and undo brings edges back', () => {

@@ -1,3 +1,4 @@
+import { assignLineId } from '@shared/lineIds'
 import dagre from '@dagrejs/dagre'
 import type { Draft } from 'immer'
 import { analyzeFlow } from '@shared/flowAnalysis'
@@ -41,10 +42,11 @@ export function addNode(
   connectFrom?: { source: string; sourceHandle: string | null }
 ): string | null {
   const id = newId()
-  const ok = editFlow(`Add ${NODE_LABELS[type].toLowerCase()}`, flowId, (flow) => {
+  const ok = editFlow(`Add ${NODE_LABELS[type].toLowerCase()}`, flowId, (flow, project) => {
     // The first node of an empty flow is where it starts.
     const data: Record<string, unknown> = Object.keys(flow.nodes).length === 0 ? { isStart: true, startOrder: 0 } : {}
     flow.nodes[id] = { id, type, position: roundPosition(position), data }
+    assignLineId(project as Project, flow as Flow, flow.nodes[id])
     if (connectFrom) {
       const conn = { source: connectFrom.source, sourceHandle: connectFrom.sourceHandle, target: id, targetHandle: INPUT_HANDLE }
       if (canConnect(flow, conn).ok) addEdgeInPlace(flow, conn)
@@ -204,7 +206,7 @@ export function duplicateNodes(flowId: string, nodeIds: string[]): string[] {
   const flow = store().project?.flows[flowId]
   if (!flow || nodeIds.length === 0) return []
   const map = new Map(nodeIds.filter((id) => flow.nodes[id]).map((id) => [id, newId()]))
-  editFlow('Duplicate nodes', flowId, (f) => {
+  editFlow('Duplicate nodes', flowId, (f, project) => {
     for (const [oldId, id] of map) {
       const src = flow.nodes[oldId]
       const data = { ...src.data }
@@ -212,6 +214,8 @@ export function duplicateNodes(flowId: string, nodeIds: string[]): string[] {
       delete data.startOrder
       if (typeof data.targetId === 'string' && map.has(data.targetId)) data.targetId = map.get(data.targetId)
       f.nodes[id] = { ...src, id, position: roundPosition({ x: src.position.x + 40, y: src.position.y + 40 }), data }
+      // A copy is a new line: it gets its own line ID (it'll be recorded separately).
+      assignLineId(project as Project, f as Flow, f.nodes[id])
     }
     for (const e of Object.values(flow.edges)) {
       const s = map.get(e.source)

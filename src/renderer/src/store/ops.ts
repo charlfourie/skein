@@ -12,6 +12,7 @@ import {
   TEMPLATE_COLORS
 } from '@shared/factory'
 import { applyRename } from '@shared/expr/sites'
+import { reprefixLines } from '@shared/lineIds'
 import { newId } from '@shared/ids'
 import {
   changePropertyType,
@@ -670,6 +671,20 @@ export function resetEntityValue(entityId: string, propertyId: string): void {
   edit('Reset value', (p) => {
     const e = p.entities[entityId]
     if (e && propertyId in e.values) delete e.values[propertyId]
+  })
+}
+
+// ---------------------------------------------------------------------------
+// Line IDs
+
+/** Set a flow's line prefix (null: made from its name). With `rename`, existing lines move to it too. */
+export function setLinePrefix(flowId: string, prefix: string | null, rename: boolean): void {
+  edit(rename ? 'Rename line IDs' : 'Edit line prefix', (p) => {
+    const flow = p.flows[flowId]
+    if (!flow) return
+    if (prefix) flow.linePrefix = prefix
+    else delete flow.linePrefix
+    if (rename) reprefixLines(p as Project, flow)
   })
 }
 

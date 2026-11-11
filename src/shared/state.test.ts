@@ -206,7 +206,7 @@ describe('file format v4', () => {
     expect(result.project.schemaVersion).toBe(SCHEMA_VERSION)
     expect('variables' in result.project).toBe(false)
     expect(Object.values(result.project.state.time.phases).map((x) => x.label)).toEqual(['Dawn', 'Day', 'Dusk', 'Night'])
-    expect(Object.values(result.project.flows)[0].nodes['d'].data).toEqual({ text: 'Hi', note: 'Direction: whispered' })
+    expect(Object.values(result.project.flows)[0].nodes['d'].data).toEqual({ text: 'Hi', note: 'Direction: whispered', lineId: 'MAIN_d' })
   })
 
   it('round-trips state byte-for-byte and repairs dangling relationship values', () => {

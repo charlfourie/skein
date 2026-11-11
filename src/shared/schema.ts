@@ -16,7 +16,7 @@ import { z } from 'zod'
  */
 
 export const PROJECT_FORMAT = 'skein.project' as const
-export const SCHEMA_VERSION = 6 as const
+export const SCHEMA_VERSION = 7 as const
 
 export const SECTION_IDS = ['flows', 'entities', 'templates'] as const
 export type SectionId = (typeof SECTION_IDS)[number]
@@ -98,12 +98,36 @@ export const FlowFrameSchema = z
   })
   .passthrough()
 
+/**
+ * A comment on a node (v7). A thread is a comment with no `parentId` plus its
+ * replies. The author is the name set in Skein's own settings: there are no
+ * accounts. Comments are for the team, never exported.
+ */
+export const CommentSchema = z
+  .object({
+    id: Id,
+    nodeId: Id,
+    /** The comment this one replies to (a thread's first comment). Absent: it starts a thread. */
+    parentId: Id.optional(),
+    author: z.string().default(''),
+    text: z.string().default(''),
+    /** When it was written (ISO 8601). Written once, so it never churns the file. */
+    createdAt: z.string().default(''),
+    /** On a thread's first comment: the thread is done. */
+    resolved: z.boolean().optional()
+  })
+  .passthrough()
+
 export const FlowSchema = z
   .object({
     ...treeItemShape,
     nodes: z.record(FlowNodeSchema).default({}),
     edges: z.record(FlowEdgeSchema).default({}),
-    frames: z.record(FlowFrameSchema).optional()
+    frames: z.record(FlowFrameSchema).optional(),
+    /** Start of the line IDs of new lines in this flow (v7). Absent: made from the flow's name. */
+    linePrefix: z.string().optional(),
+    /** Comment threads on this flow's nodes (v7). */
+    comments: z.record(CommentSchema).optional()
   })
   .passthrough()
 
@@ -349,6 +373,7 @@ export type Folder = z.output<typeof FolderSchema>
 export type FlowNode = z.output<typeof FlowNodeSchema>
 export type FlowEdge = z.output<typeof FlowEdgeSchema>
 export type FlowFrame = z.output<typeof FlowFrameSchema>
+export type NodeComment = z.output<typeof CommentSchema>
 export type Activity = z.output<typeof ActivitySchema>
 export type Flow = z.output<typeof FlowSchema>
 export type PropertyValue = z.output<typeof PropertyValueSchema>

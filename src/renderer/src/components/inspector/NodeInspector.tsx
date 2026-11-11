@@ -9,6 +9,8 @@ import { dataRef, dataString, isEndNode, isKnownNodeType, isStartNode } from '@s
 import type { Flow, Project } from '@shared/schema'
 import { TECHNICAL_NAME_RE, toTechnicalName } from '@shared/technicalName'
 import { useIssuesFor } from '../../hooks/useIssues'
+import { lineIdOf, menuLineId } from '@shared/lineIds'
+import { ReadOnly } from '../ui/ReadOnly'
 import { compareOrder } from '../../lib/tree'
 import { deleteElements, moveChoice, moveStart, updateNodeData } from '../../store/flowOps'
 import { useProjectStore } from '../../store/projectStore'
@@ -65,6 +67,12 @@ export function NodeInspector({ project, flowId, nodeId }: { project: Project; f
               onCommit={(menuText) => patch({ menuText })}
             />
           </FieldLabel>
+          {lineIdOf(node) && (
+            <div className="flex flex-col gap-1 rounded-md bg-raised/40 px-2 py-1.5">
+              <ReadOnly label="Line ID" value={lineIdOf(node)!} mono copyable />
+              {dataString(node, 'menuText') && <ReadOnly label="Choice text ID" value={menuLineId(lineIdOf(node)!)} mono copyable />}
+            </div>
+          )}
         </>
       )}
 

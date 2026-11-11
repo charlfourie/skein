@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { Check, Copy, MousePointer2 } from 'lucide-react'
-import { useState, type ReactNode } from 'react'
+import { MousePointer2 } from 'lucide-react'
+import type { ReactNode } from 'react'
 import { TEMPLATE_COLORS } from '@shared/factory'
 import { findEntityReferences, instancesOf } from '@shared/mutations'
 import { SCHEMA_VERSION, type Project } from '@shared/schema'
@@ -8,12 +8,14 @@ import { useIssuesFor } from '../../hooks/useIssues'
 import { cx } from '../../lib/cx'
 import { TEMPLATE_ICONS, templateIcon } from '../../lib/meta'
 import { folderPath } from '../../lib/tree'
-import { renameItem, updateEntityTechnicalName, updateMeta, updateTemplate } from '../../store/ops'
+import { renameItem, setLinePrefix, updateEntityTechnicalName, updateMeta, updateTemplate } from '../../store/ops'
+import { cleanLinePrefix, defaultLinePrefix, isDialogue, lineIdOf, linePrefixOf } from '@shared/lineIds'
 import { stateUsage } from '@shared/expr/usage'
 import { useProjectStore, type Selection, type StateDocId } from '../../store/projectStore'
 import { STATE_DOCS } from '../state/StateDocs'
 import { FieldLabel, IssueList, TextArea, TextInput } from '../ui/fields'
 import { EdgeInspector, NodeInspector } from './NodeInspector'
+import { ReadOnly } from '../ui/ReadOnly'
 
 export function Inspector() {
   const selection = useProjectStore((s) => s.selection)
@@ -156,6 +158,9 @@ function FlowInspector({ project, id }: { project: Project; id: string }) {
       <Group title="Details">
         <ReadOnly label="Location" value={['Flows', ...location].join(' / ')} />
         <ReadOnly label="Flow ID" value={flow.id} mono copyable />
+      </Group>
+      <Group title="Line IDs">
+        <LinePrefix project={project} flowId={id} />
       </Group>
       <Group title="Contents">
         <Stats
@@ -386,42 +391,45 @@ function Group({ title, children }: { title: string; children: ReactNode }) {
   )
 }
 
-function ReadOnly({ label, value, mono, copyable }: { label: string; value: string; mono?: boolean; copyable?: boolean }) {
-  const [copied, setCopied] = useState(false)
-  const copy = () => {
-    void navigator.clipboard.writeText(value).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1200)
+/**
+ * The start of this flow's line IDs. Changing it applies to new lines; existing
+ * lines keep theirs (recordings and translations may already use them) unless
+ * the designer chooses to rename them too.
+ */
+function LinePrefix({ project, flowId }: { project: Project; flowId: string }) {
+  const flow = project.flows[flowId]
+  const prefix = linePrefixOf(flow)
+  const lines = Object.values(flow.nodes).filter(isDialogue)
+  const other = lines.filter((n) => !lineIdOf(n)?.startsWith(`${prefix}_`)).length
+  const rename = async () => {
+    const ok = await window.api.confirm({
+      message: `Rename ${other} line ID${other === 1 ? '' : 's'} to start with ${prefix}?`,
+      detail: 'Recordings and translations that use the old IDs will need renaming too.',
+      confirmLabel: 'Rename'
     })
+    if (ok) setLinePrefix(flowId, flow.linePrefix ?? null, true)
   }
   return (
-    <div className="flex items-center justify-between gap-2 text-xs">
-      <span className="shrink-0 text-faint">{label}</span>
-      <span className="flex min-w-0 items-center gap-1">
-        <span className={cx('truncate text-muted', mono && 'font-mono text-2xs')} title={value}>
-          {value}
-        </span>
-        {copyable && (
-          <button
-            type="button"
-            onClick={copy}
-            aria-label={`Copy ${label}`}
-            className="grid h-5 w-5 shrink-0 place-items-center rounded text-faint transition-colors hover:bg-raised hover:text-fg"
-          >
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.span
-                key={copied ? 'y' : 'n'}
-                initial={{ scale: 0.5, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.5, opacity: 0 }}
-                transition={{ duration: 0.12 }}
-              >
-                {copied ? <Check size={12} className="text-ok" /> : <Copy size={12} />}
-              </motion.span>
-            </AnimatePresence>
+    <div className="flex flex-col gap-1.5">
+      <FieldLabel label="Prefix" hint={`new lines are ${prefix}_…`}>
+        <TextInput
+          value={flow.linePrefix ?? ''}
+          mono
+          placeholder={defaultLinePrefix(flow.name)}
+          onCommit={(raw) => {
+            const clean = cleanLinePrefix(raw)
+            setLinePrefix(flowId, clean && clean !== defaultLinePrefix(flow.name) ? clean : null, false)
+          }}
+        />
+      </FieldLabel>
+      {other > 0 && (
+        <p className="text-2xs leading-relaxed text-faint">
+          {other} line{other === 1 ? '' : 's'} still use{other === 1 ? 's' : ''} another prefix.{' '}
+          <button type="button" className="text-accent hover:underline" onClick={rename}>
+            Rename {other === 1 ? 'it' : 'them'}
           </button>
-        )}
-      </span>
+        </p>
+      )}
     </div>
   )
 }

@@ -1,3 +1,4 @@
+import { assignLineIds } from './lineIds'
 import type { z } from 'zod'
 import { createDefaultState } from './factory'
 import { normalizeOrders } from './flowOrder'
@@ -40,7 +41,11 @@ const MIGRATIONS: Record<number, (raw: Record<string, unknown>) => Record<string
   4: migrateV4toV5,
   // v5 → v6: saved scenarios and story tests (optional `scenarios` and `tests`
   // sections). Older files have neither, so nothing needs rewriting.
-  5: (raw) => raw
+  5: (raw) => raw,
+  // v6 → v7: line IDs on dialogue lines (`data.lineId`), line prefixes and
+  // comments on flows, and projects that can be a folder with one file per
+  // flow. Line IDs are given to every line after loading (see assignLineIds).
+  6: (raw) => raw
 }
 
 function migrateV4toV5(raw: Record<string, unknown>): Record<string, unknown> {
@@ -168,6 +173,10 @@ export function parseProject(input: string): ParseResult {
 
   const project = parsed.data
   const repairs = repairIntegrity(project)
+  // Lines without an ID (older files, lines added by hand) get one silently; a
+  // duplicate ID is a real problem, so it's reported.
+  const { duplicates } = assignLineIds(project)
+  for (const d of duplicates) repairs.push(`Flow "${d.flow}": two lines shared the line ID ${d.lineId}; one got a new ID.`)
   return { ok: true, project, repairs }
 }
 
@@ -426,6 +435,24 @@ export function repairIntegrity(project: Project): string[] {
         delete node.data.targetId
       }
     }
+  }
+
+  // 9b. Comments on nodes that no longer exist, and replies to missing threads.
+  for (const flow of Object.values(project.flows)) {
+    let removed = 0
+    for (let again = true; again; ) {
+      again = false
+      for (const [key, c] of Object.entries(flow.comments ?? {})) {
+        if (c.id !== key) c.id = key
+        const orphan = !flow.nodes[c.nodeId] || (c.parentId !== undefined && !flow.comments?.[c.parentId])
+        if (!orphan) continue
+        delete flow.comments![key]
+        removed++
+        again = true
+      }
+    }
+    if (removed) repairs.push(`Flow "${flow.name}": removed ${removed} comment${removed === 1 ? '' : 's'} on nodes that no longer exist.`)
+    if (flow.comments && Object.keys(flow.comments).length === 0) delete flow.comments
   }
 
   // 10. Scenarios and story tests (v6). Tests that point at a flow, node or
