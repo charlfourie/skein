@@ -25,8 +25,11 @@ npm run dev          # launch the app with hot reload
 
 Then pick a demo under **Try a demo** on the Welcome screen:
 
-- **The Coffee Order** (simple): one flow with a choice, a condition, coins to spend and a loop back to the menu.
-- **The Midnight Museum Heist** (advanced): three flows with items, trust, character state, time phases, rules and four endings.
+- **The Coffee Order** (simple): one flow with a menu, coins to spend, choices that lock when you can't afford them, a loop back to the menu and a tip-jar condition.
+- **The Midnight Museum Heist** (advanced): three flows with a coin budget, items, trust, character state, time phases, rules and five endings.
+
+Both track `Player.Coins`, shown live at the top of the Play panel. [docs/DEMOS.md](docs/DEMOS.md) has the full choice matrix for each coin amount.
+Use **Home** at the top left to return to the Welcome screen.
 
 Demos open as unsaved copies, so **Save As** keeps your changes and the bundled originals stay untouched.
 You can also use **Open project…** and pick `examples/lighthouse-v2.skein.json`.

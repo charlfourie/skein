@@ -283,7 +283,7 @@ export type PropertyPatch = Partial<
     PropertyDef,
     'name' | 'technicalName' | 'description' | 'defaultValue' | 'referenceTemplateId' | 'min' | 'max' | 'integer' | 'mutable'
   >
-> & { namespace?: string }
+> & { namespace?: string; showInPlay?: boolean }
 
 export function updateDef(scope: DefScope, id: string, patch: PropertyPatch): void {
   edit('Edit definition', (p) => {

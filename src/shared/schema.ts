@@ -192,7 +192,9 @@ export const EntitySchema = z
 
 export const StateVariableSchema = PropertyDefSchema.extend({
   /** First part of the variable's path: `World` in `World.StormRaging`. */
-  namespace: z.string().default('World')
+  namespace: z.string().default('World'),
+  /** Show this variable's live value at the top of the Play panel (and flag it as HUD-worthy in the export). */
+  showInPlay: z.boolean().optional()
 })
 
 export const RelationshipDefSchema = PropertyDefSchema.extend({

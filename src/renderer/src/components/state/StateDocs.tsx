@@ -174,6 +174,16 @@ function WorldVariables({ project }: { project: Project }) {
                       />
                       <IssueList issues={own.filter((i) => i.field === 'namespace')} />
                     </FieldLabel>
+                    <div className="mt-3 flex items-start justify-between gap-4 rounded-md border border-line bg-bg/40 px-3 py-2">
+                      <div>
+                        <p className="text-xs text-fg">Show in Play</p>
+                        <p className="text-2xs leading-snug text-faint">
+                          Pins the live value to the top of the Play panel, like a game&apos;s HUD (coins, health, time left). The export
+                          marks it with <code className="text-muted">hud: true</code>.
+                        </p>
+                      </div>
+                      <Toggle checked={v.showInPlay === true} onChange={(on) => updateDef(scope, id, { showInPlay: on || undefined })} label="Show in Play" />
+                    </div>
                   </div>
                 }
               />

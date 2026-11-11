@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { FilePlus2, FolderOpen, PackageOpen, PanelLeft, PanelRight, Redo2, Save, SaveAll, Undo2, X } from 'lucide-react'
+import { FilePlus2, FolderOpen, House, PackageOpen, PanelLeft, PanelRight, Redo2, Save, SaveAll, Undo2, X } from 'lucide-react'
 import { closeProject, newProject, openProject, saveProject, saveProjectAs } from '../../lib/projectIO'
 import { isMac, shortcut } from '../../lib/platform'
 import { selectCanRedo, selectCanUndo, selectDirty, useProjectStore } from '../../store/projectStore'
@@ -26,6 +26,16 @@ export function TopBar({ leftOpen, rightOpen, onToggleLeft, onToggleRight }: Top
 
   return (
     <header className="flex h-11 shrink-0 items-center gap-1 border-b border-line bg-panel px-2">
+      <button
+        type="button"
+        onClick={() => void closeProject()}
+        title="Back to the main menu (asks to save first if there are unsaved changes)"
+        className="flex h-7 items-center gap-1.5 rounded-md px-2 text-xs font-medium text-muted transition-colors hover:bg-raised hover:text-fg focus-visible:ring-2 focus-visible:ring-accent/60"
+      >
+        <House size={14} strokeWidth={1.8} />
+        Home
+      </button>
+      <div className="mx-1 h-5 w-px bg-line" />
       <IconButton icon={PanelLeft} label="Toggle explorer" active={leftOpen} onClick={onToggleLeft} />
 
       <div className="flex min-w-0 items-center gap-2 px-2">

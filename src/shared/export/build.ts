@@ -207,8 +207,10 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
   }
 
   // --- State -------------------------------------------------------------------
-  const variables: Record<string, ExportDef> = {}
-  for (const v of Object.values(project.state.variables)) variables[`${v.namespace}.${v.technicalName}`] = defOf(v)
+  const variables: Record<string, ExportDef & { hud?: true }> = {}
+  for (const v of Object.values(project.state.variables)) {
+    variables[`${v.namespace}.${v.technicalName}`] = { ...defOf(v), ...(v.showInPlay ? { hud: true as const } : {}) }
+  }
 
   const relationships: Record<string, ExportRelationship> = {}
   for (const r of Object.values(project.state.relationships)) {

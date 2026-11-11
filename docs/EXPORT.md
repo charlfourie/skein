@@ -140,6 +140,7 @@ Values are:
 ```
 
 - **World variables** are keyed `Namespace.Name`.
+- A variable with `"hud": true` was marked **Show in Play** by the designer: a value meant to be shown to the player, such as coins or health.
 - **Relationships** are one-way. `Keeper→Stranger` and `Stranger→Keeper` are separate
   values. A pair with no entry in `values` starts at `default`.
 

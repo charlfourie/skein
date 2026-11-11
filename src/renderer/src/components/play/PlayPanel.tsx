@@ -214,6 +214,8 @@ function PlayTab({
         <IconButton size="sm" icon={RotateCcw} label="Restart from the starting state" onClick={restart} />
       </div>
 
+      <Hud session={session} />
+
       {stale && (
         <button type="button" onClick={restart} className="rounded-md border border-accent/40 bg-accent/10 px-2.5 py-1.5 text-left text-2xs text-accent">
           You&apos;ve edited the project since this play-through began. Restart to play the new version.
@@ -358,6 +360,39 @@ function PlayTab({
           <div ref={transcriptEnd} />
         </div>
       </section>
+    </div>
+  )
+}
+
+/**
+ * Variables marked "Show in Play" (State › World variables), pinned like a game HUD.
+ * A value that has changed since the start is highlighted, with where it began.
+ */
+function Hud({ session }: { session: PlaySession }) {
+  const shown = Object.entries(session.file.state.variables).filter(([, def]) => def.hud)
+  if (shown.length === 0) return null
+  return (
+    <div className="flex flex-wrap gap-1.5" aria-label="Shown in Play">
+      {shown.map(([key, def]) => {
+        const now = session.world.read({ get: 'var', var: key })
+        const start = def.default
+        const moved = now !== start
+        const name = key.slice(key.indexOf('.') + 1)
+        return (
+          <span
+            key={key}
+            title={moved ? `${key}: ${formatValue(start)} at the start` : key}
+            className={cx(
+              'flex items-baseline gap-1.5 rounded-md border px-2 py-1 text-xs tabular-nums',
+              moved ? 'border-accent/50 bg-accent/10' : 'border-line bg-raised'
+            )}
+          >
+            <span className="text-2xs text-muted">{name}</span>
+            <span className="font-semibold text-fg">{formatValue(now)}</span>
+            {typeof def.max === 'number' && <span className="text-2xs text-faint">/ {def.max}</span>}
+          </span>
+        )
+      })}
     </div>
   )
 }

@@ -158,7 +158,8 @@ export interface ExportFile {
   templates: Record<string, ExportTemplate>
   entities: Record<string, ExportEntity>
   state: {
-    variables: Record<string, ExportDef>
+    /** `hud: true` marks a value the designer wants shown to the player (e.g. coins). */
+    variables: Record<string, ExportDef & { hud?: true }>
     relationships: Record<string, ExportRelationship>
     time: {
       phases: string[]

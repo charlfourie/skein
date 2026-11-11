@@ -90,10 +90,14 @@ function newDemo(name: string, description: string): Project {
 // =============================================================================
 // Demo 1 — The Coffee Order (simple)
 // =============================================================================
+/** Prices on the café menu, in coins. Also used by docs/DEMOS.md. */
+export const COFFEE_PRICES = { flatWhite: 4, hotChocolate: 3, biscuit: 1, tip: 1 } as const
+
 function coffeeOrder(): Project {
+  const p = COFFEE_PRICES
   const project = newDemo(
     'Demo · The Coffee Order',
-    'A tiny branching conversation. Shows dialogue, a player choice, a condition, an instruction that spends coins, and a jump that loops back. You start with 3 coins, so ordering the flat white shows the loop back to the menu.'
+    `A tiny branching conversation about spending coins. You start with 5 coins (shown at the top of the Play panel). Each menu item has a Requires, so anything you can't afford shows as locked with the price it needs, and water is always free. After each order Pip asks "anything else?" and the jump loops back to the menu. On the way out, a condition checks whether you have a coin left for the tip jar.`
   )
   const character = createTemplate(newId(), 'Character', 'Character', null, 0, '#818cf8', 'user')
   const bio = prop('Bio', 'longText', 0)
@@ -105,34 +109,61 @@ function coffeeOrder(): Project {
   const you = createEntity(newId(), 'You', 'You', character.id, null, 1)
   for (const ent of [pip, you]) project.entities[ent.id] = ent
 
-  variable(project, 'Player', 'Coins', 'number', 0, { defaultValue: 3, min: 0, max: 20, integer: true, description: 'Money in your pocket. Raise it to 4 or more under State and the flat white goes through.' })
+  variable(project, 'Player', 'Coins', 'number', 0, {
+    defaultValue: 5,
+    min: 0,
+    max: 20,
+    integer: true,
+    showInPlay: true,
+    description: 'Money in your pocket. Shown at the top of the Play panel. Change the starting value to see different choices unlock.'
+  } as Partial<PropertyDef>)
+  variable(project, 'Player', 'Items Bought', 'number', 1, { defaultValue: 0, min: 0, integer: true, showInPlay: true, description: 'How many things you ordered.' } as Partial<PropertyDef>)
 
   const flow = createFlow(newId(), 'The Order', null, 0)
   const { n, e, chain } = builder(flow)
-  const hello = n('dialogue', { isStart: true, speakerId: pip.id, text: 'Morning! What can I get you?', note: 'Start here.' })
-  const menu = n('hub', { label: 'The menu', note: 'A hub is a meeting point. With several outputs it offers the player a choice. The jump below loops back to it.' })
-  const flat = n('dialogue', { speakerId: you.id, menuText: 'A flat white (4 coins)', text: 'A flat white, please.' })
-  const cocoa = n('dialogue', { speakerId: you.id, menuText: 'Hot chocolate (3 coins)', text: 'Hot chocolate. Extra marshmallows.', effects: 'Player.Coins -= 3', note: 'Effects change state as the story passes through.' })
-  const water = n('dialogue', { speakerId: you.id, menuText: 'Just water', text: 'Just water, thanks.' })
-  const canPay = n('condition', { expression: 'Player.Coins >= 4', note: 'Conditions branch automatically: green is true, red is false.' })
-  const pay = n('instruction', { script: 'Player.Coins -= 4', note: 'Instructions change state.' })
-  const flatYes = n('dialogue', { speakerId: pip.id, text: 'Four coins. One flat white, with a fern on top.' })
-  const short = n('dialogue', { speakerId: pip.id, text: "Ah, you're a little short for that one. Anything else?" })
-  const back = n('jump', { targetId: menu, note: 'A jump continues the flow somewhere else: here, back to the menu.' })
-  const cocoaYes = n('dialogue', { speakerId: pip.id, text: 'Marshmallow tower, coming right up.' })
+  const hello = n('dialogue', { isStart: true, speakerId: pip.id, text: 'Morning! What can I get you?', note: 'Start here. Open Play (the triangle in the toolbar) and watch Coins at the top of the panel.' })
+  const menu = n('hub', { label: 'The menu', note: 'A hub with several outputs offers a choice. Each priced option has a Requires: when you can\'t afford it, Play shows it locked with what it needs.' })
+  const buy = (menuText: string, text: string, price: number, reply: string) => {
+    const pick = n('dialogue', {
+      speakerId: you.id,
+      menuText: `${menuText} (${price} coin${price === 1 ? '' : 's'})`,
+      text,
+      requires: `Player.Coins >= ${price}`,
+      effects: `Player.Coins -= ${price}\nPlayer.ItemsBought += 1`,
+      note: `Only offered with ${price}+ coins. Effects spend the coins as the story passes through.`
+    })
+    const answer = n('dialogue', { speakerId: pip.id, text: reply })
+    chain(pick, answer)
+    return { pick, answer }
+  }
+  const flat = buy('A flat white', 'A flat white, please.', p.flatWhite, 'One flat white, with a fern on top.')
+  const cocoa = buy('Hot chocolate', 'Hot chocolate. Extra marshmallows.', p.hotChocolate, 'Marshmallow tower, coming right up.')
+  const biscuit = buy('A ginger biscuit', 'And one of those ginger biscuits.', p.biscuit, 'Last one in the jar. Lucky you.')
+  const water = n('dialogue', { speakerId: you.id, menuText: 'Just water (free)', text: 'Just water, thanks.', note: 'Always available, so you are never stuck with nothing to pick.' })
   const waterYes = n('dialogue', { speakerId: pip.id, text: 'On the house!' })
+  const done = n('dialogue', { speakerId: you.id, menuText: "That's everything", text: "That's everything, thanks." })
+  const again = n('dialogue', { speakerId: pip.id, text: 'Anything else?' })
+  const loop = n('jump', { targetId: menu, note: 'A jump continues the flow somewhere else: here, back to the menu, so you can keep ordering until the coins run out.' })
+  const canTip = n('condition', { expression: `Player.Coins >= ${p.tip}`, note: 'Conditions branch automatically: green is true, red is false.' })
+  const tipAsk = n('dialogue', { speakerId: pip.id, text: 'There\'s a tip jar by the till, if you like.' })
+  const tip = n('dialogue', { speakerId: you.id, menuText: `Drop a coin in the jar (${p.tip} coin)`, text: 'Here you go.', requires: `Player.Coins >= ${p.tip}`, effects: `Player.Coins -= ${p.tip}` })
+  const tipThanks = n('dialogue', { speakerId: pip.id, text: 'You\'re a star. Next foam fern is extra leafy.', isEnd: true })
+  const noTip = n('dialogue', { speakerId: you.id, menuText: 'Not today', text: 'Not today, sorry.' })
   const bye = n('dialogue', { speakerId: pip.id, text: 'Enjoy! See you tomorrow.', isEnd: true })
+  const broke = n('dialogue', { speakerId: pip.id, text: 'Pockets empty? Come back tomorrow, I\'ll save you a biscuit.', isEnd: true })
+
   chain(hello, menu)
-  e(menu, flat)
-  e(menu, cocoa)
-  e(menu, water)
-  chain(flat, canPay)
-  e(canPay, pay, 'true')
-  e(canPay, short, 'false')
-  chain(pay, flatYes, bye)
-  chain(short, back)
-  chain(cocoa, cocoaYes, bye)
-  chain(water, waterYes, bye)
+  for (const option of [flat.pick, cocoa.pick, biscuit.pick, water, done]) e(menu, option)
+  for (const tail of [flat.answer, cocoa.answer, biscuit.answer]) e(tail, again)
+  chain(water, waterYes, again)
+  chain(again, loop)
+  chain(done, canTip)
+  e(canTip, tipAsk, 'true')
+  e(canTip, broke, 'false')
+  e(tipAsk, tip)
+  e(tipAsk, noTip)
+  chain(tip, tipThanks)
+  chain(noTip, bye)
   layout(flow)
   project.flows[flow.id] = flow
   return project
@@ -144,7 +175,7 @@ function coffeeOrder(): Project {
 function museumHeist(): Project {
   const project = newDemo(
     'Demo · The Midnight Museum Heist',
-    'A crew plans a heist to win back the Jade Monkey. Shows templates, items, character state, relationships, world variables, time phases with rules, requirements that hide used options, loops, and four endings across three flows. Play 1 · The Plan, then 2 · The Heist, then 3 · The Getaway.'
+    'A crew plans a heist to win back the Jade Monkey. Shows templates, items, character state, relationships, world variables, time phases with rules, requirements that hide used options or lock what you can’t afford, a coin budget shown in Play, loops, and five endings across three flows. Play 1 · The Plan, then 2 · The Heist, then 3 · The Getaway.'
   )
   const fCrew = newId(), fItems = newId(), fPlaces = newId(), fFlows = newId()
   project.folders[fFlows] = createFolder(fFlows, 'The Heist', 'flows', null, 0)
@@ -207,12 +238,12 @@ function museumHeist(): Project {
   place('The Getaway Van', 'GetawayVan', 'Painted to look like a flower delivery.')
 
   // State
-  variable(project, 'Heist', 'Alarm', 'number', 0, { defaultValue: 0, min: 0, max: 10, integer: true, description: 'How suspicious the museum is. At 3 or more, the sirens start.' })
+  variable(project, 'Heist', 'Alarm', 'number', 0, { defaultValue: 0, min: 0, max: 10, integer: true, showInPlay: true, description: 'How suspicious the museum is. At 3 or more, the sirens start.' } as Partial<PropertyDef>)
   variable(project, 'Heist', 'Has Blueprints', 'boolean', 1, { defaultValue: false })
   variable(project, 'Heist', 'Has Lockpicks', 'boolean', 2, { defaultValue: false })
   variable(project, 'Heist', 'Has Cat Treats', 'boolean', 3, { defaultValue: false })
   variable(project, 'Heist', 'Has Jade Monkey', 'boolean', 4, { defaultValue: false })
-  variable(project, 'Player', 'Cash', 'number', 5, { defaultValue: 5, min: 0, integer: true })
+  variable(project, 'Player', 'Coins', 'number', 5, { defaultValue: 5, min: 0, integer: true, showInPlay: true, description: 'The crew budget. Shown at the top of the Play panel. You cannot afford everything: choose what matters.' } as Partial<PropertyDef>)
 
   const trust = {
     ...createRelationship(newId(), 'Trust', 'Trust', character.id, character.id, 'number', 0),
@@ -249,13 +280,13 @@ function museumHeist(): Project {
     const hub = n('hub', { label: 'Get ready', note: 'Each option has a Requires, so it disappears once done. The jumps loop back here.' })
     const askJuni = n('dialogue', { speakerId: rook.id, menuText: 'Ask Juni for the blueprints', text: 'Juni, can you get us into the museum’s plans?', requires: 'not Heist.HasBlueprints' })
     const juniYes = n('dialogue', { speakerId: juni.id, text: 'Already done. There’s an air vent right above the Grand Gallery.', effects: 'Heist.HasBlueprints = true\nJuni->Rook.Trust += 1' })
-    const coffee = n('dialogue', { speakerId: rook.id, menuText: 'Buy Juni a coffee (1 cash)', text: 'Flat white, extra shot. You’ve earned it.', requires: 'Juni->Rook.Trust < 2 and Player.Cash >= 1', effects: 'Player.Cash -= 1\nJuni->Rook.Trust += 1' })
+    const coffee = n('dialogue', { speakerId: rook.id, menuText: 'Buy Juni a coffee (1 coin)', text: 'Flat white, extra shot. You’ve earned it.', requires: 'Juni->Rook.Trust < 2 and Player.Coins >= 1', effects: 'Player.Coins -= 1\nJuni->Rook.Trust += 1' })
     const coffeeYes = n('dialogue', { speakerId: juni.id, text: 'Okay. You’re officially my favourite criminal.' })
     const askBruno = n('dialogue', { speakerId: rook.id, menuText: 'Ask Bruno for lockpicks', text: 'Bruno, we’ll need your lockpicks.', requires: 'not Heist.HasLockpicks' })
     const brunoYes = n('dialogue', { speakerId: bruno.id, text: 'Grandma’s set. Bring them back, or she’ll find you. She always finds you.', effects: 'Heist.HasLockpicks = true' })
     const pep = n('dialogue', { speakerId: rook.id, menuText: 'Give Bruno a pep talk', text: 'Bruno. Best driver in the city. Tonight is going to be easy.', requires: 'Bruno.Nerve < 4' })
     const pepYes = n('dialogue', { speakerId: bruno.id, text: '…Yeah. Yeah! Easy!', effects: 'Bruno.Nerve += 1\nBruno->Rook.Trust += 1' })
-    const shop = n('dialogue', { speakerId: rook.id, menuText: 'Buy cat treats (2 cash)', text: 'The guard has a cat, apparently. One packet of salmon treats, please.', requires: 'not Heist.HasCatTreats and Player.Cash >= 2', effects: 'Player.Cash -= 2\nHeist.HasCatTreats = true' })
+    const shop = n('dialogue', { speakerId: rook.id, menuText: 'Buy cat treats (2 coins)', text: 'The guard has a cat, apparently. One packet of salmon treats, please.', requires: 'not Heist.HasCatTreats and Player.Coins >= 2', effects: 'Player.Coins -= 2\nHeist.HasCatTreats = true' })
     const ready = n('dialogue', { speakerId: rook.id, menuText: 'We’re ready. Let’s go.', text: 'Right. Everyone in the van.' })
     const check = n('condition', { expression: 'Heist.HasBlueprints and Heist.HasLockpicks', note: 'You need both the blueprints and the lockpicks to leave.' })
     const notYet = n('dialogue', { speakerId: juni.id, text: 'Without the blueprints and the lockpicks? Bold. Also no.' })
@@ -295,12 +326,16 @@ function museumHeist(): Project {
     const bluffOk = n('dialogue', { speakerId: juni.id, text: 'Very dangerous monkey. We’ll take it from here, sir.' })
     const bluffOk2 = n('dialogue', { speakerId: gustav.id, text: 'Oh! Right. Mind Biscuit, she bites.', effects: 'Gustav->Rook.Trust += 1' })
     const bluffBad = n('dialogue', { speakerId: gustav.id, text: 'Pest control? At midnight? I’m calling my supervisor.', effects: 'Heist.Alarm += 3' })
+    const bribe = n('dialogue', { speakerId: rook.id, menuText: 'Slip Gustav a bribe (4 coins)', text: 'Gustav. Wake up. Fancy a very long tea break?', requires: 'Player.Coins >= 4', effects: 'Player.Coins -= 4', note: 'Only offered with 4+ coins. With 5 to start, buying treats or coffee in The Plan makes this unaffordable.' })
+    const bribeOk = n('dialogue', { speakerId: gustav.id, text: 'Tea break. Twenty minutes. I saw nothing. Biscuit saw nothing.', effects: 'Gustav->Rook.Trust += 1' })
     const grab = n('instruction', { script: 'Heist.HasJadeMonkey = true\nadvance to Midnight', note: 'Advancing to Midnight runs “The midnight patrol”: any alarm at all gets worse.' })
     const got = n('dialogue', { speakerId: rook.id, text: 'Got it. Everyone out. Now.', isEnd: true, note: 'Continue with 3 · The Getaway.' })
     chain(start, vent, gallery)
     e(gallery, treats)
     e(gallery, sneak)
     e(gallery, talk)
+    e(gallery, bribe)
+    chain(bribe, bribeOk, grab)
     chain(treats, treatsOk, grab)
     chain(sneak, sneakBad, grab)
     chain(talk, bluff)
@@ -319,20 +354,28 @@ function museumHeist(): Project {
     const { n, e, chain } = builder(away)
     const start = n('condition', { isStart: true, expression: 'Heist.Alarm >= 3', requires: 'Heist.HasJadeMonkey', note: 'Three or more alarm points and the sirens start.' })
     const sirens = n('dialogue', { speakerId: bruno.id, text: 'Sirens! Why is it always sirens?' })
+    const chase = n('dialogue', { speakerId: juni.id, text: 'There’s a car wash on the corner. For a couple of coins they’ll hide us in the tunnel.' })
+    const hide = n('dialogue', { speakerId: rook.id, menuText: 'Pay the car wash (2 coins)', text: 'Two coins. Deluxe wax, and take your time.', requires: 'Player.Coins >= 2', effects: 'Player.Coins -= 2\nadvance to Dawn', note: 'Only offered with 2+ coins: a guaranteed escape.' })
+    const hidden = n('dialogue', { text: 'HIDDEN IN PLAIN SUDS. The police roar past the car wash. You stroll out at dawn, very clean, Jade Monkey in hand.', isEnd: true, note: 'Ending 5 of 5.' })
+    const drive = n('dialogue', { speakerId: rook.id, menuText: 'Floor it, Bruno', text: 'No time. Floor it!' })
     const nerveCheck = n('condition', { expression: 'Bruno.Nerve >= 4', note: 'Bruno’s nerve decides the chase. A pep talk in The Plan helps.' })
     const escape = n('dialogue', { speakerId: bruno.id, text: 'Hold on to something! Left, right, through the car wash… and we’re clear!', effects: 'advance to Dawn' })
-    const closeShave = n('dialogue', { text: 'CLOSE SHAVE. The van smells of soap and victory. You deliver the Jade Monkey at sunrise.', isEnd: true, note: 'Ending 1 of 4.' })
+    const closeShave = n('dialogue', { text: 'CLOSE SHAVE. The van smells of soap and victory. You deliver the Jade Monkey at sunrise.', isEnd: true, note: 'Ending 1 of 5.' })
     const panic = n('dialogue', { speakerId: bruno.id, text: 'I can’t, I can’t, I CAN’T—', effects: 'Bruno.Nerve -= 1' })
-    const caught = n('dialogue', { text: 'CAUGHT. The van stalls outside the museum. Biscuit watches from the window, deeply satisfied.', isEnd: true, note: 'Ending 2 of 4.' })
+    const caught = n('dialogue', { text: 'CAUGHT. The van stalls outside the museum. Biscuit watches from the window, deeply satisfied.', isEnd: true, note: 'Ending 2 of 5.' })
     const quiet = n('dialogue', { speakerId: juni.id, text: 'Not a single siren. We’re ghosts.', effects: 'advance to Dawn' })
     const vexMeet = n('dialogue', { speakerId: vex.id, text: 'The Jade Monkey. Hand it over, darling, and the rent is gone forever.' })
-    const give = n('dialogue', { speakerId: rook.id, menuText: 'Hand it to Madame Vex', text: 'A deal’s a deal.', effects: 'Vex->Rook.Trust += 3\nPlayer.Cash += 50' })
-    const clean = n('dialogue', { text: 'CLEAN GETAWAY. No rent, ever again. Bruno buys everyone pancakes.', isEnd: true, note: 'Ending 3 of 4.' })
+    const give = n('dialogue', { speakerId: rook.id, menuText: 'Hand it to Madame Vex', text: 'A deal’s a deal.', effects: 'Vex->Rook.Trust += 3\nPlayer.Coins += 50' })
+    const clean = n('dialogue', { text: 'CLEAN GETAWAY. No rent, ever again. Bruno buys everyone pancakes.', isEnd: true, note: 'Ending 3 of 5.' })
     const giveBack = n('dialogue', { speakerId: rook.id, menuText: 'Return it to the museum', text: 'Actually… the museum is free on Sundays. Everyone should get to see it.', requires: 'Gustav->Rook.Trust >= 1', note: 'Only offered if Gustav fell for the bluff.' })
-    const robin = n('dialogue', { text: 'ROBIN HOOD. The Jade Monkey is back on its plinth by Monday. Gustav swears he saw Biscuit wink.', isEnd: true, note: 'Ending 4 of 4.' })
+    const robin = n('dialogue', { text: 'ROBIN HOOD. The Jade Monkey is back on its plinth by Monday. Gustav swears he saw Biscuit wink.', isEnd: true, note: 'Ending 4 of 5.' })
     e(start, sirens, 'true')
     e(start, quiet, 'false')
-    chain(sirens, nerveCheck)
+    chain(sirens, chase)
+    e(chase, hide)
+    e(chase, drive)
+    chain(hide, hidden)
+    chain(drive, nerveCheck)
     e(nerveCheck, escape, 'true')
     e(nerveCheck, panic, 'false')
     chain(escape, closeShave)
