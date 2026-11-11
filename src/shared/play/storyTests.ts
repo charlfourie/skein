@@ -272,9 +272,7 @@ export function playRoute(file: ExportFile, flowId: string, start: StartState, r
         const choice = beat.choices.find((c) => c.node === step.choose)
         if (!choice) {
           const offered = beat.choices.map((c) => `“${short(c.text)}”`).join(', ')
-          const why = !findNode(file, step.choose)
-            ? `the choice the test picked (${nodeLabel(file, step.choose)}) was deleted`
-            : `${nodeLabel(file, step.choose)} isn't offered any more`
+          const why = !findNode(file, step.choose) ? 'the choice the test picked was deleted' : `${nodeLabel(file, step.choose)} isn't offered any more`
           throw new Mismatch(`At ${nodeLabel(file, beat.node.id)}, ${why}. Offered now: ${offered}.`, beat.node.id)
         }
         i++

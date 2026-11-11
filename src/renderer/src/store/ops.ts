@@ -20,6 +20,7 @@ import {
   deletePhase,
   deleteRelationship,
   deleteFolderTree,
+  deleteTestsOfFlows,
   deleteTemplates,
   removeEnumOption as removeEnumOptionMutation,
   removeProperty as removePropertyMutation
@@ -32,8 +33,10 @@ import type {
   PropertyValue,
   RelationshipDef,
   Rule,
+  Scenario,
   SectionId,
   StateVariable,
+  StoryTest,
   Template
 } from '@shared/schema'
 import { coerceValue } from '@shared/values'
@@ -168,8 +171,10 @@ export function renameItem(kind: TreeKind, id: string, rawName: string): void {
 /** Delete a tree item and everything that depends on it. (Confirmation is the caller's job.) */
 export function deleteItem(kind: TreeKind, id: string): void {
   edit('Delete', (p) => {
-    if (kind === 'flow') delete p.flows[id]
-    else if (kind === 'entity') deleteEntities(p, [id])
+    if (kind === 'flow') {
+      delete p.flows[id]
+      deleteTestsOfFlows(p, new Set([id]))
+    }    else if (kind === 'entity') deleteEntities(p, [id])
     else if (kind === 'template') deleteTemplates(p, [id])
     else deleteFolderTree(p, id)
   })
@@ -666,6 +671,87 @@ export function resetEntityValue(entityId: string, propertyId: string): void {
     const e = p.entities[entityId]
     if (e && propertyId in e.values) delete e.values[propertyId]
   })
+}
+
+// ---------------------------------------------------------------------------
+// Scenarios and story tests
+
+export type ScenarioPatch = Partial<Pick<Scenario, 'name' | 'day' | 'phaseId' | 'seed' | 'setup'>>
+
+/** Save a new scenario. Fields left undefined start from the project's own starting state. */
+export function addScenario(fields: ScenarioPatch & { name: string }): string | null {
+  const id = newId()
+  const ok = edit('Save scenario', (p) => {
+    const list = Object.values(p.scenarios ?? {})
+    p.scenarios = p.scenarios ?? {}
+    p.scenarios[id] = { id, order: nextOrder(list), setup: '', ...clean(fields), name: fields.name }
+  })
+  return ok ? id : null
+}
+
+/** `undefined` leaves a field alone; `null` for day, phase or seed goes back to the project's own. */
+export function updateScenario(id: string, patch: { [K in keyof ScenarioPatch]?: ScenarioPatch[K] | null }): void {
+  edit('Edit scenario', (p) => {
+    const sc = p.scenarios?.[id] as Record<string, unknown> | undefined
+    if (!sc) return
+    for (const [k, v] of Object.entries(patch)) {
+      if (v === undefined) continue
+      if (v === null) delete sc[k]
+      else if (sc[k] !== v) sc[k] = v
+    }
+  })
+}
+
+/** Delete a scenario. Tests that start from it are reported as broken until they're pointed elsewhere. */
+export function removeScenario(id: string): void {
+  edit('Delete scenario', (p) => {
+    if (!p.scenarios?.[id]) return
+    delete p.scenarios[id]
+    if (Object.keys(p.scenarios).length === 0) delete p.scenarios
+  })
+}
+
+export type TestFields = Omit<StoryTest, 'id' | 'order'>
+
+export function addTest(fields: TestFields): string | null {
+  const id = newId()
+  const ok = edit('Save test', (p) => {
+    const list = Object.values(p.tests ?? {})
+    p.tests = p.tests ?? {}
+    p.tests[id] = { ...clean(fields), id, order: nextOrder(list) } as StoryTest
+  })
+  return ok ? id : null
+}
+
+export type TestPatch = Partial<Pick<StoryTest, 'name' | 'scenarioId' | 'checks' | 'allEnd' | 'allReached' | 'reach' | 'route' | 'stopsAt' | 'ends'>>
+
+export function updateTest(id: string, patch: TestPatch): void {
+  edit('Edit test', (p) => {
+    const t = p.tests?.[id] as Record<string, unknown> | undefined
+    if (!t) return
+    for (const [k, v] of Object.entries(patch)) {
+      if (v === undefined) continue
+      // Off switches and empty lists leave the file, so tests stay small and diffs quiet.
+      if ((k === 'allEnd' || k === 'allReached') && v === false) delete t[k]
+      else if (k === 'reach' && Array.isArray(v)) {
+        if (v.length) t[k] = [...v].sort()
+        else delete t[k]
+      } else t[k] = v
+    }
+  })
+}
+
+export function removeTest(id: string): void {
+  edit('Delete test', (p) => {
+    if (!p.tests?.[id]) return
+    delete p.tests[id]
+    if (Object.keys(p.tests).length === 0) delete p.tests
+  })
+}
+
+/** Drop undefined fields, so they're absent from the file rather than stored. */
+function clean<T extends object>(o: T): T {
+  return Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined)) as T
 }
 
 // ---------------------------------------------------------------------------

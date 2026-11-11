@@ -1,6 +1,7 @@
 import { useRef, useState, type RefObject } from 'react'
 import { Panel, PanelGroup, type ImperativePanelHandle } from 'react-resizable-panels'
 import { useProjectStore } from '../../store/projectStore'
+import { useStoryTestRunner } from '../../store/tests'
 import { Inspector } from '../inspector/Inspector'
 import { NavTree } from '../nav/NavTree'
 import { ResizeHandle } from '../ui/ResizeHandle'
@@ -17,6 +18,7 @@ export function Shell() {
   const rightRef = useRef<ImperativePanelHandle>(null)
   const [leftOpen, setLeftOpen] = useState(true)
   const [rightOpen, setRightOpen] = useState(true)
+  useStoryTestRunner()
 
   const toggle = (ref: RefObject<ImperativePanelHandle>) => {
     const panel = ref.current

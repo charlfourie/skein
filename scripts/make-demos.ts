@@ -26,6 +26,26 @@ import type { Flow, Project, PropertyDef } from '../src/shared/schema'
 import { serializeProject } from '../src/shared/serialize'
 
 const OUT = 'src/renderer/src/demos'
+
+/**
+ * Ids come from a seeded generator, so regenerating a demo only changes what
+ * actually changed (random ids would rewrite every line of both files).
+ */
+function seedIds(seed: number): void {
+  let s = seed >>> 0
+  const next = () => {
+    s = (s + 0x6d2b79f5) >>> 0
+    let t = s
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return (t ^ (t >>> 14)) >>> 0
+  }
+  const hex = (n: number) => next().toString(16).padStart(8, '0').slice(0, n)
+  Object.defineProperty(globalThis.crypto, 'randomUUID', {
+    configurable: true,
+    value: () => `${hex(8)}-${hex(4)}-4${hex(3)}-${((next() & 3) | 8).toString(16)}${hex(3)}-${hex(8)}${hex(4)}`
+  })
+}
 const CREATED = '2026-01-01T00:00:00.000Z'
 
 const prop = (name: string, type: PropertyDef['type'], order: number, extra: Partial<PropertyDef> = {}): PropertyDef => ({
@@ -166,6 +186,39 @@ function coffeeOrder(): Project {
   chain(noTip, bye)
   layout(flow)
   project.flows[flow.id] = flow
+
+  // Story tests: open the Play panel's Tests tab to see them. They re-run after every edit.
+  const oneCoin = newId()
+  project.scenarios = { [oneCoin]: { id: oneCoin, name: 'Only 1 coin', order: 0, setup: 'Player.Coins = 1' } }
+  const t1 = newId()
+  const t2 = newId()
+  const t3 = newId()
+  project.tests = {
+    [t1]: {
+      id: t1,
+      name: 'A flat white, no tip',
+      order: 0,
+      flowId: flow.id,
+      scenarioId: null,
+      kind: 'play',
+      route: [{ choose: flat.pick }, { choose: done }, { choose: noTip }],
+      stopsAt: bye,
+      ends: true,
+      checks: `Player.Coins == ${5 - p.flatWhite}\nPlayer.ItemsBought == 1`
+    },
+    [t2]: { id: t2, name: 'Every order ends, nothing is unreachable', order: 1, flowId: flow.id, scenarioId: null, kind: 'explore', allEnd: true, allReached: true, checks: 'Player.Coins >= 0' },
+    [t3]: {
+      id: t3,
+      name: 'With 1 coin you can still tip',
+      order: 2,
+      flowId: flow.id,
+      scenarioId: oneCoin,
+      kind: 'explore',
+      allEnd: true,
+      reach: [tipThanks],
+      checks: 'Player.ItemsBought <= 1'
+    }
+  }
   return project
 }
 
@@ -388,10 +441,27 @@ function museumHeist(): Project {
     layout(away)
   }
   project.flows[away.id] = away
+
+  // Story tests: every path through the getaway ends, from a loud escape and a quiet one.
+  const loud = newId()
+  const quiet = newId()
+  project.scenarios = {
+    [loud]: { id: loud, name: 'Loud: alarm at 3', order: 0, setup: 'Heist.HasJadeMonkey = true\nHeist.Alarm = 3' },
+    [quiet]: { id: quiet, name: 'Quiet: no alarm, Gustav fooled', order: 1, setup: 'Heist.HasJadeMonkey = true\nGustav->Rook.Trust = 1' }
+  }
+  const ending = (prefix: string) => Object.values(away.nodes).find((x) => String(x.data.text).startsWith(prefix))!.id
+  const t1 = newId()
+  const t2 = newId()
+  project.tests = {
+    [t1]: { id: t1, name: 'Sirens: every path ends, never below 0 coins', order: 0, flowId: away.id, scenarioId: loud, kind: 'explore', allEnd: true, checks: 'Player.Coins >= 0' },
+    [t2]: { id: t2, name: 'Quiet: both endings are reachable', order: 1, flowId: away.id, scenarioId: quiet, kind: 'explore', allEnd: true, reach: [ending('CLEAN'), ending('ROBIN')].sort(), checks: 'Time.Phase is Dawn' }
+  }
   return project
 }
 
 mkdirSync(OUT, { recursive: true })
+seedIds(1)
 writeFileSync(`${OUT}/coffee-order.skein.json`, serializeProject(coffeeOrder()))
+seedIds(2)
 writeFileSync(`${OUT}/museum-heist.skein.json`, serializeProject(museumHeist()))
 console.log(`Wrote ${OUT}/coffee-order.skein.json and ${OUT}/museum-heist.skein.json`)

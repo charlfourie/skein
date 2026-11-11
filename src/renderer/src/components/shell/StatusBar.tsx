@@ -1,7 +1,11 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { Circle, CircleCheck, CircleDot } from 'lucide-react'
-import { SCHEMA_VERSION } from '@shared/schema'
+import { sortedTests } from '@shared/play/storyTests'
+import { SCHEMA_VERSION, type Project } from '@shared/schema'
+import { usePlay } from '../../store/play'
 import { selectDirty, useProjectStore } from '../../store/projectStore'
+import { useTests } from '../../store/tests'
+import { TestStatusIcon } from '../play/TestStatus'
 
 export function StatusBar() {
   const filePath = useProjectStore((s) => s.filePath)
@@ -42,11 +46,39 @@ export function StatusBar() {
       )}
 
       <div className="flex-1" />
+      <TestSummary project={project} />
       <span className="tabular-nums">
         {Object.keys(project.flows).length} flows · {Object.keys(project.entities).length} entities ·{' '}
         {Object.keys(project.state.variables).length} world variables
       </span>
       <span className="font-mono text-faint">v{SCHEMA_VERSION}</span>
     </footer>
+  )
+}
+
+/** How the story tests are doing; click to open the first failing one's flow. */
+function TestSummary({ project }: { project: Project }) {
+  const results = useTests((s) => s.results)
+  const fresh = useTests((s) => s.checked === project && !s.running)
+  const tests = sortedTests(project)
+  if (tests.length === 0) return null
+  const bad = tests.filter((t) => results[t.id] && results[t.id].status !== 'pass')
+  const first = bad[0] ?? tests[0]
+  const open = () => {
+    if (!project.flows[first.flowId]) return
+    useProjectStore.setState({ activeDoc: { kind: 'flow', id: first.flowId } })
+    usePlay.getState().openFor(first.flowId, 'tests')
+  }
+  const status = !fresh ? 'pending' : bad.some((t) => results[t.id].status === 'fail') ? 'fail' : bad.length ? 'broken' : 'pass'
+  const label = !fresh
+    ? `Checking ${tests.length} test${tests.length === 1 ? '' : 's'}…`
+    : bad.length
+      ? `${bad.length} of ${tests.length} test${tests.length === 1 ? '' : 's'} need${bad.length === 1 ? 's' : ''} attention`
+      : `${tests.length} test${tests.length === 1 ? '' : 's'} passing`
+  return (
+    <button type="button" onClick={open} className="flex items-center gap-1.5 transition-colors hover:text-fg" title="Story tests (they re-run after every edit)">
+      <TestStatusIcon status={status} size={11} />
+      <span className={status === 'fail' ? 'text-danger' : status === 'broken' ? 'text-warn' : undefined}>{label}</span>
+    </button>
   )
 }

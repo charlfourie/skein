@@ -1,12 +1,13 @@
 import { ExprText } from '../defs/ExprText'
 import { formatDuration } from '@shared/time'
 import { motion } from 'framer-motion'
-import { AlertTriangle, ArrowRightCircle, Clock, Crosshair, Flag, Lock, Play, RotateCcw, X } from 'lucide-react'
+import { AlertTriangle, ArrowRightCircle, Clock, Crosshair, Flag, FlaskConical, Lock, Play, RotateCcw, X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { buildExport } from '@shared/export/build'
+import { buildExport, type ExportResult } from '@shared/export/build'
 import type { ExportFile } from '@shared/export/types'
 import type { PathExample } from '@shared/play/explore'
-import type { Project } from '@shared/schema'
+import type { Project, RouteStep } from '@shared/schema'
+import { nodeLabel, playRoute, scenarioStart } from '@shared/play/storyTests'
 import { cx } from '../../lib/cx'
 import { formatValue, PlaySession, type PlayEntry, clockText } from '../../lib/playSession'
 import { usePlay } from '../../store/play'
@@ -16,6 +17,11 @@ import { IconButton } from '../ui/IconButton'
 import { Select } from '../ui/fields'
 import { ExploreTab } from './ExploreTab'
 import { StartStateTab } from './StartStateTab'
+import { TestsTab } from './TestsTab'
+import { saveSessionAsTest, valuesToChecks } from '../../lib/scenarios'
+import { toast } from '../../lib/toast'
+import { runTestsNow, useTests } from '../../store/tests'
+import { TextArea, TextInput } from '../ui/fields'
 import { currentStart } from './startState'
 
 /** One export per project version, shared by every panel, so a play-through only reads as stale after a real edit. */
@@ -57,6 +63,21 @@ export function PlayPanel({ project, flowId }: { project: Project; flowId: strin
     [build.file, flowId, follow]
   )
 
+  /** Play a story test's route in the Play tab, from the test's own start. */
+  const playTest = useCallback(
+    (testFlowId: string, scenarioId: string | null, route: RouteStep[]) => {
+      const start = scenarioStart(project, build, scenarioId)
+      if (!start.ok) return toast.warn("Couldn't start the test", start.message)
+      if (!build.file.flows[testFlowId]) return
+      const s = new PlaySession(build.file, testFlowId, start.start, {}, undefined, route)
+      s.followRoute()
+      usePlay.getState().setSession(s)
+      usePlay.setState({ flowId: s.flowId, tab: 'play' })
+      follow(s)
+    },
+    [build, follow, project]
+  )
+
   // Start playing when the panel opens on a flow with no play-through yet.
   useEffect(() => {
     const s = usePlay.getState().session
@@ -95,7 +116,7 @@ export function PlayPanel({ project, flowId }: { project: Project; flowId: strin
       onKeyDown={(e) => e.stopPropagation()}
     >
       <header className="flex items-center gap-1 border-b border-line px-2 py-1.5">
-        {(['play', 'explore', 'start'] as const).map((t) => (
+        {(['play', 'explore', 'start', 'tests'] as const).map((t) => (
           <button
             key={t}
             type="button"
@@ -105,7 +126,7 @@ export function PlayPanel({ project, flowId }: { project: Project; flowId: strin
               tab === t ? 'bg-raised text-fg' : 'text-muted hover:text-fg'
             )}
           >
-            {t === 'play' ? 'Play' : t === 'explore' ? 'Explore' : 'Start state'}
+            {t === 'play' ? 'Play' : t === 'explore' ? 'Explore' : t === 'start' ? 'Start state' : <TestsLabel flowId={flowId} />}
           </button>
         ))}
         <div className="flex-1" />
@@ -114,7 +135,16 @@ export function PlayPanel({ project, flowId }: { project: Project; flowId: strin
 
       <div className="flex-1 overflow-y-auto px-3 py-3">
         {tab === 'play' && session && (
-          <PlayTab project={project} session={session} build={build.file} problems={flowProblems.map((p) => p.message)} act={act} restart={() => restart()} />
+          <PlayTab
+            project={project}
+            session={session}
+            build={build.file}
+            exportResult={build}
+            problems={flowProblems.map((p) => p.message)}
+            act={act}
+            restart={() => restart()}
+            onSaved={() => setTab('tests')}
+          />
         )}
         {tab === 'explore' && (
           <ExploreTab
@@ -126,9 +156,32 @@ export function PlayPanel({ project, flowId }: { project: Project; flowId: strin
             }}
           />
         )}
-        {tab === 'start' && <StartStateTab file={build.file} />}
+        {tab === 'start' && <StartStateTab project={project} build={build} />}
+        {tab === 'tests' && (
+          <TestsTab
+            project={project}
+            build={build}
+            flowId={flowId}
+            onReplay={(example) => {
+              restart(example)
+              setTab('play')
+            }}
+            onPlayRoute={playTest}
+          />
+        )}
       </div>
     </motion.aside>
+  )
+}
+
+/** The Tests tab's name, with a dot when a test of this flow is failing. */
+function TestsLabel({ flowId }: { flowId: string }) {
+  const failing = useTests((s) => Object.values(s.results).some((r) => r.flowId === flowId && r.status !== 'pass'))
+  return (
+    <span className="flex items-center gap-1">
+      Tests
+      {failing && <span className="h-1.5 w-1.5 rounded-full bg-danger" aria-label="(failing)" />}
+    </span>
   )
 }
 
@@ -136,16 +189,20 @@ function PlayTab({
   project,
   session,
   build,
+  exportResult,
   problems,
   act,
-  restart
+  restart,
+  onSaved
 }: {
   project: Project
   session: PlaySession
   build: ExportFile
+  exportResult: ExportResult
   problems: string[]
   act(fn: (s: PlaySession) => void): void
   restart(): void
+  onSaved(): void
 }) {
   const follow = usePlay((s) => s.follow)
   const focusNode = useProjectStore((s) => s.focusNode)
@@ -325,6 +382,8 @@ function PlayTab({
         </div>
       )}
 
+      <SaveAsTest project={project} session={session} build={exportResult} stale={stale} onSaved={onSaved} />
+
       {/* State */}
       <section>
         <h3 className="mb-1 text-2xs font-semibold uppercase tracking-wider text-faint">Changed since the start</h3>
@@ -451,4 +510,81 @@ function TranscriptLine({ entry: e, onFocus }: { entry: PlayEntry; onFocus(id: s
         </button>
       )
   }
+}
+
+/**
+ * Save this play-through as a story test: the route taken (choices and dice),
+ * where it stops, and a few checks that start out as what changed. The test
+ * re-runs after every edit, so a later change that breaks this path shows up.
+ */
+function SaveAsTest({ project, session, build, stale, onSaved }: { project: Project; session: PlaySession; build: ExportResult; stale: boolean; onSaved(): void }) {
+  const [open, setOpen] = useState(false)
+  const [name, setName] = useState('')
+  const [checks, setChecks] = useState('')
+  const disabled = session.continued ? 'A test covers one flow. Restart to record a play-through you can save.' : stale ? 'Restart to play the current version first.' : null
+
+  // Where the test runner would stop on this route (a final line ends the story; a choice waits).
+  const [ends, setEnds] = useState(true)
+  const begin = () => {
+    const start = { ...session.start, values: { ...(session.start.values ?? {}), ...session.extra } }
+    const run = playRoute(build.file, session.startFlowId, start, session.route)
+    const label = run.stop.nodeId ? nodeLabel(build.file, run.stop.nodeId).replace(/^“|”$/g, '') : 'the start'
+    setEnds(run.stop.ended)
+    setName(`${run.stop.ended ? 'Ends' : 'Waits'}: ${label.length > 40 ? `${label.slice(0, 39)}…` : label}`)
+    setChecks(valuesToChecks(build.file, session.changed().filter((c) => !c.key.startsWith('visit:'))))
+    setOpen(true)
+  }
+  const save = () => {
+    const r = saveSessionAsTest(project, build, session, name.trim() || 'Untitled test', checks)
+    if (!r.ok) return toast.warn("Couldn't save the test", r.message)
+    setOpen(false)
+    const latest = latestProject()
+    if (latest) runTestsNow(latest)
+    toast.success('Test saved', r.newScenario ? `Its starting state was saved as the scenario ${r.newScenario}.` : 'It re-runs whenever you edit the story.')
+    onSaved()
+  }
+
+  if (!open)
+    return (
+      <div className="flex items-center gap-2">
+        <Button icon={FlaskConical} disabled={!!disabled} title={disabled ?? 'Save this play-through as a story test'} onClick={begin}>
+          Save as test
+        </Button>
+        {disabled ? (
+          <span className="text-2xs text-faint">{disabled}</span>
+        ) : (
+          <span className="text-2xs text-faint">
+            {session.route.length} step{session.route.length === 1 ? '' : 's'} so far
+          </span>
+        )}
+      </div>
+    )
+
+  return (
+    <section className="flex flex-col gap-2 rounded-lg border border-accent/40 bg-accent/5 p-2.5">
+      <h3 className="flex items-center gap-1.5 text-2xs font-semibold uppercase tracking-wider text-accent">
+        <FlaskConical size={11} /> Save as test
+      </h3>
+      <TextInput value={name} autoFocus placeholder="Test name" onCommit={setName} />
+      <div>
+        <p className="mb-1 text-2xs text-muted">
+          {ends ? 'It should end here' : 'It should wait at this choice'}, and these should be true there (one per line):
+        </p>
+        <TextArea value={checks} rows={Math.min(6, Math.max(2, checks.split('\n').length))} placeholder="Player.Coins == 1" onCommit={setChecks} />
+      </div>
+      <div className="flex items-center gap-1.5">
+        <Button variant="primary" icon={FlaskConical} onClick={save}>
+          Save test
+        </Button>
+        <Button variant="ghost" onClick={() => setOpen(false)}>
+          Cancel
+        </Button>
+      </div>
+    </section>
+  )
+}
+
+/** The project as it is right now (after an edit made in the same handler). */
+function latestProject(): Project | null {
+  return useProjectStore.getState().project
 }

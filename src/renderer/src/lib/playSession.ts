@@ -1,5 +1,6 @@
 import { outcomesOf, SkeinStory, SkeinWorld, type Beat, type Choice } from '@shared/export/runtime'
 import type { ExportFile, ExportNode, ExportValue } from '@shared/export/types'
+import type { RouteStep } from '@shared/schema'
 import { applyStart, labelForKey, pathFromKey, tagsOf, type StartState, type StateKey } from '@shared/play/explore'
 
 /** One line of the Play panel's transcript. */
@@ -42,6 +43,12 @@ export class PlaySession {
   beat: Beat
   readonly entries: PlayEntry[] = []
   readonly visited = new Set<string>()
+  /** Every choice (by the node it leads to) and dice outcome so far, for saving the play-through as a test. */
+  readonly route: RouteStep[] = []
+  /** The flow the play-through began in (the story may hand off to others). */
+  readonly startFlowId: string
+  /** Set once the story carries on into another flow by hand: a test covers one flow, so it can't be saved. */
+  continued = false
   private readonly baseline: SkeinWorld
   private readonly tags: Map<string, string>
 
@@ -49,10 +56,13 @@ export class PlaySession {
     readonly file: ExportFile,
     flowId: string,
     readonly start: StartState,
-    extra: Record<StateKey, ExportValue> = {},
+    readonly extra: Record<StateKey, ExportValue> = {},
     /** Replay a path from the explorer: its picks, in order (choices and dice outcomes). */
-    picks?: number[]
+    picks?: number[],
+    /** Replay a story test's route: dice come out as it recorded them (follow it with followRoute()). */
+    route?: RouteStep[]
   ) {
+    this.startFlowId = flowId
     this.tags = tagsOf(file)
     this.world = new SkeinWorld(file)
     applyStart(this.world, start, extra)
@@ -77,11 +87,26 @@ export class PlaySession {
       this.entries.push(entry)
       this.pendingPass.push(entry)
     }
-    this.world.onRandom = (d, result) =>
+    if (route) {
+      this.testRoute = route
+      this.world.decide = (d) => {
+        const step = route[this.routeIndex]
+        if (step && 'dice' in step && step.dice < outcomesOf(d)) {
+          this.routeIndex++
+          return step.dice
+        }
+        this.world.decide = undefined // off the recorded route: roll as usual
+        const x = this.world.nextRandom()
+        return d.kind === 'chance' ? (x % 100 < d.p ? 0 : 1) : x % outcomesOf(d)
+      }
+    }
+    this.world.onRandom = (d, result) => {
+      this.route.push({ dice: d.kind === 'chance' ? (result ? 0 : 1) : (result as number) - d.min })
       this.entries.push({
         kind: 'dice',
         text: d.kind === 'chance' ? `chance ${d.p}% → ${result ? 'yes' : 'no'}` : `roll ${d.min}–${d.max} → ${result}`
       })
+    }
     this.world.onFullDay = (phase) =>
       this.entries.push({
         kind: 'warn',
@@ -98,6 +123,8 @@ export class PlaySession {
   private pendingPass: Extract<PlayEntry, { kind: 'pass' }>[] = []
   private replayPicks: number[] | null = null
   private replayIndex = 0
+  private testRoute: RouteStep[] | null = null
+  private routeIndex = 0
 
   get flowId(): string {
     return this.story.flow.id
@@ -145,7 +172,10 @@ export class PlaySession {
       if (choices.length === 0) this.beat = this.step(() => this.story.choose(0))
       return
     }
-    if (choices.length > 1) this.entries.push({ kind: 'pick', nodeId: choice.node, text: choice.text })
+    if (choices.length > 1) {
+      this.entries.push({ kind: 'pick', nodeId: choice.node, text: choice.text })
+      this.route.push({ choose: choice.node })
+    }
     this.beat = this.step(() => this.story.choose(index))
   }
 
@@ -159,6 +189,7 @@ export class PlaySession {
 
   /** Carry the same world into another flow (e.g. the next scene). */
   continueIn(flowId: string): void {
+    this.continued = true
     this.story = this.attach(new SkeinStory(this.world, flowId))
     this.visited.clear()
     this.entries.push({ kind: 'note', text: `Continued in “${this.story.flow.name}”` })
@@ -176,6 +207,29 @@ export class PlaySession {
       } else this.choose(0)
     }
     this.world.decide = undefined
+  }
+
+  /**
+   * Play on along the story test route given to the constructor: each real
+   * choice takes the route's next step, as the test runner does. Stops where
+   * the route runs out or no longer matches, so the designer sees where it went wrong.
+   */
+  followRoute(): void {
+    const route = this.testRoute
+    if (!route) return
+    for (let guard = 0; guard < 1000 && !this.ended; guard++) {
+      const choices = choicesOf(this.beat)
+      if (choices.length > 1) {
+        const step = route[this.routeIndex]
+        const choice = step && 'choose' in step ? choices.find((c) => c.node === step.choose) : undefined
+        if (!choice) {
+          if (step) this.entries.push({ kind: 'note', text: 'The test’s next recorded choice isn’t offered here: this is where it fails.' })
+          break
+        }
+        this.routeIndex++
+        this.choose(choice.index)
+      } else this.choose(0)
+    }
   }
 
   /** Move the world's time and rule log into the transcript. */

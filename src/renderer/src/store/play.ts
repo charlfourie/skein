@@ -12,7 +12,7 @@ import type { PlaySession } from '../lib/playSession'
 interface PlayState {
   open: boolean
   flowId: string | null
-  tab: 'play' | 'explore' | 'start'
+  tab: 'play' | 'explore' | 'start' | 'tests'
   current: string | null
   visited: ReadonlySet<string>
   /** Starting values to test with, by state key ("var:World.Storm"). Kept per project session. */
@@ -21,6 +21,8 @@ interface PlayState {
   startPhase: string | null
   /** Seed for chance() and roll() (null: the runtime's default seed). */
   seed: number | null
+  /** The saved scenario last loaded into the Start state tab (it may have been edited since). */
+  scenarioId: string | null
   /** Explore tab: variables to vary ("both", "all", or a list of numbers like "0, 3, 5"), and the path cap. */
   vary: Record<StateKey, string>
   maxPaths: number
@@ -60,6 +62,7 @@ const PER_PROJECT = {
   startDay: null,
   startPhase: null,
   seed: null,
+  scenarioId: null,
   vary: {},
   session: null
 } as const satisfies Partial<PlayState>
@@ -74,6 +77,7 @@ export const usePlay = create<PlayState>((set) => ({
   startDay: null,
   startPhase: null,
   seed: null,
+  scenarioId: null,
   vary: {},
   maxPaths: 20000,
   follow: true,
@@ -97,7 +101,7 @@ export const usePlay = create<PlayState>((set) => ({
   setStartTime: (startDay, startPhase) => set({ startDay, startPhase }),
   setSeed: (seed) => set({ seed }),
   reset: () => set((s) => ({ ...PER_PROJECT, version: s.version + 1 })),
-  resetStart: () => set({ overrides: {}, startDay: null, startPhase: null, seed: null }),
+  resetStart: () => set({ overrides: {}, startDay: null, startPhase: null, seed: null, scenarioId: null }),
   setVary: (key, spec) =>
     set((s) => {
       const vary = { ...s.vary }

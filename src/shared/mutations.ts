@@ -166,6 +166,7 @@ export function deleteFolderTree(project: Project, rootId: string): Set<string> 
       delete project.flows[flow.id]
     }
   }
+  deleteTestsOfFlows(project, removed)
   const templateIds = Object.values(project.templates).filter(inside).map((t) => t.id)
   const entityIds = [
     ...Object.values(project.entities).filter(inside).map((e) => e.id),
@@ -176,6 +177,18 @@ export function deleteFolderTree(project: Project, rootId: string): Set<string> 
   deleteTemplates(project, templateIds)
   for (const id of folders) delete project.folders[id]
   return removed
+}
+
+/** Story tests of flows that are being deleted go with them (a test can't outlive its flow). */
+export function deleteTestsOfFlows(project: Project, flowIds: ReadonlySet<string>): number {
+  let n = 0
+  for (const t of Object.values(project.tests ?? {})) {
+    if (!flowIds.has(t.flowId)) continue
+    delete project.tests![t.id]
+    n++
+  }
+  if (project.tests && Object.keys(project.tests).length === 0) delete project.tests
+  return n
 }
 
 /** Remove a property and every entity value set for it. */

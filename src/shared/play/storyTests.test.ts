@@ -7,25 +7,32 @@ import type { Project, StoryTest } from '../schema'
 import { serializeCanonical } from '../serialize'
 import { runStoryTests } from './storyTests'
 
-// The Coffee Order demo: 5 coins, a menu hub, a tip jar.
-const FLOW = 'd9d2e655-47c2-4956-ad41-628ddbfea87f'
-const N = {
-  hub: '2ed654c4-864f-419d-a1c0-3e5be1934dc0',
-  flatWhite: 'e0c9c4a9-e659-49b1-9346-1279f085ea5e',
-  biscuit: '586e3664-7b7d-463e-8776-babc20e4ba7e',
-  everything: '82c2730b-874a-4e13-ad8f-7c9dfac78786',
-  tipJar: '4ac636ae-ec69-4c8a-998e-d6da58894e82',
-  dropCoin: '30986c8d-66ae-4682-bcc8-c2ebb3475cde',
-  notToday: '769dd27f-b33d-4d1f-b562-c3a1f41c66b3',
-  enjoy: 'bedb8ffd-0ecf-48bb-9ab6-ea1f7aa75961',
-  star: '04d941b7-d481-4549-a8c2-f50530deec15',
-  pocketsEmpty: '1d226b86-d5b7-49c1-b876-9fa7d5c9862b'
-}
-
+// The Coffee Order demo: 5 coins, a menu hub, a tip jar. Nodes are found by their text.
 function coffee(): Project {
   const r = parseProject(readFileSync('src/renderer/src/demos/coffee-order.skein.json', 'utf8'))
   if (!r.ok) throw new Error(r.error)
-  return r.project
+  // Start without the demo's own tests: each test below brings its own.
+  return produce(r.project, (d) => {
+    delete d.tests
+    delete d.scenarios
+  })
+}
+const demo = coffee()
+const FLOW = Object.values(demo.flows)[0].id
+const byText = (start: string) => {
+  const n = Object.values(demo.flows[FLOW].nodes).find((x) => [x.data.menuText, x.data.text, x.data.label].some((t) => typeof t === 'string' && t.startsWith(start)))
+  if (!n) throw new Error(`no node “${start}”`)
+  return n.id
+}
+const N = {
+  hub: byText('The menu'),
+  flatWhite: byText('A flat white'),
+  biscuit: byText('A ginger biscuit'),
+  everything: byText("That's everything"),
+  notToday: byText('Not today'),
+  enjoy: byText('Enjoy!'),
+  star: byText("You're a star"),
+  pocketsEmpty: byText('Pockets empty')
 }
 
 const play = (over: Partial<StoryTest> = {}): StoryTest => ({
@@ -90,7 +97,7 @@ describe('story tests: play', () => {
     })
     const [r] = runStoryTests(p)
     expect(r.status).toBe('fail')
-    expect(r.failures[0].message).toMatch(/^At the hub “The menu”, the choice the test picked \(a node that was deleted\) was deleted\. Offered now: /)
+    expect(r.failures[0].message).toMatch(/^At the hub “The menu”, the choice the test picked was deleted\. Offered now: /)
     expect(r.failures[0].nodeId).toBe(N.hub)
   })
 

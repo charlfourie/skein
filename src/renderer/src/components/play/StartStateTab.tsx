@@ -1,19 +1,27 @@
-import { Dices, RotateCcw } from 'lucide-react'
-import { useMemo } from 'react'
+import { Bookmark, Dices, RotateCcw, Save, Trash2 } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import type { ExportResult } from '@shared/export/build'
 import { DEFAULT_SEED } from '@shared/export/runtime'
-import type { ExportDef, ExportFile, ExportValue } from '@shared/export/types'
+import type { ExportDef, ExportValue } from '@shared/export/types'
+import { sortedScenarios } from '@shared/play/storyTests'
+import type { Project } from '@shared/schema'
 import { usePlay } from '../../store/play'
+import { addScenario, removeScenario, updateScenario } from '../../store/ops'
 import { formatValue } from '../../lib/playSession'
+import { currentAsScenario, keyToExpr, loadScenario, startMatches } from '../../lib/scenarios'
+import { toast } from '../../lib/toast'
+import { Button } from '../ui/Button'
 import { IconButton } from '../ui/IconButton'
 import { NumberInput, Select, TextInput, Toggle } from '../ui/fields'
-import { usesRandom } from './startState'
+import { currentStart, usesRandom } from './startState'
 
 /**
  * The state a test play-through (and the explorer) starts from: the time, and
  * any world variable set to something other than its default. Kept for this
  * session only; it never changes the project.
  */
-export function StartStateTab({ file }: { file: ExportFile }) {
+export function StartStateTab({ project, build }: { project: Project; build: ExportResult }) {
+  const file = build.file
   const overrides = usePlay((s) => s.overrides)
   const startDay = usePlay((s) => s.startDay)
   const startPhase = usePlay((s) => s.startPhase)
@@ -28,12 +36,14 @@ export function StartStateTab({ file }: { file: ExportFile }) {
     groups.set(ns, [...(groups.get(ns) ?? []), [name, def]])
   }
   const changed = Object.keys(overrides).length + (startDay !== null ? 1 : 0) + (startPhase !== null ? 1 : 0) + (seed !== null ? 1 : 0)
+  // Values a scenario's setup sets that this tab has no field for (entity state, relationships).
+  const others = Object.entries(overrides).filter(([k]) => !k.startsWith('var:'))
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-start justify-between gap-3">
         <p className="text-xs leading-relaxed text-muted">
-          Test from any situation without touching the project. Play and Explore both start from here.
+          Test from any situation without touching the story. Play, Explore and new tests all start from here.
         </p>
         {changed > 0 && (
           <button type="button" onClick={resetStart} className="shrink-0 text-2xs text-accent hover:underline">
@@ -41,6 +51,8 @@ export function StartStateTab({ file }: { file: ExportFile }) {
           </button>
         )}
       </div>
+
+      <ScenarioBar project={project} build={build} changed={changed} />
 
       <section className="rounded-lg border border-line bg-bg/40 p-2.5">
         <h3 className="mb-2 text-2xs font-semibold uppercase tracking-wider text-faint">Time</h3>
@@ -106,7 +118,119 @@ export function StartStateTab({ file }: { file: ExportFile }) {
         </section>
       ))}
       {vars.length === 0 && <p className="text-xs text-faint">This project has no world variables yet.</p>}
+      {others.length > 0 && (
+        <section className="rounded-lg border border-line bg-bg/40 p-2.5">
+          <h3 className="mb-1.5 text-2xs font-semibold uppercase tracking-wider text-faint">Also set by the scenario</h3>
+          {others.map(([k, v]) => (
+            <p key={k} className="font-mono text-2xs text-accent">
+              {keyToExpr(k) ?? k} = {formatValue(v)}
+            </p>
+          ))}
+        </section>
+      )}
     </div>
+  )
+}
+
+/**
+ * Saved scenarios: named starting states the whole team shares (they're kept
+ * in the project file). Load one to test from it; save the current settings
+ * as a new one, or update the one you loaded.
+ */
+function ScenarioBar({ project, build, changed }: { project: Project; build: ExportResult; changed: number }) {
+  const scenarioId = usePlay((s) => s.scenarioId)
+  const [naming, setNaming] = useState(false)
+  usePlay((s) => s.seed) // the rest of the start re-renders this through the tab above
+  const scenarios = sortedScenarios(project)
+  const active = scenarioId ? project.scenarios?.[scenarioId] : undefined
+  const play = usePlay.getState()
+  const edited = active ? !startMatches(project, build, active, currentStart()) || (active.seed ?? null) !== play.seed : false
+  const usedBy = active ? Object.values(project.tests ?? {}).filter((t) => t.scenarioId === active.id).length : 0
+
+  const load = (id: string | null) => {
+    const problem = loadScenario(project, build, id)
+    if (problem) toast.warn("Couldn't load the scenario", problem)
+  }
+  const fields = () => {
+    const f = currentAsScenario(project, build.file)
+    if (f.skipped.length) toast.info('Some values were left out', `Empty references can't be saved in a scenario yet: ${f.skipped.join(', ')}.`)
+    return f
+  }
+  const saveNew = (name: string) => {
+    setNaming(false)
+    if (!name) return
+    const { skipped: _skipped, ...f } = fields()
+    const id = addScenario({ ...f, name })
+    if (id) usePlay.setState({ scenarioId: id })
+  }
+  const update = () => {
+    if (!active) return
+    const { skipped: _skipped, ...f } = fields()
+    updateScenario(active.id, { setup: f.setup, day: f.day ?? null, phaseId: f.phaseId ?? null, seed: f.seed ?? null })
+  }
+  const remove = async () => {
+    if (!active) return
+    if (
+      usedBy > 0 &&
+      !(await window.api.confirm({
+        message: `Delete the scenario “${active.name}”?`,
+        detail: `${usedBy} story test${usedBy === 1 ? ' starts' : 's start'} from it and will need a new start.\nYou can undo this with Ctrl+Z.`,
+        confirmLabel: 'Delete',
+        danger: true
+      }))
+    )
+      return
+    removeScenario(active.id)
+    usePlay.setState({ scenarioId: null })
+  }
+
+  return (
+    <section className="rounded-lg border border-line bg-bg/40 p-2.5">
+      <h3 className="mb-2 flex items-center gap-1.5 text-2xs font-semibold uppercase tracking-wider text-faint">
+        <Bookmark size={11} /> Scenario
+      </h3>
+      <div className="flex items-center gap-1.5">
+        <div className="min-w-0 flex-1">
+          <Select
+            value={active ? active.id : null}
+            placeholder={changed > 0 && !active ? 'Unsaved start' : 'The project’s own start'}
+            options={scenarios.map((sc) => ({ value: sc.id, label: sc.name || '(unnamed)' }))}
+            onChange={load}
+          />
+        </div>
+        {active && <IconButton size="sm" icon={Trash2} tone="danger" label={`Delete the scenario “${active.name}”`} onClick={remove} />}
+      </div>
+      {active && (
+        <div className="mt-1.5">
+          <TextInput value={active.name} required placeholder="Scenario name" onCommit={(name) => updateScenario(active.id, { name })} />
+        </div>
+      )}
+      {naming ? (
+        <div className="mt-1.5">
+          <TextInput value="" autoFocus placeholder="Name it, e.g. Day 4, storm, 1 coin" onCommit={saveNew} />
+        </div>
+      ) : (
+        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+          {active && edited && (
+            <>
+              <span className="text-2xs text-warn">Edited since you loaded it.</span>
+              <Button icon={Save} onClick={update}>
+                Update “{active.name}”
+              </Button>
+            </>
+          )}
+          {(changed > 0 && (!active || edited)) && (
+            <Button icon={Bookmark} variant={active ? 'ghost' : 'subtle'} onClick={() => setNaming(true)}>
+              Save as a new scenario
+            </Button>
+          )}
+          {active && usedBy > 0 && !edited && <span className="text-2xs text-faint">Used by {usedBy} test{usedBy === 1 ? '' : 's'}.</span>}
+          {!active && changed === 0 && scenarios.length === 0 && (
+            <span className="text-2xs leading-relaxed text-faint">Change the values below, then save them as a scenario the team can reuse.</span>
+          )}
+        </div>
+      )}
+    </section>
   )
 }
 

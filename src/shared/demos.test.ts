@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { buildExport } from './export/build'
 import { SkeinStory, SkeinWorld } from './export/runtime'
 import { parseProject } from './parse'
+import { runStoryTests } from './play/storyTests'
 
 const load = (name: string) => {
   const parsed = parseProject(readFileSync(`src/renderer/src/demos/${name}.skein.json`, 'utf8'))
@@ -12,6 +13,16 @@ const load = (name: string) => {
 }
 
 describe('bundled demos', () => {
+  for (const name of ['coffee-order', 'museum-heist']) {
+    it(`${name} ships with story tests, and they pass`, () => {
+      const parsed = parseProject(readFileSync(`src/renderer/src/demos/${name}.skein.json`, 'utf8'))
+      if (!parsed.ok) throw new Error(parsed.error)
+      const results = runStoryTests(parsed.project)
+      expect(results.length).toBeGreaterThan(1)
+      expect(results.filter((r) => r.status !== 'pass').map((r) => [r.name, r.failures])).toEqual([])
+    })
+  }
+
   for (const name of ['coffee-order', 'museum-heist']) {
     it(`${name} exports without problems and shows coins in Play`, () => {
       const { file, problems } = load(name)

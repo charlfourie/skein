@@ -27,7 +27,9 @@ export async function confirmAndDelete(project: Project, kind: TreeKind, id: str
     const flow = project.flows[id]
     if (!flow) return
     const nodes = Object.keys(flow.nodes).length
-    if (nodes === 0 || (await ask(`Delete the flow “${flow.name}”?`, `It contains ${plural(nodes, 'node')}.`))) deleteItem('flow', id)
+    const tests = Object.values(project.tests ?? {}).filter((t) => t.flowId === id).length
+    const contents = [nodes && plural(nodes, 'node'), tests && plural(tests, 'story test')].filter(Boolean).join(' and ')
+    if (!contents || (await ask(`Delete the flow “${flow.name}”?`, `It contains ${contents}.`))) deleteItem('flow', id)
     return
   }
 
