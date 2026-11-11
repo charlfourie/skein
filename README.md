@@ -49,30 +49,30 @@ It's built for:
 | 🎙️ **Ready for voice and translation** | Every line has a stable line ID, and lines can show live values: `You've got {Player.Coins} left.` |
 | 💬 **Made for teams** | Comment threads on any node, and one file per flow, so people working on different scenes never collide in git. |
 | 🔒 **Yours, on your disk** | No accounts, no server. Files are written atomically, repaired after messy merges, and watched for `git pull` changes. |
-| 🌐 **Desktop or browser** | An Electron desktop app, or the same editor [in your browser](https://skein-mocha.vercel.app). |
+| 🌐 **Runs in your browser** | Nothing to install. [Open it](https://skein-mocha.vercel.app) and work on files on your own disk. Chrome, Edge and Arc open and save project folders; Firefox and Safari use single files. |
 
 ## 🚀 Quick start
 
-### Fastest: in your browser
-
 Open **[skein-mocha.vercel.app](https://skein-mocha.vercel.app)** and pick a demo under
-**Try a demo**. Nothing to install. Chrome, Edge, Brave and Arc read and save files in
-place; Firefox and Safari open by upload and save by download. See [docs/WEB.md](docs/WEB.md).
-The hosted version counts anonymous visits (no cookies, nothing from your projects);
-the desktop app sends nothing.
+**Try a demo**, or **New project** to start your own. Nothing to install, and no account.
 
-### Desktop app
+Skein reads and writes files on your own computer: nothing you write is uploaded. Chrome,
+Edge, Brave and Arc open and save project folders in place; Firefox and Safari open a
+single file by upload and save it by download. See [docs/WEB.md](docs/WEB.md). The hosted
+version counts anonymous visits (no cookies, nothing from your projects).
 
+### Run your own copy
+
+Skein is a static web page, so you can run it yourself, offline or on your own server.
 Requires [Node.js](https://nodejs.org) 20 or newer.
 
 ```bash
 git clone https://github.com/charlfourie/skein.git
 cd skein
 npm install
-npm run dev
+npm run dev        # http://localhost:5173, with hot reload
+npm run build      # a static site in dist/, for any web server
 ```
-
-The app opens on the Welcome screen. Pick a demo, or **New project** to start your own.
 
 ## 🎬 A five-minute tour
 
@@ -178,15 +178,17 @@ runtimes, and the tools to play and test a story. The next ones make it somethin
 | ✅ | **7 · Play and analysis:** Play, Explore, start states and replays, plus saved scenarios and story tests that re-check after every edit | Done |
 | 🟡 | **8 · Format foundations:** one file per flow, line IDs, variables inside lines, comments on nodes, a versioning policy, a published JSON Schema and a shared conformance kit for every runtime | In review |
 | ⬜ | **9 · Unity, production-ready:** an installable Unity package, an importer that checks exports, configurable components and a sample scene | Planned |
-| ⬜ | **10 · Shipping the editor:** desktop installers and releases, so writers don't need Node | Planned |
-| ⬜ | **11 · Localisation and voice-over:** translator export and import, recording scripts, Unity Localization support | Planned |
-| ⬜ | **12 · Godot:** a native GDScript runtime and add-on | Planned |
-| ⬜ | **13 · Extensibility:** event nodes and custom node types that every runtime hands to the game, and plugins | Planned |
-| ⬜ | **14 · Unreal, interchange and adoption:** a C++ runtime and Unreal plugin, import from ink, Yarn Spinner and Twine, a CLI and a docs site | Planned |
+| ⬜ | **10 · Localisation and voice-over:** translator export and import, recording scripts, Unity Localization support | Planned |
+| ⬜ | **11 · Godot:** a native GDScript runtime and add-on | Planned |
+| ⬜ | **12 · Extensibility:** event nodes and custom node types that every runtime hands to the game, and plugins | Planned |
+| ⬜ | **13 · Unreal, interchange and adoption:** a C++ runtime and Unreal plugin, import from ink, Yarn Spinner and Twine, a CLI and a docs site | Planned |
 
-Through every phase Skein stays **local-first** (it always works offline, with files you
-own), keeps **deterministic files** that diff cleanly, and has **one source of truth** for
-story logic that every runtime is tested against.
+Through every phase Skein stays **local-first** (your projects are files on your own
+disk, and you can run Skein yourself), keeps **deterministic files** that diff cleanly,
+and has **one source of truth** for story logic that every runtime is tested against.
+
+**One editor, in the browser.** Skein is a web app only: there's no desktop app, and none
+is planned.
 
 **No cloud, ever.** Skein has no accounts, no sign-in and no server. Teams share projects
 however they like (git, a shared drive, email), and nothing on the roadmap changes that.
@@ -204,7 +206,7 @@ See what's changed recently in the [changelog](CHANGELOG.md).
 | [Architecture](docs/ARCHITECTURE.md) | Code layout, project folders and files, and why they merge cleanly |
 | [Versions](docs/VERSIONING.md) | Editor, project and export versions, and what each one promises |
 | [Conformance kit](runtimes/conformance/README.md) | How every runtime is checked, and how to port one |
-| [Web build](docs/WEB.md) | Running Skein in a browser and deploying it |
+| [In the browser](docs/WEB.md) | Which browsers do what, shortcuts, running and deploying your own copy |
 
 ## 🤝 Contributing
 
@@ -224,7 +226,7 @@ Found a bug or have an idea? [Open an issue](https://github.com/charlfourie/skei
 Skein is created and maintained by [Charl Fourie](https://github.com/charlfourie), with
 help from Claude. It stands on the shoulders of
 [React Flow](https://reactflow.dev), [dagre](https://github.com/dagrejs/dagre),
-[Electron](https://www.electronjs.org), [Zod](https://zod.dev),
+[Vite](https://vite.dev), [Zod](https://zod.dev),
 [Zustand](https://github.com/pmndrs/zustand), [Immer](https://immerjs.github.io/immer/)
 and [Lucide](https://lucide.dev), and takes its cue from
 [articy:draft](https://www.articy.com).

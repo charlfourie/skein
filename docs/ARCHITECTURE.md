@@ -7,7 +7,7 @@ For using the editor, see the [user guide](GUIDE.md).
 
 ```
 src/
-  shared/        Pure TypeScript used by every process — no Electron, no DOM
+  shared/        Pure TypeScript: no DOM, no Node, so it runs in the browser, in Node tools and in tests
     schema.ts      File format (zod): the single source of truth for the JSON shape
     serialize.ts   Canonical, deterministic JSON writer
     parse.ts       Load pipeline: conflict-marker check → JSON → migrate → validate → repair
@@ -30,16 +30,13 @@ src/
     play/storyTests.ts Story tests: scenarios, recorded routes, every-path checks
     export/            Game export: format types, builder, reference runtime
     factory.ts     Constructors for new projects, flows and folders
-    ipc.ts         IPC channel names and the typed `window.api` contract
-  main/          Electron main process — the only code that touches the disk
-    index.ts       Window, native dialogs, IPC handlers, unsaved-changes guard on close
+    bridge.ts      The typed `window.api` contract: picking, reading and writing files
+  node/          File access for the command-line tools (export, test:story)
     storage.ts     Atomic writes (temp file + fsync + rename, with Windows lock retries)
-    projectStorage.ts  Reading and writing project folders
-    watcher.ts     Detects edits to the open project made outside Skein (git pull, etc.)
-    recent.ts      Recent-projects list (stored in the user-data folder, not the project)
-    menu.ts        Native menu and shortcuts
-  preload/       Narrow, typed bridge exposed as `window.api` (context-isolated, sandboxed)
-  renderer/      React UI
+    projectStorage.ts  Reading and writing project folders on disk
+  renderer/      The editor (React)
+    web/browserApi.ts       The bridge in the browser: File System Access, uploads and downloads, Recent, shortcuts
+    web/main.tsx            Entry point: installs the bridge, then starts the editor
     store/projectStore.ts   Zustand store: immutable project snapshots, undo/redo history, UI state
     store/ops.ts            Every edit to the document, each one undoable step
     store/flowOps.ts        Canvas edits: add/move/connect/delete nodes, auto-layout
@@ -50,16 +47,18 @@ src/
     components/             Shell, NavTree, Workspace (React Flow), Inspector, Welcome
 ```
 
-**Data flow.** The renderer holds the project in a Zustand store. On save it sends
-the project object to the main process, which serializes it canonically and writes
-it atomically. On open, the main process reads the text and the renderer runs it
-through `parseProject`. Serialization lives in exactly one place, so every save is
-canonical no matter how the in-memory object was built.
+**Data flow.** The editor holds the project in a Zustand store. On save it hands the
+project object to the bridge, which splits it into files (or one file) with the
+canonical serializer and writes them. On open, the bridge reads the file or folder and
+the editor runs it through `parseProject` / `parseProjectFiles`. Serialization lives in
+exactly one place, so every save is canonical no matter how the in-memory object was
+built.
 
-**Security.** `contextIsolation`, `sandbox` and no `nodeIntegration`. The renderer
-can only read or write paths the user chose in a native dialog (or chose in an
-earlier session, via the recent list). The production build ships a strict CSP.
-Reload is disabled in production builds so Ctrl+R can't silently discard work.
+**Security and privacy.** Skein is a static web page: no server receives anything you
+write. It can only read or write files and folders you picked in the browser's own
+picker (or picked in an earlier visit, via Recent), and the browser asks before it
+writes. The build ships a strict Content-Security-Policy, and the page warns before the
+tab closes with unsaved changes.
 
 ## Project folders
 

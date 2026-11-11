@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { closeProject, newProject, openProject, openProjectFolder, saveProject, saveProjectAs } from '../lib/projectIO'
+import { closeProject, newProject, openProject, openProjectFile, saveProject, saveProjectAs } from '../lib/projectIO'
 import { selectDirty, useProjectStore } from '../store/projectStore'
 import { useUi } from '../store/ui'
 
@@ -22,7 +22,7 @@ function runHistoryCommand(command: 'undo' | 'redo'): void {
   else s.redo()
 }
 
-/** Wires native menu commands, external-change notices and window title/dirty state. */
+/** Wires keyboard commands, external-change notices and the tab's title and unsaved-changes guard. */
 export function useAppCommands(): void {
   useEffect(() => {
     const offMenu = window.api.onMenuCommand((command) => {
@@ -34,23 +34,17 @@ export function useAppCommands(): void {
         case 'open':
           void openProject()
           break
-        case 'open-folder':
-          void openProjectFolder()
+        case 'open-file':
+          void openProjectFile()
           break
         case 'save':
           if (hasProject) void saveProject()
           break
         case 'save-as':
-          if (hasProject) void saveProjectAs('folder')
-          break
-        case 'save-as-file':
-          if (hasProject) void saveProjectAs('file')
+          if (hasProject) void saveProjectAs()
           break
         case 'close-project':
           if (hasProject) void closeProject()
-          break
-        case 'save-and-close':
-          void saveProject().then((ok) => ok && window.api.forceClose())
           break
         case 'export':
           if (hasProject) useUi.getState().setExportOpen(true)

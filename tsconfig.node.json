@@ -17,11 +17,11 @@
     "outDir": "node_modules/.tmp/tsc-node"
   },
   "include": [
-    "electron.vite.config.ts",
+    "vite.web.config.ts",
     "vitest.config.ts",
     "scripts/**/*.ts",
-    "src/main/**/*.ts",
-    "src/preload/**/*.ts",
+    "runtimes/conformance/**/*.ts",
+    "src/node/**/*.ts",
     "src/shared/**/*.ts"
   ]
 }

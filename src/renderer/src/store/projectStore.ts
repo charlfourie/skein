@@ -1,6 +1,6 @@
 import { produce, type Draft } from 'immer'
 import { create } from 'zustand'
-import type { ExternalChange } from '@shared/ipc'
+import type { ExternalChange } from '@shared/bridge'
 import type { Project } from '@shared/schema'
 import { compareOrder } from '../lib/tree'
 import { usePlay } from './play'

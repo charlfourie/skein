@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Circle, CircleCheck, CircleDot } from 'lucide-react'
 import { sortedTests } from '@shared/play/storyTests'
 import { isFolderProjectPath } from '@shared/projectFiles'
-import { dirname } from '../../lib/platform'
+import { displayName } from '../../lib/projectIO'
 import { SCHEMA_VERSION, type Project } from '@shared/schema'
 import { SKEIN_VERSION } from '@shared/version'
 import { usePlay } from '../../store/play'
@@ -38,14 +38,10 @@ export function StatusBar() {
       </AnimatePresence>
 
       {filePath && (
-        <button
-          type="button"
-          onClick={() => window.api.showInFolder(filePath)}
-          title="Show in folder"
-          className="min-w-0 truncate font-mono text-faint transition-colors hover:text-fg"
-        >
-          {isFolderProjectPath(filePath) ? `${dirname(filePath)} (folder)` : filePath}
-        </button>
+        <span className="min-w-0 truncate font-mono text-faint" title={filePath}>
+          {displayName(filePath)}
+          {isFolderProjectPath(filePath) ? ' (folder)' : ''}
+        </span>
       )}
 
       <div className="flex-1" />

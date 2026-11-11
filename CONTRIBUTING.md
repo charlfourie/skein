@@ -7,8 +7,8 @@ Thanks for helping! Bug reports, demo ideas, docs fixes and code are all welcome
 [Open an issue](https://github.com/charlfourie/skein/issues) with:
 
 - what you did, what you expected, and what happened instead;
-- whether you were on the desktop app or [the web version](https://skein-mocha.vercel.app),
-  and which browser;
+- which browser you were using, and whether it was [the hosted version](https://skein-mocha.vercel.app)
+  or your own copy;
 - a small `.skein.json` that shows the problem, if you can share one.
 
 ## Setting up
@@ -19,8 +19,7 @@ Requires [Node.js](https://nodejs.org) 20 or newer.
 git clone https://github.com/charlfourie/skein.git
 cd skein
 npm install
-npm run dev                                   # desktop app with hot reload
-npx vite --config vite.web.config.ts          # or the web version
+npm run dev                                   # the editor at http://localhost:5173, with hot reload
 ```
 
 ## Branches

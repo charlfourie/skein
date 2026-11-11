@@ -5,7 +5,7 @@
  */
 import { existsSync, readFileSync, statSync } from 'fs'
 import { dirname, join } from 'path'
-import { readProjectFolder } from '../src/main/projectStorage'
+import { readProjectFolder } from '../src/node/projectStorage'
 import { parseProject, type ParseResult } from '../src/shared/parse'
 import { PROJECT_FILE, isFolderProjectPath, parseProjectFiles } from '../src/shared/projectFiles'
 import type { Project } from '../src/shared/schema'

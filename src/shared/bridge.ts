@@ -1,28 +1,8 @@
 import type { ProjectFiles } from './projectFiles'
 import type { Project } from './schema'
 
-/** IPC channel names shared by the main process, preload and renderer. */
-export const IPC = {
-  openDialog: 'project:open-dialog',
-  openFolderDialog: 'project:open-folder-dialog',
-  saveDialog: 'project:save-dialog',
-  read: 'project:read',
-  write: 'project:write',
-  externalChange: 'project:external-change',
-  recentList: 'recent:list',
-  recentTouch: 'recent:touch',
-  recentRemove: 'recent:remove',
-  confirmDiscard: 'dialog:confirm-discard',
-  confirm: 'dialog:confirm',
-  setDirty: 'window:set-dirty',
-  forceClose: 'window:force-close',
-  showInFolder: 'shell:show-in-folder',
-  exportDialog: 'export:save-dialog',
-  exportWrite: 'export:write',
-  menuCommand: 'menu:command'
-} as const
-
-export type MenuCommand = 'new' | 'open' | 'open-folder' | 'save' | 'save-as' | 'save-as-file' | 'close-project' | 'save-and-close' | 'undo' | 'redo' | 'export'
+/** Commands from keyboard shortcuts (the browser bridge listens for them). */
+export type MenuCommand = 'new' | 'open' | 'open-file' | 'save' | 'save-as' | 'close-project' | 'undo' | 'redo' | 'export'
 
 /** A single-file project comes back as `text`; a project folder (path ends in project.json) as `files`. */
 export type ReadResult = { ok: true; path: string; text: string } | { ok: true; path: string; files: ProjectFiles } | { ok: false; error: string }
@@ -50,9 +30,15 @@ export interface ConfirmOptions {
   danger?: boolean
 }
 
-/** The API exposed to the renderer as `window.api` by the preload script. */
+/**
+ * Everything the editor needs from outside itself: picking, reading and writing
+ * project files, confirmations, and shortcuts. The browser implementation is
+ * src/renderer/src/web/browserApi.ts; tests can supply their own.
+ */
 export interface SkeinApi {
   platform: string
+  /** The browser can open and save project folders (Chromium's File System Access). Elsewhere, projects are single files. */
+  supportsFolders: boolean
   /** Pick a project file (a .skein.json, or a project folder's project.json). */
   openProjectDialog(): Promise<string | null>
   /** Pick a project folder. Resolves its project.json path; throws with a message when the folder isn't a Skein project. */
@@ -66,9 +52,8 @@ export interface SkeinApi {
   removeRecent(path: string): Promise<void>
   confirmDiscard(projectName: string): Promise<DiscardChoice>
   confirm(options: ConfirmOptions): Promise<boolean>
+  /** Warn before the tab closes while there are unsaved changes. */
   setDirty(dirty: boolean, projectName: string | null): void
-  forceClose(): void
-  showInFolder(path: string): void
   /** Ask where to write a game export. Returns the chosen path, or null. */
   exportDialog(suggestedName: string): Promise<string | null>
   /** Write export text to a path chosen with exportDialog. */

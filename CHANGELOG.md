@@ -7,9 +7,8 @@ What's new in Skein, newest first. Dates are when the work landed on `main`.
 ### Added
 - **Project folders.** A project saves as `<Name>.skein/`, with `project.json` and one
   file per flow in `flows/` (each carrying its comments and story tests), so people
-  editing different flows never touch the same file. **Open Project Folder…** and
-  **Save As Single File…** are in the File menu. In the browser, Chrome, Edge and Arc
-  support folders; Firefox and Safari keep using single files.
+  editing different flows never touch the same file. Chrome, Edge and Arc open and save
+  folders; Firefox and Safari keep using single files.
 - **Line IDs** on every line (`ORDER_3f9a2c`, and `…_M` for choice text), for voice-over
   and translation. Stable through edits, moves and flow renames, and merge-safe. Shown
   with a copy button in the inspector; set a flow's prefix in its inspector.
@@ -28,8 +27,15 @@ What's new in Skein, newest first. Dates are when the work landed on `main`.
   run, now covering line IDs and variables in lines. CI runs it against the C# runtime.
 - The status bar shows the editor version (0.8.0) and project format.
 - `npm run export` and `npm run test:story` accept a project folder.
+- The status bar shows the open project's folder or file name.
 
 ### Changed
+- **Skein is a web app only.** The Electron desktop app is gone, and no desktop app is
+  planned: the editor runs in the browser, hosted or as your own copy (`npm run dev` /
+  `npm run build`). Your projects stay files on your own disk. In Chrome, Edge and Arc,
+  **Open** picks a project folder; **Open a file…** (Ctrl+Shift+O) opens a single
+  `.skein.json`. The roadmap's desktop-installer phase is dropped, and later phases move
+  up one.
 - **Project format v7.** Older projects open as before; saving a single-file project
   offers to convert it to a folder (the old file is kept).
 - The C# runtime reads export v4 and fills placeholders exactly like the reference.

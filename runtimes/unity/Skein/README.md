@@ -14,7 +14,7 @@ Skein/
 
 1. Edit the story in Skein: open `Story/Atlantic Frequency.skein.json` (at the
    Unity project root, outside `Assets/`).
-2. **File › Export for Game Engine… (Ctrl+E)** and save over
+2. **Export** (Ctrl+E) and save over
    `Assets/Story/AtlanticFrequency.game.json`.
 3. Back in Unity, the new story is picked up the next time you press Play.
 

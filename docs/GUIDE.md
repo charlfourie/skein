@@ -185,17 +185,19 @@ Atlantic Frequency.skein/
 ```
 
 People editing different flows never touch the same file, so merges stay simple.
-**File › Open Project Folder…** opens one (picking its `project.json` with **Open
-Project…** works too). **Save As** makes a new folder; **Save As Single File** writes one
-`.skein.json` instead. Older single-file projects open as before, and the first time
-you save one, Skein offers to convert it (the old file is left where it was).
 
-In the browser, Chrome, Edge and Arc read and write project folders. Firefox and Safari
-use single files.
+In Chrome, Edge, Brave and Arc, **Open** (Ctrl+O) picks a project folder and **Save As**
+(Ctrl+Shift+S) makes a new one. To open an older single `.skein.json` file, use **Open a
+file…** on the Welcome screen (or Ctrl+Shift+O); the first time you save it, Skein
+offers to convert it to a folder (the old file is left where it was). The browser asks
+once per visit before Skein may save into a folder.
+
+Firefox and Safari can't write folders, so there a project is a single `.skein.json`
+file: Open uploads it into the tab and Save downloads it.
 
 ## Export for game engines
 
-**Export for game engines:** **File › Export for Game Engine…** (Ctrl+E, or the package
+**Export for game engines:** press Ctrl+E (or the package
 icon in the top bar). It writes a clean JSON file:
 
 - no positions, colours, folders or notes;

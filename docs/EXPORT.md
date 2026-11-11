@@ -1,6 +1,6 @@
 # Skein game export — format `skein.export` v4
 
-**File › Export for Game Engine… (Ctrl+E)** writes a JSON file for your game. It has
+**Export** (Ctrl+E, or the package icon in the top bar) writes a JSON file for your game. It has
 everything the game needs and nothing the editor needs. There are no canvas positions,
 colours, icons, folders, ordering, descriptions or designer notes.
 

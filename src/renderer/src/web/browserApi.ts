@@ -7,18 +7,17 @@ import type {
   RecentProject,
   SkeinApi,
   WriteResult
-} from '@shared/ipc'
+} from '@shared/bridge'
 import { FLOWS_DIR, FOLDER_SUFFIX, PROJECT_FILE, isFolderProjectPath, planWrite, splitProject, type ProjectFiles } from '@shared/projectFiles'
 import { serializeProject } from '@shared/serialize'
 
 /**
- * Browser implementation of the desktop bridge (`window.api`).
+ * The editor's bridge to files and the keyboard (`window.api`), in the browser.
  *
- * The editor only ever talks to `SkeinApi`, so the web build swaps the Electron
- * preload for this file and nothing else changes. Projects stay local files:
+ * The editor only ever talks to `SkeinApi`. Projects stay local files:
  *
  *  - Chromium browsers (Chrome, Edge, Arc, Brave) use the File System Access API,
- *    so Open/Save read and write the real file on disk, like the desktop app,
+ *    so Open/Save read and write the real files on disk,
  *    and project folders (one file per flow) work too.
  *  - Other browsers (Firefox, Safari) fall back to a file picker for Open and a
  *    download for Save, so they use single-file projects.
@@ -167,7 +166,7 @@ async function writeText(key: string, text: string): Promise<WriteResult> {
 
 // ---- Project folders ----
 
-/** `<id>/<Name>.skein/project.json`: ends in project.json, like a desktop folder project's path. */
+/** `<id>/<Name>.skein/project.json`: ends in project.json, so the editor knows it is a folder project. */
 function folderKey(dir: FsDirHandle): string {
   return newKey(`${dir.name}/${PROJECT_FILE}`)
 }
@@ -321,7 +320,7 @@ setInterval(() => {
   )
 }, 2000)
 
-// ---- Menu shortcuts (the desktop app gets these from the native menu) ----
+// ---- Keyboard shortcuts for file commands ----
 
 const menuListeners = new Set<(command: MenuCommand) => void>()
 
@@ -341,7 +340,7 @@ window.addEventListener('keydown', (e) => {
   const key = e.key.toLowerCase()
   let command: MenuCommand | null = null
   if (key === 's') command = e.shiftKey ? 'save-as' : 'save'
-  else if (key === 'o' && !e.shiftKey) command = 'open'
+  else if (key === 'o') command = e.shiftKey ? 'open-file' : 'open'
   else if (key === 'e' && !e.shiftKey) command = 'export'
   else if (key === 'w' && e.shiftKey) command = 'close-project'
   // Ctrl+N opens a browser window in most browsers and can't be intercepted, so Alt+N is offered too (below).
@@ -380,6 +379,7 @@ function confirmText(options: ConfirmOptions): string {
 
 export const browserApi: SkeinApi = {
   platform: isMac ? 'darwin' : 'win32',
+  supportsFolders: hasFolders,
 
   async openProjectDialog() {
     if (hasFsAccess) {
@@ -577,14 +577,6 @@ export const browserApi: SkeinApi = {
 
   setDirty(isDirty) {
     dirty = isDirty
-  },
-
-  forceClose() {
-    dirty = false
-  },
-
-  showInFolder() {
-    // Browsers can't reveal files in the OS file manager.
   },
 
   async exportDialog(suggestedName) {

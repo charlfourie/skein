@@ -1,5 +1,5 @@
 import { createEmptyProject } from '@shared/factory'
-import type { ProjectLayout } from '@shared/ipc'
+import type { ProjectLayout } from '@shared/bridge'
 import { parseProject } from '@shared/parse'
 import { isFolderProjectPath, parseProjectFiles } from '@shared/projectFiles'
 import type { Demo } from '../demos'
@@ -16,9 +16,9 @@ export function displayName(path: string): string {
 const keptAsFile = new Set<string>()
 
 /**
- * High-level file operations. The renderer never touches the disk: it asks the
- * main process (via the preload bridge) to show dialogs and read/write files,
- * and the main process does the canonical serialization and atomic write.
+ * High-level file operations. The editor never touches files directly: it asks
+ * the bridge (`window.api`, the browser's file pickers) to choose, read and
+ * write them, and every save goes through the canonical serializer.
  */
 
 const store = () => useProjectStore.getState()
@@ -49,21 +49,26 @@ export async function newProject(): Promise<void> {
   store().loadProject(createEmptyProject('Untitled Project'), null)
 }
 
+/** Open a project: a known path (Recent), or pick one — a folder where the browser supports it, else a file. */
 export async function openProject(path?: string): Promise<boolean> {
   if (!(await guardUnsaved())) return false
-  const target = path ?? (await window.api.openProjectDialog())
-  if (!target) return false
-  return loadFrom(target)
+  if (path) return loadFrom(path)
+  if (!window.api.supportsFolders) return pickAndLoad(() => window.api.openProjectDialog())
+  return pickAndLoad(() => window.api.openProjectFolderDialog())
 }
 
-/** Open a project folder (one file per flow). */
-export async function openProjectFolder(): Promise<boolean> {
+/** Open a single .skein.json file (older projects, or one someone sent you). */
+export async function openProjectFile(): Promise<boolean> {
   if (!(await guardUnsaved())) return false
+  return pickAndLoad(() => window.api.openProjectDialog())
+}
+
+async function pickAndLoad(pick: () => Promise<string | null>): Promise<boolean> {
   let target: string | null
   try {
-    target = await window.api.openProjectFolderDialog()
+    target = await pick()
   } catch (err) {
-    toast.error("Couldn't open that folder", err instanceof Error ? err.message : String(err))
+    toast.error("Couldn't open that", err instanceof Error ? err.message : String(err))
     return false
   }
   return target ? loadFrom(target) : false
@@ -121,8 +126,8 @@ export async function saveProject(): Promise<boolean> {
   const { project, filePath } = store()
   if (!project) return false
   if (!filePath) return saveProjectAs()
-  // A single-file project: offer the folder layout once per session.
-  if (!isFolderProjectPath(filePath) && !keptAsFile.has(filePath)) {
+  // A single-file project: offer the folder layout once per session, where the browser can write folders.
+  if (window.api.supportsFolders && !isFolderProjectPath(filePath) && !keptAsFile.has(filePath)) {
     keptAsFile.add(filePath)
     const convert = await window.api.confirm({
       message: 'Save this project as a folder instead?',
@@ -136,8 +141,8 @@ export async function saveProject(): Promise<boolean> {
   return writeTo(filePath)
 }
 
-/** Save under a new name: as a project folder (the default) or a single file. */
-export async function saveProjectAs(layout: ProjectLayout = 'folder'): Promise<boolean> {
+/** Save under a new name: as a project folder where the browser supports it, else a single file. */
+export async function saveProjectAs(layout: ProjectLayout = window.api.supportsFolders ? 'folder' : 'file'): Promise<boolean> {
   const { project } = store()
   if (!project) return false
   const name = layout === 'folder' ? suggestedProjectName(project.meta.name) : suggestedFileName(project.meta.name)
