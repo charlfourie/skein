@@ -70,6 +70,8 @@ interface ProjectActions {
    * (no history entry, no dirty flag).
    */
   edit(label: string, recipe: (draft: Draft<Project>) => void): boolean
+  /** Swap in a whole project as one undoable step (restoring recovered work over the saved files). */
+  replaceProject(label: string, next: Project): void
   undo(): void
   redo(): void
   select(selection: Selection): void
@@ -166,6 +168,20 @@ export const useProjectStore = create<ProjectStore>()((set, get) => ({
     const entry: HistoryEntry = { project: s.project, label, selection: s.selection, activeDoc: s.activeDoc }
     set({ project: next, past: [...s.past, entry].slice(-HISTORY_LIMIT), future: [] })
     return true
+  },
+
+  replaceProject: (label, next) => {
+    const s = get()
+    if (!s.project) return
+    const frozen = produce(next, () => undefined)
+    const entry: HistoryEntry = { project: s.project, label, selection: s.selection, activeDoc: s.activeDoc }
+    set({
+      project: frozen,
+      past: [...s.past, entry].slice(-HISTORY_LIMIT),
+      future: [],
+      renamingId: null,
+      ...sanitizeView(frozen, s.selection, s.activeDoc)
+    })
   },
 
   undo: () => {

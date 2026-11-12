@@ -1,18 +1,22 @@
 import { motion } from 'framer-motion'
-import { Coffee, FilePlus2, FileWarning, FolderOpen, Gem, X } from 'lucide-react'
+import { Coffee, FilePlus2, FileWarning, FolderOpen, Gem, LifeBuoy, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { RecentProject } from '@shared/bridge'
 import { DEMOS, type Demo } from '../demos'
-import { newProject, openDemo, openProject, openProjectFile } from '../lib/projectIO'
+import { displayName, newProject, openDemo, openProject, openProjectFile, recoveredWhen, restoreRecovery } from '../lib/projectIO'
+import { discardRecovery, listRecovery, type RecoveryRecord } from '../lib/recovery'
 import { dirname, shortcut } from '../lib/platform'
+import { Button } from './ui/Button'
 import { Logo } from './ui/Logo'
 
 export function Welcome() {
   const [recent, setRecent] = useState<RecentProject[] | null>(null)
+  const [recovered, setRecovered] = useState<RecoveryRecord[]>([])
 
   useEffect(() => {
     let live = true
     void window.api.listRecent().then((list) => live && setRecent(list))
+    void listRecovery().then((list) => live && setRecovered(list))
     return () => {
       live = false
     }
@@ -48,6 +52,24 @@ export function Welcome() {
             <p className="text-xs text-muted">Narrative design, stored as plain files you own.</p>
           </div>
         </div>
+
+        {recovered.length > 0 && (
+          <RecoveryList
+            records={recovered}
+            onDiscard={async (id) => {
+              const name = recovered.find((r) => r.projectId === id)?.name ?? 'this project'
+              const sure = await window.api.confirm({
+                message: `Discard the unsaved changes to “${name}”?`,
+                detail: 'The copy Skein kept is deleted. Your saved project files are not touched.',
+                confirmLabel: 'Discard',
+                danger: true
+              })
+              if (!sure) return
+              await discardRecovery(id)
+              setRecovered((list) => list.filter((r) => r.projectId !== id))
+            }}
+          />
+        )}
 
         <div className="mt-8 grid grid-cols-2 gap-3">
           <ActionCard
@@ -128,12 +150,45 @@ export function Welcome() {
         </section>
 
         <p className="mt-8 text-xs leading-relaxed text-faint">
-          No accounts, no cloud. A project is a single <code className="font-mono text-muted">.skein.json</code> file.
-          Share it through git, a shared drive or email. Skein writes it deterministically (sorted keys, stable ids), so
-          teammates&apos; changes merge as small, readable diffs.
+          No accounts, no cloud. A project is a folder of plain JSON files, one per flow, on your own computer. Share it
+          through git or a shared drive. Skein writes it deterministically (sorted keys, stable ids), so teammates&apos;
+          changes merge as small, readable diffs.
         </p>
       </motion.main>
     </div>
+  )
+}
+
+/** Unsaved changes Skein kept a copy of (the tab closed, or the browser crashed). */
+function RecoveryList({ records, onDiscard }: { records: RecoveryRecord[]; onDiscard(id: string): void }) {
+  return (
+    <section className="mt-8 rounded-xl border border-warn/40 bg-warn/5 p-3" aria-label="Unsaved changes">
+      <h2 className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-fg">
+        <LifeBuoy size={14} className="text-warn" />
+        Unsaved changes
+      </h2>
+      <p className="mb-2 text-2xs text-muted">
+        Skein kept a copy of changes that weren&apos;t saved. Restore puts them back so you can save them.
+      </p>
+      <ul className="flex flex-col gap-1.5">
+        {records.map((r) => (
+          <li key={r.projectId} className="flex items-center gap-3 rounded-lg bg-panel/80 px-3 py-2">
+            <span className="flex min-w-0 flex-1 flex-col">
+              <span className="truncate font-medium text-fg">{r.name}</span>
+              <span className="truncate text-2xs text-faint">
+                {recoveredWhen(r.savedAt)} · {r.path ? displayName(r.path) : 'never saved'}
+              </span>
+            </span>
+            <Button variant="ghost" onClick={() => onDiscard(r.projectId)} aria-label={`Discard unsaved changes to ${r.name}`}>
+              Discard
+            </Button>
+            <Button variant="primary" onClick={() => void restoreRecovery(r)} aria-label={`Restore unsaved changes to ${r.name}`}>
+              Restore
+            </Button>
+          </li>
+        ))}
+      </ul>
+    </section>
   )
 }
 

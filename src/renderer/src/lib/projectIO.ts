@@ -5,6 +5,7 @@ import { isFolderProjectPath, parseProjectFiles } from '@shared/projectFiles'
 import type { Demo } from '../demos'
 import { selectDirty, useProjectStore } from '../store/projectStore'
 import { basename, dirname, suggestedFileName, suggestedProjectName } from './platform'
+import { discardRecovery, findRecovery, holdRecovery, readRecovered, type RecoveryRecord } from './recovery'
 import { toast } from './toast'
 
 /** How a project path reads in messages: a folder by its folder name, a file by its file name. */
@@ -95,8 +96,8 @@ export async function reloadFromDisk(): Promise<boolean> {
   return path ? loadFrom(path) : false
 }
 
-async function loadFrom(path: string): Promise<boolean> {
-  return exclusive(false, async () => {
+async function loadFrom(path: string, options: { offerRecovery?: boolean } = {}): Promise<boolean> {
+  const loaded = await exclusive(false, async () => {
     const res = await window.api.readProject(path)
     if (!res.ok) {
       toast.error(`Couldn't open ${displayName(path)}`, res.error)
@@ -120,6 +121,80 @@ async function loadFrom(path: string): Promise<boolean> {
     }
     return true
   })
+  if (loaded && options.offerRecovery !== false) await offerRecovery()
+  return loaded
+}
+
+/** When a copy was kept, in words: "today at 14:32", "3 Nov at 09:05". */
+export function recoveredWhen(iso: string): string {
+  const d = new Date(iso)
+  const time = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
+  const today = new Date().toDateString() === d.toDateString()
+  return today ? `today at ${time}` : `${d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} at ${time}`
+}
+
+/** The project just opened has a recovery copy: restore it over the files, or discard it. */
+async function offerRecovery(): Promise<void> {
+  const project = store().project
+  if (!project) return
+  const id = project.meta.id
+  const release = holdRecovery(id)
+  try {
+    const record = await findRecovery(id)
+    if (!record) return
+    const restore = await window.api.confirm({
+      message: `Restore unsaved changes to “${record.name}”?`,
+      detail:
+        `Skein kept a copy of changes that weren't saved (${recoveredWhen(record.savedAt)}). ` +
+        'Restore puts them back over the saved files, as one step you can undo. Cancel discards the copy.',
+      confirmLabel: 'Restore'
+    })
+    if (restore && store().project?.meta.id === id) applyRecovered(record)
+    else await discardRecovery(id)
+  } finally {
+    release()
+  }
+}
+
+function applyRecovered(record: RecoveryRecord): boolean {
+  const read = readRecovered(record)
+  if (!read.ok) {
+    toast.error("Couldn't restore the unsaved changes", read.error)
+    return false
+  }
+  store().replaceProject('Restore unsaved changes', read.project)
+  toast.success('Restored unsaved changes', `From ${recoveredWhen(record.savedAt)}. Save to keep them, or undo to go back to the saved files.`)
+  return true
+}
+
+/**
+ * Restore a recovery copy from the start screen: reopen its project and put the
+ * changes back over it (one undoable step). If the project can't be reopened
+ * (moved, or never saved), the copy opens as a new, unsaved project.
+ */
+export async function restoreRecovery(record: RecoveryRecord): Promise<boolean> {
+  if (!(await guardUnsaved())) return false
+  const read = readRecovered(record)
+  if (!read.ok) {
+    toast.error("Couldn't restore the unsaved changes", read.error)
+    return false
+  }
+  const release = holdRecovery(record.projectId)
+  try {
+    if (record.path && (await loadFrom(record.path, { offerRecovery: false })) && store().project?.meta.id === record.projectId) {
+      return applyRecovered(record)
+    }
+    store().loadProject(read.project, null, { dirty: true })
+    toast.success(
+      'Restored unsaved changes',
+      record.path
+        ? `Couldn't reopen ${displayName(record.path)}, so this is an unsaved copy. Use Save As to keep it.`
+        : `From ${recoveredWhen(record.savedAt)}. This project was never saved: use Save As to keep it.`
+    )
+    return true
+  } finally {
+    release()
+  }
 }
 
 export async function saveProject(): Promise<boolean> {
