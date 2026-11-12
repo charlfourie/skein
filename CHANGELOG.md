@@ -34,9 +34,13 @@ What's new in Skein, newest first. Dates are when the work landed on `main`.
 ### Changed
 - In a line's text in the inspector, **Enter** now adds the next line; **Shift+Enter** is a
   line break.
+- Deleting the last line of a scene hands its **end** mark back to the line before it
+  (when nothing else follows that line), so no dead end appears.
 - The export dialog shares the app's dialog frame (Escape closes it from any field).
 
 ### Fixed
+- The inspector (and the flow area) could go blank and stay blank when the selection
+  changed twice in quick succession, such as adding a line and deleting it straight away.
 - A new connection on an output whose connections had no stored order (older or
   hand-written projects) now comes last, as it should, instead of first.
 

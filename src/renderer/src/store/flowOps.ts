@@ -147,12 +147,26 @@ export function reconnect(flowId: string, edgeId: string, c: ConnectionLike): bo
 export function deleteElements(flowId: string, nodeIds: string[], edgeIds: string[], frameIds: string[] = []): void {
   if (nodeIds.length === 0 && edgeIds.length === 0 && frameIds.length === 0) return
   editFlow(nodeIds.length ? 'Delete nodes' : frameIds.length && !edgeIds.length ? 'Delete frame' : 'Delete connections', flowId, (flow) => {
+    const before = endsBefore(flow, nodeIds)
     deleteFlowElements(flow, nodeIds, edgeIds)
+    // Deleting the last line of a scene hands its end mark back to the line before it,
+    // as adding a line after an end passes it on (no dead end appears either way).
+    for (const id of before) {
+      const node = flow.nodes[id]
+      if (node && !node.data.isEnd && outputHandles(node.type).every((h) => outgoingEdges(flow, id, h).length === 0)) node.data.isEnd = true
+    }
     // Deleting a frame keeps the nodes inside it.
     for (const id of frameIds) delete flow.frames?.[id]
     if (flow.frames && Object.keys(flow.frames).length === 0) delete flow.frames
   })
   store().select({ kind: 'flow', id: flowId })
+}
+
+/** Nodes that lead into a deleted node marked as an end: the end mark may go back to them. */
+function endsBefore(flow: Draft<Flow>, nodeIds: string[]): string[] {
+  const gone = new Set(nodeIds)
+  const ends = new Set(nodeIds.filter((id) => flow.nodes[id]?.data.isEnd === true))
+  return [...new Set(Object.values(flow.edges).filter((e) => ends.has(e.target) && !gone.has(e.source)).map((e) => e.source))]
 }
 
 // --- Frames (editor-only groups) ------------------------------------------------

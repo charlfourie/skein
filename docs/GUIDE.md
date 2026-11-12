@@ -107,7 +107,7 @@ the mouse.
 - **Shift+Enter** puts a line break in the text; **Esc** goes back to the canvas.
 - If the line already led straight on to another node, the new line goes in between and
   what was below moves down to make room. A line marked as an end passes the end mark
-  on to the new last line. New lines never land on top of other nodes.
+  on to the new last line, and gets it back if you delete that line. New lines never land on top of other nodes.
 
 ### Script view
 

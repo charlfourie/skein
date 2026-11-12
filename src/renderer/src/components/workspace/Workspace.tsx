@@ -70,18 +70,10 @@ export function Workspace() {
       </div>
 
       <div className="relative min-h-0 flex-1">
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={key}
-            className="absolute inset-0"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.12 }}
-          >
-            <DocView project={project} doc={info ? doc : null} flowView={flowView} />
-          </motion.div>
-        </AnimatePresence>
+        {/* Fades in, with no exit to wait for: switching again mid-fade must never leave it blank. */}
+        <motion.div key={key} className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.12 }}>
+          <DocView project={project} doc={info ? doc : null} flowView={flowView} />
+        </motion.div>
       </div>
     </div>
   )

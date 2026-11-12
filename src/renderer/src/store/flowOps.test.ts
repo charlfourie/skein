@@ -205,3 +205,22 @@ describe('comments on nodes', () => {
     expect(flow().comments).toBeUndefined()
   })
 })
+
+describe('end marks follow the last line', () => {
+  it('pass on to a line added after an end, and come back when it is deleted', async () => {
+    const { quickLine } = await import('./flowOps')
+    const a = addNode(flowId, 'dialogue', { x: 0, y: 0 })!
+    updateNodeData(flowId, a, { isEnd: true })
+    const b = quickLine(flowId, a)!
+    expect(flow().nodes[a].data.isEnd).toBeUndefined()
+    expect(flow().nodes[b].data.isEnd).toBe(true)
+    deleteElements(flowId, [b], [])
+    expect(flow().nodes[a].data.isEnd).toBe(true)
+    // Only when nothing else follows: a line that still leads on stays as it was.
+    const c = quickLine(flowId, a)!
+    const d = addNode(flowId, 'dialogue', { x: 400, y: 0 }, { source: a, sourceHandle: 'out' })!
+    deleteElements(flowId, [c], [])
+    expect(flow().nodes[a].data.isEnd).toBeUndefined()
+    expect(flow().nodes[d]).toBeDefined()
+  })
+})

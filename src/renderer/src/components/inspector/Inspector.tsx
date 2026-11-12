@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { MousePointer2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { TEMPLATE_COLORS } from '@shared/factory'
@@ -28,18 +28,17 @@ export function Inspector() {
         {selection && <span className="text-2xs text-faint">{KIND_LABEL[selection.kind]}</span>}
       </div>
       <div className="relative flex-1 overflow-y-auto">
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={key}
-            initial={{ opacity: 0, x: 8 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -8 }}
-            transition={{ duration: 0.14 }}
-            className="px-3 pb-6"
-          >
-            <InspectorBody selection={selection} />
-          </motion.div>
-        </AnimatePresence>
+        {/* Fades in on a new selection. No exit animation: waiting for one to finish could
+            leave the panel blank when the selection changes again mid-fade (add, then delete). */}
+        <motion.div
+          key={key}
+          initial={{ opacity: 0, x: 8 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.14 }}
+          className="px-3 pb-6"
+        >
+          <InspectorBody selection={selection} />
+        </motion.div>
       </div>
     </div>
   )
