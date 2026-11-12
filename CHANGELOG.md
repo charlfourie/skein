@@ -2,7 +2,7 @@
 
 What's new in Skein, newest first. Dates are when the work landed on `main`.
 
-## Unreleased (on `next`) · 0.9.0 · Phase 9: writer's workflow
+## 2026-11-12 · 0.9.0 · Phase 9: writer's workflow
 
 ### Added
 - **Quick line entry.** Select a line and press **Enter**: the next line appears below,

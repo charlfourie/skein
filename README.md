@@ -178,8 +178,8 @@ read which files, so a game never breaks when the editor updates.
 
 ## 🗺️ Roadmap
 
-Skein is built in reviewed phases. Phases 1 to 8 built the editor, its first
-runtimes, the tools to play and test a story, and a format ready for teams, voice and translation. The next ones make writing in it as comfortable as any commercial tool, then take it to every engine.
+Skein is built in reviewed phases. Phases 1 to 9 built the editor, its first
+runtimes, the tools to play and test a story, a format ready for teams, voice and translation, and a comfortable way to write in it. The next ones add media, localisation and structure, then take it to every engine.
 
 | | Phase | Status |
 | --- | --- | --- |
@@ -187,8 +187,8 @@ runtimes, the tools to play and test a story, and a format ready for teams, voic
 | ✅ | **6 · First runtimes:** C# (Unity, Godot .NET, .NET) and Unity components, checked against the reference by a conformance suite | Done |
 | ✅ | **7 · Play and analysis:** Play, Explore, start states and replays, plus saved scenarios and story tests that re-check after every edit | Done |
 | ✅ | **8 · Format foundations:** one file per flow, line IDs, variables inside lines, comments on nodes, a versioning policy, a published JSON Schema and a shared conformance kit for every runtime | Done |
-| 🟡 | **9 · Writer's workflow:** project-wide search with find and replace, a Problems panel listing every error, warning and failing test, copy and paste of nodes between flows and projects, autosave with recovery after a crash, quick line entry (Enter adds the next line, alternating speakers), a script view that reads and edits a flow as a screenplay, and pasting screenplay text to create nodes | In review |
-| ⬜ | **10 · Media and voice:** portraits and images on entities (shown on nodes and in Play), audio matched to line IDs and played in Play, word and line counts per character and flow, a printable script for table reads and recording, and voice preview with the browser's built-in speech | Planned |
+| ✅ | **9 · Writer's workflow:** project-wide search with find and replace, a Problems panel listing every error, warning and failing test, copy and paste of nodes between flows and projects, autosave with recovery after a crash, quick line entry (Enter adds the next line, alternating speakers), a script view that reads and edits a flow as a screenplay, and pasting screenplay text to create nodes | Done |
+| 🟡 | **10 · Media and voice:** portraits and images on entities (shown on nodes and in Play), audio matched to line IDs and played in Play, word and line counts per character and flow, a printable script for table reads and recording, and voice preview with the browser's built-in speech | Next |
 | ⬜ | **11 · Localisation:** translator export and import keyed by line ID, translation states that mark a line outdated when its source changes, and proofreading in the same language | Planned |
 | ⬜ | **12 · Structure and navigation:** nested flows you open by double-clicking, a 2D location map editor, favourites, a list of what jumps or calls into each flow, and a light theme | Planned |
 | ⬜ | **13 · Unity, production-ready:** an installable Unity package, an importer that checks exports, configurable components, a sample scene and Unity Localization support | Planned |
