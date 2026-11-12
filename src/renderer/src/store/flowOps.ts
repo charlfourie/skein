@@ -1,4 +1,5 @@
 import { assignLineId } from '@shared/lineIds'
+import { pasteInto, type ClipboardPayload, type PasteResult } from '@shared/clipboard'
 import dagre from '@dagrejs/dagre'
 import type { Draft } from 'immer'
 import { analyzeFlow } from '@shared/flowAnalysis'
@@ -227,6 +228,15 @@ export function duplicateNodes(flowId: string, nodeIds: string[]): string[] {
     }
   })
   return [...map.values()]
+}
+
+/** Paste copied nodes (see shared/clipboard.ts) into a flow, as one undo step. */
+export function pasteNodes(flowId: string, payload: ClipboardPayload, at: Position | null): PasteResult {
+  let result: PasteResult = { nodeIds: [], notes: [] }
+  editFlow(payload.nodes.length === 1 ? 'Paste node' : 'Paste nodes', flowId, (_f, project) => {
+    result = pasteInto(project as Project, flowId, payload, at, newId)
+  })
+  return result
 }
 
 /**

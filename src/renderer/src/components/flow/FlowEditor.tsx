@@ -28,7 +28,9 @@ import type { Flow, Position, Project } from '@shared/schema'
 import type { IssueMap } from '@shared/validate'
 import { useIssues } from '../../hooks/useIssues'
 import { cx } from '../../lib/cx'
-import { addFrame, addNode, autoLayout, connect, deleteElements, duplicateNodes, moveNodes, placeFrame, reconnect } from '../../store/flowOps'
+import { addFrame, addNode, autoLayout, connect, deleteElements, duplicateNodes, moveNodes, pasteNodes, placeFrame, reconnect } from '../../store/flowOps'
+import { copySelection, readClipboard } from '@shared/clipboard'
+import { toast } from '../../lib/toast'
 import { usePrefs } from '../../store/prefs'
 import { useProjectStore, type Selection } from '../../store/projectStore'
 import { usePlay } from '../../store/play'
@@ -175,9 +177,16 @@ export function FlowEditor({ flow }: { flow: Flow }) {
   )
   const [edges, setEdges] = useState<NarrativeRFEdge[]>(derivedEdges)
 
+  /** Nodes to select once they arrive (just pasted). */
+  const selectNext = useRef<Set<string> | null>(null)
   useEffect(() => {
     setNodes((prev) => {
       const byId = new Map(prev.map((n) => [n.id, n]))
+      const pending = selectNext.current
+      if (pending) {
+        selectNext.current = null
+        return derivedNodes.map((n) => ({ ...n, selected: pending.has(n.id), measured: byId.get(n.id)?.measured }) as CanvasNode)
+      }
       // A node that was just created (palette, quick-add, duplicate) arrives
       // selected, so the inspector opens on it straight away.
       const sel = useProjectStore.getState().selection
@@ -420,6 +429,61 @@ export function FlowEditor({ flow }: { flow: Flow }) {
     }
   }
 
+  // --- Copy and paste ---------------------------------------------------------
+  // Through the system clipboard (copy/cut/paste events, so no permission prompts),
+  // as JSON text: nodes can go to another flow, another project or another tab.
+
+  /** The pointer's last spot on the canvas, in flow coordinates: where a paste lands. */
+  const pointer = useRef<Position | null>(null)
+  const typing = (t: EventTarget | null) => {
+    const el = t as HTMLElement | null
+    return !!el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable)
+  }
+  const selectedIds = () => ({
+    nodes: nodes.filter((n) => n.selected && !isFrame(n)).map((n) => n.id),
+    frames: nodes.filter((n) => n.selected && isFrame(n)).map((n) => n.id)
+  })
+  // Listened for on the document: after a cut the focused node is gone and focus
+  // falls back to the page, and a paste should still land here.
+  const clip = useRef({ onCopy: (_e: globalThis.ClipboardEvent, _cut: boolean) => {}, onPaste: (_e: globalThis.ClipboardEvent) => {} })
+  clip.current.onCopy = (e, cut) => {
+    const sel = selectedIds()
+    const payload = copySelection(project, flow.id, sel.nodes, sel.frames)
+    if (!payload || !e.clipboardData) return
+    e.preventDefault()
+    e.clipboardData.setData('text/plain', JSON.stringify(payload))
+    if (cut) deleteElements(flow.id, sel.nodes, [], sel.frames)
+  }
+  clip.current.onPaste = (e) => {
+    const payload = readClipboard(e.clipboardData?.getData('text/plain') ?? '')
+    if (!payload) return
+    e.preventDefault()
+    const result = pasteNodes(flow.id, payload, pointer.current)
+    if (!result.nodeIds.length) return
+    selectNext.current = new Set(result.nodeIds)
+    if (result.nodeIds.length === 1) select({ kind: 'node', flowId: flow.id, id: result.nodeIds[0] })
+    else select({ kind: 'flow', id: flow.id })
+    if (result.notes.length) toast.info(`Pasted ${result.nodeIds.length} node${result.nodeIds.length === 1 ? '' : 's'}`, result.notes.join('\n'))
+  }
+  useEffect(() => {
+    const ours = (e: Event) => {
+      const t = e.target as Node | null
+      if (typing(t)) return false
+      return t === document.body || !!(t && wrapper.current?.contains(t))
+    }
+    const copy = (e: globalThis.ClipboardEvent) => ours(e) && clip.current.onCopy(e, false)
+    const cut = (e: globalThis.ClipboardEvent) => ours(e) && clip.current.onCopy(e, true)
+    const paste = (e: globalThis.ClipboardEvent) => ours(e) && clip.current.onPaste(e)
+    document.addEventListener('copy', copy)
+    document.addEventListener('cut', cut)
+    document.addEventListener('paste', paste)
+    return () => {
+      document.removeEventListener('copy', copy)
+      document.removeEventListener('cut', cut)
+      document.removeEventListener('paste', paste)
+    }
+  }, [])
+
   // --- Issue navigation -----------------------------------------------------
 
   const problemNodes = useMemo(() => {
@@ -453,6 +517,12 @@ export function FlowEditor({ flow }: { flow: Flow }) {
         ref={wrapper}
         className="relative h-full w-full outline-none"
         onKeyDown={onKeyDown}
+        onMouseMove={(e) => {
+          pointer.current = rf.screenToFlowPosition({ x: e.clientX, y: e.clientY })
+        }}
+        onMouseLeave={() => {
+          pointer.current = null
+        }}
         onDragOver={(e) => {
           if (e.dataTransfer.types.includes(NODE_DRAG_MIME)) {
             e.preventDefault()
