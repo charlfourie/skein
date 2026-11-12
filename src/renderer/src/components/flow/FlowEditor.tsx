@@ -30,6 +30,7 @@ import { useIssues } from '../../hooks/useIssues'
 import { cx } from '../../lib/cx'
 import { addFrame, addNode, autoLayout, connect, deleteElements, duplicateNodes, moveNodes, pasteNodes, placeFrame, reconnect } from '../../store/flowOps'
 import { copySelection, readClipboard } from '@shared/clipboard'
+import { parseScreenplay } from '@shared/screenplay'
 import { toast } from '../../lib/toast'
 import { useUi } from '../../store/ui'
 import { quickEntryKey, setMeasuredSizes } from '../../lib/quickKeys'
@@ -488,8 +489,18 @@ export function FlowEditor({ flow }: { flow: Flow }) {
     if (cut) deleteElements(flow.id, sel.nodes, [], sel.frames)
   }
   clip.current.onPaste = (e) => {
-    const payload = readClipboard(e.clipboardData?.getData('text/plain') ?? '')
-    if (!payload) return
+    const text = e.clipboardData?.getData('text/plain') ?? ''
+    const payload = readClipboard(text)
+    if (!payload) {
+      // Not nodes: maybe a scene written as text. Preview it before it becomes lines.
+      if (!parseScreenplay(text)) return
+      e.preventDefault()
+      const sel = selectedIds().nodes
+      const box = wrapper.current?.getBoundingClientRect()
+      const centre = box ? rf.screenToFlowPosition({ x: box.left + box.width / 2, y: box.top + box.height / 3 }) : { x: 0, y: 0 }
+      useUi.getState().setScenePaste({ flowId: flow.id, text, at: pointer.current ?? centre, after: sel.length === 1 ? sel[0] : null })
+      return
+    }
     e.preventDefault()
     const result = pasteNodes(flow.id, payload, pointer.current)
     if (!result.nodeIds.length) return

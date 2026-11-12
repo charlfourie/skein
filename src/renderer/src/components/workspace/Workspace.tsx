@@ -1,9 +1,12 @@
 import { ReactFlowProvider } from '@xyflow/react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { MousePointerClick, Workflow, type LucideIcon } from 'lucide-react'
+import { FileText, MousePointerClick, Network, Workflow, type LucideIcon } from 'lucide-react'
 import type { Project } from '@shared/schema'
 import { templateIcon } from '../../lib/meta'
 import { useProjectStore, type DocRef, type StateDocId } from '../../store/projectStore'
+import { useUi, type FlowView } from '../../store/ui'
+import { cx } from '../../lib/cx'
+import { ScriptView } from '../script/ScriptView'
 import { STATE_DOCS, StateDoc } from '../state/StateDocs'
 import { EntitySheet } from '../entities/EntitySheet'
 import { FlowEditor } from '../flow/FlowEditor'
@@ -39,7 +42,9 @@ export function Workspace() {
   const project = useProjectStore((s) => s.project) as Project
   const doc = useProjectStore((s) => s.activeDoc)
   const info = doc ? describeDoc(project, doc) : null
-  const key = doc && info ? `${doc.kind}:${doc.id}` : 'empty'
+  const flowView = useUi((s) => s.flowView)
+  const isFlow = doc?.kind === 'flow' && info !== null
+  const key = doc && info ? `${doc.kind}:${doc.id}${isFlow ? `:${flowView}` : ''}` : 'empty'
   const TabIcon = info?.icon
 
   return (
@@ -48,7 +53,7 @@ export function Workspace() {
         <AnimatePresence initial={false} mode="popLayout">
           {info && TabIcon && (
             <motion.div
-              key={key}
+              key={doc ? `${doc.kind}:${doc.id}` : 'none'}
               layout
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
@@ -61,6 +66,7 @@ export function Workspace() {
             </motion.div>
           )}
         </AnimatePresence>
+        {isFlow && <ViewSwitch view={flowView} />}
       </div>
 
       <div className="relative min-h-0 flex-1">
@@ -73,7 +79,7 @@ export function Workspace() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.12 }}
           >
-            <DocView project={project} doc={info ? doc : null} />
+            <DocView project={project} doc={info ? doc : null} flowView={flowView} />
           </motion.div>
         </AnimatePresence>
       </div>
@@ -81,7 +87,38 @@ export function Workspace() {
   )
 }
 
-function DocView({ project, doc }: { project: Project; doc: DocRef | null }) {
+const VIEWS: { id: FlowView; label: string; icon: LucideIcon }[] = [
+  { id: 'canvas', label: 'Canvas', icon: Network },
+  { id: 'script', label: 'Script', icon: FileText }
+]
+
+/** Canvas or script: two ways of looking at the same flow. */
+function ViewSwitch({ view }: { view: FlowView }) {
+  const setView = useUi((s) => s.setFlowView)
+  return (
+    <div role="tablist" aria-label="Flow view" className="mb-1 ml-auto flex shrink-0 items-center gap-0.5 rounded-md bg-bg p-0.5 ring-1 ring-line">
+      {VIEWS.map(({ id, label, icon: Icon }) => (
+        <button
+          key={id}
+          type="button"
+          role="tab"
+          aria-selected={view === id}
+          onClick={() => setView(id)}
+          className={cx(
+            'flex h-6 items-center gap-1.5 rounded px-2 text-2xs font-medium transition-colors',
+            view === id ? 'bg-raised text-fg' : 'text-faint hover:text-fg'
+          )}
+        >
+          <Icon size={12} />
+          {label}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+function DocView({ project, doc, flowView }: { project: Project; doc: DocRef | null; flowView: FlowView }) {
+  if (doc?.kind === 'flow' && project.flows[doc.id] && flowView === 'script') return <ScriptView flow={project.flows[doc.id]} />
   if (doc?.kind === 'flow' && project.flows[doc.id]) {
     return (
       <ReactFlowProvider>

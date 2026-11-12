@@ -8,7 +8,7 @@ import type { Flow, FlowNode } from './schema'
  * file minimal and diffs to the lines that actually changed.
  *
  *   all          isStart?: true, isEnd?: true, note?: string
- *   dialogue     speakerId?: entity id, text?, menuText?, stageDirections?
+ *   dialogue     speakerId?: entity id, text?, menuText?
  *   condition    expression?: string          (outputs: "true", "false")
  *   instruction  script?: string
  *   hub          label?: string

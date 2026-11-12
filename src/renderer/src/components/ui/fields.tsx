@@ -86,7 +86,9 @@ export function TextArea({
   dimmed,
   focusNonce,
   onKeyDown,
-  label
+  label,
+  className,
+  resizable = true
 }: {
   value: string
   onCommit(value: string): void
@@ -98,6 +100,8 @@ export function TextArea({
   /** Keys before the default; `commit` saves the draft first (for keys that move on). */
   onKeyDown?(e: KeyboardEvent<HTMLTextAreaElement>, commit: () => void): void
   label?: string
+  className?: string
+  resizable?: boolean
 }) {
   const [draft, setDraft] = useState(value)
   useEffect(() => setDraft(value), [value])
@@ -118,7 +122,7 @@ export function TextArea({
       onChange={(e) => setDraft(e.target.value)}
       onKeyDown={onKeyDown && ((e) => onKeyDown(e, () => draft !== value && onCommit(draft)))}
       onBlur={() => draft !== value && onCommit(draft)}
-      className={cx(inputClass, 'resize-y leading-relaxed', dimmed && 'text-muted')}
+      className={cx(inputClass, resizable ? 'resize-y' : 'resize-none', 'leading-relaxed', dimmed && 'text-muted', className)}
     />
   )
 }

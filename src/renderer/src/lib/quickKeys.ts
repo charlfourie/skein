@@ -1,6 +1,7 @@
 import type { KeyboardEvent } from 'react'
 import type { SizeOf } from '@shared/quickEntry'
 import { quickChoice, quickLine, stepSpeaker } from '../store/flowOps'
+import type { LineFocusTarget } from '../store/ui'
 import { toast } from './toast'
 
 /**
@@ -20,14 +21,14 @@ export function setMeasuredSizes(sizeOf: SizeOf | undefined): void {
   measured = sizeOf
 }
 
-export function quickEntryKey(e: KeyboardEvent, flowId: string, nodeId: string, before?: () => void): boolean {
+export function quickEntryKey(e: KeyboardEvent, flowId: string, nodeId: string, before?: () => void, where: LineFocusTarget = 'inspector'): boolean {
   if (e.nativeEvent.isComposing || e.key === 'Process') return false // typing with an input method
   const mod = e.ctrlKey || e.metaKey
   if (e.key === 'Enter' && !e.shiftKey && !e.altKey) {
     e.preventDefault()
     before?.()
-    if (!mod) quickLine(flowId, nodeId, measured)
-    else if (!quickChoice(flowId, nodeId, measured)) toast.info('Nothing to branch from', 'A choice goes beside another line from the same node. This one has nothing before it.')
+    if (!mod) quickLine(flowId, nodeId, measured, where)
+    else if (!quickChoice(flowId, nodeId, measured, where)) toast.info('Nothing to branch from', 'A choice goes beside another line from the same node. This one has nothing before it.')
     return true
   }
   if (e.altKey && !mod && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {

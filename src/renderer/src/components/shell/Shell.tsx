@@ -30,7 +30,7 @@ export function Shell() {
   // Quick line entry puts the cursor in the inspector: show it if it's collapsed.
   const lineFocus = useUi((s) => s.lineFocus)
   useEffect(() => {
-    if (lineFocus && rightRef.current?.isCollapsed()) rightRef.current.expand()
+    if (lineFocus?.where === 'inspector' && rightRef.current?.isCollapsed()) rightRef.current.expand()
   }, [lineFocus])
 
   const toggle = (ref: RefObject<ImperativePanelHandle>) => {

@@ -1,5 +1,6 @@
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
 import { ExportDialog } from './components/export/ExportDialog'
+import { ScenePasteDialog } from './components/script/ScenePasteDialog'
 import { Shell } from './components/shell/Shell'
 import { Toaster } from './components/ui/Toaster'
 import { Welcome } from './components/Welcome'
@@ -26,6 +27,7 @@ export default function App() {
         </motion.div>
       </AnimatePresence>
       <ExportDialog />
+      <ScenePasteDialog />
       <Toaster />
     </MotionConfig>
   )

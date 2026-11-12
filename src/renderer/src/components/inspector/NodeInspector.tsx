@@ -32,7 +32,7 @@ export function NodeInspector({ project, flowId, nodeId }: { project: Project; f
   const lineFocus = useUi((s) => s.lineFocus)
   // The line field took the cursor (child effects run first): the request is used up.
   useEffect(() => {
-    if (lineFocus?.nodeId === nodeId) useUi.setState({ lineFocus: null })
+    if (lineFocus?.nodeId === nodeId && lineFocus.where === 'inspector') useUi.setState({ lineFocus: null })
   }, [lineFocus, nodeId])
   const flow = project.flows[flowId]
   const node = flow?.nodes[nodeId]
@@ -72,7 +72,7 @@ export function NodeInspector({ project, flowId, nodeId }: { project: Project; f
               rows={5}
               placeholder="What do they say?"
               onCommit={(text) => patch({ text })}
-              focusNonce={lineFocus?.nodeId === nodeId ? lineFocus.nonce : undefined}
+              focusNonce={lineFocus?.nodeId === nodeId && lineFocus.where === 'inspector' ? lineFocus.nonce : undefined}
               onKeyDown={(e, commit) => {
                 if (e.key === 'Escape') {
                   e.preventDefault()

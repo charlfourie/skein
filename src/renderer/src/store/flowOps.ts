@@ -11,7 +11,8 @@ import { frameAround, nodesInFrame, type Size } from '@shared/frames'
 import type { Flow, FlowFrame, Position, Project } from '@shared/schema'
 import { addChoiceBeside, cycleSpeaker, insertLineAfter, nextSpeaker, type SizeOf } from '@shared/quickEntry'
 import { useProjectStore } from './projectStore'
-import { useUi } from './ui'
+import { useUi, type LineFocusTarget } from './ui'
+import { addScreenplay, type ScreenplayLine, type ScreenplayResult, type SpeakerChoice } from '@shared/screenplay'
 
 /** Canvas edits. Each call is one undoable step. */
 
@@ -234,16 +235,16 @@ export function duplicateNodes(flowId: string, nodeIds: string[]): string[] {
 
 // --- Quick line entry (see shared/quickEntry.ts) -----------------------------
 
-function landOn(flowId: string, id: string | null): string | null {
+function landOn(flowId: string, id: string | null, where: LineFocusTarget): string | null {
   if (!id) return null
   store().select({ kind: 'node', flowId, id })
-  useUi.getState().focusLine(id)
+  useUi.getState().focusLine(id, where)
   useUi.getState().revealNode(id)
   return id
 }
 
 /** The next line after a node: connected, below it, spoken by whoever spoke before. Selected, with the cursor in its text. */
-export function quickLine(flowId: string, nodeId: string, sizeOf?: SizeOf): string | null {
+export function quickLine(flowId: string, nodeId: string, sizeOf?: SizeOf, where: LineFocusTarget = 'inspector'): string | null {
   const project = store().project
   const flow = project?.flows[flowId]
   if (!project || !flow?.nodes[nodeId]) return null
@@ -252,16 +253,16 @@ export function quickLine(flowId: string, nodeId: string, sizeOf?: SizeOf): stri
   editFlow('Add line', flowId, (_f, p) => {
     id = insertLineAfter(p as Project, flowId, nodeId, { speakerId, newId, sizeOf })
   })
-  return landOn(flowId, id)
+  return landOn(flowId, id, where)
 }
 
 /** Another choice beside a node, from the same parent. Null when the node has no parent to branch from. */
-export function quickChoice(flowId: string, nodeId: string, sizeOf?: SizeOf): string | null {
+export function quickChoice(flowId: string, nodeId: string, sizeOf?: SizeOf, where: LineFocusTarget = 'inspector'): string | null {
   let id: string | null = null
   editFlow('Add choice', flowId, (_f, p) => {
     id = addChoiceBeside(p as Project, flowId, nodeId, { newId, sizeOf })
   })
-  return landOn(flowId, id)
+  return landOn(flowId, id, where)
 }
 
 /** Step a line's speaker up or down the speaker list. */
@@ -271,6 +272,22 @@ export function stepSpeaker(flowId: string, nodeId: string, step: 1 | -1): void 
   if (!project || node?.type !== 'dialogue') return
   const current = typeof node.data.speakerId === 'string' ? node.data.speakerId : undefined
   updateNodeData(flowId, nodeId, { speakerId: cycleSpeaker(project, current, step) ?? null })
+}
+
+/** Add a pasted scene (see shared/screenplay.ts) as lines, new characters included, as one undo step. */
+export function addScene(
+  flowId: string,
+  lines: readonly ScreenplayLine[],
+  speakers: Record<string, SpeakerChoice>,
+  at: Position,
+  after: string | null,
+  chooser: string | null
+): ScreenplayResult {
+  let result: ScreenplayResult = { nodeIds: [], newEntityIds: [], notes: [] }
+  store().edit(lines.length === 1 ? 'Paste line' : 'Paste scene', (p) => {
+    result = addScreenplay(p as Project, flowId, lines, speakers, { at, after, newId, chooser })
+  })
+  return result
 }
 
 /** Paste copied nodes (see shared/clipboard.ts) into a flow, as one undo step. */
