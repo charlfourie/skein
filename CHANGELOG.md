@@ -2,6 +2,44 @@
 
 What's new in Skein, newest first. Dates are when the work landed on `main`.
 
+## Unreleased (on `next`) · 0.9.0 · Phase 9: writer's workflow
+
+### Added
+- **Quick line entry.** Select a line and press **Enter**: the next line appears below,
+  connected, spoken by whoever spoke before, with the cursor in its text. **Ctrl/⌘+Enter**
+  adds another choice beside it, **Alt+↑/↓** changes the speaker, **Esc** goes back to the
+  canvas. New lines never land on other nodes; a line that led straight on gets the new one
+  in between.
+- **Script view.** Switch any flow between **Canvas** and **Script**: the flow as a reader
+  follows it, choices numbered and indented, loops and jumps shown as where the story goes
+  back to. Rewrite lines, change speakers, add lines and reorder choices there; **Print**
+  makes a screenplay-style page.
+- **Paste a scene.** Paste text like `PIP: Morning!`, screenplay cues, `> choices` and
+  `(directions)` onto the canvas (or **Paste a scene…** in the script view). A preview
+  matches each name to an entity, a new character or narration, then adds the lines,
+  connected, in one undo step.
+- **Copy, cut and paste nodes** (Ctrl/⌘+C, X, V), with their connections and frames, into
+  another flow, project or tab. Speakers and flows are matched by name; anything that
+  can't be is reported.
+- **Search and replace** across the project (Ctrl/⌘+F): lines, choice text, conditions,
+  effects, notes, comments and names, with match case, whole word, regular expressions and
+  filters. Replace all previews every change and refuses ones that would break logic.
+- **Problems panel:** every error, warning and failing story test in one list, grouped by
+  flow, next to Search. The status bar counts open it.
+- **Unsaved changes are kept** in browser storage (never the project files) while you
+  work. After a crash or a closed tab, the Welcome screen offers them back: Restore puts
+  them over the saved project as one undoable step.
+- **Keyboard shortcuts sheet:** press **?** (or the keyboard icon in the status bar).
+
+### Changed
+- In a line's text in the inspector, **Enter** now adds the next line; **Shift+Enter** is a
+  line break.
+- The export dialog shares the app's dialog frame (Escape closes it from any field).
+
+### Fixed
+- A new connection on an output whose connections had no stored order (older or
+  hand-written projects) now comes last, as it should, instead of first.
+
 ## 2026-11-12
 
 ### Changed

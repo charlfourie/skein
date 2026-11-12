@@ -5,8 +5,9 @@ The full reference for working in Skein. New here? Start with the
 for the details.
 
 **Contents:** [Templates](#templates) · [Entities](#entities) · [Flows](#flows) ·
-[State](#state) · [Expression language](#expression-language) · [Time](#time) ·
-[Export](#export-for-game-engines) · [Play and Explore](#play-and-explore) · [Undo](#undo-and-redo)
+[Writing](#writing) · [State](#state) · [Expression language](#expression-language) ·
+[Time](#time) · [Saving](#saving-project-folders) · [Export](#export-for-game-engines) ·
+[Play and Explore](#play-and-explore) · [Undo](#undo-and-redo) · [Shortcuts](#keyboard-shortcuts)
 
 ## Templates
 
@@ -84,9 +85,106 @@ invalid identifiers are flagged in red.
   comment and stays on your computer (there are no accounts). Nodes with open threads
   show a 💬 badge, and the **open comments** chip at the top right visits each one.
   Comments travel with the project file and are never exported.
-- **Keys:** Delete removes, Ctrl+D duplicates, Shift+drag box-selects.
+- **Keys:** Delete removes, Ctrl+D duplicates, Shift+drag box-selects. Press **?** for
+  every shortcut.
 - **Auto-layout and preferences:** auto-layout (dagre, undoable) tidies the flow. Snap
   to grid and edge animation are per-machine preferences.
+
+## Writing
+
+Tools for getting words down quickly and keeping a large project in order.
+
+### Quick line entry
+
+Select a line and press **Enter**: the next line appears below it, connected, with the
+cursor in its text. It's spoken by whoever spoke before, so a two-person exchange
+alternates by itself. Keep typing and pressing Enter to write a whole scene without
+the mouse.
+
+- **Ctrl/⌘+Enter** adds another choice beside the current line (from the same node,
+  offered right after it).
+- **Alt+↑ / Alt+↓** changes the speaker.
+- **Shift+Enter** puts a line break in the text; **Esc** goes back to the canvas.
+- If the line already led straight on to another node, the new line goes in between and
+  what was below moves down to make room. A line marked as an end passes the end mark
+  on to the new last line. New lines never land on top of other nodes.
+
+### Script view
+
+Switch a flow between **Canvas** and **Script** (above the flow, on the right). The script
+shows the flow the way a reader follows it: lines in order, choices numbered and indented
+under the line that offers them, the true and false sides of a condition, and where the
+story jumps or loops back. Anything no start reaches is listed at the end.
+
+In the script you can rewrite a line, change its speaker, add a line after it (**Enter**,
+or the **+** on hover) and move a choice up or down. Everything else (conditions,
+requirements, effects) is edited on the canvas; the crosshair on any row shows it there.
+**Print** opens a screenplay-style page for a table read.
+
+### Pasting a scene
+
+Write a scene anywhere (a document, a chat) and paste it onto the canvas, or use
+**Paste a scene…** in the script view:
+
+```
+PIP: Morning! What can I get you?
+(wiping the counter)
+
+> A flat white, please.
+> Just water, thanks.
+
+PIP
+Coming right up.
+```
+
+- `NAME: text`, or a name on its own line above its text, is a line by that speaker.
+- `(…)` is a stage direction, kept as the line's note.
+- `> text` is a choice; choices in a row make one menu, and each leads on to the line
+  after the menu. A choice with no name is spoken by whoever usually picks choices.
+- Text with no name is narration. Text straight under a line (no blank line between)
+  carries on that line.
+
+A preview shows what will be added. Each name is matched to an entity by name, technical
+name or first name; change it to another entity, a new character, or narration. The
+lines go below the selected node (connected to it if nothing follows it yet) or where the
+pointer is, and the whole paste is one undo step.
+
+### Copy and paste
+
+**Ctrl/⌘+C** copies the selected nodes, the connections between them and any selected
+frames; **Ctrl/⌘+X** cuts; **Ctrl/⌘+V** pastes them where the pointer is. It goes through
+the system clipboard, so you can paste into another flow, another project, or Skein in
+another tab. Pasted nodes are new nodes with their own line IDs, and never a second start.
+Speakers are matched by technical name and flows by name; anything that can't be matched
+is left empty, and Skein says what.
+
+### Search and replace
+
+**Ctrl/⌘+F** opens **Search** in the left panel. It searches lines, choice text,
+conditions, effects, notes, comments and names across the project, with match case, whole
+word and regular expressions, and can narrow to one flow, one speaker or some kinds of
+text. Results are grouped by flow; click one to go to it.
+
+**Replace** works on one result at a time (hover a result) or all of them. Replace all
+shows every change first, and refuses any that would break a condition or action (renaming
+`Player.Coins` to a variable that doesn't exist, say). Names are never replaced: rename
+those in place, so everything that uses them follows. With a regular expression, `$1` in the
+replacement is the first group.
+
+### Problems
+
+The **Problems** tab (next to Search, with a count) lists every error and warning in the
+project, and every failing story test, grouped by flow. Click one to go to it. The counts
+in the status bar open it too.
+
+### Unsaved changes are kept
+
+While a project has unsaved changes, Skein keeps a copy of them in your browser (never in
+your project files). If the tab closes or the browser crashes, the Welcome screen offers
+the changes back next time: **Restore** reopens the project and puts the changes back
+over it, as one step you can undo; **Discard** throws the copy away. Opening a project that
+has such a copy asks first. Copies are removed once you save, and after 30 days. They live
+in this browser on this computer only.
 
 ## State
 
@@ -234,3 +332,24 @@ For engine developers:
 **Undo / redo:** Ctrl+Z and Ctrl+Y (or Ctrl+Shift+Z), or the arrows in the top bar. Inside a text
 field these undo typing; elsewhere they step through project changes. That includes deletes,
 which is why most deletes only ask for confirmation when something else depends on them.
+
+## Keyboard shortcuts
+
+Press **?** anywhere outside a text field (or the keyboard icon in the status bar) for the
+full list. On a Mac, ⌘ replaces Ctrl and ⌥ replaces Alt.
+
+| Keys | Does |
+| --- | --- |
+| Ctrl+O, Ctrl+Shift+O | Open a project, open a single file |
+| Ctrl+S, Ctrl+Shift+S | Save, Save As |
+| Ctrl+E | Export for a game engine |
+| Alt+N | New project |
+| Ctrl+Shift+W | Close the project |
+| Ctrl+Z, Ctrl+Y | Undo, redo |
+| Ctrl+F | Search and replace |
+| Ctrl+C, Ctrl+X, Ctrl+V | Copy, cut, paste nodes (or paste a scene written as text) |
+| Ctrl+D, Ctrl+G | Duplicate, frame the selected nodes |
+| Enter | Next line (a line selected, or in its text) |
+| Ctrl+Enter | Another choice beside this one |
+| Alt+↑, Alt+↓ | Change the speaker |
+| F2 | Rename in the explorer |

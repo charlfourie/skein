@@ -26,6 +26,12 @@ src/
     expr/sites.ts      Every expression in a project, and rename-following
     expr/usage.ts      Where each piece of state is used
     expr/template.ts   Variables inside lines ({Player.Coins})
+    search.ts      Project-wide search, and replace plans that refuse to break expressions
+    problems.ts    Every error, warning and failing test, for the Problems panel
+    clipboard.ts   Copy and paste of nodes as JSON (new ids, names matched across projects)
+    quickEntry.ts  Quick line entry: next line, choice beside, speakers, free-space placement
+    script.ts      A flow read as a script (reading order, branches), and its printable page
+    screenplay.ts  Reading a pasted scene (NAME: text, cues, > choices) and adding it as lines
     play/explore.ts    Path explorer: every sequence of choices and dice through a flow
     play/storyTests.ts Story tests: scenarios, recorded routes, every-path checks
     export/            Game export: format types, builder, reference runtime
@@ -44,6 +50,9 @@ src/
     components/state/       World variables, relationships, time & rules documents
     components/defs/        Shared definition cards and the live-checked expression field
     lib/projectIO.ts        New / Open / Save / Save As / Reload flows
+    lib/recovery.ts         Recovery copies of unsaved changes (IndexedDB), and restoring them
+    components/script/      Script view and the Paste a scene preview
+    components/search/, problems/  The Search and Problems tabs of the left panel
     components/             Shell, NavTree, Workspace (React Flow), Inspector, Welcome
 ```
 
@@ -58,7 +67,8 @@ built.
 write. It can only read or write files and folders you picked in the browser's own
 picker (or picked in an earlier visit, via Recent), and the browser asks before it
 writes. The build ships a strict Content-Security-Policy, and the page warns before the
-tab closes with unsaved changes.
+tab closes with unsaved changes. Recovery copies of unsaved work stay in the browser's own
+storage on that computer (IndexedDB), are never uploaded, and are deleted on save.
 
 ## Project folders
 

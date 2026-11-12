@@ -29,8 +29,15 @@ Firefox and Safari don't offer it, so Skein falls back to uploads and downloads 
 | Ctrl/⌘ + Z, Ctrl + Y (⌘ + Shift + Z) | Undo, redo |
 | Alt + N | New project (browsers keep Ctrl+N for a new window) |
 | Ctrl/⌘ + Shift + W | Close the project |
+| Ctrl/⌘ + F | Search and replace (instead of the browser's find, which can't see the canvas) |
+| ? | Every shortcut, including the canvas and quick line entry |
 
-The page warns before the tab closes while there are unsaved changes.
+The page warns before the tab closes while there are unsaved changes. If it closes anyway
+(or the browser crashes), the copy Skein keeps in browser storage is offered back on the
+Welcome screen next time; see [Unsaved changes are kept](GUIDE.md#unsaved-changes-are-kept).
+
+Copy and paste of nodes uses the normal clipboard events, so the browser never asks for
+clipboard permission.
 
 ## Run your own copy
 

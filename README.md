@@ -40,6 +40,8 @@ It's built for:
 
 | | |
 | --- | --- |
+| ✍️ **Fast to write in** | Press Enter to write the next line (speakers alternate by themselves), read and edit a flow as a script, paste a scene written anywhere as connected lines, copy and paste nodes between projects, and get unsaved work back after a crash. |
+| 🔎 **Search and Problems** | Find and replace across every line, condition and note (with regular expressions, and a preview that refuses replacements that would break logic), and one list of every error, warning and failing test. |
 | 🗺️ **Flowchart editor** | Dialogue, conditions, hubs, jumps and reusable scenes on an infinite canvas, with auto-layout, frames and live warnings for dead ends and orphans. |
 | 🧠 **Real game state** | World variables, character stats, one-way relationships (who trusts whom), dice, and a clock where actions take time. Expressions are checked as you type, with "did you mean…?" suggestions. |
 | ▶️ **Play mode** | Click through any flow exactly as the game will run it, with live state, a transcript, and a HUD for values like coins. Choices you can't afford show as locked, with the reason. |
@@ -103,6 +105,11 @@ cat treats **or** a bribe for the guard, but not both.
 is defined. **Show in Play** is what puts it in the HUD.
 
 <img src="docs/images/state.png" alt="The World variables page with Coins expanded: technical name, starting value 5, namespace Player, the Show in Play switch turned on, and a 0 to 20 range" width="860">
+
+**5. ✍️ Write a few lines.** Select Pip's last line (*Enjoy! See you tomorrow.*) and press
+**Enter**: a new line appears below for **You**, with the cursor in it. Type, press Enter
+again, and Pip answers. Then switch the flow to **Script** (top right) to read the whole
+conversation as a screenplay. Press **?** for every shortcut.
 
 The full coin matrix for both demos (what's offered at every coin amount) is in
 [docs/DEMOS.md](docs/DEMOS.md).
@@ -177,7 +184,7 @@ runtimes, the tools to play and test a story, and a format ready for teams, voic
 | ✅ | **6 · First runtimes:** C# (Unity, Godot .NET, .NET) and Unity components, checked against the reference by a conformance suite | Done |
 | ✅ | **7 · Play and analysis:** Play, Explore, start states and replays, plus saved scenarios and story tests that re-check after every edit | Done |
 | ✅ | **8 · Format foundations:** one file per flow, line IDs, variables inside lines, comments on nodes, a versioning policy, a published JSON Schema and a shared conformance kit for every runtime | Done |
-| 🟡 | **9 · Writer's workflow:** project-wide search with find and replace, a Problems panel listing every error, warning and failing test, copy and paste of nodes between flows and projects, autosave with recovery after a crash, quick line entry (Enter adds the next line, alternating speakers), a script view that reads and edits a flow as a screenplay, and pasting screenplay text to create nodes | Next |
+| 🟡 | **9 · Writer's workflow:** project-wide search with find and replace, a Problems panel listing every error, warning and failing test, copy and paste of nodes between flows and projects, autosave with recovery after a crash, quick line entry (Enter adds the next line, alternating speakers), a script view that reads and edits a flow as a screenplay, and pasting screenplay text to create nodes | In review |
 | ⬜ | **10 · Media and voice:** portraits and images on entities (shown on nodes and in Play), audio matched to line IDs and played in Play, word and line counts per character and flow, a printable script for table reads and recording, and voice preview with the browser's built-in speech | Planned |
 | ⬜ | **11 · Localisation:** translator export and import keyed by line ID, translation states that mark a line outdated when its source changes, and proofreading in the same language | Planned |
 | ⬜ | **12 · Structure and navigation:** nested flows you open by double-clicking, a 2D location map editor, favourites, a list of what jumps or calls into each flow, and a light theme | Planned |

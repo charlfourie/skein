@@ -1,7 +1,7 @@
 {
   "name": "skein",
   "productName": "Skein",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Local-first, node-based narrative design editor that runs in your browser. Projects are deterministic JSON files on your disk.",
   "private": true,
   "license": "Apache-2.0",

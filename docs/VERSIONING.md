@@ -5,14 +5,15 @@ promise about what keeps working.
 
 | Editor | Project format | Export format | Notes |
 | --- | --- | --- | --- |
+| 0.9.0 | 7 | 4 | Phase 9: search and replace, Problems, copy and paste, recovery, quick line entry, script view, scene paste |
 | 0.8.0 | 7 | 4 | Phase 8: project folders, line IDs, variables inside lines, comments |
 | 0.1.0 | 6 | 3 | Phases 1 to 7 (before the editor version was kept up to date) |
 
-## The editor (`0.8.0`)
+## The editor (`0.9.0`)
 
 The app itself, shown in the status bar. Until 1.0 the minor number is the last
 finished phase of the [roadmap](../README.md#%EF%B8%8F-roadmap), and the patch
-number counts fixes since. Each release is tagged in git (`v0.8.0`) when its phase
+number counts fixes since. Each release is tagged in git (`v0.9.0`) when its phase
 is merged into `main`.
 
 ## The project format (`skein.project`, version 7)
