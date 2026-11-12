@@ -2,6 +2,13 @@
 
 What's new in Skein, newest first. Dates are when the work landed on `main`.
 
+## 2026-11-12
+
+### Changed
+- Skein's home is now **[skein.charl.space](https://skein.charl.space)**. The old
+  address keeps working, but browsers keep Recent projects and folder permissions per
+  address, so they start fresh on the new one: reopen your project once from there.
+
 ## 2026-11-11 · 0.8.0 · Phase 8: format foundations
 
 ### Added

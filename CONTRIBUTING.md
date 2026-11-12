@@ -7,7 +7,7 @@ Thanks for helping! Bug reports, demo ideas, docs fixes and code are all welcome
 [Open an issue](https://github.com/charlfourie/skein/issues) with:
 
 - what you did, what you expected, and what happened instead;
-- which browser you were using, and whether it was [the hosted version](https://skein-mocha.vercel.app)
+- which browser you were using, and whether it was [the hosted version](https://skein.charl.space)
   or your own copy;
 - a small `.skein.json` that shows the problem, if you can share one.
 
@@ -24,10 +24,10 @@ npm run dev                                   # the editor at http://localhost:5
 
 ## Branches
 
-- **`main` is production.** It is what [skein-mocha.vercel.app](https://skein-mocha.vercel.app)
+- **`main` is production.** It is what [skein.charl.space](https://skein.charl.space)
   serves, so everything on it should be ready for users.
 - **`next` is where the next phase is built.** Vercel deploys every push to `next` as a
-  preview. Merge `next` into `main` when a piece of work is reviewed and ready to ship.
+  preview. (The old address, skein-mocha.vercel.app, still serves production too.) Merge `next` into `main` when a piece of work is reviewed and ready to ship.
 - Small fixes to production can go straight to `main`; merge `main` back into `next`
   afterwards so the two don't drift apart.
 - Open pull requests against `next` unless you're fixing something that's broken on `main`.

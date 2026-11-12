@@ -1,6 +1,6 @@
 # Skein in the browser
 
-Skein is a web app. The hosted copy is at [skein-mocha.vercel.app](https://skein-mocha.vercel.app),
+Skein is a web app. The hosted copy is at [skein.charl.space](https://skein.charl.space),
 and you can run your own (below). Either way, your projects are files on your own
 computer: Skein reads and writes them through the browser, and nothing you write is
 uploaded anywhere.

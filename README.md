@@ -7,7 +7,7 @@
 A free, local-first narrative design editor for game writers and designers,
 in the spirit of articy:draft, with no accounts and no cloud lock-in.
 
-[![Try it in your browser](https://img.shields.io/badge/try_it-in_your_browser-818cf8?style=for-the-badge)](https://skein-mocha.vercel.app)
+[![Try it in your browser](https://img.shields.io/badge/try_it-in_your_browser-818cf8?style=for-the-badge)](https://skein.charl.space)
 
 [![Tests](https://github.com/charlfourie/skein/actions/workflows/ci.yml/badge.svg)](https://github.com/charlfourie/skein/actions/workflows/ci.yml)
 [![Last commit](https://img.shields.io/github/last-commit/charlfourie/skein)](https://github.com/charlfourie/skein/commits/main)
@@ -49,11 +49,11 @@ It's built for:
 | 🎙️ **Ready for voice and translation** | Every line has a stable line ID, and lines can show live values: `You've got {Player.Coins} left.` |
 | 💬 **Made for teams** | Comment threads on any node, and one file per flow, so people working on different scenes never collide in git. |
 | 🔒 **Yours, on your disk** | No accounts, no server. Files are written atomically, repaired after messy merges, and watched for `git pull` changes. |
-| 🌐 **Runs in your browser** | Nothing to install. [Open it](https://skein-mocha.vercel.app) and work on files on your own disk. Chrome, Edge and Arc open and save project folders; Firefox and Safari use single files. |
+| 🌐 **Runs in your browser** | Nothing to install. [Open it](https://skein.charl.space) and work on files on your own disk. Chrome, Edge and Arc open and save project folders; Firefox and Safari use single files. |
 
 ## 🚀 Quick start
 
-Open **[skein-mocha.vercel.app](https://skein-mocha.vercel.app)** and pick a demo under
+Open **[skein.charl.space](https://skein.charl.space)** and pick a demo under
 **Try a demo**, or **New project** to start your own. Nothing to install, and no account.
 
 Skein reads and writes files on your own computer: nothing you write is uploaded. Chrome,
@@ -249,6 +249,6 @@ you, to use, sell and license however you like. The licences above only cover Sk
 
 **Ready to write something that branches?**
 
-[**Try Skein in your browser**](https://skein-mocha.vercel.app) · ⭐ **Star the repo** to follow along · 🤝 **[Contribute](CONTRIBUTING.md)**
+[**Try Skein in your browser**](https://skein.charl.space) · ⭐ **Star the repo** to follow along · 🤝 **[Contribute](CONTRIBUTING.md)**
 
 </div>

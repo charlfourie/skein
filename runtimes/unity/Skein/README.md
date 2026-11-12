@@ -1,6 +1,6 @@
 # Skein for Unity
 
-Plays stories written in [Skein](https://skein-mocha.vercel.app). Write and branch
+Plays stories written in [Skein](https://skein.charl.space). Write and branch
 the story in Skein, export it, and the game reads the export. No parser, no
 packages. Works with Unity 6 and the new Input System.
 
