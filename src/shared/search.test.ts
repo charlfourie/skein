@@ -15,7 +15,15 @@ const nodeBy = (p: Project, start: string) => Object.values(flowOf(p).nodes).fin
 
 describe('search', () => {
   it('finds lines, choice text, conditions, notes, comments and names, case-insensitively by default', () => {
-    const p = coffee()
+    // The demo ships without comments: add a thread to search through.
+    const p = produce(coffee(), (d) => {
+      const f = flowOf(d as Project)
+      const node = Object.keys(f.nodes)[0]
+      f.comments = {
+        c1: { id: 'c1', nodeId: node, author: 'Sam', text: 'Price check?', createdAt: '2026-01-01T00:00:00.000Z' },
+        c2: { id: 'c2', nodeId: node, parentId: 'c1', author: 'Alex', text: 'A coin each.', createdAt: '2026-01-01T00:00:00.000Z' }
+      }
+    })
     const r = searchProject(p, { query: 'coin' })
     const labels = new Set(r.matches.map((m) => m.fieldLabel))
     for (const l of ['Line', 'Choice text', 'Condition', 'Effects', 'Note', 'Reply', 'Variable']) expect(labels, l).toContain(l)

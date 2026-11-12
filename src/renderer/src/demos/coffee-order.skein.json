@@ -23,23 +23,6 @@
   },
   "flows": {
     "ced87b88-daaf-445d-b4da-e4db7d994a39": {
-      "comments": {
-        "6b96227d-6c15-4da5-8367-f57cbd17b7c2": {
-          "author": "Alex",
-          "createdAt": "2026-01-01T00:00:00.000Z",
-          "id": "6b96227d-6c15-4da5-8367-f57cbd17b7c2",
-          "nodeId": "9eb24ac3-9831-4e87-ae9e-0c4e6270731e",
-          "parentId": "977d1dad-7990-4be2-ab65-0ee6735371dd",
-          "text": "Keep it at the end: it only shows up when you have a coin left."
-        },
-        "977d1dad-7990-4be2-ab65-0ee6735371dd": {
-          "author": "Sam",
-          "createdAt": "2026-01-01T00:00:00.000Z",
-          "id": "977d1dad-7990-4be2-ab65-0ee6735371dd",
-          "nodeId": "9eb24ac3-9831-4e87-ae9e-0c4e6270731e",
-          "text": "Should Pip mention the jar before you order instead?"
-        }
-      },
       "edges": {
         "0c30d301-3a52-40b9-a12d-e3fff5a132de": {
           "id": "0c30d301-3a52-40b9-a12d-e3fff5a132de",
@@ -811,8 +794,8 @@
     "name": "Demo · The Coffee Order"
   },
   "scenarios": {
-    "e8ec8ca3-2be3-4f98-877e-276580b09f16": {
-      "id": "e8ec8ca3-2be3-4f98-877e-276580b09f16",
+    "977d1dad-7990-4be2-ab65-0ee6735371dd": {
+      "id": "977d1dad-7990-4be2-ab65-0ee6735371dd",
       "name": "Only 1 coin",
       "order": 0,
       "setup": "Player.Coins = 1"
@@ -912,10 +895,23 @@
   },
   "tests": {
     "104ee675-9c9f-41fe-b572-72147d1a4554": {
+      "allEnd": true,
+      "checks": "Player.ItemsBought <= 1",
+      "flowId": "ced87b88-daaf-445d-b4da-e4db7d994a39",
+      "id": "104ee675-9c9f-41fe-b572-72147d1a4554",
+      "kind": "explore",
+      "name": "With 1 coin you can still tip",
+      "order": 2,
+      "reach": [
+        "a6b62ca1-83e6-47c0-966d-31c907a08d0a"
+      ],
+      "scenarioId": "977d1dad-7990-4be2-ab65-0ee6735371dd"
+    },
+    "6b96227d-6c15-4da5-8367-f57cbd17b7c2": {
       "checks": "Player.Coins == 1\nPlayer.ItemsBought == 1",
       "ends": true,
       "flowId": "ced87b88-daaf-445d-b4da-e4db7d994a39",
-      "id": "104ee675-9c9f-41fe-b572-72147d1a4554",
+      "id": "6b96227d-6c15-4da5-8367-f57cbd17b7c2",
       "kind": "play",
       "name": "A flat white, no tip",
       "order": 0,
@@ -933,11 +929,11 @@
       "scenarioId": null,
       "stopsAt": "42292677-ed92-40ca-8d6b-dc4910ee64fd"
     },
-    "582344cc-8656-4b56-ba6e-e815c31ec0b8": {
+    "79ae52e0-fe81-4c1c-8f47-1e2344c23418": {
       "checks": "Player.Coins == 0",
       "ends": true,
       "flowId": "ced87b88-daaf-445d-b4da-e4db7d994a39",
-      "id": "582344cc-8656-4b56-ba6e-e815c31ec0b8",
+      "id": "79ae52e0-fe81-4c1c-8f47-1e2344c23418",
       "kind": "play",
       "name": "Offering more tip than you have: back to the jar",
       "order": 4,
@@ -958,24 +954,11 @@
       "scenarioId": null,
       "stopsAt": "a6b62ca1-83e6-47c0-966d-31c907a08d0a"
     },
-    "79ae52e0-fe81-4c1c-8f47-1e2344c23418": {
-      "allEnd": true,
-      "checks": "Player.ItemsBought <= 1",
-      "flowId": "ced87b88-daaf-445d-b4da-e4db7d994a39",
-      "id": "79ae52e0-fe81-4c1c-8f47-1e2344c23418",
-      "kind": "explore",
-      "name": "With 1 coin you can still tip",
-      "order": 2,
-      "reach": [
-        "a6b62ca1-83e6-47c0-966d-31c907a08d0a"
-      ],
-      "scenarioId": "e8ec8ca3-2be3-4f98-877e-276580b09f16"
-    },
-    "898bcf78-90b0-4980-85cb-aa85b0fbb062": {
+    "9f6c9d19-17f0-4241-8b06-d155d4877ad0": {
       "checks": "Player.Coins == 0\nPlayer.ItemsBought == 1",
       "ends": true,
       "flowId": "ced87b88-daaf-445d-b4da-e4db7d994a39",
-      "id": "898bcf78-90b0-4980-85cb-aa85b0fbb062",
+      "id": "9f6c9d19-17f0-4241-8b06-d155d4877ad0",
       "kind": "play",
       "name": "Too short for a flat white: Pip says so, nothing is spent",
       "order": 3,
@@ -990,15 +973,15 @@
           "choose": "24f4f7b2-a4e3-4cb6-8786-1a02a45e688d"
         }
       ],
-      "scenarioId": "e8ec8ca3-2be3-4f98-877e-276580b09f16",
+      "scenarioId": "977d1dad-7990-4be2-ab65-0ee6735371dd",
       "stopsAt": "c151a40b-d27e-49fd-90ef-2dda3b88a00c"
     },
-    "9f6c9d19-17f0-4241-8b06-d155d4877ad0": {
+    "e8ec8ca3-2be3-4f98-877e-276580b09f16": {
       "allEnd": true,
       "allReached": true,
       "checks": "Player.Coins >= 0",
       "flowId": "ced87b88-daaf-445d-b4da-e4db7d994a39",
-      "id": "9f6c9d19-17f0-4241-8b06-d155d4877ad0",
+      "id": "e8ec8ca3-2be3-4f98-877e-276580b09f16",
       "kind": "explore",
       "name": "Every order ends, nothing is unreachable",
       "order": 1,

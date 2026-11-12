@@ -38,6 +38,8 @@ What's new in Skein, newest first. Dates are when the work landed on `main`.
   condition checks the price, and if you're short Pip tells you what it costs and what you
   have, then you choose again. The tip jar now offers a single coin or a handful (3), with
   the same check. New story tests cover both. (The Museum Heist still shows locked choices.)
+- The Coffee Order demo no longer opens with an example comment thread, so it starts with
+  nothing to attend to.
 
 ### Changed
 - In a line's text in the inspector, **Enter** now adds the next line; **Shift+Enter** is a

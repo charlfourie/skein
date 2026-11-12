@@ -231,13 +231,6 @@ function coffeeOrder(): Project {
   chain(bigShort, backToJar)
   chain(noTip, bye)
   layout(flow)
-  // A comment thread, as a teammate might leave one (select the tip-jar line to read it).
-  const c1 = newId()
-  const c2 = newId()
-  flow.comments = {
-    [c1]: { id: c1, nodeId: tipAsk, author: 'Sam', text: 'Should Pip mention the jar before you order instead?', createdAt: CREATED },
-    [c2]: { id: c2, nodeId: tipAsk, parentId: c1, author: 'Alex', text: 'Keep it at the end: it only shows up when you have a coin left.', createdAt: CREATED }
-  }
   project.flows[flow.id] = flow
 
   // Story tests: open the Play panel's Tests tab to see them. They re-run after every edit.
