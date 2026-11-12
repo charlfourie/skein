@@ -431,9 +431,9 @@ export function FlowEditor({ flow }: { flow: Flow }) {
       if (created.length === 1) select({ kind: 'node', flowId: flow.id, id: created[0] })
       return
     }
-    // Quick line entry: one node selected, Enter writes the next line.
+    // Quick line entry: one node selected, Enter writes the next line (not while a button has focus: Enter presses it).
     const picked = nodes.filter((n) => n.selected && !isFrame(n))
-    if (picked.length === 1) quickEntryKey(e, flow.id, picked[0].id)
+    if (picked.length === 1 && !t.closest('button, a, select')) quickEntryKey(e, flow.id, picked[0].id)
   }
   // A node just added off screen (quick line entry) slides into view, at the same zoom.
   const reveal = useUi((s) => s.reveal)
@@ -513,6 +513,8 @@ export function FlowEditor({ flow }: { flow: Flow }) {
     const ours = (e: Event) => {
       const t = e.target as Node | null
       if (typing(t)) return false
+      // Text picked out on the page (a node's text, say) copies as text.
+      if (e.type !== 'paste' && window.getSelection()?.isCollapsed === false) return false
       return t === document.body || !!(t && wrapper.current?.contains(t))
     }
     const copy = (e: globalThis.ClipboardEvent) => ours(e) && clip.current.onCopy(e, false)

@@ -72,12 +72,30 @@ export function ScriptView({ flow }: { flow: Flow }) {
           {items.length === 0 ? (
             <p className="py-16 text-center text-sm text-faint">This flow is empty. Add a node on the canvas, or paste a scene.</p>
           ) : (
-            items.map((item, i) => <Row key={`${item.kind}:${'nodeId' in item ? item.nodeId : ''}:${i}`} project={project} flow={flow} item={item} selectedId={selectedId} />)
+            items.map((item, i) => <Row key={rowKey(item, i)} project={project} flow={flow} item={item} selectedId={selectedId} />)
           )}
         </div>
       </div>
     </div>
   )
+}
+
+/** Stable keys, so adding a line doesn't remount every row after it (and lose a draft). */
+function rowKey(item: ScriptItem, i: number): string {
+  switch (item.kind) {
+    case 'line':
+    case 'direction':
+    case 'condition':
+      return item.nodeId
+    case 'when':
+      return `${item.nodeId}:${item.outcome}`
+    case 'start':
+      return `start:${item.nodeId}`
+    case 'goto':
+      return item.branch ? `goto:${item.branch.edgeId}` : `goto:${item.nodeId}:${i}`
+    default:
+      return `${item.kind}:${i}`
+  }
 }
 
 function openScene(flow: Flow, text: string, after: string | null) {
