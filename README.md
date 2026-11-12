@@ -169,7 +169,7 @@ read which files, so a game never breaks when the editor updates.
 ## 🗺️ Roadmap
 
 Skein is built in reviewed phases. Phases 1 to 8 built the editor, its first
-runtimes, the tools to play and test a story, and a format ready for teams, voice and translation. The next ones make it something any team can ship a game with, in any engine.
+runtimes, the tools to play and test a story, and a format ready for teams, voice and translation. The next ones make writing in it as comfortable as any commercial tool, then take it to every engine.
 
 | | Phase | Status |
 | --- | --- | --- |
@@ -177,11 +177,14 @@ runtimes, the tools to play and test a story, and a format ready for teams, voic
 | ✅ | **6 · First runtimes:** C# (Unity, Godot .NET, .NET) and Unity components, checked against the reference by a conformance suite | Done |
 | ✅ | **7 · Play and analysis:** Play, Explore, start states and replays, plus saved scenarios and story tests that re-check after every edit | Done |
 | ✅ | **8 · Format foundations:** one file per flow, line IDs, variables inside lines, comments on nodes, a versioning policy, a published JSON Schema and a shared conformance kit for every runtime | Done |
-| 🟡 | **9 · Unity, production-ready:** an installable Unity package, an importer that checks exports, configurable components and a sample scene | Next |
-| ⬜ | **10 · Localisation and voice-over:** translator export and import, recording scripts, Unity Localization support | Planned |
-| ⬜ | **11 · Godot:** a native GDScript runtime and add-on | Planned |
-| ⬜ | **12 · Extensibility:** event nodes and custom node types that every runtime hands to the game, and plugins | Planned |
-| ⬜ | **13 · Unreal, interchange and adoption:** a C++ runtime and Unreal plugin, import from ink, Yarn Spinner and Twine, a CLI and a docs site | Planned |
+| 🟡 | **9 · Writer's workflow:** project-wide search with find and replace, a Problems panel listing every error, warning and failing test, copy and paste of nodes between flows and projects, autosave with recovery after a crash, quick line entry (Enter adds the next line, alternating speakers), a script view that reads and edits a flow as a screenplay, and pasting screenplay text to create nodes | Next |
+| ⬜ | **10 · Media and voice:** portraits and images on entities (shown on nodes and in Play), audio matched to line IDs and played in Play, word and line counts per character and flow, a printable script for table reads and recording, and voice preview with the browser's built-in speech | Planned |
+| ⬜ | **11 · Localisation:** translator export and import keyed by line ID, translation states that mark a line outdated when its source changes, and proofreading in the same language | Planned |
+| ⬜ | **12 · Structure and navigation:** nested flows you open by double-clicking, a 2D location map editor, favourites, a list of what jumps or calls into each flow, and a light theme | Planned |
+| ⬜ | **13 · Unity, production-ready:** an installable Unity package, an importer that checks exports, configurable components, a sample scene and Unity Localization support | Planned |
+| ⬜ | **14 · Godot:** a native GDScript runtime and add-on | Planned |
+| ⬜ | **15 · Extensibility:** event nodes and custom node types that every runtime hands to the game, and plugins | Planned |
+| ⬜ | **16 · Unreal, interchange and adoption:** a C++ runtime and Unreal plugin, import from ink, Yarn Spinner and Twine, a CLI and a docs site | Planned |
 
 Through every phase Skein stays **local-first** (your projects are files on your own
 disk, and you can run Skein yourself), keeps **deterministic files** that diff cleanly,
@@ -192,6 +195,8 @@ is planned.
 
 **No cloud, ever.** Skein has no accounts, no sign-in and no server. Teams share projects
 however they like (git, a shared drive, email), and nothing on the roadmap changes that.
+Features that would need someone else's servers, such as AI writing, cloud translation or
+cloud voices, stay out; voice preview uses the speech built into your browser.
 
 See what's changed recently in the [changelog](CHANGELOG.md).
 

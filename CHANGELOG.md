@@ -8,6 +8,12 @@ What's new in Skein, newest first. Dates are when the work landed on `main`.
 - Skein's home is now **[skein.charl.space](https://skein.charl.space)**. The old
   address keeps working, but browsers keep Recent projects and folder permissions per
   address, so they start fresh on the new one: reopen your project once from there.
+- **New roadmap order.** Four phases come before Unity: the writer's workflow (search,
+  a Problems panel, copy and paste, autosave, quick line entry, a script view), media and
+  voice (portraits, audio by line ID, word counts, printable scripts, browser voice
+  preview), localisation, and structure and navigation (nested flows, location maps,
+  favourites, back-references, a light theme). Unity is now Phase 13; Godot,
+  extensibility and Unreal follow.
 
 ## 2026-11-11 · 0.8.0 · Phase 8: format foundations
 
