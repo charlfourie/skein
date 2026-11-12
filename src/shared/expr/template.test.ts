@@ -80,6 +80,6 @@ describe('variables inside lines', () => {
     story.start()
     const menu = story.choose(0)
     expect(menu.kind).toBe('choice')
-    if (menu.kind === 'choice') expect(menu.choices[0].lineId).toBe(pick.menuLine)
+    if (menu.kind === 'choice') expect(menu.choices.find((c) => c.text.startsWith('A flat white'))?.lineId).toBe(pick.menuLine)
   })
 })

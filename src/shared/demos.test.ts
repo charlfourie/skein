@@ -31,15 +31,32 @@ describe('bundled demos', () => {
     })
   }
 
-  it('locks the coffee menu items the player cannot afford', () => {
+  it('offers the whole coffee menu, and says so when you come up short', () => {
     const { file } = load('coffee-order')
     const flow = Object.values(file.flows)[0]
-    const hub = Object.values(flow.nodes).find((n) => n.type === 'hub')!
-    if (hub.type !== 'hub') throw new Error('no hub')
-    const offered = (coins: number) => {
-      const story = new SkeinStory(new SkeinWorld(file, { changes: { 'var:Player.Coins': coins }, day: 1, phase: null } as never), flow.id)
-      return hub.next.filter((id) => story.available(id)).length
+    const hub = Object.values(flow.nodes).find((n) => n.type === 'hub' && n.label === 'The menu')!
+    if (hub.type !== 'hub') throw new Error('no menu')
+    const story = (coins: number) => new SkeinStory(new SkeinWorld(file, { changes: { 'var:Player.Coins': coins }, day: 1, phase: null } as never), flow.id)
+    for (const coins of [0, 1, 3, 4]) {
+      const s = story(coins)
+      expect(hub.next.filter((id) => s.available(id))).toHaveLength(5) // everything, water and leaving included
     }
-    expect([0, 1, 3, 4].map(offered)).toEqual([2, 3, 4, 5]) // water + leave are always offered
+    // One coin, a flat white: Pip says what it costs, nothing is spent, and you're back at the menu without it.
+    const s = story(1)
+    let beat = s.start()
+    while (beat.kind === 'line' && beat.choices.length === 1) beat = s.choose(0)
+    if (beat.kind === 'end') throw new Error('ended early')
+    const flat = beat.choices.findIndex((c) => c.text.startsWith('A flat white'))
+    beat = s.choose(flat)
+    const said: string[] = []
+    while (beat.kind === 'line' && beat.choices.length <= 1) {
+      said.push(beat.text)
+      beat = s.choose(0)
+    }
+    expect(said.join(' ')).toContain("A flat white's 4 coins, and you've got 1.")
+    expect(s.world.read({ get: 'var', var: 'Player.Coins' })).toBe(1)
+    if (beat.kind === 'end') throw new Error('ended early')
+    expect(beat.choices.map((c) => c.text)).not.toContain('A flat white (4 coins)')
+    expect(beat.choices.map((c) => c.text)).toContain('A ginger biscuit (1 coin)')
   })
 })

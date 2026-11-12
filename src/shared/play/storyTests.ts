@@ -158,7 +158,7 @@ export function runStoryTest(project: Project, build: ExportResult, test: StoryT
   }
   checks.list.forEach((c, i) => {
     const f = failing[i]
-    if (f.count) failures.push({ message: `“${c.source}” isn't true at the end of ${f.count} of ${count(paths, 'path')}${f.values}.`, ...(f.example ? { example: f.example } : {}) })
+    if (f.count) failures.push({ message: `“${c.source}” isn't true at the end of ${f.count.toLocaleString('en')} of ${count(paths, 'path')}${f.values}.`, ...(f.example ? { example: f.example } : {}) })
   })
   if (deleted) return { ...base, status: 'broken', failures, paths }
   return { ...base, status: failures.length ? 'fail' : 'pass', failures, paths }

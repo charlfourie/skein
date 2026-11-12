@@ -20,7 +20,9 @@ function coffee(): Project {
 const demo = coffee()
 const FLOW = Object.values(demo.flows)[0].id
 const byText = (start: string) => {
-  const n = Object.values(demo.flows[FLOW].nodes).find((x) => [x.data.menuText, x.data.text, x.data.label].some((t) => typeof t === 'string' && t.startsWith(start)))
+  // Choice text first: "A flat white (4 coins)" is the choice, "A flat white's 4 coins…" Pip's reply.
+  const nodes = Object.values(demo.flows[FLOW].nodes)
+  const n = ['menuText', 'text', 'label'].map((k) => nodes.find((x) => typeof x.data[k] === 'string' && (x.data[k] as string).startsWith(start))).find(Boolean)
   if (!n) throw new Error(`no node “${start}”`)
   return n.id
 }
@@ -138,7 +140,7 @@ describe('story tests: explore', () => {
   it('finds paths where a check fails, with one to replay', () => {
     const [r] = runStoryTests(withTests(coffee(), explorer({ scenarioId: null, reach: [], checks: 'Player.Coins >= 1' })))
     expect(r.status).toBe('fail')
-    expect(r.failures[0].message).toMatch(/^“Player.Coins >= 1” isn't true at the end of \d+ of \d+ paths \(Player.Coins is 0\)\.$/)
+    expect(r.failures[0].message).toMatch(/^“Player.Coins >= 1” isn't true at the end of [\d,]+ of [\d,]+ paths \(Player.Coins is 0\)\.$/)
     expect(r.failures[0].example?.choices.length).toBeGreaterThan(0)
   })
 

@@ -30,6 +30,10 @@ What's new in Skein, newest first. Dates are when the work landed on `main`.
   work. After a crash or a closed tab, the Welcome screen offers them back: Restore puts
   them over the saved project as one undoable step.
 - **Keyboard shortcuts sheet:** press **?** (or the keyboard icon in the status bar).
+- **The Coffee Order demo lets you try to overspend.** Every item stays on the menu; a
+  condition checks the price, and if you're short Pip tells you what it costs and what you
+  have, then you choose again. The tip jar now offers a single coin or a handful (3), with
+  the same check. New story tests cover both. (The Museum Heist still shows locked choices.)
 
 ### Changed
 - In a line's text in the inspector, **Enter** now adds the next line; **Shift+Enter** is a
@@ -41,6 +45,8 @@ What's new in Skein, newest first. Dates are when the work landed on `main`.
 ### Fixed
 - The inspector (and the flow area) could go blank and stay blank when the selection
   changed twice in quick succession, such as adding a line and deleting it straight away.
+- Story test messages wrote large path counts two ways ("1953 of 2,670"); both now use
+  separators.
 - A new connection on an output whose connections had no stored order (older or
   hand-written projects) now comes last, as it should, instead of first.
 

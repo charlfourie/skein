@@ -24,175 +24,317 @@
   "flows": {
     "ced87b88-daaf-445d-b4da-e4db7d994a39": {
       "comments": {
-        "95c68fc0-fab0-4604-a848-676b8cae6457": {
+        "6b96227d-6c15-4da5-8367-f57cbd17b7c2": {
           "author": "Alex",
           "createdAt": "2026-01-01T00:00:00.000Z",
-          "id": "95c68fc0-fab0-4604-a848-676b8cae6457",
-          "nodeId": "9e67e600-8a8f-40ad-a9fb-3cbf250027cf",
-          "parentId": "c811c3ba-8a09-4348-a013-254891dd5abf",
+          "id": "6b96227d-6c15-4da5-8367-f57cbd17b7c2",
+          "nodeId": "9eb24ac3-9831-4e87-ae9e-0c4e6270731e",
+          "parentId": "977d1dad-7990-4be2-ab65-0ee6735371dd",
           "text": "Keep it at the end: it only shows up when you have a coin left."
         },
-        "c811c3ba-8a09-4348-a013-254891dd5abf": {
+        "977d1dad-7990-4be2-ab65-0ee6735371dd": {
           "author": "Sam",
           "createdAt": "2026-01-01T00:00:00.000Z",
-          "id": "c811c3ba-8a09-4348-a013-254891dd5abf",
-          "nodeId": "9e67e600-8a8f-40ad-a9fb-3cbf250027cf",
+          "id": "977d1dad-7990-4be2-ab65-0ee6735371dd",
+          "nodeId": "9eb24ac3-9831-4e87-ae9e-0c4e6270731e",
           "text": "Should Pip mention the jar before you order instead?"
         }
       },
       "edges": {
-        "01d9c28a-c954-4c7c-951a-bee15e2e08bc": {
-          "id": "01d9c28a-c954-4c7c-951a-bee15e2e08bc",
-          "source": "a618af6a-5bd7-45ac-9037-ec7684c68a42",
+        "0c30d301-3a52-40b9-a12d-e3fff5a132de": {
+          "id": "0c30d301-3a52-40b9-a12d-e3fff5a132de",
+          "order": 0,
+          "source": "3e3ed6f2-037a-480e-8cbb-4ecca714cf14",
           "sourceHandle": "out",
-          "target": "916ac652-a47d-41fd-9d07-24379b63b5e7",
+          "target": "e806b5f5-6c94-42ff-b89f-5fc62100f61c",
           "targetHandle": "in"
         },
-        "0998f58f-8eb4-4574-83a1-238d25a04648": {
-          "id": "0998f58f-8eb4-4574-83a1-238d25a04648",
-          "source": "a3e0130b-9c9b-404e-a07f-66eb02ccad37",
-          "sourceHandle": "out",
-          "target": "a7302af5-cc64-4a50-8f55-05c1e757de17",
-          "targetHandle": "in"
-        },
-        "24f4f7b2-a4e3-4cb6-8786-1a02a45e688d": {
-          "id": "24f4f7b2-a4e3-4cb6-8786-1a02a45e688d",
-          "source": "2c5fa18f-ae51-40ba-a613-c71cdd3e4354",
-          "sourceHandle": "out",
-          "target": "15635f8a-ff9c-4fa4-adc5-1cc0a51e6436",
-          "targetHandle": "in"
-        },
-        "356894d9-a1b8-4a55-b538-6dde078edf22": {
-          "id": "356894d9-a1b8-4a55-b538-6dde078edf22",
-          "source": "3e650e41-25fe-4d23-8e47-869ff26e6d86",
-          "sourceHandle": "out",
-          "target": "afb64551-5847-43ec-9c32-cb5984340cf2",
-          "targetHandle": "in"
-        },
-        "3c08f5af-0dbd-44e4-850e-685e3c11abd1": {
-          "id": "3c08f5af-0dbd-44e4-850e-685e3c11abd1",
-          "source": "916ac652-a47d-41fd-9d07-24379b63b5e7",
-          "sourceHandle": "out",
-          "target": "2c5fa18f-ae51-40ba-a613-c71cdd3e4354",
-          "targetHandle": "in"
-        },
-        "3e3ed6f2-037a-480e-8cbb-4ecca714cf14": {
-          "id": "3e3ed6f2-037a-480e-8cbb-4ecca714cf14",
+        "1567adc0-af36-4602-8819-8cf8352fafa9": {
+          "id": "1567adc0-af36-4602-8819-8cf8352fafa9",
+          "order": 0,
           "source": "9b82776d-8628-4627-b226-48c27269f744",
-          "sourceHandle": "false",
-          "target": "dc6e8651-7f34-4c45-8662-bc41389d3413",
-          "targetHandle": "in"
-        },
-        "4e618761-4a7b-4a10-8141-63b7b3572b86": {
-          "id": "4e618761-4a7b-4a10-8141-63b7b3572b86",
-          "source": "eb600423-06c3-4d2d-b908-5ff1e7c41b7a",
           "sourceHandle": "out",
-          "target": "1567adc0-af36-4602-8819-8cf8352fafa9",
+          "target": "cacd8530-4099-4fdd-9deb-00f2f5862ed7",
           "targetHandle": "in"
         },
-        "53f27cf1-f9f8-4a16-b00b-a217009d0854": {
-          "id": "53f27cf1-f9f8-4a16-b00b-a217009d0854",
-          "source": "4d02fe43-acf4-4a6c-9821-85f2d7c2363b",
-          "sourceHandle": "out",
-          "target": "a618af6a-5bd7-45ac-9037-ec7684c68a42",
-          "targetHandle": "in"
-        },
-        "67cfbaeb-9d6d-4917-8df3-64638a14c260": {
-          "id": "67cfbaeb-9d6d-4917-8df3-64638a14c260",
-          "source": "0741fc17-fbf7-4546-9dd8-1806b89c4027",
-          "sourceHandle": "out",
-          "target": "2c5fa18f-ae51-40ba-a613-c71cdd3e4354",
-          "targetHandle": "in"
-        },
-        "6f9dfada-3480-4250-9a57-0bdfafc99925": {
-          "id": "6f9dfada-3480-4250-9a57-0bdfafc99925",
+        "15cd4677-e05a-48c5-bdff-82f3fed5599e": {
+          "id": "15cd4677-e05a-48c5-bdff-82f3fed5599e",
+          "order": 0,
           "source": "4d02fe43-acf4-4a6c-9821-85f2d7c2363b",
           "sourceHandle": "out",
           "target": "8ae4d8b2-498c-4e27-ae8b-dc9c1250a20a",
           "targetHandle": "in"
         },
-        "976020b0-2819-4274-b45d-0332a1ee7eb5": {
-          "id": "976020b0-2819-4274-b45d-0332a1ee7eb5",
-          "source": "4d02fe43-acf4-4a6c-9821-85f2d7c2363b",
-          "sourceHandle": "out",
-          "target": "3e650e41-25fe-4d23-8e47-869ff26e6d86",
+        "3370cb69-5821-400c-9f5c-f903a1ff3b0c": {
+          "id": "3370cb69-5821-400c-9f5c-f903a1ff3b0c",
+          "order": 0,
+          "source": "4e618761-4a7b-4a10-8141-63b7b3572b86",
+          "sourceHandle": "false",
+          "target": "95c68fc0-fab0-4604-a848-676b8cae6457",
           "targetHandle": "in"
         },
-        "9eb24ac3-9831-4e87-ae9e-0c4e6270731e": {
-          "id": "9eb24ac3-9831-4e87-ae9e-0c4e6270731e",
-          "source": "9b82776d-8628-4627-b226-48c27269f744",
-          "sourceHandle": "true",
-          "target": "9e67e600-8a8f-40ad-a9fb-3cbf250027cf",
-          "targetHandle": "in"
-        },
-        "a47cf1a8-6e09-41c7-ba0a-c5eb1d981fb0": {
-          "id": "a47cf1a8-6e09-41c7-ba0a-c5eb1d981fb0",
-          "source": "afb64551-5847-43ec-9c32-cb5984340cf2",
-          "sourceHandle": "out",
-          "target": "2c5fa18f-ae51-40ba-a613-c71cdd3e4354",
-          "targetHandle": "in"
-        },
-        "a6b62ca1-83e6-47c0-966d-31c907a08d0a": {
-          "id": "a6b62ca1-83e6-47c0-966d-31c907a08d0a",
-          "source": "9e67e600-8a8f-40ad-a9fb-3cbf250027cf",
-          "sourceHandle": "out",
-          "target": "eb600423-06c3-4d2d-b908-5ff1e7c41b7a",
-          "targetHandle": "in"
-        },
-        "b72795a7-3df1-428c-8627-f40c02a981dc": {
-          "id": "b72795a7-3df1-428c-8627-f40c02a981dc",
+        "356894d9-a1b8-4a55-b538-6dde078edf22": {
+          "id": "356894d9-a1b8-4a55-b538-6dde078edf22",
+          "order": 0,
           "source": "ab47bb16-3c0b-4623-8346-43d31c58ee54",
-          "sourceHandle": "out",
-          "target": "2c5fa18f-ae51-40ba-a613-c71cdd3e4354",
+          "sourceHandle": "true",
+          "target": "f75bfe35-28ec-4546-b095-c89c5619631c",
           "targetHandle": "in"
         },
-        "c92056a0-f8ff-42de-9e2c-96c4548095b6": {
-          "id": "c92056a0-f8ff-42de-9e2c-96c4548095b6",
-          "source": "4d02fe43-acf4-4a6c-9821-85f2d7c2363b",
-          "sourceHandle": "out",
-          "target": "46c3984d-a437-44b2-becf-1277d4851c32",
-          "targetHandle": "in"
-        },
-        "dea9307f-cb93-4cab-a18a-262ddf21689e": {
-          "id": "dea9307f-cb93-4cab-a18a-262ddf21689e",
+        "3a6fbf56-0b22-4a7c-afa0-cd4a16836351": {
+          "id": "3a6fbf56-0b22-4a7c-afa0-cd4a16836351",
+          "order": 0,
           "source": "cacd8530-4099-4fdd-9deb-00f2f5862ed7",
           "sourceHandle": "out",
           "target": "0741fc17-fbf7-4546-9dd8-1806b89c4027",
           "targetHandle": "in"
         },
-        "dffcc3a7-c7e0-418a-9b3d-08a2b203cd52": {
-          "id": "dffcc3a7-c7e0-418a-9b3d-08a2b203cd52",
+        "3fdd7395-d6bb-4a02-9016-a40751959458": {
+          "id": "3fdd7395-d6bb-4a02-9016-a40751959458",
+          "order": 0,
+          "source": "9eb24ac3-9831-4e87-ae9e-0c4e6270731e",
+          "sourceHandle": "out",
+          "target": "3e3ed6f2-037a-480e-8cbb-4ecca714cf14",
+          "targetHandle": "in"
+        },
+        "46c3984d-a437-44b2-becf-1277d4851c32": {
+          "id": "46c3984d-a437-44b2-becf-1277d4851c32",
+          "order": 0,
+          "source": "3e650e41-25fe-4d23-8e47-869ff26e6d86",
+          "sourceHandle": "out",
+          "target": "dea9307f-cb93-4cab-a18a-262ddf21689e",
+          "targetHandle": "in"
+        },
+        "4acd6309-191c-4638-b623-87b69c345d46": {
+          "id": "4acd6309-191c-4638-b623-87b69c345d46",
+          "order": 4,
+          "source": "4d02fe43-acf4-4a6c-9821-85f2d7c2363b",
+          "sourceHandle": "out",
+          "target": "24f4f7b2-a4e3-4cb6-8786-1a02a45e688d",
+          "targetHandle": "in"
+        },
+        "53f27cf1-f9f8-4a16-b00b-a217009d0854": {
+          "id": "53f27cf1-f9f8-4a16-b00b-a217009d0854",
+          "order": 0,
+          "source": "dffcc3a7-c7e0-418a-9b3d-08a2b203cd52",
+          "sourceHandle": "out",
+          "target": "f5137258-5626-4e91-9a0c-77e10ede9939",
+          "targetHandle": "in"
+        },
+        "5c5ca517-d325-490a-a385-e48fdbb16a2b": {
+          "id": "5c5ca517-d325-490a-a385-e48fdbb16a2b",
+          "order": 1,
+          "source": "4d02fe43-acf4-4a6c-9821-85f2d7c2363b",
+          "sourceHandle": "out",
+          "target": "2c5fa18f-ae51-40ba-a613-c71cdd3e4354",
+          "targetHandle": "in"
+        },
+        "62413dd9-0b3a-4a0b-9dd9-ec127f1812ae": {
+          "id": "62413dd9-0b3a-4a0b-9dd9-ec127f1812ae",
+          "order": 1,
+          "source": "3e3ed6f2-037a-480e-8cbb-4ecca714cf14",
+          "sourceHandle": "out",
+          "target": "0998f58f-8eb4-4574-83a1-238d25a04648",
+          "targetHandle": "in"
+        },
+        "664b6fc6-d3e3-4a95-85c3-7293076f624b": {
+          "id": "664b6fc6-d3e3-4a95-85c3-7293076f624b",
+          "order": 0,
+          "source": "a215bbd7-fce7-4eae-bcc9-7e2763140510",
+          "sourceHandle": "out",
+          "target": "42292677-ed92-40ca-8d6b-dc4910ee64fd",
+          "targetHandle": "in"
+        },
+        "67cfbaeb-9d6d-4917-8df3-64638a14c260": {
+          "id": "67cfbaeb-9d6d-4917-8df3-64638a14c260",
+          "order": 0,
+          "source": "f5137258-5626-4e91-9a0c-77e10ede9939",
+          "sourceHandle": "false",
+          "target": "976020b0-2819-4274-b45d-0332a1ee7eb5",
+          "targetHandle": "in"
+        },
+        "68096816-8e6f-4234-b543-0ce8c8587104": {
+          "id": "68096816-8e6f-4234-b543-0ce8c8587104",
+          "order": 0,
+          "source": "4e618761-4a7b-4a10-8141-63b7b3572b86",
+          "sourceHandle": "true",
+          "target": "c811c3ba-8a09-4348-a013-254891dd5abf",
+          "targetHandle": "in"
+        },
+        "783b52f7-564c-4b58-afb5-12afa186f9b8": {
+          "id": "783b52f7-564c-4b58-afb5-12afa186f9b8",
+          "order": 3,
+          "source": "4d02fe43-acf4-4a6c-9821-85f2d7c2363b",
+          "sourceHandle": "out",
+          "target": "01d9c28a-c954-4c7c-951a-bee15e2e08bc",
+          "targetHandle": "in"
+        },
+        "7bf7c155-82db-4741-ba0e-c676145dd176": {
+          "id": "7bf7c155-82db-4741-ba0e-c676145dd176",
+          "order": 0,
           "source": "24cb6ec4-a792-48c8-81ec-242f19fc1142",
           "sourceHandle": "out",
           "target": "4d02fe43-acf4-4a6c-9821-85f2d7c2363b",
           "targetHandle": "in"
         },
-        "e806b5f5-6c94-42ff-b89f-5fc62100f61c": {
-          "id": "e806b5f5-6c94-42ff-b89f-5fc62100f61c",
-          "source": "9e67e600-8a8f-40ad-a9fb-3cbf250027cf",
+        "7ca98785-9555-4a49-aa39-5cb739bd43c2": {
+          "id": "7ca98785-9555-4a49-aa39-5cb739bd43c2",
+          "order": 0,
+          "source": "24f4f7b2-a4e3-4cb6-8786-1a02a45e688d",
           "sourceHandle": "out",
-          "target": "a3e0130b-9c9b-404e-a07f-66eb02ccad37",
+          "target": "ea73abc1-76c6-4e8e-99b8-32986498a381",
           "targetHandle": "in"
         },
-        "ea73abc1-76c6-4e8e-99b8-32986498a381": {
-          "id": "ea73abc1-76c6-4e8e-99b8-32986498a381",
-          "source": "46c3984d-a437-44b2-becf-1277d4851c32",
-          "sourceHandle": "out",
-          "target": "9b82776d-8628-4627-b226-48c27269f744",
-          "targetHandle": "in"
-        },
-        "f5137258-5626-4e91-9a0c-77e10ede9939": {
-          "id": "f5137258-5626-4e91-9a0c-77e10ede9939",
-          "source": "4d02fe43-acf4-4a6c-9821-85f2d7c2363b",
+        "881305df-0db4-4128-a69e-481e505eab3f": {
+          "id": "881305df-0db4-4128-a69e-481e505eab3f",
+          "order": 0,
+          "source": "3c08f5af-0dbd-44e4-850e-685e3c11abd1",
           "sourceHandle": "out",
           "target": "cacd8530-4099-4fdd-9deb-00f2f5862ed7",
           "targetHandle": "in"
         },
-        "f75bfe35-28ec-4546-b095-c89c5619631c": {
-          "id": "f75bfe35-28ec-4546-b095-c89c5619631c",
+        "916ac652-a47d-41fd-9d07-24379b63b5e7": {
+          "id": "916ac652-a47d-41fd-9d07-24379b63b5e7",
+          "order": 0,
+          "source": "f75bfe35-28ec-4546-b095-c89c5619631c",
+          "sourceHandle": "out",
+          "target": "cacd8530-4099-4fdd-9deb-00f2f5862ed7",
+          "targetHandle": "in"
+        },
+        "a3e0130b-9c9b-404e-a07f-66eb02ccad37": {
+          "id": "a3e0130b-9c9b-404e-a07f-66eb02ccad37",
+          "order": 0,
+          "source": "2c5fa18f-ae51-40ba-a613-c71cdd3e4354",
+          "sourceHandle": "out",
+          "target": "15635f8a-ff9c-4fa4-adc5-1cc0a51e6436",
+          "targetHandle": "in"
+        },
+        "a47cf1a8-6e09-41c7-ba0a-c5eb1d981fb0": {
+          "id": "a47cf1a8-6e09-41c7-ba0a-c5eb1d981fb0",
+          "order": 0,
+          "source": "976020b0-2819-4274-b45d-0332a1ee7eb5",
+          "sourceHandle": "out",
+          "target": "dea9307f-cb93-4cab-a18a-262ddf21689e",
+          "targetHandle": "in"
+        },
+        "a618af6a-5bd7-45ac-9037-ec7684c68a42": {
+          "id": "a618af6a-5bd7-45ac-9037-ec7684c68a42",
+          "order": 0,
+          "source": "ab47bb16-3c0b-4623-8346-43d31c58ee54",
+          "sourceHandle": "false",
+          "target": "3e650e41-25fe-4d23-8e47-869ff26e6d86",
+          "targetHandle": "in"
+        },
+        "a7302af5-cc64-4a50-8f55-05c1e757de17": {
+          "id": "a7302af5-cc64-4a50-8f55-05c1e757de17",
+          "order": 0,
+          "source": "15635f8a-ff9c-4fa4-adc5-1cc0a51e6436",
+          "sourceHandle": "true",
+          "target": "9b82776d-8628-4627-b226-48c27269f744",
+          "targetHandle": "in"
+        },
+        "aebe05d8-e4d7-44a6-9f3d-df8fe152202b": {
+          "id": "aebe05d8-e4d7-44a6-9f3d-df8fe152202b",
+          "order": 0,
+          "source": "e806b5f5-6c94-42ff-b89f-5fc62100f61c",
+          "sourceHandle": "out",
+          "target": "a6b62ca1-83e6-47c0-966d-31c907a08d0a",
+          "targetHandle": "in"
+        },
+        "afb64551-5847-43ec-9c32-cb5984340cf2": {
+          "id": "afb64551-5847-43ec-9c32-cb5984340cf2",
+          "order": 0,
           "source": "8ae4d8b2-498c-4e27-ae8b-dc9c1250a20a",
           "sourceHandle": "out",
           "target": "ab47bb16-3c0b-4623-8346-43d31c58ee54",
+          "targetHandle": "in"
+        },
+        "b5387b48-ea62-4bee-a537-4a268f7e2cc6": {
+          "id": "b5387b48-ea62-4bee-a537-4a268f7e2cc6",
+          "order": 0,
+          "source": "01d9c28a-c954-4c7c-951a-bee15e2e08bc",
+          "sourceHandle": "out",
+          "target": "3c08f5af-0dbd-44e4-850e-685e3c11abd1",
+          "targetHandle": "in"
+        },
+        "b72795a7-3df1-428c-8627-f40c02a981dc": {
+          "id": "b72795a7-3df1-428c-8627-f40c02a981dc",
+          "order": 0,
+          "source": "6f9dfada-3480-4250-9a57-0bdfafc99925",
+          "sourceHandle": "out",
+          "target": "cacd8530-4099-4fdd-9deb-00f2f5862ed7",
+          "targetHandle": "in"
+        },
+        "bf943a1a-221c-44ba-9b15-5e2677bd8148": {
+          "id": "bf943a1a-221c-44ba-9b15-5e2677bd8148",
+          "order": 2,
+          "source": "4d02fe43-acf4-4a6c-9821-85f2d7c2363b",
+          "sourceHandle": "out",
+          "target": "dffcc3a7-c7e0-418a-9b3d-08a2b203cd52",
+          "targetHandle": "in"
+        },
+        "c00b3f3d-e1de-4556-8e3f-fc777c46d890": {
+          "id": "c00b3f3d-e1de-4556-8e3f-fc777c46d890",
+          "order": 0,
+          "source": "ea73abc1-76c6-4e8e-99b8-32986498a381",
+          "sourceHandle": "true",
+          "target": "9eb24ac3-9831-4e87-ae9e-0c4e6270731e",
+          "targetHandle": "in"
+        },
+        "c6cedecd-171b-48e8-a2a3-18e4391a311a": {
+          "id": "c6cedecd-171b-48e8-a2a3-18e4391a311a",
+          "order": 0,
+          "source": "0998f58f-8eb4-4574-83a1-238d25a04648",
+          "sourceHandle": "out",
+          "target": "4e618761-4a7b-4a10-8141-63b7b3572b86",
+          "targetHandle": "in"
+        },
+        "c92056a0-f8ff-42de-9e2c-96c4548095b6": {
+          "id": "c92056a0-f8ff-42de-9e2c-96c4548095b6",
+          "order": 0,
+          "source": "f5137258-5626-4e91-9a0c-77e10ede9939",
+          "sourceHandle": "true",
+          "target": "6f9dfada-3480-4250-9a57-0bdfafc99925",
+          "targetHandle": "in"
+        },
+        "c9c1f187-8df9-43f5-b0e9-13eda44b0ff3": {
+          "id": "c9c1f187-8df9-43f5-b0e9-13eda44b0ff3",
+          "order": 0,
+          "source": "95c68fc0-fab0-4604-a848-676b8cae6457",
+          "sourceHandle": "out",
+          "target": "1169b66a-9af9-4a68-9084-50078bb7155b",
+          "targetHandle": "in"
+        },
+        "d335eedf-70b2-46a9-be5d-bc6d5bbe0c60": {
+          "id": "d335eedf-70b2-46a9-be5d-bc6d5bbe0c60",
+          "order": 0,
+          "source": "ea73abc1-76c6-4e8e-99b8-32986498a381",
+          "sourceHandle": "false",
+          "target": "c151a40b-d27e-49fd-90ef-2dda3b88a00c",
+          "targetHandle": "in"
+        },
+        "dc6e8651-7f34-4c45-8662-bc41389d3413": {
+          "id": "dc6e8651-7f34-4c45-8662-bc41389d3413",
+          "order": 0,
+          "source": "9e67e600-8a8f-40ad-a9fb-3cbf250027cf",
+          "sourceHandle": "out",
+          "target": "dea9307f-cb93-4cab-a18a-262ddf21689e",
+          "targetHandle": "in"
+        },
+        "e8b0585a-a64d-49dc-b0db-cf5b9c5d30a6": {
+          "id": "e8b0585a-a64d-49dc-b0db-cf5b9c5d30a6",
+          "order": 2,
+          "source": "3e3ed6f2-037a-480e-8cbb-4ecca714cf14",
+          "sourceHandle": "out",
+          "target": "a215bbd7-fce7-4eae-bcc9-7e2763140510",
+          "targetHandle": "in"
+        },
+        "eb600423-06c3-4d2d-b908-5ff1e7c41b7a": {
+          "id": "eb600423-06c3-4d2d-b908-5ff1e7c41b7a",
+          "order": 0,
+          "source": "15635f8a-ff9c-4fa4-adc5-1cc0a51e6436",
+          "sourceHandle": "false",
+          "target": "9e67e600-8a8f-40ad-a9fb-3cbf250027cf",
           "targetHandle": "in"
         }
       },
@@ -200,44 +342,72 @@
       "id": "ced87b88-daaf-445d-b4da-e4db7d994a39",
       "name": "The Order",
       "nodes": {
-        "0741fc17-fbf7-4546-9dd8-1806b89c4027": {
+        "01d9c28a-c954-4c7c-951a-bee15e2e08bc": {
           "data": {
-            "lineId": "ORDER_0741fc",
-            "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
-            "text": "One flat white, with a fern on top."
+            "lineId": "ORDER_01d9c2",
+            "menuText": "Just water (free)",
+            "note": "Free, so you are never stuck with nothing to pick. Only once: after a glass it leaves the menu, so every path ends (Explore checks this).",
+            "once": true,
+            "speakerId": "0a1943b8-de62-44b6-b829-ef96c400b453",
+            "text": "Just water, thanks."
           },
-          "id": "0741fc17-fbf7-4546-9dd8-1806b89c4027",
+          "id": "01d9c28a-c954-4c7c-951a-bee15e2e08bc",
           "position": {
             "x": 0,
             "y": 632
           },
           "type": "dialogue"
         },
-        "15635f8a-ff9c-4fa4-adc5-1cc0a51e6436": {
+        "0741fc17-fbf7-4546-9dd8-1806b89c4027": {
           "data": {
             "note": "A jump continues the flow somewhere else: here, back to the menu, so you can keep ordering until the coins run out.",
             "targetId": "4d02fe43-acf4-4a6c-9821-85f2d7c2363b"
           },
-          "id": "15635f8a-ff9c-4fa4-adc5-1cc0a51e6436",
+          "id": "0741fc17-fbf7-4546-9dd8-1806b89c4027",
           "position": {
             "x": 472,
-            "y": 1048
+            "y": 1264
           },
           "type": "jump"
         },
-        "1567adc0-af36-4602-8819-8cf8352fafa9": {
+        "0998f58f-8eb4-4574-83a1-238d25a04648": {
           "data": {
-            "isEnd": true,
-            "lineId": "ORDER_1567ad",
-            "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
-            "text": "Enjoy! See you tomorrow."
+            "lineId": "ORDER_0998f5",
+            "menuText": "Drop in a handful (3 coins)",
+            "requires": "not Seen.TipTooBig",
+            "speakerId": "0a1943b8-de62-44b6-b829-ef96c400b453",
+            "text": "Keep the change. All of it."
           },
-          "id": "1567adc0-af36-4602-8819-8cf8352fafa9",
+          "id": "0998f58f-8eb4-4574-83a1-238d25a04648",
           "position": {
-            "x": 1424,
+            "x": 2216,
             "y": 1264
           },
           "type": "dialogue"
+        },
+        "1169b66a-9af9-4a68-9084-50078bb7155b": {
+          "data": {
+            "note": "Back to the tip jar to choose again.",
+            "targetId": "3e3ed6f2-037a-480e-8cbb-4ecca714cf14"
+          },
+          "id": "1169b66a-9af9-4a68-9084-50078bb7155b",
+          "position": {
+            "x": 2368,
+            "y": 1888
+          },
+          "type": "jump"
+        },
+        "15635f8a-ff9c-4fa4-adc5-1cc0a51e6436": {
+          "data": {
+            "expression": "Player.Coins >= 3",
+            "note": "Can you pay 3 coins? True serves it, false sends you back to the menu."
+          },
+          "id": "15635f8a-ff9c-4fa4-adc5-1cc0a51e6436",
+          "position": {
+            "x": 1104,
+            "y": 632
+          },
+          "type": "condition"
         },
         "24cb6ec4-a792-48c8-81ec-242f19fc1142": {
           "data": {
@@ -249,237 +419,382 @@
           },
           "id": "24cb6ec4-a792-48c8-81ec-242f19fc1142",
           "position": {
-            "x": 472,
+            "x": 1104,
             "y": 0
+          },
+          "type": "dialogue"
+        },
+        "24f4f7b2-a4e3-4cb6-8786-1a02a45e688d": {
+          "data": {
+            "lineId": "ORDER_24f4f7",
+            "menuText": "That's everything",
+            "speakerId": "0a1943b8-de62-44b6-b829-ef96c400b453",
+            "text": "That's everything, thanks."
+          },
+          "id": "24f4f7b2-a4e3-4cb6-8786-1a02a45e688d",
+          "position": {
+            "x": 2368,
+            "y": 424
           },
           "type": "dialogue"
         },
         "2c5fa18f-ae51-40ba-a613-c71cdd3e4354": {
           "data": {
             "lineId": "ORDER_2c5fa1",
-            "note": "Braces show a value in the line as it plays: {Player.Coins} becomes the coins you have now. Try it in Play.",
-            "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
-            "text": "Anything else? You’ve got {Player.Coins} left."
+            "menuText": "Hot chocolate (3 coins)",
+            "note": "Offered until Pip has told you it's too dear: coins only go down, so asking again wouldn't change her answer (and Explore can see every path ends).",
+            "requires": "not Seen.CocoaTooDear",
+            "speakerId": "0a1943b8-de62-44b6-b829-ef96c400b453",
+            "text": "Hot chocolate. Extra marshmallows."
           },
           "id": "2c5fa18f-ae51-40ba-a613-c71cdd3e4354",
           "position": {
-            "x": 472,
+            "x": 1104,
+            "y": 424
+          },
+          "type": "dialogue"
+        },
+        "3c08f5af-0dbd-44e4-850e-685e3c11abd1": {
+          "data": {
+            "lineId": "ORDER_3c08f5",
+            "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
+            "text": "On the house!"
+          },
+          "id": "3c08f5af-0dbd-44e4-850e-685e3c11abd1",
+          "position": {
+            "x": 0,
             "y": 840
           },
           "type": "dialogue"
         },
+        "3e3ed6f2-037a-480e-8cbb-4ecca714cf14": {
+          "data": {
+            "label": "The tip jar",
+            "note": "A hub of its own, so offering more than you have can come back here without Pip asking twice."
+          },
+          "id": "3e3ed6f2-037a-480e-8cbb-4ecca714cf14",
+          "position": {
+            "x": 2216,
+            "y": 1048
+          },
+          "type": "hub"
+        },
         "3e650e41-25fe-4d23-8e47-869ff26e6d86": {
           "data": {
-            "effects": "Player.Coins -= 1\nPlayer.ItemsBought += 1",
             "lineId": "ORDER_3e650e",
-            "menuText": "A ginger biscuit (1 coin)",
-            "note": "Only offered with 1+ coins. Effects spend the coins as the story passes through.",
-            "requires": "Player.Coins >= 1",
-            "speakerId": "0a1943b8-de62-44b6-b829-ef96c400b453",
-            "text": "And one of those ginger biscuits."
+            "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
+            "tag": "FlatWhiteTooDear",
+            "text": "A flat white's 4 coins, and you've got {Player.Coins}. Something a bit cheaper?"
           },
           "id": "3e650e41-25fe-4d23-8e47-869ff26e6d86",
           "position": {
-            "x": 632,
-            "y": 424
+            "x": 1896,
+            "y": 840
           },
           "type": "dialogue"
         },
-        "46c3984d-a437-44b2-becf-1277d4851c32": {
+        "42292677-ed92-40ca-8d6b-dc4910ee64fd": {
           "data": {
-            "lineId": "ORDER_46c398",
-            "menuText": "That's everything",
-            "speakerId": "0a1943b8-de62-44b6-b829-ef96c400b453",
-            "text": "That's everything, thanks."
+            "isEnd": true,
+            "lineId": "ORDER_422926",
+            "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
+            "text": "Enjoy! See you tomorrow."
           },
-          "id": "46c3984d-a437-44b2-becf-1277d4851c32",
+          "id": "42292677-ed92-40ca-8d6b-dc4910ee64fd",
           "position": {
-            "x": 1424,
-            "y": 424
+            "x": 2528,
+            "y": 1472
           },
           "type": "dialogue"
         },
         "4d02fe43-acf4-4a6c-9821-85f2d7c2363b": {
           "data": {
             "label": "The menu",
-            "note": "A hub with several outputs offers a choice. Each priced option has a Requires: when you can't afford it, Play shows it locked with what it needs."
+            "note": "A hub with several outputs offers a choice. Everything is on offer whatever you can afford: the condition after each order checks the coins."
           },
           "id": "4d02fe43-acf4-4a6c-9821-85f2d7c2363b",
           "position": {
-            "x": 472,
+            "x": 1104,
             "y": 208
           },
           "type": "hub"
         },
+        "4e618761-4a7b-4a10-8141-63b7b3572b86": {
+          "data": {
+            "expression": "Player.Coins >= 3",
+            "note": "Can you spare 3 coins? If not, Pip says so and you choose again."
+          },
+          "id": "4e618761-4a7b-4a10-8141-63b7b3572b86",
+          "position": {
+            "x": 2216,
+            "y": 1472
+          },
+          "type": "condition"
+        },
+        "6f9dfada-3480-4250-9a57-0bdfafc99925": {
+          "data": {
+            "effects": "Player.Coins -= 1\nPlayer.ItemsBought += 1",
+            "lineId": "ORDER_6f9dfa",
+            "note": "Effects spend the coins as the story passes through, so only once the check has passed.",
+            "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
+            "text": "Last one in the jar. Lucky you."
+          },
+          "id": "6f9dfada-3480-4250-9a57-0bdfafc99925",
+          "position": {
+            "x": 320,
+            "y": 840
+          },
+          "type": "dialogue"
+        },
         "8ae4d8b2-498c-4e27-ae8b-dc9c1250a20a": {
           "data": {
-            "effects": "Player.Coins -= 3\nPlayer.ItemsBought += 1",
             "lineId": "ORDER_8ae4d8",
-            "menuText": "Hot chocolate (3 coins)",
-            "note": "Only offered with 3+ coins. Effects spend the coins as the story passes through.",
-            "requires": "Player.Coins >= 3",
+            "menuText": "A flat white (4 coins)",
+            "note": "Offered until Pip has told you it's too dear: coins only go down, so asking again wouldn't change her answer (and Explore can see every path ends).",
+            "requires": "not Seen.FlatWhiteTooDear",
             "speakerId": "0a1943b8-de62-44b6-b829-ef96c400b453",
-            "text": "Hot chocolate. Extra marshmallows."
+            "text": "A flat white, please."
           },
           "id": "8ae4d8b2-498c-4e27-ae8b-dc9c1250a20a",
           "position": {
-            "x": 320,
+            "x": 1424,
             "y": 424
           },
           "type": "dialogue"
         },
-        "916ac652-a47d-41fd-9d07-24379b63b5e7": {
+        "95c68fc0-fab0-4604-a848-676b8cae6457": {
           "data": {
-            "lineId": "ORDER_916ac6",
+            "lineId": "ORDER_95c68f",
             "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
-            "text": "On the house!"
+            "tag": "TipTooBig",
+            "text": "That's sweet, but you've only got {Player.Coins}. A coin's plenty, honestly."
           },
-          "id": "916ac652-a47d-41fd-9d07-24379b63b5e7",
+          "id": "95c68fc0-fab0-4604-a848-676b8cae6457",
           "position": {
-            "x": 952,
-            "y": 632
+            "x": 2368,
+            "y": 1680
           },
           "type": "dialogue"
         },
-        "9b82776d-8628-4627-b226-48c27269f744": {
+        "976020b0-2819-4274-b45d-0332a1ee7eb5": {
           "data": {
-            "expression": "Player.Coins >= 1",
-            "note": "Conditions branch automatically: green is true, red is false."
-          },
-          "id": "9b82776d-8628-4627-b226-48c27269f744",
-          "position": {
-            "x": 1424,
-            "y": 632
-          },
-          "type": "condition"
-        },
-        "9e67e600-8a8f-40ad-a9fb-3cbf250027cf": {
-          "data": {
-            "lineId": "ORDER_9e67e6",
+            "lineId": "ORDER_976020",
             "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
-            "text": "There's a tip jar by the till, if you like."
+            "tag": "BiscuitTooDear",
+            "text": "Biscuits are a coin each, and your pockets are empty. Water's free, though."
           },
-          "id": "9e67e600-8a8f-40ad-a9fb-3cbf250027cf",
+          "id": "976020b0-2819-4274-b45d-0332a1ee7eb5",
           "position": {
             "x": 1264,
             "y": 840
           },
           "type": "dialogue"
         },
-        "a3e0130b-9c9b-404e-a07f-66eb02ccad37": {
+        "9b82776d-8628-4627-b226-48c27269f744": {
           "data": {
-            "effects": "Player.Coins -= 1",
-            "lineId": "ORDER_a3e013",
-            "menuText": "Drop a coin in the jar (1 coin)",
-            "requires": "Player.Coins >= 1",
-            "speakerId": "0a1943b8-de62-44b6-b829-ef96c400b453",
-            "text": "Here you go."
-          },
-          "id": "a3e0130b-9c9b-404e-a07f-66eb02ccad37",
-          "position": {
-            "x": 1104,
-            "y": 1048
-          },
-          "type": "dialogue"
-        },
-        "a618af6a-5bd7-45ac-9037-ec7684c68a42": {
-          "data": {
-            "lineId": "ORDER_a618af",
-            "menuText": "Just water (free)",
-            "note": "Free, so you are never stuck with nothing to pick. Only once: after a glass it leaves the menu, so every path ends (Explore checks this).",
-            "once": true,
-            "speakerId": "0a1943b8-de62-44b6-b829-ef96c400b453",
-            "text": "Just water, thanks."
-          },
-          "id": "a618af6a-5bd7-45ac-9037-ec7684c68a42",
-          "position": {
-            "x": 952,
-            "y": 424
-          },
-          "type": "dialogue"
-        },
-        "a7302af5-cc64-4a50-8f55-05c1e757de17": {
-          "data": {
-            "isEnd": true,
-            "lineId": "ORDER_a7302a",
-            "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
-            "text": "You're a star. Next foam fern is extra leafy."
-          },
-          "id": "a7302af5-cc64-4a50-8f55-05c1e757de17",
-          "position": {
-            "x": 1104,
-            "y": 1264
-          },
-          "type": "dialogue"
-        },
-        "ab47bb16-3c0b-4623-8346-43d31c58ee54": {
-          "data": {
-            "lineId": "ORDER_ab47bb",
+            "effects": "Player.Coins -= 3\nPlayer.ItemsBought += 1",
+            "lineId": "ORDER_9b8277",
+            "note": "Effects spend the coins as the story passes through, so only once the check has passed.",
             "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
             "text": "Marshmallow tower, coming right up."
           },
-          "id": "ab47bb16-3c0b-4623-8346-43d31c58ee54",
-          "position": {
-            "x": 320,
-            "y": 632
-          },
-          "type": "dialogue"
-        },
-        "afb64551-5847-43ec-9c32-cb5984340cf2": {
-          "data": {
-            "lineId": "ORDER_afb645",
-            "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
-            "text": "Last one in the jar. Lucky you."
-          },
-          "id": "afb64551-5847-43ec-9c32-cb5984340cf2",
+          "id": "9b82776d-8628-4627-b226-48c27269f744",
           "position": {
             "x": 632,
-            "y": 632
+            "y": 840
           },
           "type": "dialogue"
         },
-        "cacd8530-4099-4fdd-9deb-00f2f5862ed7": {
+        "9e67e600-8a8f-40ad-a9fb-3cbf250027cf": {
           "data": {
-            "effects": "Player.Coins -= 4\nPlayer.ItemsBought += 1",
-            "lineId": "ORDER_cacd85",
-            "menuText": "A flat white (4 coins)",
-            "note": "Only offered with 4+ coins. Effects spend the coins as the story passes through.",
-            "requires": "Player.Coins >= 4",
-            "speakerId": "0a1943b8-de62-44b6-b829-ef96c400b453",
-            "text": "A flat white, please."
-          },
-          "id": "cacd8530-4099-4fdd-9deb-00f2f5862ed7",
-          "position": {
-            "x": 0,
-            "y": 424
-          },
-          "type": "dialogue"
-        },
-        "dc6e8651-7f34-4c45-8662-bc41389d3413": {
-          "data": {
-            "isEnd": true,
-            "lineId": "ORDER_dc6e86",
+            "lineId": "ORDER_9e67e6",
             "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
-            "text": "Pockets empty? Come back tomorrow, I'll save you a biscuit."
+            "tag": "CocoaTooDear",
+            "text": "Hot chocolate's 3 coins. You've only got {Player.Coins}, love. Anything else take your fancy?"
           },
-          "id": "dc6e8651-7f34-4c45-8662-bc41389d3413",
+          "id": "9e67e600-8a8f-40ad-a9fb-3cbf250027cf",
           "position": {
             "x": 1584,
             "y": 840
           },
           "type": "dialogue"
         },
-        "eb600423-06c3-4d2d-b908-5ff1e7c41b7a": {
+        "9eb24ac3-9831-4e87-ae9e-0c4e6270731e": {
           "data": {
-            "lineId": "ORDER_eb6004",
+            "lineId": "ORDER_9eb24a",
+            "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
+            "text": "There's a tip jar by the till, if you like."
+          },
+          "id": "9eb24ac3-9831-4e87-ae9e-0c4e6270731e",
+          "position": {
+            "x": 2216,
+            "y": 840
+          },
+          "type": "dialogue"
+        },
+        "a215bbd7-fce7-4eae-bcc9-7e2763140510": {
+          "data": {
+            "lineId": "ORDER_a215bb",
             "menuText": "Not today",
             "speakerId": "0a1943b8-de62-44b6-b829-ef96c400b453",
             "text": "Not today, sorry."
           },
-          "id": "eb600423-06c3-4d2d-b908-5ff1e7c41b7a",
+          "id": "a215bbd7-fce7-4eae-bcc9-7e2763140510",
+          "position": {
+            "x": 2528,
+            "y": 1264
+          },
+          "type": "dialogue"
+        },
+        "a6b62ca1-83e6-47c0-966d-31c907a08d0a": {
+          "data": {
+            "effects": "Player.Coins -= 1",
+            "isEnd": true,
+            "lineId": "ORDER_a6b62c",
+            "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
+            "text": "You're a star. Next foam fern is extra leafy."
+          },
+          "id": "a6b62ca1-83e6-47c0-966d-31c907a08d0a",
+          "position": {
+            "x": 1584,
+            "y": 1472
+          },
+          "type": "dialogue"
+        },
+        "ab47bb16-3c0b-4623-8346-43d31c58ee54": {
+          "data": {
+            "expression": "Player.Coins >= 4",
+            "note": "Can you pay 4 coins? True serves it, false sends you back to the menu."
+          },
+          "id": "ab47bb16-3c0b-4623-8346-43d31c58ee54",
           "position": {
             "x": 1424,
+            "y": 632
+          },
+          "type": "condition"
+        },
+        "c151a40b-d27e-49fd-90ef-2dda3b88a00c": {
+          "data": {
+            "isEnd": true,
+            "lineId": "ORDER_c151a4",
+            "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
+            "text": "Pockets empty? Come back tomorrow, I'll save you a biscuit."
+          },
+          "id": "c151a40b-d27e-49fd-90ef-2dda3b88a00c",
+          "position": {
+            "x": 2528,
+            "y": 840
+          },
+          "type": "dialogue"
+        },
+        "c811c3ba-8a09-4348-a013-254891dd5abf": {
+          "data": {
+            "effects": "Player.Coins -= 3",
+            "isEnd": true,
+            "lineId": "ORDER_c811c3",
+            "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
+            "text": "Three whole coins? Free refills for life."
+          },
+          "id": "c811c3ba-8a09-4348-a013-254891dd5abf",
+          "position": {
+            "x": 2056,
+            "y": 1680
+          },
+          "type": "dialogue"
+        },
+        "cacd8530-4099-4fdd-9deb-00f2f5862ed7": {
+          "data": {
+            "lineId": "ORDER_cacd85",
+            "note": "Braces show a value in the line as it plays: {Player.Coins} becomes the coins you have now. Try it in Play.",
+            "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
+            "text": "Anything else? You’ve got {Player.Coins} left."
+          },
+          "id": "cacd8530-4099-4fdd-9deb-00f2f5862ed7",
+          "position": {
+            "x": 472,
             "y": 1048
+          },
+          "type": "dialogue"
+        },
+        "dea9307f-cb93-4cab-a18a-262ddf21689e": {
+          "data": {
+            "note": "Not enough coins: back to the menu to pick something else. Nothing was spent.",
+            "targetId": "4d02fe43-acf4-4a6c-9821-85f2d7c2363b"
+          },
+          "id": "dea9307f-cb93-4cab-a18a-262ddf21689e",
+          "position": {
+            "x": 1584,
+            "y": 1048
+          },
+          "type": "jump"
+        },
+        "dffcc3a7-c7e0-418a-9b3d-08a2b203cd52": {
+          "data": {
+            "lineId": "ORDER_dffcc3",
+            "menuText": "A ginger biscuit (1 coin)",
+            "note": "Offered until Pip has told you it's too dear: coins only go down, so asking again wouldn't change her answer (and Explore can see every path ends).",
+            "requires": "not Seen.BiscuitTooDear",
+            "speakerId": "0a1943b8-de62-44b6-b829-ef96c400b453",
+            "text": "And one of those ginger biscuits."
+          },
+          "id": "dffcc3a7-c7e0-418a-9b3d-08a2b203cd52",
+          "position": {
+            "x": 792,
+            "y": 424
+          },
+          "type": "dialogue"
+        },
+        "e806b5f5-6c94-42ff-b89f-5fc62100f61c": {
+          "data": {
+            "lineId": "ORDER_e806b5",
+            "menuText": "Drop a coin in the jar (1 coin)",
+            "note": "You only get here with a coin or more, so this one needs no check.",
+            "speakerId": "0a1943b8-de62-44b6-b829-ef96c400b453",
+            "text": "Here you go."
+          },
+          "id": "e806b5f5-6c94-42ff-b89f-5fc62100f61c",
+          "position": {
+            "x": 1584,
+            "y": 1264
+          },
+          "type": "dialogue"
+        },
+        "ea73abc1-76c6-4e8e-99b8-32986498a381": {
+          "data": {
+            "expression": "Player.Coins >= 1",
+            "note": "Conditions branch automatically: green is true, red is false."
+          },
+          "id": "ea73abc1-76c6-4e8e-99b8-32986498a381",
+          "position": {
+            "x": 2368,
+            "y": 632
+          },
+          "type": "condition"
+        },
+        "f5137258-5626-4e91-9a0c-77e10ede9939": {
+          "data": {
+            "expression": "Player.Coins >= 1",
+            "note": "Can you pay 1 coin? True serves it, false sends you back to the menu."
+          },
+          "id": "f5137258-5626-4e91-9a0c-77e10ede9939",
+          "position": {
+            "x": 792,
+            "y": 632
+          },
+          "type": "condition"
+        },
+        "f75bfe35-28ec-4546-b095-c89c5619631c": {
+          "data": {
+            "effects": "Player.Coins -= 4\nPlayer.ItemsBought += 1",
+            "lineId": "ORDER_f75bfe",
+            "note": "Effects spend the coins as the story passes through, so only once the check has passed.",
+            "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
+            "text": "One flat white, with a fern on top."
+          },
+          "id": "f75bfe35-28ec-4546-b095-c89c5619631c",
+          "position": {
+            "x": 952,
+            "y": 840
           },
           "type": "dialogue"
         }
@@ -491,13 +806,13 @@
   "format": "skein.project",
   "meta": {
     "createdAt": "2026-01-01T00:00:00.000Z",
-    "description": "A tiny branching conversation about spending coins. You start with 5 coins (shown at the top of the Play panel). Each menu item has a Requires, so anything you can't afford shows as locked with the price it needs, and water is always free. After each order Pip asks \"anything else?\" and the jump loops back to the menu. On the way out, a condition checks whether you have a coin left for the tip jar.",
+    "description": "A tiny branching conversation about spending coins. You start with 5 coins (shown at the top of the Play panel). Order anything on the menu: a condition checks you can pay, and if you can't, Pip tells you what it costs and how much you have, and you pick again. Water is always free. After each order Pip asks \"anything else?\" and the jump loops back to the menu. On the way out there's a tip jar, with the same check if you offer more than you have.",
     "id": "b8829f5c-6d01-4fea-a7d2-239126bd675b",
     "name": "Demo · The Coffee Order"
   },
   "scenarios": {
-    "1169b66a-9af9-4a68-9084-50078bb7155b": {
-      "id": "1169b66a-9af9-4a68-9084-50078bb7155b",
+    "e8ec8ca3-2be3-4f98-877e-276580b09f16": {
+      "id": "e8ec8ca3-2be3-4f98-877e-276580b09f16",
       "name": "Only 1 coin",
       "order": 0,
       "setup": "Player.Coins = 1"
@@ -559,7 +874,7 @@
       },
       "2a8fd491-ad43-4f2e-8fa5-29bb3537636b": {
         "defaultValue": 5,
-        "description": "Money in your pocket. Shown at the top of the Play panel. Change the starting value to see different choices unlock.",
+        "description": "Money in your pocket. Shown at the top of the Play panel. Change the starting value to see what Pip says when you come up short.",
         "id": "2a8fd491-ad43-4f2e-8fa5-29bb3537636b",
         "integer": true,
         "max": 20,
@@ -596,51 +911,98 @@
     }
   },
   "tests": {
-    "42292677-ed92-40ca-8d6b-dc4910ee64fd": {
-      "allEnd": true,
-      "allReached": true,
-      "checks": "Player.Coins >= 0",
-      "flowId": "ced87b88-daaf-445d-b4da-e4db7d994a39",
-      "id": "42292677-ed92-40ca-8d6b-dc4910ee64fd",
-      "kind": "explore",
-      "name": "Every order ends, nothing is unreachable",
-      "order": 1,
-      "scenarioId": null
-    },
-    "a215bbd7-fce7-4eae-bcc9-7e2763140510": {
+    "104ee675-9c9f-41fe-b572-72147d1a4554": {
       "checks": "Player.Coins == 1\nPlayer.ItemsBought == 1",
       "ends": true,
       "flowId": "ced87b88-daaf-445d-b4da-e4db7d994a39",
-      "id": "a215bbd7-fce7-4eae-bcc9-7e2763140510",
+      "id": "104ee675-9c9f-41fe-b572-72147d1a4554",
       "kind": "play",
       "name": "A flat white, no tip",
       "order": 0,
       "route": [
         {
-          "choose": "cacd8530-4099-4fdd-9deb-00f2f5862ed7"
+          "choose": "8ae4d8b2-498c-4e27-ae8b-dc9c1250a20a"
         },
         {
-          "choose": "46c3984d-a437-44b2-becf-1277d4851c32"
+          "choose": "24f4f7b2-a4e3-4cb6-8786-1a02a45e688d"
         },
         {
-          "choose": "eb600423-06c3-4d2d-b908-5ff1e7c41b7a"
+          "choose": "a215bbd7-fce7-4eae-bcc9-7e2763140510"
         }
       ],
       "scenarioId": null,
-      "stopsAt": "1567adc0-af36-4602-8819-8cf8352fafa9"
+      "stopsAt": "42292677-ed92-40ca-8d6b-dc4910ee64fd"
     },
-    "c151a40b-d27e-49fd-90ef-2dda3b88a00c": {
+    "582344cc-8656-4b56-ba6e-e815c31ec0b8": {
+      "checks": "Player.Coins == 0",
+      "ends": true,
+      "flowId": "ced87b88-daaf-445d-b4da-e4db7d994a39",
+      "id": "582344cc-8656-4b56-ba6e-e815c31ec0b8",
+      "kind": "play",
+      "name": "Offering more tip than you have: back to the jar",
+      "order": 4,
+      "route": [
+        {
+          "choose": "8ae4d8b2-498c-4e27-ae8b-dc9c1250a20a"
+        },
+        {
+          "choose": "24f4f7b2-a4e3-4cb6-8786-1a02a45e688d"
+        },
+        {
+          "choose": "0998f58f-8eb4-4574-83a1-238d25a04648"
+        },
+        {
+          "choose": "e806b5f5-6c94-42ff-b89f-5fc62100f61c"
+        }
+      ],
+      "scenarioId": null,
+      "stopsAt": "a6b62ca1-83e6-47c0-966d-31c907a08d0a"
+    },
+    "79ae52e0-fe81-4c1c-8f47-1e2344c23418": {
       "allEnd": true,
       "checks": "Player.ItemsBought <= 1",
       "flowId": "ced87b88-daaf-445d-b4da-e4db7d994a39",
-      "id": "c151a40b-d27e-49fd-90ef-2dda3b88a00c",
+      "id": "79ae52e0-fe81-4c1c-8f47-1e2344c23418",
       "kind": "explore",
       "name": "With 1 coin you can still tip",
       "order": 2,
       "reach": [
-        "a7302af5-cc64-4a50-8f55-05c1e757de17"
+        "a6b62ca1-83e6-47c0-966d-31c907a08d0a"
       ],
-      "scenarioId": "1169b66a-9af9-4a68-9084-50078bb7155b"
+      "scenarioId": "e8ec8ca3-2be3-4f98-877e-276580b09f16"
+    },
+    "898bcf78-90b0-4980-85cb-aa85b0fbb062": {
+      "checks": "Player.Coins == 0\nPlayer.ItemsBought == 1",
+      "ends": true,
+      "flowId": "ced87b88-daaf-445d-b4da-e4db7d994a39",
+      "id": "898bcf78-90b0-4980-85cb-aa85b0fbb062",
+      "kind": "play",
+      "name": "Too short for a flat white: Pip says so, nothing is spent",
+      "order": 3,
+      "route": [
+        {
+          "choose": "8ae4d8b2-498c-4e27-ae8b-dc9c1250a20a"
+        },
+        {
+          "choose": "dffcc3a7-c7e0-418a-9b3d-08a2b203cd52"
+        },
+        {
+          "choose": "24f4f7b2-a4e3-4cb6-8786-1a02a45e688d"
+        }
+      ],
+      "scenarioId": "e8ec8ca3-2be3-4f98-877e-276580b09f16",
+      "stopsAt": "c151a40b-d27e-49fd-90ef-2dda3b88a00c"
+    },
+    "9f6c9d19-17f0-4241-8b06-d155d4877ad0": {
+      "allEnd": true,
+      "allReached": true,
+      "checks": "Player.Coins >= 0",
+      "flowId": "ced87b88-daaf-445d-b4da-e4db7d994a39",
+      "id": "9f6c9d19-17f0-4241-8b06-d155d4877ad0",
+      "kind": "explore",
+      "name": "Every order ends, nothing is unreachable",
+      "order": 1,
+      "scenarioId": null
     }
   }
 }

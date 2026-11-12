@@ -16,7 +16,7 @@ in the spirit of articy:draft, with no accounts and no cloud lock-in.
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6)
 ![Engines](https://img.shields.io/badge/engines-JS%2FTS%20·%20C%23%20·%20Unity%20·%20Godot%20.NET-34d399)
 
-<img src="docs/images/demo.gif" alt="Opening the Coffee Order demo and playing it: buying a flat white spends 4 of 5 coins, and the pricier menu items lock" width="860">
+<img src="docs/images/demo.gif" alt="Opening the Coffee Order demo and playing it: a flat white spends 4 of 5 coins, then asking for a hot chocolate with 1 coin left gets Pip saying it costs 3 and you have 1, and you choose again" width="860">
 
 </div>
 
@@ -85,16 +85,19 @@ left) takes you back to the Welcome screen at any time.
 <img src="docs/images/welcome.png" alt="The Skein Welcome screen with New project, Open project, and two demo cards: The Coffee Order and The Midnight Museum Heist" width="860">
 
 **1. ☕ The Coffee Order (simple).** You have 5 coins at Pip's café. Open the flow, press
-**Play** (top right of the canvas) and order something. Your coins tick down in the HUD,
-and anything you can no longer afford stays on the menu, locked, showing what it needs.
+**Play** (top right of the canvas) and order something. Your coins tick down in the HUD.
+Order something you can't afford and a condition catches it: Pip tells you the price and
+what you've got, nothing is spent, and you're back at the menu to pick again. The tip jar
+on the way out works the same way. (For choices that simply lock when you can't afford
+them, see the bribe in the Museum Heist.)
 
-<img src="docs/images/play-locked.png" alt="The Play panel after buying a flat white: Coins 1 of 20, with the flat white and hot chocolate locked and showing their coin requirements" width="860">
+<img src="docs/images/play-short.png" alt="The Play panel after a flat white, asking for a hot chocolate with 1 coin left: Pip says hot chocolate is 3 coins and you've only got 1, the condition's false branch is highlighted on the canvas, and Coins still shows 1" width="860">
 
 **2. 🔍 Explore it.** Switch to the **Explore** tab and press **Explore all paths**. Skein
 plays every possible order and tells you where each one ends, whether any node is
 unreachable, and how low your coins can go.
 
-<img src="docs/images/explore.png" alt="The Explore tab reporting 98 paths, every node reachable, every path ending, and the share of paths for each of the three endings" width="860">
+<img src="docs/images/explore.png" alt="The Explore tab reporting 2,670 paths, all 33 nodes reached, every path ending, and the share of paths for each of the four endings" width="860">
 
 **3. 💎 The Midnight Museum Heist (advanced).** Three linked scenes: plan the job, pull it
 off, then make the getaway. It shows items, trust between characters, a stat that

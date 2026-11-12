@@ -18,7 +18,7 @@ describe('search', () => {
     const p = coffee()
     const r = searchProject(p, { query: 'coin' })
     const labels = new Set(r.matches.map((m) => m.fieldLabel))
-    for (const l of ['Line', 'Choice text', 'Requires', 'Effects', 'Note', 'Reply', 'Variable']) expect(labels, l).toContain(l)
+    for (const l of ['Line', 'Choice text', 'Condition', 'Effects', 'Note', 'Reply', 'Variable']) expect(labels, l).toContain(l)
     expect(r.truncated).toBe(false)
     const m = r.matches.find((x) => x.fieldLabel === 'Choice text')!
     expect(m.value.slice(m.start, m.end).toLowerCase()).toBe('coin')
@@ -84,7 +84,7 @@ describe('replace', () => {
     const plan2 = planReplace(p, searchProject(p, ok).matches, ok, '>= 5')
     expect(plan2.some((c) => !c.refused)).toBe(true)
     const next = produce(p, (d) => void applyReplace(d as Project, [...plan, ...plan2]))
-    expect(nodeBy(next, 'A flat white').data.requires).toBe('Player.Coins >= 5')
+    expect(Object.values(flowOf(next).nodes).filter((n) => n.data.expression === 'Player.Coins >= 5')).toHaveLength(1) // the flat white's price check
     expect(searchProject(next, { query: 'Player.Money' }).matches).toEqual([])
   })
 

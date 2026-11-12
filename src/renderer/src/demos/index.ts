@@ -19,7 +19,7 @@ export const DEMOS: readonly Demo[] = [
     id: 'coffee-order',
     title: 'The Coffee Order',
     level: 'Simple',
-    blurb: 'Spend 5 coins at a café. What you can’t afford locks, and the menu loops until you leave.',
+    blurb: 'Spend 5 coins at a café. Ask for what you can’t afford and Pip says so; the menu loops until you leave.',
     text: coffeeOrder
   },
   {

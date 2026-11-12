@@ -68,8 +68,12 @@ function variable(project: Project, ns: string, name: string, type: PropertyDef[
   project.state.variables[v.id] = v
 }
 
-/** Minimal graph builder: `n` adds a node (unset fields are dropped), `e` connects two, `chain` connects several. */
-function builder(flow: Flow) {
+/**
+ * Minimal graph builder: `n` adds a node (unset fields are dropped), `e` connects two, `chain` connects several.
+ * With `ordered`, connections are offered in the order they're made (stored, so layout can't reorder them).
+ */
+function builder(flow: Flow, ordered = false) {
+  const counts = new Map<string, number>()
   const n = (type: string, data: Record<string, unknown>) => {
     const id = newId()
     const clean: Record<string, unknown> = {}
@@ -80,6 +84,11 @@ function builder(flow: Flow) {
   const e = (source: string, target: string, sourceHandle = 'out') => {
     const id = newId()
     flow.edges[id] = { id, source, target, sourceHandle, targetHandle: 'in' }
+    if (ordered) {
+      const k = `${source}|${sourceHandle}`
+      flow.edges[id].order = counts.get(k) ?? 0
+      counts.set(k, (counts.get(k) ?? 0) + 1)
+    }
   }
   const chain = (...ids: string[]) => ids.slice(1).forEach((id, i) => e(ids[i], id))
   return { n, e, chain }
@@ -118,13 +127,15 @@ function newDemo(name: string, description: string): Project {
 // Demo 1 — The Coffee Order (simple)
 // =============================================================================
 /** Prices on the café menu, in coins. Also used by docs/DEMOS.md. */
-export const COFFEE_PRICES = { flatWhite: 4, hotChocolate: 3, biscuit: 1, tip: 1 } as const
+export const COFFEE_PRICES = { flatWhite: 4, hotChocolate: 3, biscuit: 1, tip: 1, bigTip: 3 } as const
+
+const coins = (n: number) => `${n} coin${n === 1 ? '' : 's'}`
 
 function coffeeOrder(): Project {
   const p = COFFEE_PRICES
   const project = newDemo(
     'Demo · The Coffee Order',
-    `A tiny branching conversation about spending coins. You start with 5 coins (shown at the top of the Play panel). Each menu item has a Requires, so anything you can't afford shows as locked with the price it needs, and water is always free. After each order Pip asks "anything else?" and the jump loops back to the menu. On the way out, a condition checks whether you have a coin left for the tip jar.`
+    `A tiny branching conversation about spending coins. You start with 5 coins (shown at the top of the Play panel). Order anything on the menu: a condition checks you can pay, and if you can't, Pip tells you what it costs and how much you have, and you pick again. Water is always free. After each order Pip asks "anything else?" and the jump loops back to the menu. On the way out there's a tip jar, with the same check if you offer more than you have.`
   )
   const character = createTemplate(newId(), 'Character', 'Character', null, 0, '#818cf8', 'user')
   const bio = prop('Bio', 'longText', 0)
@@ -142,58 +153,82 @@ function coffeeOrder(): Project {
     max: 20,
     integer: true,
     showInPlay: true,
-    description: 'Money in your pocket. Shown at the top of the Play panel. Change the starting value to see different choices unlock.'
+    description: 'Money in your pocket. Shown at the top of the Play panel. Change the starting value to see what Pip says when you come up short.'
   } as Partial<PropertyDef>)
   variable(project, 'Player', 'Items Bought', 'number', 1, { defaultValue: 0, min: 0, integer: true, showInPlay: true, description: 'How many things you ordered.' } as Partial<PropertyDef>)
 
   const flow = createFlow(newId(), 'The Order', null, 0)
-  const { n, e, chain } = builder(flow)
+  const { n, e, chain } = builder(flow, true)
   const hello = n('dialogue', { isStart: true, speakerId: pip.id, text: 'Morning! What can I get you?', note: 'Start here. Open Play (the triangle in the toolbar) and watch Coins at the top of the panel.' })
-  const menu = n('hub', { label: 'The menu', note: 'A hub with several outputs offers a choice. Each priced option has a Requires: when you can\'t afford it, Play shows it locked with what it needs.' })
-  const buy = (menuText: string, text: string, price: number, reply: string) => {
-    const pick = n('dialogue', {
-      speakerId: you.id,
-      menuText: `${menuText} (${price} coin${price === 1 ? '' : 's'})`,
-      text,
-      requires: `Player.Coins >= ${price}`,
-      effects: `Player.Coins -= ${price}\nPlayer.ItemsBought += 1`,
-      note: `Only offered with ${price}+ coins. Effects spend the coins as the story passes through.`
-    })
-    const answer = n('dialogue', { speakerId: pip.id, text: reply })
-    chain(pick, answer)
-    return { pick, answer }
-  }
-  const flat = buy('A flat white', 'A flat white, please.', p.flatWhite, 'One flat white, with a fern on top.')
-  const cocoa = buy('Hot chocolate', 'Hot chocolate. Extra marshmallows.', p.hotChocolate, 'Marshmallow tower, coming right up.')
-  const biscuit = buy('A ginger biscuit', 'And one of those ginger biscuits.', p.biscuit, 'Last one in the jar. Lucky you.')
-  const water = n('dialogue', { speakerId: you.id, menuText: 'Just water (free)', text: 'Just water, thanks.', once: true, note: 'Free, so you are never stuck with nothing to pick. Only once: after a glass it leaves the menu, so every path ends (Explore checks this).' })
-  const waterYes = n('dialogue', { speakerId: pip.id, text: 'On the house!' })
-  const done = n('dialogue', { speakerId: you.id, menuText: "That's everything", text: "That's everything, thanks." })
+  const menu = n('hub', { label: 'The menu', note: 'A hub with several outputs offers a choice. Everything is on offer whatever you can afford: the condition after each order checks the coins.' })
   const again = n('dialogue', {
     speakerId: pip.id,
     text: 'Anything else? You’ve got {Player.Coins} left.',
     note: 'Braces show a value in the line as it plays: {Player.Coins} becomes the coins you have now. Try it in Play.'
   })
   const loop = n('jump', { targetId: menu, note: 'A jump continues the flow somewhere else: here, back to the menu, so you can keep ordering until the coins run out.' })
+  const retry = n('jump', { targetId: menu, note: 'Not enough coins: back to the menu to pick something else. Nothing was spent.' })
+
+  /** A priced order: pick it, check the coins, then Pip serves it (and takes the coins) or says you're short. */
+  const buy = (tag: string, menuText: string, text: string, price: number, reply: string, short: string) => {
+    const pick = n('dialogue', {
+      speakerId: you.id,
+      menuText: `${menuText} (${coins(price)})`,
+      text,
+      requires: `not Seen.${tag}`,
+      note: `Offered until Pip has told you it's too dear: coins only go down, so asking again wouldn't change her answer (and Explore can see every path ends).`
+    })
+    const check = n('condition', { expression: `Player.Coins >= ${price}`, note: `Can you pay ${coins(price)}? True serves it, false sends you back to the menu.` })
+    const answer = n('dialogue', {
+      speakerId: pip.id,
+      text: reply,
+      effects: `Player.Coins -= ${price}\nPlayer.ItemsBought += 1`,
+      note: 'Effects spend the coins as the story passes through, so only once the check has passed.'
+    })
+    const tooDear = n('dialogue', { speakerId: pip.id, text: short, tag })
+    chain(pick, check)
+    e(check, answer, 'true')
+    e(check, tooDear, 'false')
+    chain(answer, again)
+    chain(tooDear, retry)
+    return pick
+  }
+  const flat = buy('FlatWhiteTooDear', 'A flat white', 'A flat white, please.', p.flatWhite, 'One flat white, with a fern on top.', `A flat white's ${coins(p.flatWhite)}, and you've got {Player.Coins}. Something a bit cheaper?`)
+  const cocoa = buy('CocoaTooDear', 'Hot chocolate', 'Hot chocolate. Extra marshmallows.', p.hotChocolate, 'Marshmallow tower, coming right up.', `Hot chocolate's ${coins(p.hotChocolate)}. You've only got {Player.Coins}, love. Anything else take your fancy?`)
+  const biscuit = buy('BiscuitTooDear', 'A ginger biscuit', 'And one of those ginger biscuits.', p.biscuit, 'Last one in the jar. Lucky you.', "Biscuits are a coin each, and your pockets are empty. Water's free, though.")
+  const water = n('dialogue', { speakerId: you.id, menuText: 'Just water (free)', text: 'Just water, thanks.', once: true, note: 'Free, so you are never stuck with nothing to pick. Only once: after a glass it leaves the menu, so every path ends (Explore checks this).' })
+  const waterYes = n('dialogue', { speakerId: pip.id, text: 'On the house!' })
+  const done = n('dialogue', { speakerId: you.id, menuText: "That's everything", text: "That's everything, thanks." })
+
+  // Leaving: the tip jar, only if you've a coin left.
   const canTip = n('condition', { expression: `Player.Coins >= ${p.tip}`, note: 'Conditions branch automatically: green is true, red is false.' })
   const tipAsk = n('dialogue', { speakerId: pip.id, text: 'There\'s a tip jar by the till, if you like.' })
-  const tip = n('dialogue', { speakerId: you.id, menuText: `Drop a coin in the jar (${p.tip} coin)`, text: 'Here you go.', requires: `Player.Coins >= ${p.tip}`, effects: `Player.Coins -= ${p.tip}` })
-  const tipThanks = n('dialogue', { speakerId: pip.id, text: 'You\'re a star. Next foam fern is extra leafy.', isEnd: true })
+  const jar = n('hub', { label: 'The tip jar', note: 'A hub of its own, so offering more than you have can come back here without Pip asking twice.' })
+  const tip = n('dialogue', { speakerId: you.id, menuText: `Drop a coin in the jar (${coins(p.tip)})`, text: 'Here you go.', note: 'You only get here with a coin or more, so this one needs no check.' })
+  const tipThanks = n('dialogue', { speakerId: pip.id, text: 'You\'re a star. Next foam fern is extra leafy.', effects: `Player.Coins -= ${p.tip}`, isEnd: true })
+  const bigTip = n('dialogue', { speakerId: you.id, menuText: `Drop in a handful (${coins(p.bigTip)})`, text: 'Keep the change. All of it.', requires: 'not Seen.TipTooBig' })
+  const canBigTip = n('condition', { expression: `Player.Coins >= ${p.bigTip}`, note: `Can you spare ${coins(p.bigTip)}? If not, Pip says so and you choose again.` })
+  const bigThanks = n('dialogue', { speakerId: pip.id, text: 'Three whole coins? Free refills for life.', effects: `Player.Coins -= ${p.bigTip}`, isEnd: true })
+  const bigShort = n('dialogue', { speakerId: pip.id, text: "That's sweet, but you've only got {Player.Coins}. A coin's plenty, honestly.", tag: 'TipTooBig' })
+  const backToJar = n('jump', { targetId: jar, note: 'Back to the tip jar to choose again.' })
   const noTip = n('dialogue', { speakerId: you.id, menuText: 'Not today', text: 'Not today, sorry.' })
   const bye = n('dialogue', { speakerId: pip.id, text: 'Enjoy! See you tomorrow.', isEnd: true })
   const broke = n('dialogue', { speakerId: pip.id, text: 'Pockets empty? Come back tomorrow, I\'ll save you a biscuit.', isEnd: true })
 
   chain(hello, menu)
-  for (const option of [flat.pick, cocoa.pick, biscuit.pick, water, done]) e(menu, option)
-  for (const tail of [flat.answer, cocoa.answer, biscuit.answer]) e(tail, again)
+  for (const option of [flat, cocoa, biscuit, water, done]) e(menu, option)
   chain(water, waterYes, again)
   chain(again, loop)
   chain(done, canTip)
   e(canTip, tipAsk, 'true')
   e(canTip, broke, 'false')
-  e(tipAsk, tip)
-  e(tipAsk, noTip)
+  chain(tipAsk, jar)
+  for (const option of [tip, bigTip, noTip]) e(jar, option)
   chain(tip, tipThanks)
+  chain(bigTip, canBigTip)
+  e(canBigTip, bigThanks, 'true')
+  e(canBigTip, bigShort, 'false')
+  chain(bigShort, backToJar)
   chain(noTip, bye)
   layout(flow)
   // A comment thread, as a teammate might leave one (select the tip-jar line to read it).
@@ -211,6 +246,8 @@ function coffeeOrder(): Project {
   const t1 = newId()
   const t2 = newId()
   const t3 = newId()
+  const t4 = newId()
+  const t5 = newId()
   project.tests = {
     [t1]: {
       id: t1,
@@ -219,7 +256,7 @@ function coffeeOrder(): Project {
       flowId: flow.id,
       scenarioId: null,
       kind: 'play',
-      route: [{ choose: flat.pick }, { choose: done }, { choose: noTip }],
+      route: [{ choose: flat }, { choose: done }, { choose: noTip }],
       stopsAt: bye,
       ends: true,
       checks: `Player.Coins == ${5 - p.flatWhite}\nPlayer.ItemsBought == 1`
@@ -235,6 +272,30 @@ function coffeeOrder(): Project {
       allEnd: true,
       reach: [tipThanks],
       checks: 'Player.ItemsBought <= 1'
+    },
+    [t4]: {
+      id: t4,
+      name: 'Too short for a flat white: Pip says so, nothing is spent',
+      order: 3,
+      flowId: flow.id,
+      scenarioId: oneCoin,
+      kind: 'play',
+      route: [{ choose: flat }, { choose: biscuit }, { choose: done }],
+      stopsAt: broke,
+      ends: true,
+      checks: 'Player.Coins == 0\nPlayer.ItemsBought == 1'
+    },
+    [t5]: {
+      id: t5,
+      name: 'Offering more tip than you have: back to the jar',
+      order: 4,
+      flowId: flow.id,
+      scenarioId: null,
+      kind: 'play',
+      route: [{ choose: flat }, { choose: done }, { choose: bigTip }, { choose: tip }],
+      stopsAt: tipThanks,
+      ends: true,
+      checks: 'Player.Coins == 0'
     }
   }
   return project

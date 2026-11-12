@@ -4,40 +4,57 @@ Skein ships with two demos on the Welcome screen (**Try a demo**). Both track th
 money in one world variable, `Player.Coins`, with **Show in Play** switched on, so the live
 amount sits at the top of the Play panel.
 
-Every choice that costs coins has a **Requires** of `Player.Coins >= price`. When the player
-can't afford it, Play still lists it, greyed out with a lock and the requirement it needs, so
-you can see exactly what money would have unlocked. Each choice point also has at least one
-free option, so a player is never left with nothing to pick.
+The two demos handle money in the two common ways:
+
+- **The Coffee Order lets you try.** Every item is on the menu whatever you have. A condition
+  after the choice checks the price: if you can pay, the reply spends the coins; if not, Pip
+  says what it costs and what you've got, and a jump takes you back to choose again.
+- **The Museum Heist locks.** A priced choice has a **Requires** of `Player.Coins >= price`.
+  When the player can't afford it, Play still lists it, greyed out with a lock and the
+  requirement it needs.
+
+Either way each choice point has at least one free option, so a player is never left with
+nothing to pick.
 
 The tables below were produced by playing the exported demos through Skein's reference runtime.
 Regenerate the demos with `npm run make:demos`.
 
 ## The Coffee Order (simple)
 
-You start with **5 coins**. After each order Pip asks "Anything else?" (and tells you how many coins you have left, with `{Player.Coins}` in the line) and the flow loops back
-to the menu, so you can keep buying until the coins run out. Water is free but **Only once**, so every
-path through the café reaches an ending (Explore confirms there are no endless loops).
+You start with **5 coins**. After each order Pip asks "Anything else?" (and tells you how many
+coins you have left, with `{Player.Coins}` in the line) and the flow loops back to the menu,
+so you can keep buying until the coins run out.
 
-**Menu, by coins in your pocket** (✓ offered, 🔒 shown locked)
+**Ordering something you can't afford.** Each priced item goes through a condition,
+`Player.Coins >= price`. On **true**, Pip serves it and her line's effects spend the coins. On
+**false**, Pip tells you the price and how many coins you have (nothing is spent) and a jump
+takes you back to the menu. Her "too dear" line is tagged (`FlatWhiteTooDear`,
+`CocoaTooDear`, `BiscuitTooDear`), and the item requires `not Seen.<tag>`, so once she's told
+you, it leaves the menu: your coins only go down, so asking again couldn't change her answer.
+Water is free but **Only once**. Together these mean every path through the café reaches an
+ending (Explore confirms it: 2,670 paths, every node reached).
+
+**Menu, by coins in your pocket**
 
 | Coins | Flat white (4) | Hot chocolate (3) | Ginger biscuit (1) | Just water (free, once) | That's everything |
 | --- | --- | --- | --- | --- | --- |
-| 5 | ✓ | ✓ | ✓ | ✓ | ✓ |
-| 4 | ✓ | ✓ | ✓ | ✓ | ✓ |
-| 3 | 🔒 | ✓ | ✓ | ✓ | ✓ |
-| 2 | 🔒 | 🔒 | ✓ | ✓ | ✓ |
-| 1 | 🔒 | 🔒 | ✓ | ✓ | ✓ |
-| 0 | 🔒 | 🔒 | 🔒 | ✓ | ✓ |
+| 5 | served | served | served | ✓ | ✓ |
+| 4 | served | served | served | ✓ | ✓ |
+| 3 | "too dear" | served | served | ✓ | ✓ |
+| 2 | "too dear" | "too dear" | served | ✓ | ✓ |
+| 1 | "too dear" | "too dear" | served | ✓ | ✓ |
+| 0 | "too dear" | "too dear" | "too dear" | ✓ | ✓ |
 
 **Leaving** ("That's everything"): a condition checks `Player.Coins >= 1`.
 
 | Coins left | What happens | Ending |
 | --- | --- | --- |
-| 1 or more | Pip points at the tip jar: **Drop a coin in the jar (1)** or **Not today** | "You're a star…" or "Enjoy! See you tomorrow." |
+| 3 or more | The tip jar: **Drop a coin in the jar (1)**, **Drop in a handful (3)** or **Not today** | "You're a star…", "Three whole coins? Free refills for life." or "Enjoy! See you tomorrow." |
+| 1 or 2 | The same three; a handful gets "That's sweet, but you've only got 1. A coin's plenty, honestly." and back to the jar (where the handful is now gone) | "You're a star…" or "Enjoy! See you tomorrow." |
 | 0 | No tip offered | "Pockets empty? Come back tomorrow…" |
 
 Example spends from 5 coins: flat white + biscuit (0 left, no tip); hot chocolate + biscuit +
-tip (0 left); three biscuits + tip (1 left).
+tip (0 left); three biscuits + tip (1 left); a biscuit + a handful in the jar (1 left).
 
 ## The Midnight Museum Heist (advanced)
 
