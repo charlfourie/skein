@@ -64,8 +64,22 @@ export function orderedTargets(flow: LooseFlow, nodeId: string, handle?: string)
   return outgoingEdges(flow, nodeId, handle).map((e) => e.target)
 }
 
-/** The order value for a new connection added after the existing ones on that output. */
+/**
+ * Give every connection on this output a stored order, keeping the order they
+ * play in now. Connections without one (hand-written or older data) sort after
+ * any that have one, so this must run before a new, ordered connection joins them.
+ */
+export function settleEdgeOrder(flow: LooseFlow, source: string, handle: string): void {
+  const edges = outgoingEdges(flow, source, handle)
+  if (edges.every((e) => finite(e.order))) return
+  edges.forEach((e, i) => {
+    e.order = i
+  })
+}
+
+/** The order value for a new connection added after the existing ones on that output (settle the order first). */
 export function nextEdgeOrder(flow: LooseFlow, source: string, handle: string): number {
+  settleEdgeOrder(flow, source, handle)
   let max = -1
   for (const e of Object.values(flow.edges)) {
     if (e.source === source && (e.sourceHandle ?? DEFAULT_HANDLE) === handle && finite(e.order)) max = Math.max(max, e.order)

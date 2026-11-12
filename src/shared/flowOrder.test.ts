@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs'
 import { describe, expect, it } from 'vitest'
 import { buildExport } from './export/build'
-import { choiceNumbers, normalizeOrders, orderedTargets, startNodes } from './flowOrder'
+import { choiceNumbers, nextEdgeOrder, normalizeOrders, orderedTargets, startNodes } from './flowOrder'
 import { parseProject } from './parse'
 import type { Project } from './schema'
 import { serializeProject } from './serialize'
@@ -132,5 +132,20 @@ describe('explicit choice and start order (format v5)', () => {
     if (!r.ok) throw new Error(r.error)
     const expected = JSON.parse(readFileSync('examples/lighthouse-v2.game.json', 'utf8'))
     expect(buildExport(r.project).file).toEqual(expected)
+  })
+})
+
+describe('adding to connections without a stored order', () => {
+  it('settles their current order first, so a new connection comes last', () => {
+    const flow = {
+      nodes: { a: { id: 'a', position: { x: 0, y: 0 } }, b: { id: 'b', position: { x: 300, y: 100 } }, c: { id: 'c', position: { x: 0, y: 100 } }, d: { id: 'd', position: { x: 600, y: 100 } } },
+      edges: {
+        e1: { id: 'e1', source: 'a', target: 'b', sourceHandle: 'out' },
+        e2: { id: 'e2', source: 'a', target: 'c', sourceHandle: 'out' }
+      } as Record<string, { id: string; source: string; target: string; sourceHandle: string; order?: number }>
+    }
+    expect(orderedTargets(flow, 'a')).toEqual(['c', 'b'])
+    flow.edges.e3 = { id: 'e3', source: 'a', target: 'd', sourceHandle: 'out', order: nextEdgeOrder(flow, 'a', 'out') }
+    expect(orderedTargets(flow, 'a')).toEqual(['c', 'b', 'd'])
   })
 })

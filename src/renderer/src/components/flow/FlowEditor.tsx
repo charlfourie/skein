@@ -31,6 +31,8 @@ import { cx } from '../../lib/cx'
 import { addFrame, addNode, autoLayout, connect, deleteElements, duplicateNodes, moveNodes, pasteNodes, placeFrame, reconnect } from '../../store/flowOps'
 import { copySelection, readClipboard } from '@shared/clipboard'
 import { toast } from '../../lib/toast'
+import { useUi } from '../../store/ui'
+import { quickEntryKey, setMeasuredSizes } from '../../lib/quickKeys'
 import { usePrefs } from '../../store/prefs'
 import { useProjectStore, type Selection } from '../../store/projectStore'
 import { usePlay } from '../../store/play'
@@ -426,8 +428,39 @@ export function FlowEditor({ flow }: { flow: Flow }) {
       const ids = nodes.filter((n) => n.selected && !isFrame(n)).map((n) => n.id)
       const created = duplicateNodes(flow.id, ids)
       if (created.length === 1) select({ kind: 'node', flowId: flow.id, id: created[0] })
+      return
     }
+    // Quick line entry: one node selected, Enter writes the next line.
+    const picked = nodes.filter((n) => n.selected && !isFrame(n))
+    if (picked.length === 1) quickEntryKey(e, flow.id, picked[0].id)
   }
+  // A node just added off screen (quick line entry) slides into view, at the same zoom.
+  const reveal = useUi((s) => s.reveal)
+  useEffect(() => {
+    if (!reveal || !flow.nodes[reveal.nodeId]) return
+    const t = setTimeout(() => {
+      const node = rf.getNode(reveal.nodeId)
+      const box = wrapper.current?.getBoundingClientRect()
+      if (!node || !box) return
+      const w = node.measured?.width ?? 260
+      const h = node.measured?.height ?? 100
+      const tl = rf.flowToScreenPosition(node.position)
+      const br = rf.flowToScreenPosition({ x: node.position.x + w, y: node.position.y + h })
+      const margin = 48
+      const inView = tl.x >= box.left + margin && tl.y >= box.top + margin && br.x <= box.right - margin && br.y <= box.bottom - margin
+      if (!inView) void rf.setCenter(node.position.x + w / 2, node.position.y + h / 2, { zoom: rf.getZoom(), duration: 300 })
+    }, 60)
+    return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reveal])
+  // New lines are placed clear of nodes as the canvas measured them.
+  useEffect(() => {
+    setMeasuredSizes((id) => {
+      const m = rf.getNode(id)?.measured
+      return m?.width && m.height ? { width: m.width, height: m.height } : undefined
+    })
+    return () => setMeasuredSizes(undefined)
+  }, [rf])
 
   // --- Copy and paste ---------------------------------------------------------
   // Through the system clipboard (copy/cut/paste events, so no permission prompts),

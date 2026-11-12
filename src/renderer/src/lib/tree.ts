@@ -1,3 +1,4 @@
+import { compareOrder } from '@shared/order'
 import type { Folder, Project, SectionId, TreeItem } from '@shared/schema'
 
 export type ItemKind = 'flow' | 'entity' | 'template'
@@ -18,20 +19,7 @@ export const ITEM_KIND: Record<SectionId, ItemKind> = {
 
 type ProjectLike = Pick<Project, 'folders' | SectionId>
 
-interface Orderable {
-  id: string
-  name: string
-  order: number
-}
-
-/** Stable display order: explicit order, then name (natural), then id as a tiebreaker. */
-export function compareOrder(a: Orderable, b: Orderable): number {
-  return (
-    a.order - b.order ||
-    a.name.localeCompare(b.name, undefined, { sensitivity: 'base', numeric: true }) ||
-    (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
-  )
-}
+export { compareOrder }
 
 export function nextOrder(siblings: Array<{ order: number }>): number {
   return siblings.reduce((max, s) => Math.max(max, s.order), -1) + 1

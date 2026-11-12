@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { AlertTriangle, XCircle } from 'lucide-react'
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import type { Issue } from '@shared/validate'
 import { formatDuration, parseDuration } from '@shared/time'
 import { cx } from '../../lib/cx'
@@ -83,22 +83,40 @@ export function TextArea({
   onCommit,
   placeholder,
   rows = 4,
-  dimmed
+  dimmed,
+  focusNonce,
+  onKeyDown,
+  label
 }: {
   value: string
   onCommit(value: string): void
   placeholder?: string
   rows?: number
   dimmed?: boolean
+  /** Each new value puts the cursor here (at the end of the text). */
+  focusNonce?: number
+  /** Keys before the default; `commit` saves the draft first (for keys that move on). */
+  onKeyDown?(e: KeyboardEvent<HTMLTextAreaElement>, commit: () => void): void
+  label?: string
 }) {
   const [draft, setDraft] = useState(value)
   useEffect(() => setDraft(value), [value])
+  const ref = useRef<HTMLTextAreaElement>(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!focusNonce || !el) return
+    el.focus()
+    el.setSelectionRange(el.value.length, el.value.length)
+  }, [focusNonce])
   return (
     <textarea
+      ref={ref}
       value={draft}
       placeholder={placeholder}
       rows={rows}
+      aria-label={label}
       onChange={(e) => setDraft(e.target.value)}
+      onKeyDown={onKeyDown && ((e) => onKeyDown(e, () => draft !== value && onCommit(draft)))}
       onBlur={() => draft !== value && onCommit(draft)}
       className={cx(inputClass, 'resize-y leading-relaxed', dimmed && 'text-muted')}
     />

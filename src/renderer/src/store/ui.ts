@@ -14,6 +14,12 @@ interface UiState {
   setLeftTab(tab: LeftTab): void
   shortcutsOpen: boolean
   setShortcutsOpen(open: boolean): void
+  /** Asks the inspector to put the cursor in a node's line (quick line entry). */
+  lineFocus: { nodeId: string; nonce: number } | null
+  focusLine(nodeId: string): void
+  /** Asks the canvas to bring a node into view if it's off screen (keeping the zoom). */
+  reveal: { nodeId: string; nonce: number } | null
+  revealNode(nodeId: string): void
 }
 
 export const useUi = create<UiState>((set) => ({
@@ -24,5 +30,9 @@ export const useUi = create<UiState>((set) => ({
   showLeft: (leftTab) => set((s) => ({ leftTab, leftRequest: s.leftRequest + 1 })),
   setLeftTab: (leftTab) => set({ leftTab }),
   shortcutsOpen: false,
-  setShortcutsOpen: (shortcutsOpen) => set({ shortcutsOpen })
+  setShortcutsOpen: (shortcutsOpen) => set({ shortcutsOpen }),
+  lineFocus: null,
+  focusLine: (nodeId) => set((s) => ({ lineFocus: { nodeId, nonce: (s.lineFocus?.nonce ?? 0) + 1 } })),
+  reveal: null,
+  revealNode: (nodeId) => set((s) => ({ reveal: { nodeId, nonce: (s.reveal?.nonce ?? 0) + 1 } }))
 }))

@@ -2,7 +2,7 @@ import { CONDITION_NODE_CTX } from '@shared/expr/sites'
 import { formatDuration, nodeTakes } from '@shared/time'
 import { motion } from 'framer-motion'
 import { ArrowRight, ChevronDown, ChevronUp, Crosshair, Trash2 } from 'lucide-react'
-import type { ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { analyzeFlow } from '@shared/flowAnalysis'
 import { outgoingEdges, startNodes } from '@shared/flowOrder'
 import { dataRef, dataString, isEndNode, isKnownNodeType, isStartNode } from '@shared/nodes'
@@ -10,11 +10,14 @@ import type { Flow, Project } from '@shared/schema'
 import { TECHNICAL_NAME_RE, toTechnicalName } from '@shared/technicalName'
 import { useIssuesFor } from '../../hooks/useIssues'
 import { lineIdOf, menuLineId } from '@shared/lineIds'
+import { speakerOrder } from '@shared/quickEntry'
 import { ReadOnly } from '../ui/ReadOnly'
 import { Comments } from './Comments'
 import { compareOrder } from '../../lib/tree'
 import { deleteElements, moveChoice, moveStart, updateNodeData } from '../../store/flowOps'
 import { useProjectStore } from '../../store/projectStore'
+import { useUi } from '../../store/ui'
+import { focusCanvasNode, quickEntryKey } from '../../lib/quickKeys'
 import { describeNode } from '../flow/FlowEditor'
 import { GENERIC_META, NODE_META } from '../flow/flowMeta'
 import { ExpressionField } from '../defs/ExpressionField'
@@ -26,6 +29,11 @@ export function NodeInspector({ project, flowId, nodeId }: { project: Project; f
   const issues = useIssuesFor(nodeId)
   const focusNode = useProjectStore((s) => s.focusNode)
   const openDoc = useProjectStore((s) => s.openDoc)
+  const lineFocus = useUi((s) => s.lineFocus)
+  // The line field took the cursor (child effects run first): the request is used up.
+  useEffect(() => {
+    if (lineFocus?.nodeId === nodeId) useUi.setState({ lineFocus: null })
+  }, [lineFocus, nodeId])
   const flow = project.flows[flowId]
   const node = flow?.nodes[nodeId]
   if (!flow || !node) return null
@@ -58,8 +66,24 @@ export function NodeInspector({ project, flowId, nodeId }: { project: Project; f
               onChange={(speakerId) => patch({ speakerId })}
             />
           </FieldLabel>
-          <FieldLabel label="Line">
-            <TextArea value={dataString(node, 'text')} rows={5} placeholder="What do they say?" onCommit={(text) => patch({ text })} />
+          <FieldLabel label="Line" hint="Enter: next line · Shift+Enter: line break">
+            <TextArea
+              value={dataString(node, 'text')}
+              rows={5}
+              placeholder="What do they say?"
+              onCommit={(text) => patch({ text })}
+              focusNonce={lineFocus?.nodeId === nodeId ? lineFocus.nonce : undefined}
+              onKeyDown={(e, commit) => {
+                if (e.key === 'Escape') {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  commit()
+                  focusCanvasNode(nodeId)
+                  return
+                }
+                quickEntryKey(e, flowId, nodeId, commit)
+              }}
+            />
           </FieldLabel>
           <FieldLabel label="Choice text" hint="shown in the player’s choice menu">
             <TextInput
@@ -433,13 +457,10 @@ function ToggleRow({ label, hint, checked, onChange }: { label: string; hint: st
 }
 
 function speakerOptions(project: Project): SelectOption[] {
-  return Object.values(project.entities)
-    .sort((a, b) => {
-      const ta = project.templates[a.templateId]?.name ?? ''
-      const tb = project.templates[b.templateId]?.name ?? ''
-      return ta.localeCompare(tb) || compareOrder(a, b)
-    })
-    .map((e) => ({ value: e.id, label: e.name, group: project.templates[e.templateId]?.name ?? 'Other' }))
+  return speakerOrder(project).map((id) => {
+    const e = project.entities[id]
+    return { value: e.id, label: e.name, group: project.templates[e.templateId]?.name ?? 'Other' }
+  })
 }
 
 function jumpOptions(project: Project, flowId: string, selfId: string): SelectOption[] {

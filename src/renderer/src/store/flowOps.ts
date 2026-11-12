@@ -9,7 +9,9 @@ import { deleteFlowElements } from '@shared/mutations'
 import { canConnect, INPUT_HANDLE, isExclusiveHandle, isUnsetValue, outputHandles, type ConnectionLike, type NodeType } from '@shared/nodes'
 import { frameAround, nodesInFrame, type Size } from '@shared/frames'
 import type { Flow, FlowFrame, Position, Project } from '@shared/schema'
+import { addChoiceBeside, cycleSpeaker, insertLineAfter, nextSpeaker, type SizeOf } from '@shared/quickEntry'
 import { useProjectStore } from './projectStore'
+import { useUi } from './ui'
 
 /** Canvas edits. Each call is one undoable step. */
 
@@ -228,6 +230,47 @@ export function duplicateNodes(flowId: string, nodeIds: string[]): string[] {
     }
   })
   return [...map.values()]
+}
+
+// --- Quick line entry (see shared/quickEntry.ts) -----------------------------
+
+function landOn(flowId: string, id: string | null): string | null {
+  if (!id) return null
+  store().select({ kind: 'node', flowId, id })
+  useUi.getState().focusLine(id)
+  useUi.getState().revealNode(id)
+  return id
+}
+
+/** The next line after a node: connected, below it, spoken by whoever spoke before. Selected, with the cursor in its text. */
+export function quickLine(flowId: string, nodeId: string, sizeOf?: SizeOf): string | null {
+  const project = store().project
+  const flow = project?.flows[flowId]
+  if (!project || !flow?.nodes[nodeId]) return null
+  const speakerId = nextSpeaker(project, flow, nodeId)
+  let id: string | null = null
+  editFlow('Add line', flowId, (_f, p) => {
+    id = insertLineAfter(p as Project, flowId, nodeId, { speakerId, newId, sizeOf })
+  })
+  return landOn(flowId, id)
+}
+
+/** Another choice beside a node, from the same parent. Null when the node has no parent to branch from. */
+export function quickChoice(flowId: string, nodeId: string, sizeOf?: SizeOf): string | null {
+  let id: string | null = null
+  editFlow('Add choice', flowId, (_f, p) => {
+    id = addChoiceBeside(p as Project, flowId, nodeId, { newId, sizeOf })
+  })
+  return landOn(flowId, id)
+}
+
+/** Step a line's speaker up or down the speaker list. */
+export function stepSpeaker(flowId: string, nodeId: string, step: 1 | -1): void {
+  const project = store().project
+  const node = project?.flows[flowId]?.nodes[nodeId]
+  if (!project || node?.type !== 'dialogue') return
+  const current = typeof node.data.speakerId === 'string' ? node.data.speakerId : undefined
+  updateNodeData(flowId, nodeId, { speakerId: cycleSpeaker(project, current, step) ?? null })
 }
 
 /** Paste copied nodes (see shared/clipboard.ts) into a flow, as one undo step. */

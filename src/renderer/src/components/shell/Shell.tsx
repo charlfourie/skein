@@ -27,6 +27,12 @@ export function Shell() {
     if (leftRequest && leftRef.current?.isCollapsed()) leftRef.current.expand()
   }, [leftRequest])
 
+  // Quick line entry puts the cursor in the inspector: show it if it's collapsed.
+  const lineFocus = useUi((s) => s.lineFocus)
+  useEffect(() => {
+    if (lineFocus && rightRef.current?.isCollapsed()) rightRef.current.expand()
+  }, [lineFocus])
+
   const toggle = (ref: RefObject<ImperativePanelHandle>) => {
     const panel = ref.current
     if (!panel) return
