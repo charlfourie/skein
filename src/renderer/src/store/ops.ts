@@ -370,10 +370,6 @@ export function setDefType(scope: DefScope, id: string, type: PropertyType): voi
   })
 }
 
-export function setPropertyType(templateId: string, propertyId: string, type: PropertyType): void {
-  setDefType({ kind: 'template', templateId }, propertyId, type)
-}
-
 export function removeDef(scope: DefScope, id: string): void {
   edit('Delete definition', (p) => {
     if (scope.kind === 'template') removePropertyMutation(p, scope.templateId, id)
@@ -597,15 +593,6 @@ export function removeActivity(id: string): void {
     delete p.state.time.activities?.[id]
     if (p.state.time.activities && !Object.keys(p.state.time.activities).length) delete p.state.time.activities
     for (const f of Object.values(p.flows)) for (const n of Object.values(f.nodes)) if (n.data.activityId === id) delete n.data.activityId
-  })
-}
-
-export function reorderActivities(orderedIds: string[]): void {
-  edit('Reorder activities', (p) => {
-    orderedIds.forEach((id, index) => {
-      const a = p.state.time.activities?.[id]
-      if (a && a.order !== index) a.order = index
-    })
   })
 }
 

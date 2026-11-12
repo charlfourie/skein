@@ -67,11 +67,6 @@ export function buildSectionTree(project: ProjectLike, section: SectionId): Tree
 
 export { collectFolderSubtree } from '@shared/mutations'
 
-/** Number of items (in any section) that live inside the given folders. */
-export function countItemsIn(project: ProjectLike, folderIds: Set<string>, section: SectionId): number {
-  return sectionItems(project, section).filter((i) => i.folderId !== null && folderIds.has(i.folderId)).length
-}
-
 /** Folder names from the section root down to (and including) `folderId`. */
 export function folderPath(project: Pick<Project, 'folders'>, folderId: string | null): string[] {
   const names: string[] = []

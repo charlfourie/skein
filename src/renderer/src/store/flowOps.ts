@@ -3,7 +3,7 @@ import { pasteInto, type ClipboardPayload, type PasteResult } from '@shared/clip
 import dagre from '@dagrejs/dagre'
 import type { Draft } from 'immer'
 import { analyzeFlow } from '@shared/flowAnalysis'
-import { compareEdges, nextEdgeOrder, nextStartOrder, normalizeOrders, outgoingEdges, startNodes } from '@shared/flowOrder'
+import { compareEdges, nextEdgeOrder, nextStartOrder, outgoingEdges, startNodes } from '@shared/flowOrder'
 import { newId } from '@shared/ids'
 import { deleteFlowElements } from '@shared/mutations'
 import { canConnect, INPUT_HANDLE, isExclusiveHandle, isUnsetValue, outputHandles, type ConnectionLike, type NodeType } from '@shared/nodes'
@@ -333,13 +333,6 @@ export function moveStart(flowId: string, nodeId: string, delta: -1 | 1): boolea
     ids.forEach((id, order) => {
       if (f.nodes[id] && f.nodes[id].data.startOrder !== order) f.nodes[id].data.startOrder = order
     })
-  })
-}
-
-/** Renumber orders 0..n-1 (keeping the current play order). Used after bulk edits. */
-export function tidyOrders(flowId: string): void {
-  editFlow('Tidy order', flowId, (f) => {
-    normalizeOrders(f)
   })
 }
 

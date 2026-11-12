@@ -98,15 +98,11 @@ export function validateProject(project: Project): IssueMap {
       add(v.id, { level: 'warning', field: 'namespace', message: `An entity is also called “${v.namespace}”; in expressions the namespace wins and hides that entity.` })
     }
   }
-  const byNamespace = new Map<string, typeof vars>()
-  for (const v of vars) byNamespace.set(v.namespace, [...(byNamespace.get(v.namespace) ?? []), v])
-  for (const group of byNamespace.values()) {
+  for (const group of groupBy(vars, (v) => v.namespace).values()) {
     checkTechnicalNames(group.map((v) => ({ ownerId: v.id, name: v.name, technicalName: v.technicalName })), add)
   }
   const rels = Object.values(project.state.relationships)
-  const byPair = new Map<string, typeof rels>()
-  for (const r of rels) byPair.set(`${r.fromTemplateId}>${r.toTemplateId}`, [...(byPair.get(`${r.fromTemplateId}>${r.toTemplateId}`) ?? []), r])
-  for (const group of byPair.values()) {
+  for (const group of groupBy(rels, (r) => `${r.fromTemplateId}>${r.toTemplateId}`).values()) {
     checkTechnicalNames(group.map((r) => ({ ownerId: r.id, name: r.name, technicalName: r.technicalName })), add)
   }
   for (const def of [...vars, ...rels]) {
@@ -312,4 +308,15 @@ function meterId(project: Project, ref: StateRef, selfTemplateId: string | null)
     return templateId ? `prop|${templateId}|${ref.propId}` : null
   }
   return null
+}
+
+function groupBy<T>(items: readonly T[], key: (item: T) => string): Map<string, T[]> {
+  const groups = new Map<string, T[]>()
+  for (const item of items) {
+    const k = key(item)
+    const list = groups.get(k)
+    if (list) list.push(item)
+    else groups.set(k, [item])
+  }
+  return groups
 }

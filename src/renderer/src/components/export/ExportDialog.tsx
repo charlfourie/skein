@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { AlertTriangle, ChevronRight, FileJson, PackageOpen, X, XCircle } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { AlertTriangle, ChevronRight, FileJson, PackageOpen, XCircle } from 'lucide-react'
+import { useMemo, useState } from 'react'
 import { buildExport, serializeExport, type ExportProblem } from '@shared/export/build'
 import type { Project } from '@shared/schema'
 import { cx } from '../../lib/cx'
@@ -10,6 +10,7 @@ import { useProjectStore } from '../../store/projectStore'
 import { useUi } from '../../store/ui'
 import { Button } from '../ui/Button'
 import { Toggle } from '../ui/fields'
+import { Modal } from '../ui/Modal'
 
 const PREFS_KEY = 'skein.exportPrefs.v1'
 
@@ -40,44 +41,11 @@ export function ExportDialog() {
   const open = useUi((s) => s.exportOpen)
   const setOpen = useUi((s) => s.setExportOpen)
   const project = useProjectStore((s) => s.project)
-
-  useEffect(() => {
-    if (!open) return
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [open, setOpen])
-
-  return (
-    <AnimatePresence>
-      {open && project && (
-        <motion.div
-          key="export"
-          className="fixed inset-0 z-40 grid place-items-center bg-black/55 p-6 backdrop-blur-[2px]"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onMouseDown={(e) => e.target === e.currentTarget && setOpen(false)}
-        >
-          <motion.div
-            role="dialog"
-            aria-modal="true"
-            aria-label="Export for game engine"
-            initial={{ opacity: 0, y: 12, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.98 }}
-            transition={{ type: 'spring', stiffness: 420, damping: 34 }}
-            className="flex max-h-full w-[640px] max-w-full flex-col overflow-hidden rounded-xl bg-panel shadow-pop"
-          >
-            <ExportBody project={project} onClose={() => setOpen(false)} />
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  )
+  if (!project) return null
+  return <ExportModal project={project} open={open} onClose={() => setOpen(false)} />
 }
 
-function ExportBody({ project, onClose }: { project: Project; onClose(): void }) {
+function ExportModal({ project, open, onClose }: { project: Project; open: boolean; onClose(): void }) {
   const [prefs, setPrefs] = useState(loadPrefs)
   const [preview, setPreview] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -128,24 +96,31 @@ function ExportBody({ project, onClose }: { project: Project; onClose(): void })
   }
 
   return (
-    <>
-      <div className="flex items-start gap-3 border-b border-line px-5 py-4">
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-accent/15 text-accent">
-          <PackageOpen size={18} />
-        </span>
-        <div className="min-w-0 flex-1">
-          <h2 className="font-semibold text-fg">Export for game engine</h2>
-          <p className="mt-0.5 text-xs leading-relaxed text-muted">
-            A clean JSON file for your game: no canvas positions, colours or notes; everything named by its technical name; every
-            condition and action pre-compiled so the engine needs no parser. Format spec: <code className="text-fg">docs/EXPORT.md</code>.
-          </p>
-        </div>
-        <button type="button" onClick={onClose} aria-label="Close" className="grid h-7 w-7 place-items-center rounded text-faint hover:bg-raised hover:text-fg">
-          <X size={15} />
-        </button>
-      </div>
-
-      <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+    <Modal
+      open={open}
+      onClose={onClose}
+      title="Export for game engine"
+      icon={PackageOpen}
+      subtitle={
+        <>
+          A clean JSON file for your game: no canvas positions, colours or notes; everything named by its technical name; every condition and action
+          pre-compiled so the engine needs no parser. Format spec: <code className="text-fg">docs/EXPORT.md</code>.
+        </>
+      }
+      footer={
+        <>
+          <span className="min-w-0 flex-1 truncate text-2xs text-faint" title={lastPath}>
+            {lastPath ? `Last exported to ${lastPath}` : `Shortcut: ${shortcut('E')}`}
+          </span>
+          <Button variant="ghost" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button variant="primary" icon={PackageOpen} onClick={() => void doExport()} disabled={busy}>
+            {busy ? 'Exporting…' : 'Export…'}
+          </Button>
+        </>
+      }
+    >
         <div className="grid grid-cols-5 gap-2">
           {(
             [
@@ -236,20 +211,7 @@ function ExportBody({ project, onClose }: { project: Project; onClose(): void })
             </motion.pre>
           )}
         </AnimatePresence>
-      </div>
-
-      <div className="flex items-center gap-2 border-t border-line px-5 py-3">
-        <span className="min-w-0 flex-1 truncate text-2xs text-faint" title={lastPath}>
-          {lastPath ? `Last exported to ${lastPath}` : `Shortcut: ${shortcut('E')}`}
-        </span>
-        <Button variant="ghost" onClick={onClose}>
-          Cancel
-        </Button>
-        <Button variant="primary" icon={PackageOpen} onClick={() => void doExport()} disabled={busy}>
-          {busy ? 'Exporting…' : 'Export…'}
-        </Button>
-      </div>
-    </>
+    </Modal>
   )
 }
 
