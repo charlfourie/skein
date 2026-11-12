@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { AlertTriangle, Circle, CircleCheck, CircleDot, XCircle } from 'lucide-react'
+import { AlertTriangle, Circle, CircleCheck, CircleDot, Keyboard, XCircle } from 'lucide-react'
 import { sortedTests } from '@shared/play/storyTests'
 import { isFolderProjectPath } from '@shared/projectFiles'
 import { SCHEMA_VERSION, type Project } from '@shared/schema'
@@ -56,6 +56,15 @@ export function StatusBar() {
       <span className="font-mono text-faint" title={`Skein ${SKEIN_VERSION}, project format v${SCHEMA_VERSION}`}>
         {SKEIN_VERSION} · format v{SCHEMA_VERSION}
       </span>
+      <button
+        type="button"
+        onClick={() => useUi.getState().setShortcutsOpen(true)}
+        title="Keyboard shortcuts (?)"
+        aria-label="Keyboard shortcuts"
+        className="-mr-1 grid h-5 w-5 place-items-center rounded text-faint hover:bg-raised hover:text-fg"
+      >
+        <Keyboard size={12} />
+      </button>
     </footer>
   )
 }
