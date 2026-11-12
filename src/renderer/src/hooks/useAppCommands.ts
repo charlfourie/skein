@@ -56,11 +56,22 @@ export function useAppCommands(): void {
       }
     })
 
-    // Ctrl+Shift+Z is the other common Redo shortcut on Windows/Linux.
     const onKeyDown = (e: KeyboardEvent) => {
+      const mod = window.api.platform === 'darwin' ? e.metaKey : e.ctrlKey
+      // Ctrl+Shift+Z is the other common Redo shortcut on Windows/Linux.
       if (window.api.platform !== 'darwin' && e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'z') {
         e.preventDefault()
         runHistoryCommand('redo')
+      }
+      // Ctrl+F: search the project (instead of the browser's find-in-page, which can't see the canvas).
+      if (mod && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 'f' && useProjectStore.getState().project) {
+        e.preventDefault()
+        useUi.getState().showLeft('search')
+      }
+      // ?: the keyboard shortcuts, when not typing.
+      if (e.key === '?' && !isTextEditing(document.activeElement) && !mod) {
+        e.preventDefault()
+        useUi.getState().setShortcutsOpen(true)
       }
     }
     window.addEventListener('keydown', onKeyDown)

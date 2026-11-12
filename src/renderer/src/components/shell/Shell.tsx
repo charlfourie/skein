@@ -1,11 +1,12 @@
-import { useRef, useState, type RefObject } from 'react'
+import { useEffect, useRef, useState, type RefObject } from 'react'
 import { Panel, PanelGroup, type ImperativePanelHandle } from 'react-resizable-panels'
 import { useProjectStore } from '../../store/projectStore'
 import { useStoryTestRunner } from '../../store/tests'
 import { Inspector } from '../inspector/Inspector'
-import { NavTree } from '../nav/NavTree'
 import { ResizeHandle } from '../ui/ResizeHandle'
 import { Workspace } from '../workspace/Workspace'
+import { useUi } from '../../store/ui'
+import { LeftPanel } from './LeftPanel'
 import { ExternalChangeBanner } from './ExternalChangeBanner'
 import { StatusBar } from './StatusBar'
 import { TopBar } from './TopBar'
@@ -19,6 +20,12 @@ export function Shell() {
   const [leftOpen, setLeftOpen] = useState(true)
   const [rightOpen, setRightOpen] = useState(true)
   useStoryTestRunner()
+
+  // Search or Problems asked for (Ctrl+F, the status bar): open the left panel if it's collapsed.
+  const leftRequest = useUi((s) => s.leftRequest)
+  useEffect(() => {
+    if (leftRequest && leftRef.current?.isCollapsed()) leftRef.current.expand()
+  }, [leftRequest])
 
   const toggle = (ref: RefObject<ImperativePanelHandle>) => {
     const panel = ref.current
@@ -53,7 +60,7 @@ export function Shell() {
           onCollapse={() => setLeftOpen(false)}
           onExpand={() => setLeftOpen(true)}
         >
-          <NavTree />
+          <LeftPanel />
         </Panel>
         <ResizeHandle />
         <Panel id="workspace" order={2} minSize={30}>

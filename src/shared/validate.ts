@@ -23,6 +23,8 @@ export interface Issue {
   propertyId?: string
   /** The field the issue concerns, e.g. "technicalName". */
   field?: string
+  /** A flow's summary of its nodes' issues (for its badge); the issues themselves are listed on the nodes. */
+  summary?: true
 }
 
 export type IssueMap = Map<string, Issue[]>
@@ -242,7 +244,8 @@ export function validateProject(project: Project): IssueMap {
     if (errors || warnings) {
       add(flow.id, {
         level: errors ? 'error' : 'warning',
-        message: `${errors + warnings} issue${errors + warnings === 1 ? '' : 's'} in nodes.`
+        message: `${errors + warnings} issue${errors + warnings === 1 ? '' : 's'} in nodes.`,
+        summary: true
       })
     }
   }

@@ -171,14 +171,11 @@ export function NavTree() {
     <TreeContext.Provider value={ctx}>
       {/* tabIndex -1: clicking a row focuses the tree so F2 / Delete reach it. */}
       <div className="flex h-full flex-col bg-panel outline-none" tabIndex={-1} onKeyDown={onKeyDown}>
-        <div className="flex h-9 shrink-0 items-center px-3 text-2xs font-semibold uppercase tracking-wider text-faint">
-          Explorer
-        </div>
         <button
           type="button"
           onClick={() => select({ kind: 'project' })}
           className={cx(
-            'mx-1.5 mb-1 flex h-7 items-center gap-2 rounded-md px-2 text-left transition-colors',
+            'mx-1.5 mb-1 mt-0.5 flex h-7 items-center gap-2 rounded-md px-2 text-left transition-colors',
             selection?.kind === 'project' ? 'bg-accent/15 text-fg' : 'text-muted hover:bg-raised hover:text-fg'
           )}
         >
