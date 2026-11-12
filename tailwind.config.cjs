@@ -18,7 +18,8 @@ module.exports = {
         warn: token('warn'),
         danger: token('danger'),
         ok: token('ok'),
-        loop: token('loop')
+        loop: token('loop'),
+        end: token('end')
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],

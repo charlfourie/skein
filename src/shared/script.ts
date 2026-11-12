@@ -99,6 +99,20 @@ export function scriptOf(flow: Flow): ScriptItem[] {
   return items
 }
 
+/**
+ * The flow's endings (nodes marked End), numbered in reading order: ending 1 is
+ * the first a reader meets going down the script. Stable as long as the story's
+ * shape is; moving nodes on the canvas doesn't renumber them.
+ */
+export function endingNumbers(flow: Flow, items: ScriptItem[] = scriptOf(flow)): Map<string, number> {
+  const out = new Map<string, number>()
+  for (const item of items) {
+    if (!('nodeId' in item) || item.kind === 'when' || item.kind === 'goto') continue
+    if (isEndNode(flow.nodes[item.nodeId]) && !out.has(item.nodeId)) out.set(item.nodeId, out.size + 1)
+  }
+  return out
+}
+
 // ---- Plain text and printing ------------------------------------------------
 
 /** What a line says, for reading: the speaker's name and text. */
@@ -146,6 +160,7 @@ export function gotoText(project: Project, flow: Flow, item: Extract<ScriptItem,
 
 /** A printable page for the script (opened in a new window and printed). */
 export function scriptHtml(project: Project, flow: Flow, items = scriptOf(flow)): string {
+  const endings = endingNumbers(flow, items)
   const rows = items.map((item) => {
     const pad = `style="margin-left:${item.depth * 1.6}em"`
     const node = 'nodeId' in item ? flow.nodes[item.nodeId] : undefined
@@ -157,7 +172,8 @@ export function scriptHtml(project: Project, flow: Flow, items = scriptOf(flow))
         return `<h2>Not reached from a start</h2>`
       case 'line': {
         const { speaker, text } = lineParts(project, node!)
-        const end = node && isEndNode(node) ? ' <span class="end">END</span>' : ''
+        const n = endings.size > 1 ? endings.get(node!.id) : undefined
+        const end = node && isEndNode(node) ? ` <span class="end">END${n ? ` ${n}` : ''}</span>` : ''
         return `<div class="line" ${pad}>${mark}<span class="who">${esc(speaker ?? 'Narration')}</span><div class="say">${esc(text) || '<em>(no text)</em>'}${end}</div></div>`
       }
       case 'direction':

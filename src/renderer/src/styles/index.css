@@ -16,6 +16,8 @@
   --c-danger: 248 113 113;
   --c-ok: 52 211 153;
   --c-loop: 192 132 252;
+  /* Ending nodes: not red (that's errors), not green (starts, and where Play is). */
+  --c-end: 56 189 248;
   color-scheme: dark;
 }
 
@@ -132,6 +134,20 @@ textarea,
 .sk-node-error {
   border-color: rgb(var(--c-danger) / 0.7) !important;
   animation: sk-error-pulse 1.8s ease-in-out infinite;
+}
+
+/* Where a flow starts and ends: a steady outline just outside the node, so it never
+   fights the border and shadow that selection, warnings and Play use. */
+.sk-node-start,
+.sk-node-end {
+  outline: 2px solid transparent;
+  outline-offset: 4px;
+}
+.sk-node-start {
+  outline-color: rgb(var(--c-ok) / 0.45);
+}
+.sk-node-end {
+  outline-color: rgb(var(--c-end) / 0.45);
 }
 
 /* The node a Play-panel play-through is on. */

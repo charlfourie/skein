@@ -31,6 +31,7 @@ import { cx } from '../../lib/cx'
 import { addFrame, addNode, autoLayout, connect, deleteElements, duplicateNodes, moveNodes, pasteNodes, placeFrame, reconnect } from '../../store/flowOps'
 import { copySelection, readClipboard } from '@shared/clipboard'
 import { parseScreenplay } from '@shared/screenplay'
+import { endingNumbers } from '@shared/script'
 import { toast } from '../../lib/toast'
 import { useUi } from '../../store/ui'
 import { quickEntryKey, setMeasuredSizes } from '../../lib/quickKeys'
@@ -63,6 +64,7 @@ const PLAY_PANEL_WIDTH = 404
 function deriveNodes(project: Project, flow: Flow, analysis: FlowAnalysis, issues: IssueMap): NarrativeRFNode[] {
   const starts = startNodes(flow)
   const startRank = new Map(starts.length > 1 ? starts.map((n, i) => [n.id, i + 1] as const) : [])
+  const endings = endingNumbers(flow)
   return Object.values(flow.nodes)
     .sort((a, b) => (a.id < b.id ? -1 : 1))
     .map((node) => {
@@ -88,6 +90,7 @@ function deriveNodes(project: Project, flow: Flow, analysis: FlowAnalysis, issue
           error: nodeIssues.some((i) => i.level === 'error'),
           loopJump: analysis.loopJumps.has(node.id),
           startRank: startRank.get(node.id) ?? null,
+          ending: endings.has(node.id) ? { number: endings.get(node.id)!, of: endings.size } : null,
           issues: nodeIssues
         }
       }

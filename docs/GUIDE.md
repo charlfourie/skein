@@ -64,6 +64,10 @@ invalid identifiers are flagged in red.
 - **Edges:** particles show which way the story runs. Condition branches are green
   (true) and red (false). A connection that leads back to an earlier point is purple
   and dashed, with a ↺ loop badge.
+- **Starts and endings:** start nodes have a green halo and a START badge; nodes marked End
+  have a blue halo and an END badge. When a flow has several endings they're numbered in
+  reading order (END 1, END 2…), the same numbers the script view uses. Blue, because red
+  means an error and a pulsing green means where Play is.
 - **Warnings:** orphans (nothing leads in, and the node isn't a start) and dead ends
   (nothing follows, and it isn't an end) pulse amber. Errors pulse red.
 - **Finding problems:** the chips at the top right count problems and loops; click

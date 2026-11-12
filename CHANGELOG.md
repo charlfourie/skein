@@ -30,6 +30,10 @@ What's new in Skein, newest first. Dates are when the work landed on `main`.
   work. After a crash or a closed tab, the Welcome screen offers them back: Restore puts
   them over the saved project as one undoable step.
 - **Keyboard shortcuts sheet:** press **?** (or the keyboard icon in the status bar).
+- **Starts and endings stand out.** Start nodes have a green halo and ending nodes a blue
+  one, and the END badge is coloured and numbered in reading order (END 1, END 2…), so you
+  can see at a glance how many outcomes a flow has. The script view and printout number
+  them too.
 - **The Coffee Order demo lets you try to overspend.** Every item stays on the menu; a
   condition checks the price, and if you're short Pip tells you what it costs and what you
   have, then you choose again. The tip jar now offers a single coin or a handful (3), with

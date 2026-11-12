@@ -5,7 +5,7 @@ import { orderedTargets } from './flowOrder'
 import { parseProject } from './parse'
 import type { Project } from './schema'
 import { addScreenplay, characterName, matchSpeaker, parseScreenplay, screenplayNames, usualChooser } from './screenplay'
-import { scriptHtml, scriptOf } from './script'
+import { endingNumbers, scriptHtml, scriptOf } from './script'
 
 function load(path: string): Project {
   const r = parseProject(readFileSync(path, 'utf8'))
@@ -129,5 +129,18 @@ describe('who picks choices', () => {
     })
     expect(ids.slice(1).map((id) => flowOf(next).nodes[id].data.speakerId)).toEqual([you, you])
     expect(characterName('OLD TOM')).toBe('Old Tom')
+  })
+})
+
+describe('ending numbers', () => {
+  it('number the endings in reading order', () => {
+    const p = coffee()
+    const f = flowOf(p)
+    const ends = endingNumbers(f)
+    const text = (id: string) => String(f.nodes[id].data.text)
+    expect([...ends.values()]).toEqual([1, 2, 3, 4])
+    expect([...ends.keys()].every((id) => f.nodes[id].data.isEnd === true)).toBe(true)
+    expect(Object.values(f.nodes).filter((n) => n.data.isEnd).length).toBe(ends.size)
+    expect(text([...ends.keys()][0])).toMatch(/^You're a star|^Pockets empty|^Three whole|^Enjoy/)
   })
 })

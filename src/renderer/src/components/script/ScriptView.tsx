@@ -2,7 +2,7 @@ import { ArrowDown, ArrowUp, ClipboardPaste, Crosshair, CornerDownRight, Flag, P
 import { useEffect, useMemo, useRef, type ClipboardEvent, type ReactNode } from 'react'
 import { dataString, isEndNode } from '@shared/nodes'
 import { parseScreenplay } from '@shared/screenplay'
-import { directionText, gotoText, lineParts, scriptHtml, scriptOf, type BranchInfo, type ScriptItem } from '@shared/script'
+import { directionText, endingNumbers, gotoText, lineParts, scriptHtml, scriptOf, type BranchInfo, type ScriptItem } from '@shared/script'
 import type { Flow, Project } from '@shared/schema'
 import { speakerOrder } from '@shared/quickEntry'
 import { cx } from '../../lib/cx'
@@ -23,6 +23,7 @@ export function ScriptView({ flow }: { flow: Flow }) {
   const project = useProjectStore((s) => s.project) as Project
   const selection = useProjectStore((s) => s.selection)
   const items = useMemo(() => scriptOf(flow), [flow])
+  const endings = useMemo(() => endingNumbers(flow, items), [flow, items])
   const selectedId = selection?.kind === 'node' && selection.flowId === flow.id ? selection.id : null
   const lines = items.filter((i) => i.kind === 'line').length
   const list = useRef<HTMLDivElement>(null)
@@ -72,7 +73,7 @@ export function ScriptView({ flow }: { flow: Flow }) {
           {items.length === 0 ? (
             <p className="py-16 text-center text-sm text-faint">This flow is empty. Add a node on the canvas, or paste a scene.</p>
           ) : (
-            items.map((item, i) => <Row key={rowKey(item, i)} project={project} flow={flow} item={item} selectedId={selectedId} />)
+            items.map((item, i) => <Row key={rowKey(item, i)} project={project} flow={flow} item={item} selectedId={selectedId} endings={endings} />)
           )}
         </div>
       </div>
@@ -105,7 +106,7 @@ function openScene(flow: Flow, text: string, after: string | null) {
   useUi.getState().setScenePaste({ flowId: flow.id, text, at, after })
 }
 
-function Row({ project, flow, item, selectedId }: { project: Project; flow: Flow; item: ScriptItem; selectedId: string | null }) {
+function Row({ project, flow, item, selectedId, endings }: { project: Project; flow: Flow; item: ScriptItem; selectedId: string | null; endings: Map<string, number> }) {
   const select = useProjectStore((s) => s.select)
   const indent = { paddingLeft: item.depth * 28 }
   const node = 'nodeId' in item ? flow.nodes[item.nodeId] : undefined
@@ -154,7 +155,7 @@ function Row({ project, flow, item, selectedId }: { project: Project; flow: Flow
     </div>
   )
 
-  if (item.kind === 'line' && node) return shell(<LineBody project={project} flow={flow} nodeId={node.id} />, <AddAfter flowId={flow.id} nodeId={node.id} />)
+  if (item.kind === 'line' && node) return shell(<LineBody project={project} flow={flow} nodeId={node.id} ending={endings.size > 1 ? (endings.get(node.id) ?? null) : null} />, <AddAfter flowId={flow.id} nodeId={node.id} />)
   if (item.kind === 'direction' && node) {
     return shell(<p className="py-0.5 text-xs italic text-muted">({directionText(project, node)})</p>, <AddAfter flowId={flow.id} nodeId={node.id} />)
   }
@@ -177,7 +178,7 @@ function Row({ project, flow, item, selectedId }: { project: Project; flow: Flow
   return null
 }
 
-function LineBody({ project, flow, nodeId }: { project: Project; flow: Flow; nodeId: string }) {
+function LineBody({ project, flow, nodeId, ending }: { project: Project; flow: Flow; nodeId: string; ending: number | null }) {
   const node = flow.nodes[nodeId]
   const lineFocus = useUi((s) => s.lineFocus)
   const mine = lineFocus?.nodeId === nodeId && lineFocus.where === 'script'
@@ -205,8 +206,8 @@ function LineBody({ project, flow, nodeId }: { project: Project; flow: Flow; nod
         </select>
         {menuText && <span className="truncate text-2xs text-faint">choice: “{menuText}”</span>}
         {isEndNode(node) && (
-          <span className="flex items-center gap-0.5 rounded bg-raised px-1 py-px text-[10px] font-semibold text-muted">
-            <Flag size={9} /> END
+          <span className="flex items-center gap-0.5 rounded bg-end/15 px-1 py-px text-[10px] font-semibold text-end">
+            <Flag size={9} fill="currentColor" /> END{ending ? ` ${ending}` : ''}
           </span>
         )}
       </div>

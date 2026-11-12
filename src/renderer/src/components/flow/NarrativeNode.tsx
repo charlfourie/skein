@@ -27,6 +27,8 @@ export interface NarrativeNodeData extends Record<string, unknown> {
   loopJump: boolean
   /** Priority among several start nodes (1 = tried first), or null. */
   startRank: number | null
+  /** This node is marked End: which ending it is, in reading order, out of how many. */
+  ending: { number: number; of: number } | null
   issues: Issue[]
 }
 
@@ -103,6 +105,8 @@ export const NarrativeNode = memo(function NarrativeNode({ id, data, selected }:
         'group relative rounded-xl border bg-panel text-left shadow-[0_8px_24px_-14px_rgb(0_0_0/0.8)] transition-[border-color,box-shadow]',
         compact ? 'w-[200px]' : 'w-[260px]',
         selected ? 'border-accent shadow-[0_0_0_3px_rgb(var(--c-accent)/0.25)]' : 'border-line hover:border-faint/70',
+        // Where the story begins and ends: a steady halo (pulses mean a problem, or where Play is).
+        isStart ? 'sk-node-start' : isEnd && 'sk-node-end',
         playMark === 'current' && 'sk-play-current border-ok shadow-[0_0_0_3px_rgb(var(--c-ok)/0.35)]',
         playMark === 'visited' && !selected && 'border-ok/45',
         data.error ? 'sk-node-error' : data.warn && 'sk-node-warn'
@@ -154,8 +158,11 @@ export const NarrativeNode = memo(function NarrativeNode({ id, data, selected }:
           </span>
         )}
         {isEnd && (
-          <span className="flex items-center gap-0.5 rounded bg-raised px-1 py-px text-[10px] font-semibold text-muted" title="End node">
-            <Flag size={9} /> END
+          <span
+            className="flex items-center gap-0.5 rounded bg-end/15 px-1 py-px text-[10px] font-semibold text-end"
+            title={data.ending && data.ending.of > 1 ? `Ending ${data.ending.number} of ${data.ending.of} in this flow (numbered in reading order)` : 'End node'}
+          >
+            <Flag size={9} fill="currentColor" /> END{data.ending && data.ending.of > 1 ? ` ${data.ending.number}` : ''}
           </span>
         )}
         {data.loopJump && (
