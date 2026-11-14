@@ -101,6 +101,9 @@ invalid identifiers are flagged in red.
   Comments travel with the project file and are never exported.
 - **Right-click** a node for Copy, Cut, Paste, Duplicate and Delete (on the whole selection
   when the node is part of it), or empty canvas for **Paste here** and the node list.
+  On one node, **Select everything after** / **before** selects every node the story can
+  reach from it, or that leads to it (jumps included). With several selected, **Align**
+  lines up their edges or centres, or spreads them evenly. All of it undoes with Ctrl+Z.
 - **Keys:** Delete removes, Ctrl+D duplicates, Shift+drag box-selects. Press **?** for
   every shortcut.
 - **Auto-layout and preferences:** auto-layout (dagre, undoable) tidies the flow. Snap

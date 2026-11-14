@@ -17,7 +17,19 @@ import {
   type OnSelectionChangeParams
 } from '@xyflow/react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Activity, AlertTriangle, ClipboardPaste, Copy, CopyPlus, Frame as FrameIcon, Grid3x3, Maximize, MessageSquare, Network, Play, Repeat, Scissors, Trash2 } from 'lucide-react'
+import {
+  AlignCenterHorizontal,
+  AlignCenterVertical,
+  AlignEndHorizontal,
+  AlignEndVertical,
+  AlignHorizontalSpaceAround,
+  AlignStartHorizontal,
+  AlignStartVertical,
+  AlignVerticalSpaceAround,
+  ArrowDownToLine,
+  ArrowUpToLine,
+  type LucideIcon,
+  Activity, AlertTriangle, ClipboardPaste, Copy, CopyPlus, Frame as FrameIcon, Grid3x3, Maximize, MessageSquare, Network, Play, Repeat, Scissors, Trash2 } from 'lucide-react'
 import { openThreadCounts } from '@shared/comments'
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react'
 import { analyzeFlow, type FlowAnalysis } from '@shared/flowAnalysis'
@@ -30,6 +42,7 @@ import type { IssueMap } from '@shared/validate'
 import { useIssues } from '../../hooks/useIssues'
 import { cx } from '../../lib/cx'
 import { addFrame, addNode, autoLayout, connect, deleteElements, duplicateNodes, moveNodes, pasteNodes, placeFrame, reconnect } from '../../store/flowOps'
+import { align, reachable, type AlignMode } from '@shared/arrange'
 import { copySelection, readClipboard, type ClipboardPayload } from '@shared/clipboard'
 import { parseScreenplay } from '@shared/screenplay'
 import { endingNumbers } from '@shared/script'
@@ -41,6 +54,7 @@ import { useProjectStore, type Selection } from '../../store/projectStore'
 import { usePlay } from '../../store/play'
 import { PlayPanel } from '../play/PlayPanel'
 import { MenuItem, Popover } from '../ui/Popover'
+import { IconButton } from '../ui/IconButton'
 import { COLORS, FlowContext, NODE_DRAG_MIME, NODE_META } from './flowMeta'
 import { ConnectionLine, edgeColor, NarrativeEdge, type NarrativeRFEdge } from './NarrativeEdge'
 import { FrameNode, type FrameRFNode } from './FrameNode'
@@ -57,6 +71,17 @@ const edgeTypes = { narrative: NarrativeEdge }
 const DROP_OFFSET = { x: 130, y: 24 }
 
 
+
+const ALIGN_BUTTONS: { mode: AlignMode; label: string; icon: LucideIcon }[] = [
+  { mode: 'left', label: 'Align left edges', icon: AlignStartVertical },
+  { mode: 'center', label: 'Align centres (vertical line)', icon: AlignCenterVertical },
+  { mode: 'right', label: 'Align right edges', icon: AlignEndVertical },
+  { mode: 'spreadX', label: 'Spread evenly, left to right', icon: AlignHorizontalSpaceAround },
+  { mode: 'top', label: 'Align top edges', icon: AlignStartHorizontal },
+  { mode: 'middle', label: 'Align middles (horizontal line)', icon: AlignCenterHorizontal },
+  { mode: 'bottom', label: 'Align bottom edges', icon: AlignEndHorizontal },
+  { mode: 'spreadY', label: 'Spread evenly, top to bottom', icon: AlignVerticalSpaceAround }
+]
 /** The last nodes copied in this tab, for pasting from the right-click menu when the browser won't share the clipboard. */
 let lastCopied: ClipboardPayload | null = null
 /** Width of the Play panel plus its margin (see PlayPanel). */
@@ -518,6 +543,21 @@ export function FlowEditor({ flow }: { flow: Flow }) {
     lastCopied = payload
     applyPaste(payload, pointer.current)
   }
+  /** Select every node reachable after (or before) one, so it can be seen, moved or aligned together. */
+  const selectReached = (id: string, direction: 'after' | 'before') => {
+    const ids = reachable(flow, id, direction)
+    ids.add(id)
+    setNodes((ns) => ns.map((n) => ({ ...n, selected: ids.has(n.id) }) as CanvasNode))
+    select({ kind: 'flow', id: flow.id })
+    toast.info(`${ids.size - 1} node${ids.size === 2 ? '' : 's'} ${direction === 'after' ? 'after' : 'before'} it`, 'Selected, with the node itself. Drag to move them together, or right-click to align.')
+  }
+  const alignSelected = (ids: string[], mode: AlignMode) => {
+    const boxes = ids.flatMap((id) => {
+      const n = rf.getNode(id)
+      return n ? [{ id, position: n.position, width: n.measured?.width ?? 260, height: n.measured?.height ?? 100 }] : []
+    })
+    moveNodes(flow.id, align(boxes, mode))
+  }
   const applyPaste = (payload: ClipboardPayload, at: Position | null) => {
     const result = pasteNodes(flow.id, payload, at)
     if (!result.nodeIds.length) return
@@ -830,6 +870,24 @@ export function FlowEditor({ flow }: { flow: Flow }) {
                   if (ids.length) selectNext.current = new Set(ids)
                 })}
               />
+              {n === 1 && (
+                <>
+                  <div className="mx-1 my-1 h-px bg-line" />
+                  <MenuItem icon={<ArrowDownToLine size={14} />} label="Select everything after" hint="where the story can go from here" onClick={run(() => selectReached(sel.nodes[0], 'after'))} />
+                  <MenuItem icon={<ArrowUpToLine size={14} />} label="Select everything before" hint="every way the story gets here" onClick={run(() => selectReached(sel.nodes[0], 'before'))} />
+                </>
+              )}
+              {n > 1 && (
+                <>
+                  <div className="mx-1 my-1 h-px bg-line" />
+                  <p className="px-2 pb-0.5 pt-1 text-2xs font-semibold uppercase tracking-wider text-faint">Align</p>
+                  <div className="grid grid-cols-4 gap-0.5 px-1 pb-1">
+                    {ALIGN_BUTTONS.map(({ mode, label, icon: Icon }) => (
+                      <IconButton key={mode} size="sm" icon={Icon} label={label} onClick={run(() => alignSelected(sel.nodes, mode))} />
+                    ))}
+                  </div>
+                </>
+              )}
               <div className="mx-1 my-1 h-px bg-line" />
               <MenuItem icon={<Trash2 size={14} />} color="#f87171" label={`Delete ${what}`} hint="Delete" onClick={run(() => deleteElements(flow.id, sel.nodes, [], sel.frames))} />
             </>

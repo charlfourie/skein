@@ -8,6 +8,10 @@ Project format 8 and export format 5 (see [VERSIONING.md](docs/VERSIONING.md)). 
 only need a version 5 runtime when they use the new hub behaviour below.
 
 ### Added
+- **Select everything before or after a node, and align a selection.** Right-click a node:
+  **Select everything after** / **before** picks every node the story can reach from it, or
+  that leads to it. With several selected, **Align** lines up left, centre, right, top,
+  middle or bottom, or spreads them evenly.
 - **Right-click to copy and paste.** Right-click a node for Copy, Cut, Paste, Duplicate
   and Delete, or empty canvas for **Paste here** (at that spot). Same clipboard as
   Ctrl/⌘+C and V, so you can mix the two.
