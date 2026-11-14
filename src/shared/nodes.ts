@@ -40,6 +40,26 @@ export function outputHandles(type: string): readonly string[] {
   return isKnownNodeType(type) ? OUTPUTS[type] : ['out']
 }
 
+/**
+ * The State fields (Requires, Effects) each node type offers in the inspector.
+ * The runtime honours both on every node, but on some types they only confuse:
+ * a condition is already a check (put state changes in an instruction), and an
+ * instruction's own script is where its changes go.
+ */
+const STATE_FIELDS: Record<NodeType, { requires: boolean; effects: boolean }> = {
+  dialogue: { requires: true, effects: true },
+  condition: { requires: false, effects: false },
+  instruction: { requires: true, effects: false },
+  hub: { requires: true, effects: true },
+  jump: { requires: true, effects: true },
+  call: { requires: true, effects: true }
+}
+
+/** Whether a node type offers a State field (unknown types offer both). */
+export function offersStateField(type: string, field: 'requires' | 'effects'): boolean {
+  return isKnownNodeType(type) ? STATE_FIELDS[type][field] : true
+}
+
 // ---------------------------------------------------------------------------
 // Typed reads of node.data
 

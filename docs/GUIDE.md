@@ -206,8 +206,11 @@ Nodes use state in three places:
 
 - **Condition nodes** branch on an expression.
 - **Instruction nodes** change state.
-- **Every node** can also have **Requires** (it's only available while this holds) and
-  **Effects** (applied when the story passes through).
+- **Other nodes** can also have **Requires** (it's only available while this holds) and
+  **Effects** (applied when the story passes through). The inspector shows only the ones
+  that make sense: a condition node has neither (it's already a check, so put changes in an
+  instruction), and an instruction node has no separate Effects (its instruction is where
+  changes go). An older project that has these set keeps showing them, with a note to move them.
 
 A number that actions push both up and down (a meter, like Strain or Trust) is flagged until it has a min and max.
 

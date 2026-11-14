@@ -5,7 +5,7 @@ import { ArrowRight, ChevronDown, ChevronUp, Crosshair, Trash2 } from 'lucide-re
 import { useEffect, type ReactNode } from 'react'
 import { analyzeFlow } from '@shared/flowAnalysis'
 import { outgoingEdges, startNodes } from '@shared/flowOrder'
-import { dataRef, dataString, isEndNode, isKnownNodeType, isStartNode } from '@shared/nodes'
+import { dataRef, dataString, isEndNode, isKnownNodeType, isStartNode, offersStateField } from '@shared/nodes'
 import type { Flow, Project } from '@shared/schema'
 import { TECHNICAL_NAME_RE, toTechnicalName } from '@shared/technicalName'
 import { useIssuesFor } from '../../hooks/useIssues'
@@ -42,6 +42,9 @@ export function NodeInspector({ project, flowId, nodeId }: { project: Project; f
   const Icon = meta.icon
   const patch = (p: Record<string, unknown>) => updateNodeData(flowId, nodeId, p)
   const a = analyzeFlow(flow)
+  // Fields a type doesn't offer stay visible while they still hold something, so old data is never hidden.
+  const showRequires = offersStateField(node.type, 'requires') || dataString(node, 'requires').trim() !== ''
+  const showEffects = offersStateField(node.type, 'effects') || dataString(node, 'effects').trim() !== ''
 
   return (
     <div className="flex flex-col gap-4 pt-1">
@@ -128,27 +131,45 @@ export function NodeInspector({ project, flowId, nodeId }: { project: Project; f
         </FieldLabel>
       )}
 
-      <Section title="State">
-        <FieldLabel label="Requires" hint="only available while this holds">
-          <ExpressionField
-            project={project}
-            value={dataString(node, 'requires')}
-            mode="condition"
-            placeholder="e.g. Time.Phase is Night"
-            onCommit={(requires) => patch({ requires })}
-          />
-        </FieldLabel>
-        <FieldLabel label="Effects" hint="applied when the story passes through">
-          <ExpressionField
-            project={project}
-            value={dataString(node, 'effects')}
-            mode="action"
-            rows={2}
-            placeholder="e.g. Keeper.Mood = Wary"
-            onCommit={(effects) => patch({ effects })}
-          />
-        </FieldLabel>
-      </Section>
+      {(showRequires || showEffects) && (
+        <Section title="State">
+          {showRequires && (
+            <FieldLabel
+              label="Requires"
+              hint={offersStateField(node.type, 'requires') ? 'only available while this holds' : 'not used on this node type: move it into the condition, then clear it'}
+            >
+              <ExpressionField
+                project={project}
+                value={dataString(node, 'requires')}
+                mode="condition"
+                placeholder="e.g. Time.Phase is Night"
+                onCommit={(requires) => patch({ requires })}
+              />
+            </FieldLabel>
+          )}
+          {showEffects && (
+            <FieldLabel
+              label="Effects"
+              hint={
+                offersStateField(node.type, 'effects')
+                  ? 'applied when the story passes through'
+                  : node.type === 'instruction'
+                    ? 'not used on this node type: move it into the instruction, then clear it'
+                    : 'not used on this node type: move it into an instruction node, then clear it'
+              }
+            >
+              <ExpressionField
+                project={project}
+                value={dataString(node, 'effects')}
+                mode="action"
+                rows={2}
+                placeholder="e.g. Keeper.Mood = Wary"
+                onCommit={(effects) => patch({ effects })}
+              />
+            </FieldLabel>
+          )}
+        </Section>
+      )}
 
       {node.type === 'hub' && (
         <FieldLabel label="Label" hint="jumps refer to hubs by this name">

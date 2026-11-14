@@ -4,6 +4,13 @@ What's new in Skein, newest first. Dates are when the work landed on `main`.
 
 ## Unreleased · Tester feedback
 
+### Changed
+- **The inspector only shows State fields that make sense for the node.** Condition nodes
+  no longer offer Requires or Effects (a condition is already a check, so changes belong in
+  an instruction), and instruction nodes no longer offer a separate Effects (the instruction
+  is where changes go). Projects that already use them keep showing them, with a note to
+  move them, so nothing is hidden.
+
 ### Fixed
 - **The Play panel closes again.** Opening it from the status bar's test count and then
   switching tabs (Play, Explore, Start state, or **Record a play-through**) left the panel
