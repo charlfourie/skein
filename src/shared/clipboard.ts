@@ -144,6 +144,7 @@ export function pasteInto(project: Project, flowId: string, payload: ClipboardPa
     if (!source || !targetId) continue
     const id = newId()
     flow.edges[id] = { ...e, id, source, target: targetId }
+    delete flow.edges[id].choiceLineId // a new choice: it gets its own ID after the edit
   }
 
   for (const fr of payload.frames) {

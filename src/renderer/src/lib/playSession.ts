@@ -153,17 +153,22 @@ export class PlaySession {
     const node = this.beat.node
     if (!node || this.beat.kind === 'end' || !('next' in node)) return []
     const available = new Map(choicesOf(this.beat).map((c) => [c.node, c.index]))
-    return node.next.map((id) => {
+    const opts = 'choices' in node ? node.choices : undefined
+    return node.next.map((id, i) => {
       const target = this.story.flow.nodes[id]
+      const opt = opts?.[i] ?? null
       const index = available.get(id)
+      // Why it's hidden: the choice's own requirement (v5) when that fails, else the target's.
+      const own = opt?.requires && !this.world.check(opt.requires) ? opt.requires : null
+      const req = own ?? target?.requires
       return {
         nodeId: id,
-        text: label(target, this.world),
+        text: opt?.text ? this.world.fill(opt.text, opt.vars) || '(empty choice)' : label(target, this.world),
         available: index !== undefined,
         ...(index !== undefined ? { index } : {}),
         ...(target?.takes ? { takes: target.takes } : {}),
         ...(target?.activity ? { activity: target.activity } : {}),
-        ...(target?.requires?.source ? { requires: target.requires.source } : target?.requires ? { requires: '(requirement)' } : {})
+        ...(req?.source ? { requires: req.source } : req ? { requires: '(requirement)' } : {})
       }
     })
   }

@@ -16,7 +16,7 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'fs'
 import { join } from 'path'
 import { SkeinStory, SkeinWorld, type Beat } from '../../src/shared/export/runtime'
-import type { ExportFile, ExportNode, ExprNode, StatePath, Statement } from '../../src/shared/export/types'
+import type { ExportChoice, ExportFile, ExportNode, ExprNode, StatePath, Statement } from '../../src/shared/export/types'
 
 const args = process.argv.slice(2)
 const check = args.includes('--check')
@@ -135,6 +135,28 @@ function synth(seed: number): ExportFile {
         ...(r() < 0.3 ? { effects: effects(1 + int(2), r() < 0.3) } : {}),
         ...(r() < 0.35 ? { takes: pick([4 / 60, 0.1, 3, 20, 90, 240.5, 700]) } : {})
       }
+      // v5: a line's or hub's own per-choice text, requirement and "only once", lined up with `next`.
+      const choicesFor = (next: string[]): { choices?: (ExportChoice | null)[] } => {
+        if (r() >= 0.5 || next.length === 0) return {}
+        const list = next.map((_, i): ExportChoice | null => {
+          if (r() < 0.3) return null
+          const cid = `${id}~${i}`
+          const once = r() < 0.35
+          const own = r() < 0.4 ? expr(2) : null
+          const unseen: ExprNode = { op: '==', a: { get: 'visit', node: cid }, b: { lit: 0 } }
+          const requires = once ? { expr: own ? { op: 'and' as const, a: unseen, b: own } : unseen } : own ? { expr: own } : undefined
+          const key = pick(Object.keys(placeholderPool))
+          const withVar = r() < 0.3
+          return {
+            id: cid,
+            ...(r() < 0.6 ? { text: withVar ? `Pick {${key}} ${cid}` : `Pick ${cid}`, ...(r() < 0.6 ? { line: `C_${id}_${i}` } : {}) } : {}),
+            ...(withVar ? { vars: { [key]: placeholderPool[key]() } } : {}),
+            ...(requires ? { requires } : {}),
+            ...(once ? { count: true as const } : {})
+          }
+        })
+        return list.every((c) => c === null) ? {} : { choices: list }
+      }
       const t = r()
       if (t < 0.45) {
         // v4: line IDs, and variables inside lines (with escapes, unknown and stray braces).
@@ -150,6 +172,7 @@ function synth(seed: number): ExportFile {
           return text
         }
         const text = fill(`Line ${id}`)
+        const next = refs()
         const menu = r() < 0.3 ? (r() < 0.2 ? '' : fill(`Choose ${id}`)) : undefined
         nodes[id] = {
           ...base,
@@ -159,15 +182,17 @@ function synth(seed: number): ExportFile {
           ...(menu !== undefined ? { menuText: menu } : {}),
           ...(r() < 0.8 ? { line: `L_${id}`, ...(menu ? { menuLine: `L_${id}_M` } : {}) } : {}),
           ...(Object.keys(vars).length ? { vars } : {}),
-          next: refs()
+          next
         }
+        Object.assign(nodes[id], choicesFor(next))
       }
       else if (t < 0.6) nodes[id] = { ...base, type: 'condition', condition: r() < 0.1 ? null : { expr: expr(3) }, onTrue: ref(), onFalse: ref() }
       else if (t < 0.75) nodes[id] = { ...base, type: 'instruction', instruction: r() < 0.1 ? null : effects(1 + int(3), true), next: refs() }
       else if (t < 0.85) {
         // v5: hubs that keep asking with one choice left, and fall back when none is.
         const fallback = r() < 0.4 ? ref() : null
-        nodes[id] = { ...base, type: 'hub', label: `Hub ${id}`, next: refs(), ...(r() < 0.5 ? { ask: true as const } : {}), ...(fallback ? { fallback } : {}) }
+        const next = refs()
+        nodes[id] = { ...base, type: 'hub', label: `Hub ${id}`, next, ...(r() < 0.5 ? { ask: true as const } : {}), ...(fallback ? { fallback } : {}), ...choicesFor(next) }
       }
       // v2: calls into other flows (including this one, and missing flows), and hand-off jumps.
       else if (t < 0.93) nodes[id] = { ...base, type: 'call', flow: r() < 0.1 ? null : r() < 0.1 ? 'missing-flow' : pick(flowKeys), next: refs() }

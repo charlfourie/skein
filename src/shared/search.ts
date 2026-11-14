@@ -13,6 +13,7 @@
  * use. Pure functions; the editor applies replacements as one undo step.
  */
 import { compile, type Mode } from './expr/check'
+import { choiceEdges, choiceRequiresOf, choiceTextOf } from './choices'
 import { NODE_EXPR_FIELDS, nodeFieldCtx } from './expr/sites'
 import type { Project } from './schema'
 
@@ -23,6 +24,8 @@ export const SEARCH_CATEGORIES: readonly SearchCategory[] = ['text', 'logic', 'n
 /** Where a match is. Enough to show it, jump to it, and change it. */
 export type SearchTarget =
   | { kind: 'node'; flowId: string; nodeId: string; field: string }
+  /** A choice (a connection from a line or hub): `nodeId` is the node that offers it. */
+  | { kind: 'choice'; flowId: string; nodeId: string; edgeId: string; field: 'choiceText' | 'requires' }
   | { kind: 'frame'; flowId: string; frameId: string }
   | { kind: 'comment'; flowId: string; nodeId: string; commentId: string }
   | { kind: 'rule'; ruleId: string; field: 'name' | 'condition' | 'effects' }
@@ -133,6 +136,14 @@ export function searchableFields(project: Project, opts: Pick<SearchOptions, 'fl
         const v = node.data[field]
         if (typeof v !== 'string' || !v) continue
         out.push({ target: { kind: 'node', flowId: flow.id, nodeId: node.id, field }, category, fieldLabel: FIELD_LABELS[field], flowId: flow.id, value: v })
+      }
+      // The choices it offers, in order (with a speaker filter: choices that lead to that speaker's lines).
+      for (const edge of choiceEdges(flow, node.id)) {
+        if (opts.speakerId && !spoken(edge.target)) continue
+        const t = choiceTextOf(edge)
+        const r = choiceRequiresOf(edge)
+        if (t) out.push({ target: { kind: 'choice', flowId: flow.id, nodeId: node.id, edgeId: edge.id, field: 'choiceText' }, category: 'text', fieldLabel: 'Choice text', flowId: flow.id, value: t })
+        if (r) out.push({ target: { kind: 'choice', flowId: flow.id, nodeId: node.id, edgeId: edge.id, field: 'requires' }, category: 'logic', fieldLabel: 'Choice requires', flowId: flow.id, value: r })
       }
     }
     for (const c of Object.values(flow.comments ?? {}).sort((a, b) => a.createdAt.localeCompare(b.createdAt) || (a.id < b.id ? -1 : 1))) {
@@ -276,6 +287,8 @@ export function targetKey(t: SearchTarget): string {
   switch (t.kind) {
     case 'node':
       return `node:${t.flowId}:${t.nodeId}:${t.field}`
+    case 'choice':
+      return `choice:${t.flowId}:${t.edgeId}:${t.field}`
     case 'frame':
       return `frame:${t.flowId}:${t.frameId}`
     case 'comment':
@@ -299,6 +312,10 @@ export function readTarget(project: Project, t: SearchTarget): string | null {
       const v = project.flows[t.flowId]?.nodes[t.nodeId]?.data[t.field]
       return typeof v === 'string' ? v : null
     }
+    case 'choice': {
+      const v = project.flows[t.flowId]?.edges[t.edgeId]?.[t.field]
+      return typeof v === 'string' ? v : null
+    }
     case 'frame':
       return project.flows[t.flowId]?.frames?.[t.frameId]?.label ?? null
     case 'comment':
@@ -320,6 +337,13 @@ function writeTarget(project: Project, t: SearchTarget, value: string): boolean 
       // Empty text is stored as absent, like everywhere else in the file.
       if (value) node.data[t.field] = value
       else delete node.data[t.field]
+      return true
+    }
+    case 'choice': {
+      const edge = project.flows[t.flowId]?.edges[t.edgeId]
+      if (!edge) return false
+      if (value) edge[t.field] = value
+      else delete edge[t.field]
       return true
     }
     case 'frame': {
@@ -347,6 +371,7 @@ function writeTarget(project: Project, t: SearchTarget, value: string): boolean 
 
 function expressionMode(t: SearchTarget): Mode | null {
   if (t.kind === 'node') return (NODE_EXPR_FIELDS as Record<string, Mode>)[t.field] ?? null
+  if (t.kind === 'choice') return t.field === 'requires' ? 'condition' : null
   if (t.kind === 'rule' && t.field !== 'name') return t.field === 'condition' ? 'condition' : 'action'
   return null
 }

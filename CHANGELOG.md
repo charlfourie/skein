@@ -8,6 +8,13 @@ Project format 8 and export format 5 (see [VERSIONING.md](docs/VERSIONING.md)). 
 only need a version 5 runtime when they use the new hub behaviour below.
 
 ### Added
+- **Each choice has its own text, Only once and Requires.** Choices now belong to the
+  connection, not the line they lead to: select the line or hub that offers them and edit
+  each one under **Choices, in order**. The same line can be offered with different words
+  from different places, and "only once" and requirements apply to that one choice. The
+  line shows what it's **Chosen as**, and connections on the canvas show each choice's
+  text, `1×` for once-only and a lock for a requirement. Search and replace, renames,
+  checks and line IDs all cover choices.
 - **Hubs fall back when their choices run out.** Hubs have a second output, **none
   left**, followed once none of their choices is available (every once-only choice used,
   or every requirement false). Leave it unconnected and the path ends, as before.
@@ -16,6 +23,11 @@ only need a version 5 runtime when they use the new hub behaviour below.
   from there. Story tests still begin where the game does.
 
 ### Changed
+- **Choice text moved onto connections.** Opening an older project moves each line's
+  choice text onto every choice that leads to it, so nothing changes in how it plays. The
+  first choice into a line keeps the line's `_M` ID, so recorded voice lines and
+  translations still match; any further ones get `_M2`, `_M3`. A line no choice leads
+  into keeps its old choice text, shown in its inspector.
 - **A hub with several choices keeps asking.** It used to skip its menu when only one
   choice was left and go straight there, so the player was sent to "Leave" without
   choosing it. It now shows the menu while any choice is left. A hub with a single

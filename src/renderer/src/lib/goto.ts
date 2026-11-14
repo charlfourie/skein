@@ -6,6 +6,7 @@ export function goToTarget(t: SearchTarget): void {
   const s = useProjectStore.getState()
   switch (t.kind) {
     case 'node':
+    case 'choice':
     case 'comment':
       return s.focusNode(t.flowId, t.nodeId)
     case 'frame':

@@ -56,6 +56,24 @@ export interface ExportCondition {
   source?: string
 }
 
+/**
+ * v5: one choice offered by a line or hub (its connection in Skein). Offered only while
+ * its target is available and its own `requires` holds ("only once" is a `requires` of
+ * `visit == 0` on the choice's `id`, with `count` so picking it adds one).
+ */
+export interface ExportChoice {
+  /** The connection's id. Visits to it are counted by this id (`{ "get": "visit", "node": id }`). */
+  id: string
+  /** What the menu shows, instead of the target's text. Placeholders as in a line's text, filled from `vars`. */
+  text?: string
+  /** The ID of `text`, for voice-over and translation. */
+  line?: string
+  vars?: Record<string, ExprNode>
+  requires?: ExportCondition
+  /** Count each time this choice is taken. */
+  count?: true
+}
+
 export interface ExportEffects {
   do: Statement[]
   source?: string
@@ -149,6 +167,8 @@ export type ExportNode =
       menuLine?: string
       /** v4: the placeholders in `text` and `menuText`, by their source (`"Player.Coins"`). */
       vars?: Record<string, ExprNode>
+      /** v5: what's specific to each choice, in the same order as `next` (null: nothing). */
+      choices?: (ExportChoice | null)[]
     })
   | (NodeBase & { type: 'condition'; condition: ExportCondition | null; onTrue: string | null; onFalse: string | null })
   | (NodeBase & { type: 'instruction'; instruction: ExportEffects | null; next: string[] })
@@ -156,7 +176,7 @@ export type ExportNode =
    * `ask` (v5): show the choices as a menu even when only one is left (a hub with several connections).
    * `fallback` (v5): where to go when none of its choices is available.
    */
-  | (NodeBase & { type: 'hub'; label: string; next: string[]; ask?: true; fallback?: string })
+  | (NodeBase & { type: 'hub'; label: string; next: string[]; ask?: true; fallback?: string; choices?: (ExportChoice | null)[] })
   /** `jumpFlow` (v2): continue at the start of another flow instead (a hand-off; `jumpTo` is then null). */
   | (NodeBase & { type: 'jump'; jumpTo: string | null; jumpFlow?: string })
   /** v2: play another flow from its start, then come back and continue with `next`. */

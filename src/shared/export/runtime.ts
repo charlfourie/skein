@@ -18,6 +18,7 @@
  *   }
  */
 import type {
+  ExportChoice,
   ExportCondition,
   ExportDef,
   ExportEffects,
@@ -442,6 +443,8 @@ export interface Choice {
   text: string
   /** The ID of that text, for voice-over and translation (null for a hub's label). */
   lineId: string | null
+  /** v5: the connection this choice is, when it has anything of its own (its `choices` entry's id). */
+  choice?: string
 }
 
 export type Beat =
@@ -521,7 +524,15 @@ export class SkeinStory {
       return 'beat' in f ? f.beat : this.enter(f.next)
     }
     this.world.playing = this.flow.id
+    this.take(choice)
     return this.enter(choice.node)
+  }
+
+  /** v5: taking a choice counts it, when it's counted (an "only once" choice). */
+  private take(choice: Choice): void {
+    if (!choice.choice || !this.current || !('choices' in this.current)) return
+    const opt = this.current.choices?.find((c) => c?.id === choice.choice)
+    if (opt?.count) this.world.countVisit(opt.id)
   }
 
   /** A node is available when it exists and its requirement holds. */
@@ -530,8 +541,16 @@ export class SkeinStory {
     return Boolean(node) && this.world.check(node!.requires)
   }
 
-  private choices(ids: string[]): Choice[] {
-    return ids.filter((id) => this.available(id)).map((id, index) => ({ index, node: id, ...this.label(id) }))
+  /** The choices a line or hub offers now: targets that are available, whose own requirement (v5) holds. */
+  private choices(node: ExportNode & { next: string[]; choices?: (ExportChoice | null)[] }): Choice[] {
+    const out: Choice[] = []
+    node.next.forEach((id, i) => {
+      const opt = node.choices?.[i] ?? null
+      if (!this.available(id) || (opt && !this.world.check(opt.requires))) return
+      const text = opt?.text ? { text: this.world.fill(opt.text, opt.vars), lineId: opt.line ?? null } : this.label(id)
+      out.push({ index: out.length, node: id, ...text, ...(opt ? { choice: opt.id } : {}) })
+    })
+    return out
   }
 
   /** What a choice shows: the target's choice text, else its line (filled in), else a hub's label. */
@@ -574,7 +593,7 @@ export class SkeinStory {
       this.world.run(node.effects)
       switch (node.type) {
         case 'dialogue':
-          this.pending = this.choices(node.next)
+          this.pending = this.choices(node)
           return { kind: 'line', node, speaker: node.speaker, text: this.world.fill(node.text, node.vars), lineId: node.line ?? null, choices: this.pending }
         case 'condition':
           id = this.world.check(node.condition) ? node.onTrue : node.onFalse
@@ -584,13 +603,14 @@ export class SkeinStory {
           id = node.next.find((n) => this.available(n)) ?? null
           break
         case 'hub': {
-          const options = this.choices(node.next)
+          const options = this.choices(node)
           // v5: a hub with several connections (`ask`) offers even its last choice as a menu.
           if (options.length > 1 || (node.ask && options.length === 1)) {
             this.pending = options
             return { kind: 'choice', node, choices: options }
           }
-          // v5: none left, so follow the fallback (its own requirement is checked on entry).
+          // One path: it's taken without asking. v5: none left, so follow the fallback (its own requirement is checked on entry).
+          if (options[0]) this.take(options[0])
           id = options[0]?.node ?? node.fallback ?? null
           break
         }

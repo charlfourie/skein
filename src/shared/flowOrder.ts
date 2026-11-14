@@ -21,7 +21,7 @@ type LooseNode = { id: string; position?: Pos; data?: Record<string, unknown> }
 type LooseEdge = { id: string; source: string; target: string; sourceHandle?: string | null; targetHandle?: string | null; order?: number }
 type LooseFlow = { nodes: Record<string, LooseNode>; edges: Record<string, LooseEdge> }
 
-const DEFAULT_HANDLE = 'out'
+export const DEFAULT_HANDLE = 'out'
 const INPUT = 'in'
 
 function pos(flow: LooseFlow, id: string): Pos {

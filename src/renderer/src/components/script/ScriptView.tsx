@@ -161,7 +161,14 @@ function Row({ project, flow, item, selectedId, endings }: { project: Project; f
     </div>
   )
 
-  if (item.kind === 'line' && node) return shell(<LineBody project={project} flow={flow} nodeId={node.id} ending={endings.size > 1 ? (endings.get(node.id) ?? null) : null} />, <AddAfter flowId={flow.id} nodeId={node.id} />)
+  // The choice that leads here, when it has text of its own.
+  const via = branch?.kind === 'choice' ? flow.edges[branch.edgeId] : undefined
+  const chosenAs = via?.choiceText || ''
+  if (item.kind === 'line' && node)
+    return shell(
+      <LineBody project={project} flow={flow} nodeId={node.id} chosenAs={chosenAs} ending={endings.size > 1 ? (endings.get(node.id) ?? null) : null} />,
+      <AddAfter flowId={flow.id} nodeId={node.id} />
+    )
   if (item.kind === 'direction' && node) {
     return shell(<p className="py-0.5 text-xs italic text-muted">({directionText(project, node)})</p>, <AddAfter flowId={flow.id} nodeId={node.id} />)
   }
@@ -184,7 +191,7 @@ function Row({ project, flow, item, selectedId, endings }: { project: Project; f
   return null
 }
 
-function LineBody({ project, flow, nodeId, ending }: { project: Project; flow: Flow; nodeId: string; ending: number | null }) {
+function LineBody({ project, flow, nodeId, chosenAs, ending }: { project: Project; flow: Flow; nodeId: string; chosenAs: string; ending: number | null }) {
   const node = flow.nodes[nodeId]
   const lineFocus = useUi((s) => s.lineFocus)
   const mine = lineFocus?.nodeId === nodeId && lineFocus.where === 'script'
@@ -210,7 +217,7 @@ function LineBody({ project, flow, nodeId, ending }: { project: Project; flow: F
             </option>
           ))}
         </select>
-        {menuText && <span className="truncate text-2xs text-faint">choice: “{menuText}”</span>}
+        {(chosenAs || menuText) && <span className="truncate text-2xs text-faint">choice: “{chosenAs || menuText}”</span>}
         {isEndNode(node) && (
           <span className="flex items-center gap-0.5 rounded bg-end/15 px-1 py-px text-[10px] font-semibold text-end">
             <Flag size={9} fill="currentColor" /> END{ending ? ` ${ending}` : ''}

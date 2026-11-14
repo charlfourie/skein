@@ -21,8 +21,12 @@ const demo = coffee()
 const FLOW = Object.values(demo.flows)[0].id
 const byText = (start: string) => {
   // Choice text first: "A flat white (4 coins)" is the choice, "A flat white's 4 coins…" Pip's reply.
-  const nodes = Object.values(demo.flows[FLOW].nodes)
-  const n = ['menuText', 'text', 'label'].map((k) => nodes.find((x) => typeof x.data[k] === 'string' && (x.data[k] as string).startsWith(start))).find(Boolean)
+  const flow = demo.flows[FLOW]
+  const nodes = Object.values(flow.nodes)
+  // Choice text lives on the choice that leads to the line.
+  const chosen = Object.values(flow.edges).find((e) => typeof e.choiceText === 'string' && e.choiceText.startsWith(start))
+  if (chosen) return chosen.target
+  const n = ['text', 'label'].map((k) => nodes.find((x) => typeof x.data[k] === 'string' && (x.data[k] as string).startsWith(start))).find(Boolean)
   if (!n) throw new Error(`no node “${start}”`)
   return n.id
 }

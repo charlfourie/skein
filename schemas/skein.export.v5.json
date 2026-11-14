@@ -53,6 +53,47 @@
                     "activity": {
                       "type": "string"
                     },
+                    "choices": {
+                      "items": {
+                        "anyOf": [
+                          {
+                            "additionalProperties": false,
+                            "properties": {
+                              "count": {
+                                "const": true,
+                                "type": "boolean"
+                              },
+                              "id": {
+                                "type": "string"
+                              },
+                              "line": {
+                                "type": "string"
+                              },
+                              "requires": {
+                                "$ref": "#/properties/state/properties/rules/items/properties/when"
+                              },
+                              "text": {
+                                "type": "string"
+                              },
+                              "vars": {
+                                "additionalProperties": {
+                                  "$ref": "#/properties/state/properties/rules/items/properties/when/properties/expr"
+                                },
+                                "type": "object"
+                              }
+                            },
+                            "required": [
+                              "id"
+                            ],
+                            "type": "object"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "type": "array"
+                    },
                     "count": {
                       "const": true,
                       "type": "boolean"
@@ -258,6 +299,19 @@
                     "ask": {
                       "const": true,
                       "type": "boolean"
+                    },
+                    "choices": {
+                      "items": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/choices/items/anyOf/0"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "type": "array"
                     },
                     "count": {
                       "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/count"

@@ -5,3 +5,6 @@ dist/
 .DS_Store
 .vercel
 .env*
+
+# Conformance harness output when a fixture fails
+runtimes/conformance/fixtures/*.actual.txt

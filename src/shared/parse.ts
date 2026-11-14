@@ -1,4 +1,4 @@
-import { assignLineIds } from './lineIds'
+import { assignChoiceLineIds, assignLineIds } from './lineIds'
 import type { z } from 'zod'
 import { createDefaultState } from './factory'
 import { normalizeOrders } from './flowOrder'
@@ -46,10 +46,41 @@ const MIGRATIONS: Record<number, (raw: Record<string, unknown>) => Record<string
   // comments on flows, and projects that can be a folder with one file per
   // flow. Line IDs are given to every line after loading (see assignLineIds).
   6: (raw) => raw,
-  // v7 → v8: hubs gain a second output, "fallback" ("When nothing's left"),
-  // followed when none of their choices is available. Older files have no
-  // fallback connections, so nothing needs rewriting.
-  7: (raw) => raw
+  // v7 → v8: choices belong to connections. A line's choice text (`menuText`)
+  // moves onto every choice connection into it (`edge.choiceText`); its line ID
+  // is kept for the first (see assignChoiceLineIds). Hubs also gain a second
+  // output, "fallback", which older files don't use.
+  7: migrateV7toV8
+}
+
+function migrateV7toV8(raw: Record<string, unknown>): Record<string, unknown> {
+  const flows = isPlainObject(raw.flows) ? raw.flows : {}
+  for (const flow of Object.values(flows)) {
+    if (!isPlainObject(flow) || !isPlainObject(flow.nodes) || !isPlainObject(flow.edges)) continue
+    const nodes = flow.nodes as Record<string, unknown>
+    const typeOf = (id: unknown) => {
+      const n = typeof id === 'string' ? nodes[id] : undefined
+      return isPlainObject(n) && typeof n.type === 'string' ? n.type : null
+    }
+    const moved = new Set<string>()
+    for (const e of Object.values(flow.edges)) {
+      if (!isPlainObject(e) || typeof e.target !== 'string') continue
+      const sourceType = typeOf(e.source)
+      if ((sourceType !== 'dialogue' && sourceType !== 'hub') || (e.sourceHandle ?? 'out') !== 'out') continue
+      const target = nodes[e.target]
+      if (!isPlainObject(target) || !isPlainObject(target.data)) continue
+      const text = target.data.menuText
+      if (typeof text !== 'string' || !text) continue
+      if (typeof e.choiceText !== 'string') e.choiceText = text
+      moved.add(e.target)
+    }
+    // Lines that no choice leads into keep their text, so connecting one later still shows it.
+    for (const id of moved) {
+      const n = nodes[id]
+      if (isPlainObject(n) && isPlainObject(n.data)) delete n.data.menuText
+    }
+  }
+  return raw
 }
 
 function migrateV4toV5(raw: Record<string, unknown>): Record<string, unknown> {
@@ -189,6 +220,7 @@ export function parseRaw(raw: unknown, earlier: string[] = []): ParseResult {
   // Lines without an ID (older files, lines added by hand) get one silently; a
   // duplicate ID is a real problem, so it's reported.
   const { duplicates } = assignLineIds(project)
+  assignChoiceLineIds(project)
   for (const d of duplicates) repairs.push(`Flow "${d.flow}": two lines shared the line ID ${d.lineId}; one got a new ID.`)
   return { ok: true, project, repairs }
 }

@@ -317,6 +317,26 @@ export function pasteNodes(flowId: string, payload: ClipboardPayload, at: Positi
  * Move a connection one place earlier (-1) or later (+1) among the connections
  * leaving the same output: this is the order the player sees the choices in.
  */
+/** Change a choice's own text, "only once" or requirement (a connection from a line or hub). Empty or false unsets. */
+export function updateChoice(flowId: string, edgeId: string, patch: { choiceText?: string; once?: boolean; requires?: string }): void {
+  editFlow('Edit choice', flowId, (flow) => {
+    const edge = flow.edges[edgeId]
+    if (!edge) return
+    if ('choiceText' in patch) {
+      if (patch.choiceText) edge.choiceText = patch.choiceText
+      else delete edge.choiceText
+    }
+    if ('once' in patch) {
+      if (patch.once) edge.once = true
+      else delete edge.once
+    }
+    if ('requires' in patch) {
+      if (patch.requires?.trim()) edge.requires = patch.requires
+      else delete edge.requires
+    }
+  })
+}
+
 export function moveChoice(flowId: string, edgeId: string, delta: -1 | 1): boolean {
   const flow = store().project?.flows[flowId]
   const edge = flow?.edges[edgeId]

@@ -45,11 +45,24 @@
       "additionalProperties": {
         "additionalProperties": true,
         "properties": {
+          "choiceLineId": {
+            "type": "string"
+          },
+          "choiceText": {
+            "type": "string"
+          },
           "id": {
             "$ref": "#/properties/id"
           },
+          "once": {
+            "const": true,
+            "type": "boolean"
+          },
           "order": {
             "$ref": "#/properties/order"
+          },
+          "requires": {
+            "type": "string"
           },
           "source": {
             "$ref": "#/properties/id"

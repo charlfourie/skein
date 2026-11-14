@@ -77,7 +77,15 @@ export const FlowEdgeSchema = z
      * choices are offered in. Lower first. (v5; earlier files derived it from
      * canvas positions, and the v4 → v5 migration stores what that produced.)
      */
-    order: Order.optional()
+    order: Order.optional(),
+    /**
+     * v8: a connection leaving a line or hub on its main output is a choice, and
+     * carries its own choice text, "only once" and requirement (see choices.ts).
+     */
+    choiceText: z.string().optional(),
+    once: z.literal(true).optional(),
+    requires: z.string().optional(),
+    choiceLineId: z.string().optional()
   })
   .passthrough()
 

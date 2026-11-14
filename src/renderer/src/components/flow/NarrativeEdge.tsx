@@ -8,13 +8,17 @@ import {
   type EdgeProps
 } from '@xyflow/react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Repeat, X } from 'lucide-react'
+import { Repeat, X, Lock } from 'lucide-react'
 import { memo } from 'react'
 import { deleteElements } from '../../store/flowOps'
 import { COLORS, useFlowContext } from './flowMeta'
 
 export interface NarrativeEdgeData extends Record<string, unknown> {
-  branch: 'out' | 'true' | 'false'
+  branch: 'out' | 'true' | 'false' | 'fallback'
+  /** A choice's own text, and whether it's once-only or has a requirement (format 8). */
+  choiceText?: string
+  once?: boolean
+  gated?: boolean
   loop: boolean
   /** One of several choices on the same output: its place in the order the player sees them. */
   choice?: { index: number; count: number } | null
@@ -87,6 +91,17 @@ export const NarrativeEdge = memo(function NarrativeEdge(props: EdgeProps<Narrat
               title={`Choice ${data.choice.index} of ${data.choice.count}: the order the player sees them in. Change it in the inspector of the node it leaves.`}
             >
               {data.choice.index}
+            </span>
+          )}
+          {data && (data.choiceText || data.once || data.gated) && (
+            <span
+              className="flex max-w-[160px] items-center gap-1 rounded-full border px-1.5 py-px text-[10px]"
+              style={{ color: '#c9cbd6', borderColor: '#ffffff22', background: '#0f1117ee' }}
+              title={[data.choiceText && `Choice text: ${data.choiceText}`, data.once && 'Only once', data.gated && 'Has a requirement'].filter(Boolean).join('\n')}
+            >
+              {data.choiceText && <span className="truncate">{data.choiceText}</span>}
+              {data.once && <span style={{ color: COLORS.accent }}>1×</span>}
+              {data.gated && <Lock size={9} style={{ color: '#fbbf24' }} />}
             </span>
           )}
           {loop && (

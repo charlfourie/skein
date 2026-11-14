@@ -25,6 +25,8 @@ namespace Skein
         public string Text;
         /// <summary>The ID of that text, for voice-over and translation (null for a hub's label).</summary>
         public string LineId;
+        /// <summary>v5: the choice's own definition, when it has one.</summary>
+        public SkeinChoiceDef Def;
     }
 
     public enum SkeinBeatKind
@@ -136,7 +138,14 @@ namespace Skein
                 return beat ?? Enter(next);
             }
             World.Playing = Flow.Id;
+            Take(pending[index]);
             return Enter(pending[index].Node);
+        }
+
+        /// <summary>v5: taking a choice counts it, when it's counted (an "only once" choice).</summary>
+        void Take(SkeinChoice choice)
+        {
+            if (choice.Def != null && choice.Def.Count) World.CountVisit(choice.Def.Id);
         }
 
         /// <summary>A node is available when it exists and its requirement holds.</summary>
@@ -146,15 +155,20 @@ namespace Skein
             return World.Check(node.Requires);
         }
 
-        List<SkeinChoice> Choices(IReadOnlyList<string> ids)
+        /// <summary>The choices a line or hub offers now: available targets whose own requirement (v5) holds.</summary>
+        List<SkeinChoice> Choices(SkeinNode node)
         {
             var list = new List<SkeinChoice>();
-            foreach (var id in ids)
-                if (Available(id))
-                {
-                    var (text, lineId) = Label(id);
-                    list.Add(new SkeinChoice { Index = list.Count, Node = id, Text = text, LineId = lineId });
-                }
+            for (var i = 0; i < node.Next.Count; i++)
+            {
+                var id = node.Next[i];
+                var def = i < node.Choices.Count ? node.Choices[i] : null;
+                if (!Available(id) || (def != null && !World.Check(def.Requires))) continue;
+                string text, lineId;
+                if (def != null && !string.IsNullOrEmpty(def.Text)) { text = World.Fill(def.Text, def.Vars); lineId = def.Line; }
+                else (text, lineId) = Label(id);
+                list.Add(new SkeinChoice { Index = list.Count, Node = id, Text = text, LineId = lineId, Def = def });
+            }
             return list;
         }
 
@@ -202,7 +216,7 @@ namespace Skein
                 switch (node.Type)
                 {
                     case SkeinNodeType.Dialogue:
-                        pending = Choices(node.Next);
+                        pending = Choices(node);
                         return new SkeinBeat { Kind = SkeinBeatKind.Line, Node = node, Speaker = node.Speaker, Text = World.Fill(node.Text, node.Vars), LineId = node.Line, Choices = pending };
                     case SkeinNodeType.Condition:
                         id = World.Check(node.Condition) ? node.OnTrue : node.OnFalse;
@@ -212,14 +226,15 @@ namespace Skein
                         id = FirstAvailable(node.Next);
                         break;
                     case SkeinNodeType.Hub:
-                        var options = Choices(node.Next);
+                        var options = Choices(node);
                         // v5: a hub with several connections (Ask) offers even its last choice as a menu.
                         if (options.Count > 1 || (node.Ask && options.Count == 1))
                         {
                             pending = options;
                             return new SkeinBeat { Kind = SkeinBeatKind.Choice, Node = node, Choices = options };
                         }
-                        // v5: none left, so follow the fallback (its own requirement is checked on entry).
+                        // One path: taken without asking. v5: none left, so follow the fallback (its own requirement is checked on entry).
+                        if (options.Count > 0) Take(options[0]);
                         id = options.Count > 0 ? options[0].Node : node.Fallback;
                         break;
                     case SkeinNodeType.Jump:

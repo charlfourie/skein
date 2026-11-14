@@ -1,4 +1,5 @@
 import { compile, type StateRef } from './expr/check'
+import { choiceEdges } from './choices'
 import { FIELD_LABELS, forEachSite, siteOwnerId, TEXT_FIELDS } from './expr/sites'
 import { parseTemplate } from './expr/template'
 import { analyzeFlow } from './flowAnalysis'
@@ -169,9 +170,14 @@ export function validateProject(project: Project): IssueMap {
     })
   }
 
-  // Braces in lines that don't make a placeholder (`{` with no `}`).
+  // Braces in lines and choices that don't make a placeholder (`{` with no `}`).
   for (const flow of Object.values(project.flows)) {
     for (const node of Object.values(flow.nodes)) {
+      for (const edge of choiceEdges(flow, node.id)) {
+        const text = edge.choiceText
+        if (typeof text !== 'string' || !/[{}]/.test(text)) continue
+        for (const p of parseTemplate(text).problems) add(node.id, { level: 'error', field: 'choiceText', message: `Choice text: ${p.message}` })
+      }
       if (node.type !== 'dialogue') continue
       for (const field of TEXT_FIELDS) {
         const text = node.data[field]

@@ -48,7 +48,7 @@ use a newer feature keeps loading in older runtimes.
 | 2 | Visit counts (`{ "get": "visit" }`, node `count` / `tag`), flow-scoped rules (rule `flow`), `advanceTo` with `stay`, dice (`chance`, `roll`), `call` nodes and `jumpFlow` |
 | 3 | The clock: node `takes` / `activity`, `{ "pass": m }`, `Time.Hour` / `Time.Minute` reads, a start `minute` |
 | 4 | Variables inside lines: dialogue `vars`, filled into `text` and `menuText` |
-| 5 | Hubs that keep asking (`ask`) and fall back (`fallback`) |
+| 5 | Hubs that keep asking (`ask`) and fall back (`fallback`); each choice's own text, requirement and "only once" (`choices` on lines and hubs) |
 
 A runtime should refuse a file whose `version` is higher than it knows. (`time.minutes`
 and `time.dayStart` are written in every file, and line IDs, `line` and `menuLine`, in
@@ -300,10 +300,10 @@ Node types:
 
 | `type` | Fields | Behaviour |
 | --- | --- | --- |
-| `dialogue` | `speaker` (entity name or null), `text`, `menuText?`, `next: [ids]`, `line?`, `menuLine?`, `vars?` | Shows a line. One available `next` = continue. Several = the player chooses (show each target's `menuText`, else its `text`). None = this flow ends after the line: call `choose(0)` to get the end beat (or, inside a Call, the beat after it). |
+| `dialogue` | `speaker` (entity name or null), `text`, `menuText?`, `next: [ids]`, `line?`, `menuLine?`, `vars?`, `choices?` | Shows a line. One available `next` = continue. Several = the player chooses (show each target's `menuText`, else its `text`). None = this flow ends after the line: call `choose(0)` to get the end beat (or, inside a Call, the beat after it). |
 | `condition` | `condition`, `onTrue`, `onFalse` (ids or null) | Evaluates and follows a branch automatically. |
 | `instruction` | `instruction` (effects), `next` | Runs `instruction`, then follows the first available `next`. |
-| `hub` | `label`, `next`, `ask?`, `fallback?` | A meeting point. One available path is followed automatically; several are offered as a choice. **v5:** with `ask: true`, a single available path is offered as a choice too (the hub has several connections, and some can disappear). When no path is available, follow `fallback` (a node id) if there is one; otherwise the path ends. |
+| `hub` | `label`, `next`, `ask?`, `fallback?`, `choices?` | A meeting point. One available path is followed automatically; several are offered as a choice. **v5:** with `ask: true`, a single available path is offered as a choice too (the hub has several connections, and some can disappear). When no path is available, follow `fallback` (a node id) if there is one; otherwise the path ends. |
 | `jump` | `jumpTo` (id or null), `jumpFlow?` | Continues at the target. **v2:** with `jumpFlow` (a flow id), the current flow is over and the story continues at that flow's first available start (a hand-off). |
 | `call` | `flow` (flow id or null), `next` | **v2.** Plays `flow` from its first available start. When that flow runs out, the story comes back and follows the first available `next`. A null or missing `flow` passes straight through to `next`. |
 
@@ -325,6 +325,17 @@ Stepping rules:
   (combined with `and` with any other requirement; `source` reads "only once").
   Counting happens on entry, so the node hides itself after the first visit.
 - When a dialogue line or hub offers choices, list only targets whose `requires` holds.
+- **v5:** a line or hub may carry `choices`, lined up with `next` (same length; `null`
+  where a choice has nothing of its own). Each entry is `{ id, text?, line?, vars?,
+  requires?, count? }`:
+  - offer the choice only while its own `requires` holds too;
+  - show its `text` (placeholders filled from its `vars`) and give its `line` as the
+    choice's `lineId`, instead of the target's;
+  - when the choice is taken, and `count` is set, add one to the visit count of its `id`.
+    That's how **Only once** on a choice exports: a `requires` of `visit == 0` on the
+    choice's own `id`. A hub that follows its only path without asking takes it too.
+- Choices without `choices` entries (and older files) show the target's `menuText`, else
+  its `text`, as before.
 
 Calls (v2):
 
@@ -343,8 +354,9 @@ carries its filled-in `text` and the `lineId` of that text (null for a hub's lab
 ### Line IDs
 
 `line` is the line's stable ID, for voice-over and translation (`"ORDER_3f9a2c"`).
-`menuLine` is the ID of its choice text (`"ORDER_3f9a2c_M"`), present when the line
-has `menuText`. They never change when the text is edited, so a game can look up a
+Choice text has its own ID: a `choices` entry's `line` (v5), such as `"ORDER_3f9a2c_M"`
+for the first choice into that line and `"ORDER_3f9a2c_M2"` for the next. Older files put
+it on the line as `menuLine`, present when the line has `menuText`. They never change when the text is edited, so a game can look up a
 recording or a translation by them. They're optional extras: a runtime that doesn't
 know them just ignores them, so they don't raise the file's version.
 

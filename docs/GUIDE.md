@@ -75,13 +75,20 @@ invalid identifiers are flagged in red.
 - **Inspector:** select a node to write its line, choose a speaker from your entities,
   set condition or instruction text, pick a jump target, mark start or end, or add a
   designer note.
+- **Choices:** select the line or hub that offers them. Under **Choices, in order**
+  each choice has its own **choice text** (blank shows the line it leads to), and its
+  settings button holds **Only once** and **Requires** for that choice alone. The same
+  line can be offered as "Tell a joke" from one hub and "Tell it again" from another.
+  The line itself shows what it's **Chosen as**, and where from. On the canvas each
+  choice's connection shows its number and text, `1×` when it's once-only, and a lock
+  when it has a requirement.
 - **Values in lines:** put an expression in braces to show its value as the line plays:
   `You've got {Player.Coins} left.` Options show their label and entities their name.
   Placeholders are checked as you type and follow renames. Write `{{` or `}}` for a
   literal brace. Play shows the filled-in line.
 - **Line IDs:** every line has a stable ID for voice-over and translation, shown (with a
-  copy button) under the line in the inspector: `ORDER_3f9a2c`, and `ORDER_3f9a2c_M` for
-  its choice text. The ID never changes when you edit the text, move the node or rename
+  copy button) under the line in the inspector: `ORDER_3f9a2c`. Choice text has its own
+  ID: `ORDER_3f9a2c_M` for the first choice into that line, `_M2`, `_M3` for others. The ID never changes when you edit the text, move the node or rename
   the flow. The prefix comes from the flow's name; change it under **Line IDs** in the
   flow's inspector (new lines use it; **Rename them** moves existing lines over too).
 - **Comments:** leave a comment for the team at the bottom of any node's inspector,
@@ -265,7 +272,8 @@ are listed. Play rolls from a seed you can set in **Start state**. Explore tries
 outcome and weights the endings by the odds.
 
 Give a node a **Tag** in its inspector to refer to it with `Seen.Tag` / `Visits.Tag`
-from any flow. **Only once** hides a choice after it has been picked. A rule can be
+from any flow. **Only once** on a choice hides it after it has been picked; on a node, the
+story can only enter that node once, by any route. A rule can be
 limited to **While playing** one flow, so it doesn't run during other scenes.
 
 **When choices run out.** A hub with several choices keeps showing its menu while any

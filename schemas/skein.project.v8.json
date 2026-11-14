@@ -99,11 +99,24 @@
             "additionalProperties": {
               "additionalProperties": true,
               "properties": {
+                "choiceLineId": {
+                  "type": "string"
+                },
+                "choiceText": {
+                  "type": "string"
+                },
                 "id": {
                   "$ref": "#/properties/meta/properties/id"
                 },
+                "once": {
+                  "const": true,
+                  "type": "boolean"
+                },
                 "order": {
                   "$ref": "#/properties/folders/additionalProperties/properties/order"
+                },
+                "requires": {
+                  "type": "string"
                 },
                 "source": {
                   "$ref": "#/properties/meta/properties/id"

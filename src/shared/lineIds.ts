@@ -8,7 +8,8 @@
  * node has an ID it's stored on the node (`data.lineId`) and never changes when
  * the text is edited, the node moves or the flow is renamed.
  */
-import type { Flow, FlowNode, Project } from './schema'
+import { isChoiceEdge } from './choices'
+import type { Flow, FlowEdge, FlowNode, Project } from './schema'
 
 /** Words dropped from the front of a flow name when making its prefix. */
 const ARTICLES = new Set(['THE', 'A', 'AN'])
@@ -72,14 +73,100 @@ export function newLineId(prefix: string, nodeId: string, taken: ReadonlySet<str
   }
 }
 
-/** Every line ID in the project. */
+/** Every line ID in the project (lines and choices). */
 export function lineIdsIn(project: Project): Set<string> {
   const ids = new Set<string>()
-  for (const flow of Object.values(project.flows)) for (const node of Object.values(flow.nodes)) {
-    const id = lineIdOf(node)
-    if (id) ids.add(id)
+  for (const flow of Object.values(project.flows)) {
+    for (const node of Object.values(flow.nodes)) {
+      const id = lineIdOf(node)
+      if (id) ids.add(id)
+    }
+    for (const edge of Object.values(flow.edges)) {
+      const id = choiceLineIdOf(edge)
+      if (id) ids.add(id)
+    }
   }
   return ids
+}
+
+export function choiceLineIdOf(edge: FlowEdge): string | null {
+  return typeof edge.choiceLineId === 'string' && edge.choiceLineId ? edge.choiceLineId : null
+}
+
+/**
+ * A new ID for a choice's text: the target line's ID plus `_M` (as choice text
+ * had before it moved onto connections), then `_M2`, `_M3`… for further choices into it.
+ */
+export function newChoiceLineId(flow: Flow, edge: FlowEdge, taken: ReadonlySet<string>): string {
+  const target = flow.nodes[edge.target]
+  const base = (target && lineIdOf(target)) || newLineId(linePrefixOf(flow), edge.id, taken)
+  if (!taken.has(menuLineId(base))) return menuLineId(base)
+  for (let i = 2; ; i++) {
+    const id = `${menuLineId(base)}${i}`
+    if (!taken.has(id)) return id
+  }
+}
+
+/**
+ * Give every choice with text an ID, and drop the ID of a choice without text.
+ * Runs after assignLineIds, on load and after every edit. Deterministic: within a
+ * flow, choices are taken by target, then source, then connection id, so the first
+ * choice into a line keeps the line's `_M` ID from before choices moved.
+ * Returns how many choices were given a new ID.
+ */
+export function assignChoiceLineIds(project: Project): number {
+  const flows = Object.values(project.flows).sort((a, b) => (a.id < b.id ? -1 : 1))
+  // Cheap check first: most edits leave every choice as it was.
+  const needs = flows.some((flow) =>
+    Object.values(flow.edges).some((e) => {
+      const has = typeof e.choiceText === 'string' && e.choiceText !== ''
+      return has !== Boolean(choiceLineIdOf(e)) && isChoiceEdge(flow, e)
+    })
+  )
+  // A choice ID used twice (or by a line too) needs sorting out as well.
+  const seen = new Set<string>()
+  let duplicated = false
+  for (const flow of flows) {
+    for (const node of Object.values(flow.nodes)) {
+      const id = lineIdOf(node)
+      if (id) seen.add(id)
+    }
+    for (const e of Object.values(flow.edges)) {
+      const id = choiceLineIdOf(e)
+      if (!id) continue
+      if (seen.has(id)) duplicated = true
+      seen.add(id)
+    }
+  }
+  if (!needs && !duplicated) return 0
+
+  const taken = new Set<string>()
+  for (const flow of flows) for (const node of Object.values(flow.nodes)) {
+    const id = lineIdOf(node)
+    if (id) taken.add(id)
+  }
+  let assigned = 0
+  for (const flow of flows) {
+    const choices = Object.values(flow.edges)
+      .filter((e) => isChoiceEdge(flow, e))
+      .sort((a, b) => (a.target < b.target ? -1 : a.target > b.target ? 1 : a.source < b.source ? -1 : a.source > b.source ? 1 : a.id < b.id ? -1 : 1))
+    for (const edge of choices) {
+      const id = choiceLineIdOf(edge)
+      if (typeof edge.choiceText !== 'string' || edge.choiceText === '') {
+        if (id) delete edge.choiceLineId
+        continue
+      }
+      if (id && !taken.has(id)) {
+        taken.add(id)
+        continue
+      }
+      const next = newChoiceLineId(flow, edge, taken)
+      edge.choiceLineId = next
+      taken.add(next)
+      assigned++
+    }
+  }
+  return assigned
 }
 
 /**

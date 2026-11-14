@@ -1,3 +1,4 @@
+import { assignChoiceLineIds } from '@shared/lineIds'
 import { produce, type Draft } from 'immer'
 import { create } from 'zustand'
 import type { ExternalChange } from '@shared/bridge'
@@ -163,7 +164,10 @@ export const useProjectStore = create<ProjectStore>()((set, get) => ({
   edit: (label, recipe) => {
     const s = get()
     if (!s.project) return false
-    const next = produce(s.project, recipe)
+    const next = produce(s.project, (draft) => {
+      recipe(draft)
+      assignChoiceLineIds(draft as Project) // a choice that gained text gets its line ID
+    })
     if (next === s.project) return false
     const entry: HistoryEntry = { project: s.project, label, selection: s.selection, activeDoc: s.activeDoc }
     set({ project: next, past: [...s.past, entry].slice(-HISTORY_LIMIT), future: [] })

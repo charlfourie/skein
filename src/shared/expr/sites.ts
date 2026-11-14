@@ -1,3 +1,4 @@
+import { choiceEdges } from '../choices'
 import type { Project } from '../schema'
 import type { CompileContext, Mode } from './check'
 import { tokenize, type Token } from './syntax'
@@ -31,7 +32,9 @@ export const FIELD_LABELS: Record<string, string> = {
   setup: 'Setup',
   checks: 'Checks',
   text: 'Line',
-  menuText: 'Choice text'
+  menuText: 'Choice text',
+  choiceText: 'Choice text',
+  choiceRequires: 'Choice requires'
 }
 
 /** Dialogue fields that may hold variables inside lines (`{Player.Coins}`). */
@@ -93,6 +96,22 @@ export function forEachSite(project: Project, fn: (site: ExprSite) => void, opti
           ctx: nodeFieldCtx(field),
           set: (s) => (node.data[field] = s)
         })
+      }
+      // v8: each choice it offers has its own requirement and text (owned by this node, kept on the connection).
+      for (const edge of choiceEdges(flow, node.id)) {
+        const owner = { kind: 'node' as const, flowId: flow.id, nodeId: node.id }
+        const req = edge.requires
+        if (typeof req === 'string' && req.trim()) {
+          fn({ owner, field: 'choiceRequires', mode: 'condition', source: req, ctx: NO_CTX, set: (s) => (edge.requires = s) })
+        }
+        const text = edge.choiceText
+        if (typeof text !== 'string' || !text.includes('{')) continue
+        let k = 0
+        for (const part of parseTemplate(text).parts) {
+          if (part.kind !== 'expr') continue
+          const index = k++
+          fn({ owner, field: 'choiceText', mode: 'value', source: part.source, ctx: VALUE_CTX, set: (s) => (edge.choiceText = replacePlaceholder(String(edge.choiceText ?? ''), index, s)) })
+        }
       }
       if (node.type !== 'dialogue') continue
       for (const field of TEXT_FIELDS) {

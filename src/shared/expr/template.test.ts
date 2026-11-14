@@ -74,14 +74,18 @@ describe('variables inside lines', () => {
     // Line IDs are extras: stripping them all leaves the version where it was.
     const bare = buildExport(produce(plain, (d) => { for (const n of Object.values(flowOf(d as Project).nodes)) delete n.data.lineId }))
     expect(file.version).toBe(bare.file.version)
+    // Choice text lives on the choice (v5), and keeps the `_M` ID it had on the line before it moved.
     const nodes = Object.values(Object.values(file.flows)[0].nodes)
-    const pick = nodes.find((n) => n.type === 'dialogue' && n.menuText?.startsWith('A flat white'))!
-    if (pick.type !== 'dialogue') throw new Error()
-    expect(pick.menuLine).toBe(`${pick.line}_M`)
+    const hub = nodes.find((n) => 'choices' in n && n.choices?.some((c) => c?.text?.startsWith('A flat white')))!
+    if (!('choices' in hub) || !hub.choices) throw new Error()
+    const i = hub.choices.findIndex((c) => c?.text?.startsWith('A flat white'))
+    const target = Object.values(file.flows)[0].nodes[hub.next[i]]
+    if (target.type !== 'dialogue') throw new Error()
+    expect(hub.choices[i]?.line).toBe(`${target.line}_M`)
     const story = new SkeinStory(new SkeinWorld(file), Object.values(file.flows)[0].id)
     story.start()
     const menu = story.choose(0)
     expect(menu.kind).toBe('choice')
-    if (menu.kind === 'choice') expect(menu.choices.find((c) => c.text.startsWith('A flat white'))?.lineId).toBe(pick.menuLine)
+    if (menu.kind === 'choice') expect(menu.choices.find((c) => c.text.startsWith('A flat white'))?.lineId).toBe(hub.choices[i]?.line)
   })
 })

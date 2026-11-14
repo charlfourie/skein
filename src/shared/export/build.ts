@@ -1,7 +1,8 @@
 import { compile, nodeTag, type Bound, type BoundStatement, type CompileContext, type StateRef } from '../expr/check'
 import { CONDITION_NODE_CTX, VALUE_CTX } from '../expr/sites'
 import { placeholderSources } from '../expr/template'
-import { menuLineId } from '../lineIds'
+import { choiceCanDisappear, choiceEdges, choiceRequiresOf, choiceTextOf, isOnceChoice } from '../choices'
+import { choiceLineIdOf, menuLineId } from '../lineIds'
 import { clockOf, nodeTakes, wholeSeconds } from '../time'
 import { dataRef, dataString, FALLBACK_HANDLE, isEndNode, isKnownNodeType, isStartNode } from '../nodes'
 import { orderedTargets, startNodes } from '../flowOrder'
@@ -14,6 +15,7 @@ import {
   type ExportCondition,
   type ExportDef,
   type ExportEffects,
+  type ExportChoice,
   type ExportEntity,
   type ExportFile,
   type ExportFlow,
@@ -272,6 +274,44 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
     // Choice order is the stored order (edge.order), never the canvas layout.
     const outgoing = (id: string, handle?: string) => orderedTargets(flow, id, handle)
 
+    /** v5: each choice's own text, requirement and "only once", lined up with `next` (null when none of them is set). */
+    const choicesOf = (id: string, label: string, at: ExportProblem['at']): (ExportChoice | null)[] | undefined => {
+      const list = choiceEdges(flow, id).map((edge, i): ExportChoice | null => {
+        const text = choiceTextOf(edge)
+        const lineId = text ? choiceLineIdOf(edge) : null
+        const where = `${label}, choice ${i + 1}`
+        let requires = condition(choiceRequiresOf(edge), {}, `${where} requirement`, at)
+        const once = isOnceChoice(edge)
+        if (once) {
+          const unseen: ExprNode = { op: '==', a: { get: 'visit', node: edge.id }, b: { lit: 0 } }
+          const src = requires?.source
+          requires = { expr: requires ? { op: 'and', a: unseen, b: requires.expr } : unseen, ...(includeSource ? { source: src ? `only once, and ${src}` : 'only once' } : {}) }
+        }
+        const vars: Record<string, ExprNode> = {}
+        for (const source of placeholderSources(text)) {
+          if (vars[source]) continue
+          const c = compile(project, source, 'value', VALUE_CTX)
+          if (!c.ok || !c.condition) {
+            problems.push({ level: 'error', message: `${where}: {${source}}: ${c.diagnostics[0]?.message ?? 'invalid'} (shown as written).`, at })
+            continue
+          }
+          vars[source] = expr(c.condition)
+        }
+        if (!text && !requires) return null
+        return {
+          id: edge.id,
+          ...(text ? { text } : {}),
+          ...(lineId ? { line: lineId } : {}),
+          ...(Object.keys(vars).length ? { vars } : {}),
+          ...(requires ? { requires } : {}),
+          ...(once ? { count: true as const } : {})
+        }
+      })
+      if (list.every((c) => c === null)) return undefined
+      need(5)
+      return list
+    }
+
     for (const node of Object.values(flow.nodes)) {
       if (!isKnownNodeType(node.type)) {
         problems.push({ level: 'warning', message: `Flow “${flow.name}”: a node of unknown type “${node.type}” was left out.` })
@@ -298,6 +338,7 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
             vars[source] = expr(c.condition)
           }
           if (Object.keys(vars).length) need(4)
+          const choices = choicesOf(node.id, label, at)
           nodes[node.id] = {
             ...base,
             type: 'dialogue',
@@ -306,7 +347,8 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
             ...(menuText ? { menuText } : {}),
             ...(line ? { line, ...(menuText ? { menuLine: menuLineId(line) } : {}) } : {}),
             ...(Object.keys(vars).length ? { vars } : {}),
-            next: outgoing(node.id)
+            next: outgoing(node.id, 'out'),
+            ...(choices ? { choices } : {})
           }
           break
         }
@@ -333,10 +375,18 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
             const [fallback] = outgoing(node.id, FALLBACK_HANDLE)
             // v5: a hub with several connections keeps asking while any choice is left, and may fall back.
             // Only marked where it matters: when a choice can disappear (a requirement or "only once").
-            const canDisappear = (id: string) => flow.nodes[id]?.data.once === true || dataString(flow.nodes[id], 'requires').trim() !== ''
-            const ask = next.length > 1 && next.some(canDisappear)
+            const ask = next.length > 1 && choiceEdges(flow, node.id).some((e) => choiceCanDisappear(flow, e))
             if (ask || fallback) need(5)
-            nodes[node.id] = { ...base, type: 'hub', label: dataString(node, 'label'), next, ...(ask ? { ask: true as const } : {}), ...(fallback ? { fallback } : {}) }
+            const choices = choicesOf(node.id, label, at)
+            nodes[node.id] = {
+              ...base,
+              type: 'hub',
+              label: dataString(node, 'label'),
+              next,
+              ...(ask ? { ask: true as const } : {}),
+              ...(fallback ? { fallback } : {}),
+              ...(choices ? { choices } : {})
+            }
           }
           break
         case 'jump': {

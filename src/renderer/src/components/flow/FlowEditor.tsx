@@ -1,3 +1,4 @@
+import { choiceRequiresOf, choiceTextOf, isChoiceEdge, isOnceChoice } from '@shared/choices'
 import {
   applyEdgeChanges,
   applyNodeChanges,
@@ -118,9 +119,13 @@ function deriveEdges(flow: Flow, analysis: FlowAnalysis): NarrativeRFEdge[] {
     .sort((a, b) => (a.id < b.id ? -1 : 1))
     .map((e) => {
       const data = {
-        branch: (e.sourceHandle ?? 'out') as 'out' | 'true' | 'false',
+        branch: (e.sourceHandle ?? 'out') as 'out' | 'true' | 'false' | 'fallback',
         loop: analysis.loopEdges.has(e.id),
-        choice: numbers.get(e.id) ?? null
+        choice: numbers.get(e.id) ?? null,
+        // A choice's own settings (format 8), shown beside its number.
+        choiceText: isChoiceEdge(flow, e) ? choiceTextOf(e) : '',
+        once: isOnceChoice(e),
+        gated: choiceRequiresOf(e).trim() !== ''
       }
       return {
         id: e.id,

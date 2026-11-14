@@ -5,7 +5,7 @@ promise about what keeps working.
 
 | Editor | Project format | Export format | Notes |
 | --- | --- | --- | --- |
-| 0.9.1 | 8 | 5 | Tester feedback: hubs keep asking with one choice left and can fall back when none is, Start at in Play, Play panel and inspector fixes |
+| 0.9.1 | 8 | 5 | Tester feedback: choices belong to connections (own text, Only once, Requires), hubs keep asking and fall back, Start at in Play, Play panel and inspector fixes |
 | 0.9.0 | 7 | 4 | Phase 9: search and replace, Problems, copy and paste, recovery, quick line entry, script view, scene paste |
 | 0.8.0 | 7 | 4 | Phase 8: project folders, line IDs, variables inside lines, comments |
 | 0.1.0 | 6 | 3 | Phases 1 to 7 (before the editor version was kept up to date) |

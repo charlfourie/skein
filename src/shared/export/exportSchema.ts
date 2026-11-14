@@ -75,6 +75,17 @@ const nodeBase = {
   activity: z.string().optional()
 }
 
+const Choice = z
+  .object({
+    id: z.string(),
+    text: z.string().optional(),
+    line: z.string().optional(),
+    vars: z.record(Expr).optional(),
+    requires: Condition.optional(),
+    count: z.literal(true).optional()
+  })
+  .strict()
+
 const Node = z.discriminatedUnion('type', [
   z
     .object({
@@ -86,13 +97,14 @@ const Node = z.discriminatedUnion('type', [
       next: z.array(z.string()),
       line: z.string().optional(),
       menuLine: z.string().optional(),
-      vars: z.record(Expr).optional()
+      vars: z.record(Expr).optional(),
+      choices: z.array(Choice.nullable()).optional()
     })
     .strict(),
   z.object({ ...nodeBase, type: z.literal('condition'), condition: Condition.nullable(), onTrue: z.string().nullable(), onFalse: z.string().nullable() }).strict(),
   z.object({ ...nodeBase, type: z.literal('instruction'), instruction: Effects.nullable(), next: z.array(z.string()) }).strict(),
   z
-    .object({ ...nodeBase, type: z.literal('hub'), label: z.string(), next: z.array(z.string()), ask: z.literal(true).optional(), fallback: z.string().optional() })
+    .object({ ...nodeBase, type: z.literal('hub'), label: z.string(), next: z.array(z.string()), ask: z.literal(true).optional(), fallback: z.string().optional(), choices: z.array(Choice.nullable()).optional() })
     .strict(),
   z.object({ ...nodeBase, type: z.literal('jump'), jumpTo: z.string().nullable(), jumpFlow: z.string().optional() }).strict(),
   z.object({ ...nodeBase, type: z.literal('call'), flow: z.string().nullable(), next: z.array(z.string()) }).strict()

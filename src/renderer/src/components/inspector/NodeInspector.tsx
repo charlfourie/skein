@@ -1,20 +1,22 @@
 import { CONDITION_NODE_CTX } from '@shared/expr/sites'
 import { formatDuration, nodeTakes } from '@shared/time'
 import { motion } from 'framer-motion'
-import { ArrowRight, ChevronDown, ChevronUp, Crosshair, Trash2 } from 'lucide-react'
-import { useEffect, type ReactNode } from 'react'
+import { ArrowRight, ChevronDown, ChevronUp, Crosshair, SlidersHorizontal, Trash2 } from 'lucide-react'
+import { useEffect, useState, type ReactNode } from 'react'
+import { choiceRequiresOf, choiceTextOf, incomingChoices, isOnceChoice } from '@shared/choices'
+import { cx } from '../../lib/cx'
 import { analyzeFlow } from '@shared/flowAnalysis'
 import { outgoingEdges, startNodes } from '@shared/flowOrder'
 import { dataRef, dataString, isEndNode, isKnownNodeType, isStartNode, offersStateField } from '@shared/nodes'
 import type { Flow, Project } from '@shared/schema'
 import { TECHNICAL_NAME_RE, toTechnicalName } from '@shared/technicalName'
 import { useIssuesFor } from '../../hooks/useIssues'
-import { lineIdOf, menuLineId } from '@shared/lineIds'
+import { choiceLineIdOf, lineIdOf } from '@shared/lineIds'
 import { speakerOrder } from '@shared/quickEntry'
 import { ReadOnly } from '../ui/ReadOnly'
 import { Comments } from './Comments'
 import { compareOrder } from '../../lib/tree'
-import { deleteElements, moveChoice, moveStart, updateNodeData } from '../../store/flowOps'
+import { deleteElements, moveChoice, moveStart, updateChoice, updateNodeData } from '../../store/flowOps'
 import { useProjectStore } from '../../store/projectStore'
 import { useUi } from '../../store/ui'
 import { focusCanvasNode, quickEntryKey } from '../../lib/quickKeys'
@@ -88,17 +90,15 @@ export function NodeInspector({ project, flowId, nodeId }: { project: Project; f
               }}
             />
           </FieldLabel>
-          <FieldLabel label="Choice text" hint="shown in the player’s choice menu">
-            <TextInput
-              value={dataString(node, 'menuText')}
-              placeholder="Short version for menus (optional)"
-              onCommit={(menuText) => patch({ menuText })}
-            />
-          </FieldLabel>
+          <ChosenAs project={project} flow={flow} nodeId={nodeId} />
+          {dataString(node, 'menuText') && (
+            <FieldLabel label="Choice text (older)" hint="used by choices into this line with no text of their own">
+              <TextInput value={dataString(node, 'menuText')} placeholder="Set it on each choice instead" onCommit={(menuText) => patch({ menuText })} />
+            </FieldLabel>
+          )}
           {lineIdOf(node) && (
             <div className="flex flex-col gap-1 rounded-md bg-raised/40 px-2 py-1.5">
               <ReadOnly label="Line ID" value={lineIdOf(node)!} mono copyable />
-              {dataString(node, 'menuText') && <ReadOnly label="Choice text ID" value={menuLineId(lineIdOf(node)!)} mono copyable />}
             </div>
           )}
         </>
@@ -338,34 +338,40 @@ function ChoiceOrder({ project, flow, nodeId, kind }: { project: Project; flow: 
   const focusNode = useProjectStore((s) => s.focusNode)
   const edges = outgoingEdges(flow, nodeId, 'out')
   if (edges.length < 2) return null
-  const hint =
-    kind === 'instruction' || kind === 'call'
-      ? 'tried in this order; the first available one is followed'
-      : 'the order the player sees them in; unavailable ones are skipped'
+  const choices = kind === 'dialogue' || kind === 'hub'
+  const hint = choices ? 'the order the player sees them in; unavailable ones are skipped' : 'tried in this order; the first available one is followed'
   return (
-    <Section title={kind === 'instruction' || kind === 'call' ? 'Next, in order' : 'Choices, in order'}>
+    <Section title={choices ? 'Choices, in order' : 'Next, in order'}>
       <p className="-mt-0.5 text-2xs text-faint">{hint}</p>
-      <ol className="flex flex-col gap-1">
+      <ol className="flex flex-col gap-1.5">
         {edges.map((e, i) => {
           const target = flow.nodes[e.target]
-          const label = target ? choiceLabel(project, target) : '(missing)'
-          const gated = target && dataString(target, 'requires')
-          return (
-            <li key={e.id} className="flex items-center gap-1.5">
-              <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full border border-accent/40 text-[10px] font-semibold tabular-nums text-accent">
-                {i + 1}
-              </span>
-              <button
-                type="button"
-                onClick={() => target && focusNode(flow.id, target.id)}
-                title={gated ? `Only offered while: ${dataString(target, 'requires')}` : 'Show on canvas'}
-                className="min-w-0 flex-1 truncate rounded-md border border-line bg-bg px-2 py-1 text-left text-xs text-fg transition-colors hover:border-accent/50"
-              >
-                {label}
-                {gated && <span className="ml-1.5 text-2xs text-warn">gated</span>}
-              </button>
+          const order = (
+            <>
               <IconButton size="sm" icon={ChevronUp} label="Move earlier" disabled={i === 0} onClick={() => moveChoice(flow.id, e.id, -1)} />
               <IconButton size="sm" icon={ChevronDown} label="Move later" disabled={i === edges.length - 1} onClick={() => moveChoice(flow.id, e.id, 1)} />
+            </>
+          )
+          return (
+            <li key={e.id} className="flex items-start gap-1.5">
+              <span className="mt-1 grid h-5 w-5 shrink-0 place-items-center rounded-full border border-accent/40 text-[10px] font-semibold tabular-nums text-accent">
+                {i + 1}
+              </span>
+              {choices ? (
+                <ChoiceRow project={project} flow={flow} edge={e} target={target} onShow={() => target && focusNode(flow.id, target.id)} order={order} />
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => target && focusNode(flow.id, target.id)}
+                    title="Show on canvas"
+                    className="min-w-0 flex-1 truncate rounded-md border border-line bg-bg px-2 py-1 text-left text-xs text-fg transition-colors hover:border-accent/50"
+                  >
+                    {target ? describeNode(project, target) : '(missing)'}
+                  </button>
+                  {order}
+                </>
+              )}
             </li>
           )
         })}
@@ -374,9 +380,85 @@ function ChoiceOrder({ project, flow, nodeId, kind }: { project: Project; flow: 
   )
 }
 
-function choiceLabel(project: Project, node: Flow['nodes'][string]): string {
-  const menu = dataString(node, 'menuText')
-  return menu ? `“${menu}”` : describeNode(project, node)
+/** One choice a line or hub offers: its own text, "only once" and requirement (format 8: they live on the connection). */
+function ChoiceRow({
+  project,
+  flow,
+  edge,
+  target,
+  onShow,
+  order
+}: {
+  project: Project
+  flow: Flow
+  edge: Flow['edges'][string]
+  target: Flow['nodes'][string] | undefined
+  onShow(): void
+  order: ReactNode
+}) {
+  const text = choiceTextOf(edge)
+  const requires = choiceRequiresOf(edge)
+  const once = isOnceChoice(edge)
+  const [open, setOpen] = useState(requires !== '' || once)
+  const fallbackText = target ? (target.type === 'dialogue' ? dataString(target, 'menuText') || dataString(target, 'text') : describeNode(project, target)) : '(missing)'
+  return (
+    <div className="min-w-0 flex-1 rounded-md border border-line bg-bg/60 p-1.5">
+      <div className="flex items-center gap-0.5">
+        <div className="min-w-0 flex-1">
+          <TextInput value={text} placeholder={fallbackText ? `${fallbackText.slice(0, 60)} (the line's text)` : 'Choice text'} onCommit={(choiceText) => updateChoice(flow.id, edge.id, { choiceText })} />
+        </div>
+        <IconButton size="sm" icon={SlidersHorizontal} label={open ? 'Hide this choice’s settings' : 'Only once and requirement'} active={open || requires !== '' || once} onClick={() => setOpen(!open)} />
+        {order}
+      </div>
+      <div className="mt-1 flex items-center gap-2 px-0.5 text-2xs text-faint">
+        <button type="button" onClick={onShow} className="flex min-w-0 items-center gap-1 truncate hover:text-accent" title="Show where it leads on the canvas">
+          <Crosshair size={10} className="shrink-0" /> <span className="truncate">{target ? describeNode(project, target) : '(missing)'}</span>
+        </button>
+        {once && <span className="shrink-0 text-accent">once</span>}
+        {requires && <span className="shrink-0 text-warn">gated</span>}
+        {target && dataString(target, 'requires') && <span className="shrink-0 text-warn" title={`The line itself requires: ${dataString(target, 'requires')}`}>line gated</span>}
+      </div>
+      {open && (
+        <div className="mt-2 flex flex-col gap-2 border-t border-line/70 pt-2">
+          <ToggleRow label="Only once" hint="not offered again after it's been picked" checked={once} onChange={(v) => updateChoice(flow.id, edge.id, { once: v })} />
+          <FieldLabel label="Requires" hint="only offered while this holds">
+            <ExpressionField project={project} value={requires} mode="condition" placeholder="e.g. Player.Coins >= 4" onCommit={(r) => updateChoice(flow.id, edge.id, { requires: r })} />
+          </FieldLabel>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/** On a line: the choices that lead to it, and what each one says (edited on the line or hub that offers it). */
+function ChosenAs({ project, flow, nodeId }: { project: Project; flow: Flow; nodeId: string }) {
+  const focusNode = useProjectStore((s) => s.focusNode)
+  const incoming = incomingChoices(flow, nodeId).filter((e) => outgoingEdges(flow, e.source, 'out').length > 1)
+  if (incoming.length === 0) return null
+  return (
+    <FieldLabel label="Chosen as" hint="edit a choice on the line or hub it leaves">
+      <div className="flex flex-col gap-1">
+        {incoming.map((e) => {
+          const from = flow.nodes[e.source]
+          const text = choiceTextOf(e)
+          return (
+            <button
+              key={e.id}
+              type="button"
+              onClick={() => focusNode(flow.id, e.source)}
+              className="flex min-w-0 items-center gap-1.5 rounded-md border border-line bg-raised/40 px-2 py-1 text-left text-xs transition-colors hover:border-accent/50"
+              title={choiceLineIdOf(e) ? `Choice text ID: ${choiceLineIdOf(e)}` : undefined}
+            >
+              <span className={cx('min-w-0 flex-1 truncate', text ? 'text-fg' : 'italic text-faint')}>{text ? `“${text}”` : 'the line’s own text'}</span>
+              <span className="shrink-0 truncate text-2xs text-faint">from {from ? describeNode(project, from) : '?'}</span>
+              {isOnceChoice(e) && <span className="shrink-0 text-2xs text-accent">once</span>}
+              {choiceRequiresOf(e) && <span className="shrink-0 text-2xs text-warn">gated</span>}
+            </button>
+          )
+        })}
+      </div>
+    </FieldLabel>
+  )
 }
 
 /** Where this start node sits among the flow's start nodes (the first available one is used). */

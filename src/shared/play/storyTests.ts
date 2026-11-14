@@ -272,7 +272,7 @@ export function playRoute(file: ExportFile, flowId: string, start: StartState, r
         const choice = beat.choices.find((c) => c.node === step.choose)
         if (!choice) {
           const offered = beat.choices.map((c) => `“${short(c.text)}”`).join(', ')
-          const why = !findNode(file, step.choose) ? 'the choice the test picked was deleted' : `${nodeLabel(file, step.choose)} isn't offered any more`
+          const why = !findNode(file, step.choose) ? 'the choice the test picked was deleted' : `${choiceLabel(file, beat.node.id, step.choose)} isn't offered any more`
           throw new Mismatch(`At ${nodeLabel(file, beat.node.id)}, ${why}. Offered now: ${offered}.`, beat.node.id)
         }
         i++
@@ -306,6 +306,17 @@ function findNode(file: ExportFile, id: string): ExportNode | undefined {
 }
 
 /** “Line text”, (hub label), or "a deleted node". */
+/** How a choice from one node to another reads: its own choice text (v5), else the target's. */
+export function choiceLabel(file: ExportFile, fromId: string, toId: string): string {
+  const from = findNode(file, fromId)
+  if (from && 'choices' in from && from.choices) {
+    const i = from.next.indexOf(toId)
+    const text = i >= 0 ? from.choices[i]?.text : undefined
+    if (text) return `“${short(text)}”`
+  }
+  return nodeLabel(file, toId)
+}
+
 export function nodeLabel(file: ExportFile, id: string | null): string {
   if (!id) return 'the start'
   const n = findNode(file, id)

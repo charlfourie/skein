@@ -179,6 +179,8 @@ namespace Skein
         public string Fallback;
         // dialogue / instruction / hub
         public IReadOnlyList<string> Next = Array.Empty<string>();
+        /// <summary>v5 dialogue / hub: what's specific to each choice, in the same order as Next (null entries: nothing).</summary>
+        public IReadOnlyList<SkeinChoiceDef> Choices = Array.Empty<SkeinChoiceDef>();
         // jump
         public string JumpTo;
         /// <summary>v2 jump: continue at the start of this flow (a hand-off) instead of JumpTo.</summary>
@@ -189,6 +191,21 @@ namespace Skein
         public double Takes;
         /// <summary>v3: the node's activity name, if any.</summary>
         public string Activity;
+    }
+
+    /// <summary>v5: one choice a line or hub offers (its connection in Skein).</summary>
+    public sealed class SkeinChoiceDef
+    {
+        /// <summary>The connection's id; visits to it are counted by this id.</summary>
+        public string Id;
+        /// <summary>What the menu shows instead of the target's text (placeholders filled from Vars), or null.</summary>
+        public string Text;
+        public string Line;
+        public JsonObject Vars;
+        /// <summary>Offered only while this holds (null = always).</summary>
+        public JsonObject Requires;
+        /// <summary>Count each time it's taken (an "only once" choice).</summary>
+        public bool Count;
     }
 
     public sealed class SkeinFlow
@@ -343,7 +360,8 @@ namespace Skein
                 Tag = o.Str("tag"),
                 Takes = o.Num("takes") ?? 0,
                 Activity = o.Str("activity"),
-                Next = SkeinDef.Strings(o.Arr("next"))
+                Next = SkeinDef.Strings(o.Arr("next")),
+                Choices = ParseChoices(o.Arr("choices"))
             };
             switch (o.Str("type"))
             {
@@ -385,6 +403,26 @@ namespace Skein
                     throw new SkeinFormatException($"Unknown node type \"{o.Str("type")}\" on node {o.Str("id")}.");
             }
             return n;
+        }
+
+        static IReadOnlyList<SkeinChoiceDef> ParseChoices(List<object> list)
+        {
+            if (list == null) return Array.Empty<SkeinChoiceDef>();
+            var result = new List<SkeinChoiceDef>(list.Count);
+            foreach (var item in list)
+            {
+                var c = item as JsonObject;
+                result.Add(c == null ? null : new SkeinChoiceDef
+                {
+                    Id = c.Str("id"),
+                    Text = c.Str("text"),
+                    Line = c.Str("line"),
+                    Vars = c.Obj("vars"),
+                    Requires = c.Obj("requires"),
+                    Count = c.Bool("count")
+                });
+            }
+            return result;
         }
 
         /// <summary>A node by its tag (any flow), or null.</summary>
