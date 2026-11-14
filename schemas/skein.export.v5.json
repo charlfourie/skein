@@ -1,8 +1,8 @@
 {
-  "$id": "https://raw.githubusercontent.com/charlfourie/skein/main/schemas/skein.export.v4.json",
+  "$id": "https://raw.githubusercontent.com/charlfourie/skein/main/schemas/skein.export.v5.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "additionalProperties": false,
-  "description": "The file games read (format \"skein.export\", versions 1 to 4). See docs/EXPORT.md for how a story runs.",
+  "description": "The file games read (format \"skein.export\", versions 1 to 5). See docs/EXPORT.md for how a story runs.",
   "properties": {
     "entities": {
       "additionalProperties": {
@@ -255,6 +255,10 @@
                     "activity": {
                       "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/activity"
                     },
+                    "ask": {
+                      "const": true,
+                      "type": "boolean"
+                    },
                     "count": {
                       "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/count"
                     },
@@ -263,6 +267,9 @@
                     },
                     "end": {
                       "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/end"
+                    },
+                    "fallback": {
+                      "type": "string"
                     },
                     "id": {
                       "$ref": "#/properties/flows/additionalProperties/properties/nodes/additionalProperties/anyOf/0/properties/id"
@@ -1059,7 +1066,7 @@
       "type": "object"
     },
     "version": {
-      "maximum": 4,
+      "maximum": 5,
       "minimum": 1,
       "type": "integer"
     }

@@ -17,7 +17,7 @@
  */
 import type { Size } from './frames'
 import { assignLineId } from './lineIds'
-import { INPUT_HANDLE, outputHandles } from './nodes'
+import { branchHandles, INPUT_HANDLE, outputHandles } from './nodes'
 import { createEntity } from './factory'
 import { nextEdgeOrder, outgoingEdges } from './flowOrder'
 import { freeSpot } from './quickEntry'
@@ -135,7 +135,7 @@ export function usualChooser(project: Project, flowId: string): string | null {
     const tally = new Map<string, number>()
     for (const f of flows)
       for (const n of Object.values(f.nodes)) {
-        const outs = outputHandles(n.type).flatMap((h) => outgoingEdges(f, n.id, h))
+        const outs = branchHandles(n.type).flatMap((h) => outgoingEdges(f, n.id, h))
         if (outs.length < 2 || (n.type !== 'dialogue' && n.type !== 'hub')) continue
         for (const e of outs) {
           const s = f.nodes[e.target]?.data.speakerId

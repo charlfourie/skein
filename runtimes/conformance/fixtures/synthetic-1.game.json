@@ -1,6 +1,6 @@
 {
   "format": "skein.export",
-  "version": 4,
+  "version": 5,
   "project": {
     "id": "f28eebae",
     "name": "Synthetic 1"
@@ -441,10 +441,7 @@
           "id": "f0n0-6afb762e",
           "type": "hub",
           "label": "Hub f0n0-6afb762e",
-          "next": [
-            "f0n0-6afb762e",
-            "f0n8-b8c5af4c"
-          ]
+          "next": []
         },
         "f0n1-ba98069f": {
           "id": "f0n1-ba98069f",
@@ -901,7 +898,6 @@
           "type": "hub",
           "label": "Hub f0n8-b8c5af4c",
           "next": [
-            "f0n6-791fd038",
             "f0n3-0ab77d40",
             "f0n6-791fd038"
           ]
@@ -918,7 +914,6 @@
       "nodes": {
         "f1n0-9209d10f": {
           "id": "f1n0-9209d10f",
-          "takes": 3,
           "type": "dialogue",
           "speaker": "Fisher",
           "text": "Line f1n0-9209d10f{Label}.{Trust}.",

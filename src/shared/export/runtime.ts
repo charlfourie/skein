@@ -585,11 +585,13 @@ export class SkeinStory {
           break
         case 'hub': {
           const options = this.choices(node.next)
-          if (options.length > 1) {
+          // v5: a hub with several connections (`ask`) offers even its last choice as a menu.
+          if (options.length > 1 || (node.ask && options.length === 1)) {
             this.pending = options
             return { kind: 'choice', node, choices: options }
           }
-          id = options[0]?.node ?? null
+          // v5: none left, so follow the fallback (its own requirement is checked on entry).
+          id = options[0]?.node ?? node.fallback ?? null
           break
         }
         case 'jump':

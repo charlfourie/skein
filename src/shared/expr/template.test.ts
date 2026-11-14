@@ -36,7 +36,7 @@ describe('variables inside lines', () => {
     })
     const { file, problems } = buildExport(p)
     expect(problems.map((x) => x.message)).toEqual([expect.stringMatching(/\{Nobody\.Here\}: There’s nothing called “Nobody”/)])
-    expect(file.version).toBe(4)
+    expect(file.version).toBeGreaterThanOrEqual(4) // variables inside lines (v4); the demo's priced hub also needs v5
     const beat = new SkeinStory(new SkeinWorld(file), flowOf(p).id).start()
     if (beat.kind !== 'line') throw new Error('expected a line')
     expect(beat.text).toBe('Morning! You have 5 coins, 1.25 flat whites, {braces} and {Nobody.Here}.')
@@ -71,7 +71,9 @@ describe('variables inside lines', () => {
       for (const n of Object.values(flowOf(d as Project).nodes)) if (typeof n.data.text === 'string') n.data.text = n.data.text.replace(/\{[^}]*\}/g, 'some')
     })
     const { file } = buildExport(plain)
-    expect(file.version).toBeLessThan(4)
+    // Line IDs are extras: stripping them all leaves the version where it was.
+    const bare = buildExport(produce(plain, (d) => { for (const n of Object.values(flowOf(d as Project).nodes)) delete n.data.lineId }))
+    expect(file.version).toBe(bare.file.version)
     const nodes = Object.values(Object.values(file.flows)[0].nodes)
     const pick = nodes.find((n) => n.type === 'dialogue' && n.menuText?.startsWith('A flat white'))!
     if (pick.type !== 'dialogue') throw new Error()

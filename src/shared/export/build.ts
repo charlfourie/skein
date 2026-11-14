@@ -3,7 +3,7 @@ import { CONDITION_NODE_CTX, VALUE_CTX } from '../expr/sites'
 import { placeholderSources } from '../expr/template'
 import { menuLineId } from '../lineIds'
 import { clockOf, nodeTakes, wholeSeconds } from '../time'
-import { dataRef, dataString, isEndNode, isKnownNodeType, isStartNode } from '../nodes'
+import { dataRef, dataString, FALLBACK_HANDLE, isEndNode, isKnownNodeType, isStartNode } from '../nodes'
 import { orderedTargets, startNodes } from '../flowOrder'
 import type { Flow, FlowNode, Project, PropertyDef, PropertyValue } from '../schema'
 import { serializeCanonical } from '../serialize'
@@ -328,7 +328,16 @@ export function buildExport(project: Project, options: ExportOptions = {}): Expo
           }
           break
         case 'hub':
-          nodes[node.id] = { ...base, type: 'hub', label: dataString(node, 'label'), next: outgoing(node.id) }
+          {
+            const next = outgoing(node.id, 'out')
+            const [fallback] = outgoing(node.id, FALLBACK_HANDLE)
+            // v5: a hub with several connections keeps asking while any choice is left, and may fall back.
+            // Only marked where it matters: when a choice can disappear (a requirement or "only once").
+            const canDisappear = (id: string) => flow.nodes[id]?.data.once === true || dataString(flow.nodes[id], 'requires').trim() !== ''
+            const ask = next.length > 1 && next.some(canDisappear)
+            if (ask || fallback) need(5)
+            nodes[node.id] = { ...base, type: 'hub', label: dataString(node, 'label'), next, ...(ask ? { ask: true as const } : {}), ...(fallback ? { fallback } : {}) }
+          }
           break
         case 'jump': {
           const toFlow = dataRef(node, 'targetFlowId')

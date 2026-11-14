@@ -5,18 +5,19 @@ promise about what keeps working.
 
 | Editor | Project format | Export format | Notes |
 | --- | --- | --- | --- |
+| 0.9.1 | 8 | 5 | Tester feedback: hubs keep asking with one choice left and can fall back when none is, Start at in Play, Play panel and inspector fixes |
 | 0.9.0 | 7 | 4 | Phase 9: search and replace, Problems, copy and paste, recovery, quick line entry, script view, scene paste |
 | 0.8.0 | 7 | 4 | Phase 8: project folders, line IDs, variables inside lines, comments |
 | 0.1.0 | 6 | 3 | Phases 1 to 7 (before the editor version was kept up to date) |
 
-## The editor (`0.9.0`)
+## The editor (`0.9.1`)
 
 The app itself, shown in the status bar. Until 1.0 the minor number is the last
 finished phase of the [roadmap](../README.md#%EF%B8%8F-roadmap), and the patch
 number counts fixes since. Each release is tagged in git (`v0.9.0`) when its phase
 is merged into `main`.
 
-## The project format (`skein.project`, version 7)
+## The project format (`skein.project`, version 8)
 
 What Skein saves: a single `.skein.json` file, or a project folder (`project.json`
 plus `flows/*.json`). Published as JSON Schemas in [`schemas/`](../schemas).
@@ -31,10 +32,10 @@ plus `flows/*.json`). Published as JSON Schemas in [`schemas/`](../schemas).
 - **A format change bumps the version**, even when it only adds an optional field,
   and comes with a migration and a test that an older file still opens.
 
-## The export format (`skein.export`, version 4)
+## The export format (`skein.export`, version 5)
 
 What games read. Specified in [EXPORT.md](EXPORT.md) and published as
-[`schemas/skein.export.v4.json`](../schemas).
+[`schemas/skein.export.v5.json`](../schemas).
 
 - **Each export carries the lowest version that can read it.** A story that uses
   no version 4 features is exported as version 3, so a game whose runtime reads
@@ -57,8 +58,8 @@ says which export versions it reads:
 
 | Runtime | Reads export versions |
 | --- | --- |
-| TypeScript reference | 1–4 |
-| C# (Unity, Godot .NET, .NET) | 1–4 |
+| TypeScript reference | 1–5 |
+| C# (Unity, Godot .NET, .NET) | 1–5 |
 
 A change to how stories play lands in the reference runtime, the conformance
 fixtures and every port in the same pull request, or not at all.

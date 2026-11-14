@@ -11,7 +11,7 @@
 
 export const EXPORT_FORMAT = 'skein.export' as const
 /** The newest format version this exporter writes. Each file carries the lowest version that can read it. */
-export const EXPORT_VERSION = 4 as const
+export const EXPORT_VERSION = 5 as const
 
 export type ExportValue = number | boolean | string | null
 
@@ -152,7 +152,11 @@ export type ExportNode =
     })
   | (NodeBase & { type: 'condition'; condition: ExportCondition | null; onTrue: string | null; onFalse: string | null })
   | (NodeBase & { type: 'instruction'; instruction: ExportEffects | null; next: string[] })
-  | (NodeBase & { type: 'hub'; label: string; next: string[] })
+  /**
+   * `ask` (v5): show the choices as a menu even when only one is left (a hub with several connections).
+   * `fallback` (v5): where to go when none of its choices is available.
+   */
+  | (NodeBase & { type: 'hub'; label: string; next: string[]; ask?: true; fallback?: string })
   /** `jumpFlow` (v2): continue at the start of another flow instead (a hand-off; `jumpTo` is then null). */
   | (NodeBase & { type: 'jump'; jumpTo: string | null; jumpFlow?: string })
   /** v2: play another flow from its start, then come back and continue with `next`. */
@@ -168,7 +172,7 @@ export interface ExportFlow {
 
 export interface ExportFile {
   format: typeof EXPORT_FORMAT
-  version: 1 | 2 | 3 | 4
+  version: 1 | 2 | 3 | 4 | 5
   project: { id: string; name: string }
   templates: Record<string, ExportTemplate>
   entities: Record<string, ExportEntity>

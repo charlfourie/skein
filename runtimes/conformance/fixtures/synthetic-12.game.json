@@ -1,13 +1,13 @@
 {
   "format": "skein.export",
-  "version": 4,
+  "version": 5,
   "project": {
-    "id": "60a4ee17",
+    "id": "b4575621",
     "name": "Synthetic 12"
   },
   "templates": {
     "Character": {
-      "id": "c0a79fa8",
+      "id": "26cf5429",
       "name": "Character",
       "properties": {
         "Mood": {
@@ -50,7 +50,7 @@
       }
     },
     "Faction": {
-      "id": "43f70928",
+      "id": "415cf840",
       "name": "Faction",
       "properties": {
         "Power": {
@@ -199,119 +199,71 @@
       ],
       "start": {
         "day": 1,
-        "phase": "Day"
+        "phase": "Dawn",
+        "minute": 65.25
       },
-      "minutes": [
-        310,
-        618.5,
-        183.5,
-        611
-      ]
+      "dayStart": 743
     },
     "rules": [
       {
-        "id": "fb28e251",
+        "id": "96391494",
         "name": "Rule 0",
         "trigger": "day",
-        "phase": null,
-        "forEach": "Character",
-        "when": {
-          "expr": {
-            "op": "/",
-            "a": {
-              "op": ">=",
-              "a": {
-                "get": "var",
-                "var": "World.Label"
-              },
-              "b": {
-                "lit": 0
-              }
-            },
-            "b": {
-              "op": "==",
-              "a": {
-                "lit": " 4 "
-              },
-              "b": {
-                "lit": "Calm"
-              }
-            }
-          }
-        },
+        "phase": "Day",
+        "forEach": null,
         "effects": {
           "do": [
             {
               "set": {
                 "get": "var",
-                "var": "World.Missing"
+                "var": "World.Ratio"
               },
               "op": "+=",
               "value": {
-                "op": "phase<",
+                "op": "!=",
                 "a": {
-                  "op": "!=",
-                  "a": {
-                    "get": "prop",
-                    "entity": "Keeper",
-                    "prop": "Title"
-                  },
-                  "b": {
-                    "lit": "3"
+                  "neg": {
+                    "get": "time",
+                    "field": "minute"
                   }
                 },
                 "b": {
-                  "lit": null
+                  "op": "!=",
+                  "a": {
+                    "get": "rel",
+                    "rel": "Character->Character.Trust",
+                    "from": "Fisher",
+                    "to": "$self"
+                  },
+                  "b": {
+                    "get": "prop",
+                    "entity": "Child",
+                    "prop": "Mood"
+                  }
                 }
               }
             },
             {
               "set": {
-                "get": "var",
-                "var": "World.Count"
-              },
-              "op": "=",
-              "value": {
-                "get": "var",
-                "var": "World.Label"
-              }
-            }
-          ]
-        }
-      },
-      {
-        "id": "85ba21ba",
-        "name": "Rule 1",
-        "trigger": "phase",
-        "phase": "Day",
-        "forEach": null,
-        "flow": "flow-0-94d5f9e1",
-        "effects": {
-          "do": [
-            {
-              "set": {
-                "get": "var",
-                "var": "World.Missing"
+                "get": "prop",
+                "entity": "Fisher",
+                "prop": "Title"
               },
               "op": "-=",
               "value": {
-                "not": {
-                  "neg": {
-                    "lit": 0.1
-                  }
-                }
+                "get": "var",
+                "var": "World.Storm"
               }
             }
           ]
         }
       },
       {
-        "id": "2126cf54",
-        "name": "Rule 2",
+        "id": "be333b4d",
+        "name": "Rule 1",
         "trigger": "phase",
-        "phase": "Day",
+        "phase": "Dawn",
         "forEach": "Character",
-        "flow": "flow-3-1dc5ccc9",
         "effects": {
           "do": [
             {
@@ -321,15 +273,18 @@
               },
               "op": "+=",
               "value": {
-                "neg": {
-                  "op": "+",
+                "op": "-",
+                "a": {
+                  "get": "visit",
+                  "node": "f2n10-0e2e834d"
+                },
+                "b": {
+                  "op": "/",
                   "a": {
-                    "get": "time",
-                    "field": "hour"
+                    "lit": null
                   },
                   "b": {
-                    "get": "time",
-                    "field": "phase"
+                    "lit": "Night"
                   }
                 }
               }
@@ -337,31 +292,24 @@
             {
               "set": {
                 "get": "rel",
-                "rel": "Character->Character.Trust",
+                "rel": "Character->Faction.Loyal",
                 "from": "Fisher",
-                "to": "Fisher"
+                "to": "Watch"
               },
               "op": "-=",
               "value": {
-                "op": "<",
+                "op": "==",
                 "a": {
-                  "op": ">",
+                  "chance": 21
+                },
+                "b": {
+                  "op": "!=",
                   "a": {
                     "lit": 0.5
                   },
                   "b": {
-                    "get": "var",
-                    "var": "World.Ratio"
-                  }
-                },
-                "b": {
-                  "op": "or",
-                  "a": {
-                    "lit": -2
-                  },
-                  "b": {
-                    "get": "var",
-                    "var": "World.Count"
+                    "get": "time",
+                    "field": "hour"
                   }
                 }
               }
@@ -370,37 +318,14 @@
         }
       },
       {
-        "id": "641b8ef5",
-        "name": "Rule 3",
+        "id": "fb76ae3b",
+        "name": "Rule 2",
         "trigger": "phase",
-        "phase": "Dawn",
-        "forEach": null,
-        "flow": "flow-1-4842d52e",
+        "phase": "Day",
+        "forEach": "Character",
         "when": {
           "expr": {
-            "op": ">=",
-            "a": {
-              "op": "==",
-              "a": {
-                "get": "time",
-                "field": "phase"
-              },
-              "b": {
-                "lit": "Dusk"
-              }
-            },
-            "b": {
-              "op": "*",
-              "a": {
-                "lit": 0
-              },
-              "b": {
-                "get": "rel",
-                "rel": "Character->Character.Trust",
-                "from": "Keeper",
-                "to": "Keeper"
-              }
-            }
+            "chance": 50
           }
         },
         "effects": {
@@ -408,49 +333,69 @@
             {
               "set": {
                 "get": "var",
-                "var": "World.Storm"
+                "var": "World.Label"
               },
-              "op": "-=",
+              "op": "+=",
               "value": {
-                "op": "/",
+                "op": "<",
                 "a": {
-                  "op": "phase<=",
+                  "op": "phase>=",
                   "a": {
-                    "get": "time",
-                    "field": "phase"
+                    "lit": -1
                   },
                   "b": {
-                    "lit": "Dawn"
+                    "lit": "Dusk"
                   }
                 },
                 "b": {
+                  "neg": {
+                    "get": "visit",
+                    "node": "f1n1-84673b3b"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "1e7d830c",
+        "name": "Rule 3",
+        "trigger": "day",
+        "phase": "Day",
+        "forEach": "Character",
+        "effects": {
+          "do": [
+            {
+              "set": {
+                "get": "prop",
+                "entity": "Watch",
+                "prop": "Power"
+              },
+              "op": "+=",
+              "value": {
+                "neg": {
                   "op": "<=",
                   "a": {
-                    "get": "time",
-                    "field": "hour"
+                    "lit": 2
                   },
                   "b": {
-                    "get": "prop",
-                    "entity": "$self",
-                    "prop": "Brave"
+                    "get": "time",
+                    "field": "hour"
                   }
                 }
               }
             },
             {
               "set": {
-                "get": "var",
-                "var": "World.Storm"
+                "get": "rel",
+                "rel": "Character->Faction.Loyal",
+                "from": "Keeper",
+                "to": "Guild"
               },
               "op": "=",
               "value": {
-                "op": "+",
-                "a": {
-                  "lit": 2
-                },
-                "b": {
-                  "lit": "Calm"
-                }
+                "chance": 35
               }
             }
           ]
@@ -464,7 +409,7 @@
       "name": "Flow 0",
       "start": [
         "f0n0-084ab88f",
-        "f0n3-613c3ff8"
+        "f0n9-f8337f58"
       ],
       "nodes": {
         "f0n0-084ab88f": {
@@ -747,86 +692,47 @@
           "type": "hub",
           "label": "Hub f0n6-a04d1365",
           "next": [
-            "f0n9-f8337f58",
             "f0n10-2f87559a",
             "f0n5-58eb743d"
           ]
         },
         "f0n7-e2b2fd4b": {
           "id": "f0n7-e2b2fd4b",
-          "effects": {
-            "do": [
-              {
-                "set": {
-                  "get": "var",
-                  "var": "World.Ratio"
+          "requires": {
+            "expr": {
+              "op": ">",
+              "a": {
+                "op": "*",
+                "a": {
+                  "get": "time",
+                  "field": "hour"
                 },
-                "op": "=",
-                "value": {
-                  "op": "or",
-                  "a": {
-                    "op": "!=",
-                    "a": {
-                      "get": "var",
-                      "var": "World.Missing"
-                    },
-                    "b": {
-                      "get": "prop",
-                      "entity": "Child",
-                      "prop": "Title"
-                    }
-                  },
-                  "b": {
-                    "get": "rel",
-                    "rel": "Character->Faction.Loyal",
-                    "from": "Child",
-                    "to": "Watch"
-                  }
+                "b": {
+                  "lit": false
                 }
               },
-              {
-                "set": {
-                  "get": "var",
-                  "var": "World.Label"
+              "b": {
+                "op": "-",
+                "a": {
+                  "get": "prop",
+                  "entity": "Fisher",
+                  "prop": "Brave"
                 },
-                "op": "+=",
-                "value": {
-                  "op": "phase>",
-                  "a": {
-                    "lit": "Watch"
-                  },
-                  "b": {
-                    "lit": "Dawn"
-                  }
+                "b": {
+                  "lit": "Night"
                 }
               }
-            ]
+            }
           },
-          "type": "call",
-          "flow": "missing-flow",
-          "next": [
-            "f0n12-bd25043f",
-            "f0n1-d07efbe4"
-          ]
-        },
-        "f0n8-0fa1bd66": {
-          "id": "f0n8-0fa1bd66",
-          "effects": {
-            "do": [
-              {
-                "pass": 1500
-              }
-            ]
-          },
+          "takes": 0.06666666666666667,
           "type": "dialogue",
-          "speaker": "Fisher",
-          "text": "Line f0n8-0fa1bd66{Trust}.{Count}.",
+          "speaker": "Stranger",
+          "text": "Line f0n7-e2b2fd4b{Ally}. { Count } open { here",
           "vars": {
-            "Trust": {
-              "get": "rel",
-              "rel": "Character->Character.Trust",
-              "from": "Stranger",
-              "to": "Stranger"
+            "Ally": {
+              "get": "prop",
+              "entity": "Keeper",
+              "prop": "Ally"
             },
             "Count": {
               "get": "var",
@@ -834,62 +740,87 @@
             }
           },
           "next": [
-            "f0n5-58eb743d",
-            "f0n11-1267150e",
-            "f0n5-58eb743d"
+            "f0n0-084ab88f",
+            "f0n4-e3ddeb77"
           ]
         },
-        "f0n9-f8337f58": {
-          "id": "f0n9-f8337f58",
-          "count": true,
-          "requires": {
-            "expr": {
-              "get": "var",
-              "var": "World.Count"
-            }
-          },
-          "type": "instruction",
-          "instruction": {
+        "f0n8-0fa1bd66": {
+          "id": "f0n8-0fa1bd66",
+          "effects": {
             "do": [
               {
                 "set": {
-                  "get": "prop",
-                  "entity": "Stranger",
-                  "prop": "Mood"
+                  "get": "rel",
+                  "rel": "Character->Character.Trust",
+                  "from": "Keeper",
+                  "to": "Stranger"
                 },
                 "op": "=",
                 "value": {
-                  "op": "and",
+                  "get": "var",
+                  "var": "World.Label"
+                }
+              },
+              {
+                "set": {
+                  "get": "rel",
+                  "rel": "Character->Character.Trust",
+                  "from": "Child",
+                  "to": "Child"
+                },
+                "op": "=",
+                "value": {
+                  "op": "phase<",
                   "a": {
-                    "neg": {
-                      "get": "prop",
-                      "entity": "Fisher",
-                      "prop": "Title"
+                    "op": "*",
+                    "a": {
+                      "lit": "Calm"
+                    },
+                    "b": {
+                      "lit": ""
                     }
                   },
                   "b": {
-                    "get": "var",
-                    "var": "World.Count"
+                    "lit": "Day"
                   }
                 }
               }
             ]
           },
-          "next": [
-            "f0n3-613c3ff8",
-            "f0n9-f8337f58",
-            "f0n0-084ab88f"
-          ]
-        },
-        "f0n10-2f87559a": {
-          "id": "f0n10-2f87559a",
+          "takes": 700,
           "type": "dialogue",
-          "speaker": "Child",
-          "text": "Line f0n10-2f87559a {Text}{Storm}. { Phase }",
-          "line": "L_f0n10-2f87559a",
+          "speaker": "Fisher",
+          "text": "Line f0n8-0fa1bd66{Clock}.{Ratio}. {Storm}",
+          "menuText": "Choose f0n8-0fa1bd66{Phase}. { Count }{Ally}.",
+          "line": "L_f0n8-0fa1bd66",
+          "menuLine": "L_f0n8-0fa1bd66_M",
           "vars": {
-            "Text": {
-              "lit": ""
+            "Clock": {
+              "op": "+",
+              "a": {
+                "get": "time",
+                "field": "hour"
+              },
+              "b": {
+                "op": "/",
+                "a": {
+                  "get": "time",
+                  "field": "minute"
+                },
+                "b": {
+                  "lit": 60
+                }
+              }
+            },
+            "Ratio": {
+              "op": "*",
+              "a": {
+                "get": "var",
+                "var": "World.Ratio"
+              },
+              "b": {
+                "lit": 1
+              }
             },
             "Storm": {
               "get": "var",
@@ -898,51 +829,251 @@
             "Phase": {
               "get": "time",
               "field": "phase"
+            },
+            "Count": {
+              "get": "var",
+              "var": "World.Count"
+            },
+            "Ally": {
+              "get": "prop",
+              "entity": "Child",
+              "prop": "Ally"
             }
           },
           "next": [
-            "f0n6-a04d1365",
             "f0n12-bd25043f",
-            "f0n10-2f87559a"
+            "f0n1-d07efbe4",
+            "f0n5-58eb743d"
           ]
+        },
+        "f0n9-f8337f58": {
+          "id": "f0n9-f8337f58",
+          "count": true,
+          "requires": {
+            "expr": {
+              "neg": {
+                "op": "/",
+                "a": {
+                  "lit": null
+                },
+                "b": {
+                  "get": "rel",
+                  "rel": "Character->Character.Trust",
+                  "from": "Stranger",
+                  "to": "$self"
+                }
+              }
+            }
+          },
+          "type": "call",
+          "flow": "flow-3-1dc5ccc9",
+          "next": [
+            "f0n1-d07efbe4",
+            "f0n10-2f87559a",
+            "f0n3-613c3ff8"
+          ]
+        },
+        "f0n10-2f87559a": {
+          "id": "f0n10-2f87559a",
+          "requires": {
+            "expr": {
+              "op": "phase>",
+              "a": {
+                "get": "time",
+                "field": "phase"
+              },
+              "b": {
+                "lit": null
+              }
+            }
+          },
+          "effects": {
+            "do": [
+              {
+                "set": {
+                  "get": "rel",
+                  "rel": "Character->Character.Trust",
+                  "from": "Fisher",
+                  "to": "Keeper"
+                },
+                "op": "+=",
+                "value": {
+                  "op": "-",
+                  "a": {
+                    "op": ">",
+                    "a": {
+                      "get": "time",
+                      "field": "hour"
+                    },
+                    "b": {
+                      "get": "prop",
+                      "entity": "Keeper",
+                      "prop": "Energy"
+                    }
+                  },
+                  "b": {
+                    "get": "var",
+                    "var": "World.Count"
+                  }
+                }
+              },
+              {
+                "set": {
+                  "get": "var",
+                  "var": "World.Storm"
+                },
+                "op": "=",
+                "value": {
+                  "op": "<=",
+                  "a": {
+                    "op": ">",
+                    "a": {
+                      "lit": "Calm"
+                    },
+                    "b": {
+                      "get": "time",
+                      "field": "minute"
+                    }
+                  },
+                  "b": {
+                    "lit": "Dusk"
+                  }
+                }
+              }
+            ]
+          },
+          "takes": 90,
+          "type": "condition",
+          "condition": {
+            "expr": {
+              "op": "<",
+              "a": {
+                "op": "+",
+                "a": {
+                  "op": "*",
+                  "a": {
+                    "get": "prop",
+                    "entity": "Child",
+                    "prop": "Mood"
+                  },
+                  "b": {
+                    "get": "time",
+                    "field": "day"
+                  }
+                },
+                "b": {
+                  "neg": {
+                    "lit": "3"
+                  }
+                }
+              },
+              "b": {
+                "op": ">=",
+                "a": {
+                  "op": "/",
+                  "a": {
+                    "get": "prop",
+                    "entity": "Watch",
+                    "prop": "Power"
+                  },
+                  "b": {
+                    "get": "prop",
+                    "entity": "Keeper",
+                    "prop": "Title"
+                  }
+                },
+                "b": {
+                  "op": ">",
+                  "a": {
+                    "lit": false
+                  },
+                  "b": {
+                    "lit": 0.1
+                  }
+                }
+              }
+            }
+          },
+          "onTrue": null,
+          "onFalse": "f0n10-2f87559a"
         },
         "f0n11-1267150e": {
           "id": "f0n11-1267150e",
-          "type": "dialogue",
-          "speaker": "Fisher",
-          "text": "Line f0n11-1267150e{Trust}.",
-          "line": "L_f0n11-1267150e",
-          "vars": {
-            "Trust": {
-              "get": "rel",
-              "rel": "Character->Character.Trust",
-              "from": "Keeper",
-              "to": "Stranger"
-            }
+          "effects": {
+            "do": [
+              {
+                "set": {
+                  "get": "var",
+                  "var": "World.Storm"
+                },
+                "op": "-=",
+                "value": {
+                  "get": "prop",
+                  "entity": "Child",
+                  "prop": "Mood"
+                }
+              }
+            ]
           },
+          "takes": 3,
+          "type": "hub",
+          "label": "Hub f0n11-1267150e",
           "next": [
-            "f0n11-1267150e",
-            "f0n8-0fa1bd66",
-            "f0n9-f8337f58"
-          ]
+            "f0n10-2f87559a",
+            "f0n6-a04d1365"
+          ],
+          "ask": true
         },
         "f0n12-bd25043f": {
           "id": "f0n12-bd25043f",
           "count": true,
-          "takes": 3,
-          "type": "dialogue",
-          "speaker": "Stranger",
-          "text": "Line f0n12-bd25043f {Nope}",
-          "menuText": "Choose f0n12-bd25043f { Missing }",
-          "line": "L_f0n12-bd25043f",
-          "menuLine": "L_f0n12-bd25043f_M",
-          "vars": {
-            "Missing": {
-              "get": "var",
-              "var": "World.Missing"
+          "requires": {
+            "expr": {
+              "op": "==",
+              "a": {
+                "lit": 2
+              },
+              "b": {
+                "op": "phase>=",
+                "a": {
+                  "get": "time",
+                  "field": "phase"
+                },
+                "b": {
+                  "lit": "Nope"
+                }
+              }
             }
           },
-          "next": []
+          "type": "dialogue",
+          "speaker": null,
+          "text": "Line f0n12-bd25043f {Ratio}{Third}.",
+          "line": "L_f0n12-bd25043f",
+          "vars": {
+            "Ratio": {
+              "op": "*",
+              "a": {
+                "get": "var",
+                "var": "World.Ratio"
+              },
+              "b": {
+                "lit": 0.3333
+              }
+            },
+            "Third": {
+              "op": "/",
+              "a": {
+                "get": "var",
+                "var": "World.Count"
+              },
+              "b": {
+                "lit": 3
+              }
+            }
+          },
+          "next": [
+            "f0n5-58eb743d"
+          ]
         }
       }
     },
@@ -951,166 +1082,23 @@
       "name": "Flow 1",
       "start": [
         "f1n0-83141e5e",
-        "f1n2-29099ee3"
+        "f1n4-b412d681"
       ],
       "nodes": {
         "f1n0-83141e5e": {
           "id": "f1n0-83141e5e",
-          "effects": {
-            "do": [
-              {
-                "set": {
-                  "get": "prop",
-                  "entity": "Stranger",
-                  "prop": "Mood"
-                },
-                "op": "+=",
-                "value": {
-                  "op": ">",
-                  "a": {
-                    "op": "and",
-                    "a": {
-                      "lit": false
-                    },
-                    "b": {
-                      "get": "prop",
-                      "entity": "Guild",
-                      "prop": "Power"
-                    }
-                  },
-                  "b": {
-                    "op": "<=",
-                    "a": {
-                      "get": "prop",
-                      "entity": "Child",
-                      "prop": "Title"
-                    },
-                    "b": {
-                      "get": "rel",
-                      "rel": "Character->Faction.Loyal",
-                      "from": "Fisher",
-                      "to": "Guild"
-                    }
-                  }
-                }
-              }
-            ]
-          },
-          "type": "dialogue",
-          "speaker": "Child",
-          "text": "Line f1n0-83141e5e",
-          "line": "L_f1n0-83141e5e",
-          "next": [
-            "f1n7-3e4c65c4",
-            "f1n4-b412d681",
-            "f1n10-3b9a2286"
-          ]
-        },
-        "f1n1-84673b3b": {
-          "id": "f1n1-84673b3b",
-          "count": true,
-          "type": "jump",
-          "jumpTo": "f1n5-17d2bfa5"
-        },
-        "f1n2-29099ee3": {
-          "id": "f1n2-29099ee3",
-          "takes": 3,
-          "type": "dialogue",
-          "speaker": "Child",
-          "text": "Line f1n2-29099ee3 {Nope}",
-          "line": "L_f1n2-29099ee3",
-          "next": []
-        },
-        "f1n3-ef03842c": {
-          "id": "f1n3-ef03842c",
-          "effects": {
-            "do": [
-              {
-                "set": {
-                  "get": "prop",
-                  "entity": "Guild",
-                  "prop": "Power"
-                },
-                "op": "=",
-                "value": {
-                  "neg": {
-                    "get": "var",
-                    "var": "World.Storm"
-                  }
-                }
-              }
-            ]
-          },
-          "takes": 3,
-          "type": "condition",
-          "condition": {
-            "expr": {
-              "op": "and",
-              "a": {
-                "op": "and",
-                "a": {
-                  "op": "phase>",
-                  "a": {
-                    "get": "time",
-                    "field": "phase"
-                  },
-                  "b": {
-                    "lit": "Dawn"
-                  }
-                },
-                "b": {
-                  "lit": "0x1f"
-                }
-              },
-              "b": {
-                "op": ">=",
-                "a": {
-                  "op": "or",
-                  "a": {
-                    "lit": 0.1
-                  },
-                  "b": {
-                    "get": "var",
-                    "var": "World.Count"
-                  }
-                },
-                "b": {
-                  "chance": 70
-                }
-              }
-            }
-          },
-          "onTrue": "f1n8-9af025bd",
-          "onFalse": "f1n8-9af025bd"
-        },
-        "f1n4-b412d681": {
-          "id": "f1n4-b412d681",
-          "count": true,
-          "requires": {
-            "expr": {
-              "lit": 1
-            }
-          },
-          "type": "call",
-          "flow": "flow-1-4842d52e",
-          "next": [
-            "f1n8-9af025bd"
-          ]
-        },
-        "f1n5-17d2bfa5": {
-          "id": "f1n5-17d2bfa5",
           "count": true,
           "type": "dialogue",
           "speaker": "Keeper",
-          "text": "Line f1n5-17d2bfa5",
+          "text": "Line f1n0-83141e5e",
           "next": [
             "f1n0-83141e5e",
             "f1n2-29099ee3",
             "f1n0-83141e5e"
           ]
         },
-        "f1n6-d7824bef": {
-          "id": "f1n6-d7824bef",
+        "f1n1-84673b3b": {
+          "id": "f1n1-84673b3b",
           "type": "condition",
           "condition": {
             "expr": {
@@ -1120,8 +1108,8 @@
           "onTrue": "f1n1-84673b3b",
           "onFalse": "f1n2-29099ee3"
         },
-        "f1n7-3e4c65c4": {
-          "id": "f1n7-3e4c65c4",
+        "f1n2-29099ee3": {
+          "id": "f1n2-29099ee3",
           "count": true,
           "requires": {
             "expr": {
@@ -1130,7 +1118,7 @@
                 "op": "<",
                 "a": {
                   "get": "visit",
-                  "node": "f1n7-3e4c65c4"
+                  "node": "f1n2-29099ee3"
                 },
                 "b": {
                   "lit": 2
@@ -1150,79 +1138,315 @@
           },
           "takes": 700,
           "type": "hub",
-          "label": "Hub f1n7-3e4c65c4",
-          "next": []
+          "label": "Hub f1n2-29099ee3",
+          "next": [],
+          "ask": true,
+          "fallback": "f1n2-29099ee3"
         },
-        "f1n8-9af025bd": {
-          "id": "f1n8-9af025bd",
+        "f1n3-ef03842c": {
+          "id": "f1n3-ef03842c",
+          "takes": 90,
+          "type": "hub",
+          "label": "Hub f1n3-ef03842c",
+          "next": [
+            "f1n8-9af025bd",
+            "f1n3-ef03842c",
+            "f1n7-3e4c65c4"
+          ]
+        },
+        "f1n4-b412d681": {
+          "id": "f1n4-b412d681",
+          "count": true,
+          "effects": {
+            "do": [
+              {
+                "set": {
+                  "get": "prop",
+                  "entity": "Keeper",
+                  "prop": "Title"
+                },
+                "op": "-=",
+                "value": {
+                  "op": "phase>=",
+                  "a": {
+                    "chance": 66
+                  },
+                  "b": {
+                    "lit": "Dawn"
+                  }
+                }
+              },
+              {
+                "set": {
+                  "get": "var",
+                  "var": "World.Ratio"
+                },
+                "op": "=",
+                "value": {
+                  "lit": "abc"
+                }
+              }
+            ]
+          },
+          "takes": 90,
+          "type": "dialogue",
+          "speaker": "Fisher",
+          "text": "Line f1n4-b412d681 { Mood }",
+          "menuText": "Choose f1n4-b412d681 { Trust } { Phase }{Ally}.",
+          "vars": {
+            "Mood": {
+              "get": "prop",
+              "entity": "Fisher",
+              "prop": "Mood"
+            },
+            "Trust": {
+              "get": "rel",
+              "rel": "Character->Character.Trust",
+              "from": "Child",
+              "to": "Keeper"
+            },
+            "Phase": {
+              "get": "time",
+              "field": "phase"
+            },
+            "Ally": {
+              "get": "prop",
+              "entity": "Child",
+              "prop": "Ally"
+            }
+          },
+          "next": [
+            "f1n6-d7824bef",
+            "f1n6-d7824bef",
+            "f1n1-84673b3b"
+          ]
+        },
+        "f1n5-17d2bfa5": {
+          "id": "f1n5-17d2bfa5",
           "effects": {
             "do": [
               {
                 "set": {
                   "get": "prop",
                   "entity": "Fisher",
-                  "prop": "Title"
+                  "prop": "Energy"
+                },
+                "op": "+=",
+                "value": {
+                  "get": "var",
+                  "var": "World.Storm"
+                }
+              },
+              {
+                "set": {
+                  "get": "var",
+                  "var": "World.Missing"
                 },
                 "op": "=",
                 "value": {
-                  "op": "+",
+                  "op": "-",
                   "a": {
-                    "get": "var",
-                    "var": "World.Count"
-                  },
-                  "b": {
-                    "op": "-",
+                    "op": "phase<",
                     "a": {
                       "get": "time",
                       "field": "phase"
                     },
                     "b": {
-                      "get": "prop",
-                      "entity": "Keeper",
-                      "prop": "Mood"
+                      "lit": "Dawn"
+                    }
+                  },
+                  "b": {
+                    "get": "var",
+                    "var": "World.Count"
+                  }
+                }
+              }
+            ]
+          },
+          "type": "dialogue",
+          "speaker": "Stranger",
+          "text": "Line f1n5-17d2bfa5",
+          "line": "L_f1n5-17d2bfa5",
+          "next": []
+        },
+        "f1n6-d7824bef": {
+          "id": "f1n6-d7824bef",
+          "requires": {
+            "expr": {
+              "op": "!=",
+              "a": {
+                "get": "rel",
+                "rel": "Character->Faction.Loyal",
+                "from": "$self",
+                "to": "Guild"
+              },
+              "b": {
+                "not": {
+                  "lit": 0
+                }
+              }
+            }
+          },
+          "takes": 20,
+          "type": "instruction",
+          "instruction": {
+            "do": [
+              {
+                "advanceTo": "Night"
+              },
+              {
+                "set": {
+                  "get": "rel",
+                  "rel": "Character->Faction.Loyal",
+                  "from": "Fisher",
+                  "to": "Guild"
+                },
+                "op": "-=",
+                "value": {
+                  "get": "var",
+                  "var": "World.Storm"
+                }
+              },
+              {
+                "set": {
+                  "get": "var",
+                  "var": "World.Storm"
+                },
+                "op": "-=",
+                "value": {
+                  "op": ">",
+                  "a": {
+                    "lit": "Dusk"
+                  },
+                  "b": {
+                    "op": "<",
+                    "a": {
+                      "get": "visit",
+                      "node": "f0n6-a04d1365"
+                    },
+                    "b": {
+                      "lit": null
                     }
                   }
                 }
               }
             ]
           },
-          "type": "call",
-          "flow": "flow-0-94d5f9e1",
+          "next": []
+        },
+        "f1n7-3e4c65c4": {
+          "id": "f1n7-3e4c65c4",
+          "count": true,
+          "requires": {
+            "expr": {
+              "op": "<",
+              "a": {
+                "lit": "Calm"
+              },
+              "b": {
+                "op": "<",
+                "a": {
+                  "lit": "Night"
+                },
+                "b": {
+                  "lit": "Calm"
+                }
+              }
+            }
+          },
+          "type": "dialogue",
+          "speaker": "Stranger",
+          "text": "Line f1n7-3e4c65c4 {Label}",
+          "vars": {
+            "Label": {
+              "get": "var",
+              "var": "World.Label"
+            }
+          },
+          "next": [
+            "f1n9-d367339e",
+            "f1n9-d367339e"
+          ]
+        },
+        "f1n8-9af025bd": {
+          "id": "f1n8-9af025bd",
+          "type": "dialogue",
+          "speaker": null,
+          "text": "Line f1n8-9af025bd {Count} { Text } {}",
+          "line": "L_f1n8-9af025bd",
+          "vars": {
+            "Count": {
+              "get": "var",
+              "var": "World.Count"
+            },
+            "Text": {
+              "lit": "{braces}"
+            }
+          },
           "next": [
             "f1n10-3b9a2286"
           ]
         },
         "f1n9-d367339e": {
           "id": "f1n9-d367339e",
+          "count": true,
           "effects": {
             "do": [
               {
                 "set": {
-                  "get": "var",
-                  "var": "World.Count"
+                  "get": "prop",
+                  "entity": "Stranger",
+                  "prop": "Mood"
                 },
                 "op": "+=",
                 "value": {
-                  "op": "and",
+                  "op": "or",
                   "a": {
-                    "op": "*",
+                    "neg": {
+                      "lit": "3"
+                    }
+                  },
+                  "b": {
+                    "op": ">=",
                     "a": {
+                      "get": "time",
+                      "field": "phase"
+                    },
+                    "b": {
                       "get": "var",
-                      "var": "World.Storm"
+                      "var": "World.Ratio"
+                    }
+                  }
+                }
+              },
+              {
+                "set": {
+                  "get": "prop",
+                  "entity": "Stranger",
+                  "prop": "Mood"
+                },
+                "op": "-=",
+                "value": {
+                  "op": ">",
+                  "a": {
+                    "op": "phase>",
+                    "a": {
+                      "get": "time",
+                      "field": "phase"
                     },
                     "b": {
                       "lit": null
                     }
                   },
                   "b": {
-                    "op": "or",
+                    "op": "and",
                     "a": {
-                      "lit": null
+                      "get": "prop",
+                      "entity": "Watch",
+                      "prop": "Power"
                     },
                     "b": {
-                      "get": "prop",
-                      "entity": "Guild",
-                      "prop": "Power"
+                      "lit": "0x1f"
                     }
                   }
                 }
@@ -1230,55 +1454,74 @@
             ]
           },
           "type": "dialogue",
-          "speaker": null,
-          "text": "Line f1n9-d367339e",
+          "speaker": "Child",
+          "text": "Line f1n9-d367339e { Count } { Storm }{Label}.",
           "line": "L_f1n9-d367339e",
+          "vars": {
+            "Count": {
+              "get": "var",
+              "var": "World.Count"
+            },
+            "Storm": {
+              "get": "var",
+              "var": "World.Storm"
+            },
+            "Label": {
+              "get": "var",
+              "var": "World.Label"
+            }
+          },
           "next": []
         },
         "f1n10-3b9a2286": {
           "id": "f1n10-3b9a2286",
-          "count": true,
-          "requires": {
-            "expr": {
-              "op": "and",
-              "a": {
-                "op": "<",
-                "a": {
-                  "get": "visit",
-                  "node": "f1n10-3b9a2286"
-                },
-                "b": {
-                  "lit": 2
-                }
-              },
-              "b": {
-                "op": "<",
-                "a": {
-                  "chance": 14
-                },
-                "b": {
-                  "op": "!=",
-                  "a": {
-                    "lit": "3"
-                  },
-                  "b": {
-                    "get": "var",
-                    "var": "World.Label"
-                  }
-                }
-              }
-            }
-          },
-          "effects": {
+          "type": "instruction",
+          "instruction": {
             "do": [
               {
                 "set": {
-                  "get": "var",
-                  "var": "World.Label"
+                  "get": "rel",
+                  "rel": "Character->Faction.Loyal",
+                  "from": "Keeper",
+                  "to": "Guild"
                 },
-                "op": "+=",
+                "op": "=",
                 "value": {
-                  "lit": null
+                  "op": "==",
+                  "a": {
+                    "op": "!=",
+                    "a": {
+                      "get": "rel",
+                      "rel": "Character->Character.Trust",
+                      "from": "Fisher",
+                      "to": "Stranger"
+                    },
+                    "b": {
+                      "get": "var",
+                      "var": "World.Count"
+                    }
+                  },
+                  "b": {
+                    "op": "*",
+                    "a": {
+                      "lit": 0.5
+                    },
+                    "b": {
+                      "lit": "Night"
+                    }
+                  }
+                }
+              },
+              {
+                "set": {
+                  "get": "var",
+                  "var": "World.Ratio"
+                },
+                "op": "-=",
+                "value": {
+                  "get": "prop",
+                  "entity": "Child",
+                  "prop": "Mood"
                 }
               },
               {
@@ -1288,52 +1531,19 @@
                 },
                 "op": "-=",
                 "value": {
-                  "op": ">",
+                  "op": "phase<=",
                   "a": {
-                    "lit": "0x1f"
+                    "get": "time",
+                    "field": "phase"
                   },
                   "b": {
-                    "op": "/",
-                    "a": {
-                      "lit": "3"
-                    },
-                    "b": {
-                      "get": "time",
-                      "field": "phase"
-                    }
+                    "lit": "Dusk"
                   }
                 }
               }
             ]
           },
-          "takes": 0.06666666666666667,
-          "type": "dialogue",
-          "speaker": "Keeper",
-          "text": "Line f1n10-3b9a2286 {Clock}",
-          "line": "L_f1n10-3b9a2286",
-          "vars": {
-            "Clock": {
-              "op": "+",
-              "a": {
-                "get": "time",
-                "field": "hour"
-              },
-              "b": {
-                "op": "/",
-                "a": {
-                  "get": "time",
-                  "field": "minute"
-                },
-                "b": {
-                  "lit": 60
-                }
-              }
-            }
-          },
-          "next": [
-            "f1n4-b412d681",
-            "f1n2-29099ee3"
-          ]
+          "next": []
         }
       }
     },
@@ -1342,24 +1552,383 @@
       "name": "Flow 2",
       "start": [
         "f2n0-ffc0b9a5",
-        "f2n11-7017adc1"
+        "f2n10-0e2e834d"
       ],
       "nodes": {
         "f2n0-ffc0b9a5": {
           "id": "f2n0-ffc0b9a5",
+          "count": true,
+          "requires": {
+            "expr": {
+              "op": "==",
+              "a": {
+                "get": "visit",
+                "node": "f2n0-ffc0b9a5"
+              },
+              "b": {
+                "lit": 0
+              }
+            }
+          },
+          "takes": 0.1,
+          "type": "dialogue",
+          "speaker": "Keeper",
+          "text": "Line f2n0-ffc0b9a5{Trust}.{Missing}. { Mood } {Nope}",
+          "line": "L_f2n0-ffc0b9a5",
+          "vars": {
+            "Trust": {
+              "get": "rel",
+              "rel": "Character->Character.Trust",
+              "from": "Keeper",
+              "to": "Stranger"
+            },
+            "Missing": {
+              "get": "var",
+              "var": "World.Missing"
+            },
+            "Mood": {
+              "get": "prop",
+              "entity": "Fisher",
+              "prop": "Mood"
+            }
+          },
+          "next": [
+            "f2n2-07bfb710",
+            "f2n2-07bfb710",
+            "f2n9-21499c8f"
+          ]
+        },
+        "f2n1-4ccc1f63": {
+          "id": "f2n1-4ccc1f63",
+          "takes": 3,
+          "type": "instruction",
+          "instruction": {
+            "do": [
+              {
+                "set": {
+                  "get": "var",
+                  "var": "World.Count"
+                },
+                "op": "-=",
+                "value": {
+                  "op": "<",
+                  "a": {
+                    "get": "var",
+                    "var": "World.Storm"
+                  },
+                  "b": {
+                    "get": "time",
+                    "field": "phase"
+                  }
+                }
+              },
+              {
+                "set": {
+                  "get": "rel",
+                  "rel": "Character->Character.Trust",
+                  "from": "$self",
+                  "to": "$self"
+                },
+                "op": "=",
+                "value": {
+                  "lit": 0.1
+                }
+              }
+            ]
+          },
+          "next": [
+            "f2n6-51ae19f5"
+          ]
+        },
+        "f2n2-07bfb710": {
+          "id": "f2n2-07bfb710",
+          "requires": {
+            "expr": {
+              "op": "phase<=",
+              "a": {
+                "get": "time",
+                "field": "phase"
+              },
+              "b": {
+                "lit": "Dusk"
+              }
+            }
+          },
+          "type": "dialogue",
+          "speaker": "Keeper",
+          "text": "Line f2n2-07bfb710 {{literal}}",
+          "next": [
+            "f2n2-07bfb710",
+            "f2n7-2cd38ea1",
+            "f2n10-0e2e834d"
+          ]
+        },
+        "f2n3-ef66eb1b": {
+          "id": "f2n3-ef66eb1b",
+          "count": true,
+          "requires": {
+            "expr": {
+              "op": "==",
+              "a": {
+                "get": "visit",
+                "node": "f2n3-ef66eb1b"
+              },
+              "b": {
+                "lit": 0
+              }
+            }
+          },
+          "type": "hub",
+          "label": "Hub f2n3-ef66eb1b",
+          "next": [
+            "f2n3-ef66eb1b",
+            "f2n8-ad20967a"
+          ]
+        },
+        "f2n4-675a142a": {
+          "id": "f2n4-675a142a",
+          "type": "dialogue",
+          "speaker": "Fisher",
+          "text": "Line f2n4-675a142a",
+          "line": "L_f2n4-675a142a",
+          "next": [
+            "f2n5-ac021b37"
+          ]
+        },
+        "f2n5-ac021b37": {
+          "id": "f2n5-ac021b37",
+          "count": true,
           "effects": {
             "do": [
               {
                 "set": {
-                  "get": "rel",
-                  "rel": "Character->Faction.Loyal",
-                  "from": "Child",
-                  "to": "Watch"
+                  "get": "var",
+                  "var": "World.Missing"
+                },
+                "op": "-=",
+                "value": {
+                  "lit": ""
+                }
+              }
+            ]
+          },
+          "takes": 240.5,
+          "type": "condition",
+          "condition": {
+            "expr": {
+              "op": "==",
+              "a": {
+                "neg": {
+                  "get": "time",
+                  "field": "minute"
+                }
+              },
+              "b": {
+                "op": "/",
+                "a": {
+                  "op": "/",
+                  "a": {
+                    "get": "rel",
+                    "rel": "Character->Character.Trust",
+                    "from": "Keeper",
+                    "to": "Fisher"
+                  },
+                  "b": {
+                    "get": "time",
+                    "field": "hour"
+                  }
+                },
+                "b": {
+                  "get": "var",
+                  "var": "World.Storm"
+                }
+              }
+            }
+          },
+          "onTrue": "f2n8-ad20967a",
+          "onFalse": "f2n3-ef66eb1b"
+        },
+        "f2n6-51ae19f5": {
+          "id": "f2n6-51ae19f5",
+          "type": "condition",
+          "condition": {
+            "expr": {
+              "op": "!=",
+              "a": {
+                "lit": ""
+              },
+              "b": {
+                "get": "visit",
+                "node": "f3n7-1a85003b"
+              }
+            }
+          },
+          "onTrue": "f2n8-ad20967a",
+          "onFalse": "f2n1-4ccc1f63"
+        },
+        "f2n7-2cd38ea1": {
+          "id": "f2n7-2cd38ea1",
+          "effects": {
+            "do": [
+              {
+                "set": {
+                  "get": "prop",
+                  "entity": "Guild",
+                  "prop": "Power"
+                },
+                "op": "-=",
+                "value": {
+                  "op": "/",
+                  "a": {
+                    "op": "<",
+                    "a": {
+                      "get": "prop",
+                      "entity": "Guild",
+                      "prop": "Power"
+                    },
+                    "b": {
+                      "lit": 0.1
+                    }
+                  },
+                  "b": {
+                    "op": "!=",
+                    "a": {
+                      "lit": ""
+                    },
+                    "b": {
+                      "get": "prop",
+                      "entity": "Fisher",
+                      "prop": "Brave"
+                    }
+                  }
+                }
+              },
+              {
+                "set": {
+                  "get": "prop",
+                  "entity": "Stranger",
+                  "prop": "Mood"
+                },
+                "op": "-=",
+                "value": {
+                  "op": "<",
+                  "a": {
+                    "op": "+",
+                    "a": {
+                      "get": "var",
+                      "var": "World.Count"
+                    },
+                    "b": {
+                      "lit": 0.5
+                    }
+                  },
+                  "b": {
+                    "op": "<=",
+                    "a": {
+                      "get": "time",
+                      "field": "day"
+                    },
+                    "b": {
+                      "lit": -2
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "type": "condition",
+          "condition": {
+            "expr": {
+              "lit": "Dusk"
+            }
+          },
+          "onTrue": "f2n3-ef66eb1b",
+          "onFalse": "f2n9-21499c8f"
+        },
+        "f2n8-ad20967a": {
+          "id": "f2n8-ad20967a",
+          "count": true,
+          "takes": 20,
+          "type": "condition",
+          "condition": {
+            "expr": {
+              "op": "==",
+              "a": {
+                "chance": 82
+              },
+              "b": {
+                "get": "var",
+                "var": "World.Label"
+              }
+            }
+          },
+          "onTrue": null,
+          "onFalse": "f2n2-07bfb710"
+        },
+        "f2n9-21499c8f": {
+          "id": "f2n9-21499c8f",
+          "count": true,
+          "type": "dialogue",
+          "speaker": "Child",
+          "text": "Line f2n9-21499c8f { Missing } {{literal}}",
+          "line": "L_f2n9-21499c8f",
+          "vars": {
+            "Missing": {
+              "get": "var",
+              "var": "World.Missing"
+            }
+          },
+          "next": []
+        },
+        "f2n10-0e2e834d": {
+          "id": "f2n10-0e2e834d",
+          "type": "instruction",
+          "instruction": {
+            "do": [
+              {
+                "set": {
+                  "get": "prop",
+                  "entity": "Fisher",
+                  "prop": "Energy"
+                },
+                "op": "=",
+                "value": {
+                  "neg": {
+                    "lit": 0
+                  }
+                }
+              },
+              {
+                "set": {
+                  "get": "var",
+                  "var": "World.Missing"
                 },
                 "op": "+=",
                 "value": {
-                  "get": "var",
-                  "var": "World.Missing"
+                  "op": "*",
+                  "a": {
+                    "op": "<",
+                    "a": {
+                      "lit": -2
+                    },
+                    "b": {
+                      "get": "prop",
+                      "entity": "Stranger",
+                      "prop": "Title"
+                    }
+                  },
+                  "b": {
+                    "op": "<=",
+                    "a": {
+                      "get": "rel",
+                      "rel": "Character->Faction.Loyal",
+                      "from": "$self",
+                      "to": "Guild"
+                    },
+                    "b": {
+                      "lit": null
+                    }
+                  }
                 }
               },
               {
@@ -1369,324 +1938,14 @@
                 },
                 "op": "=",
                 "value": {
-                  "op": ">=",
-                  "a": {
-                    "op": "*",
-                    "a": {
-                      "get": "prop",
-                      "entity": "Guild",
-                      "prop": "Power"
-                    },
-                    "b": {
-                      "lit": "Calm"
-                    }
-                  },
-                  "b": {
-                    "op": "-",
-                    "a": {
-                      "lit": "0x1f"
-                    },
-                    "b": {
-                      "get": "var",
-                      "var": "World.Ratio"
-                    }
-                  }
-                }
-              }
-            ]
-          },
-          "takes": 0.1,
-          "type": "instruction",
-          "instruction": {
-            "do": [
-              {
-                "set": {
-                  "get": "var",
-                  "var": "World.Count"
-                },
-                "op": "=",
-                "value": {
                   "op": "phase<",
                   "a": {
-                    "neg": {
-                      "get": "prop",
-                      "entity": "Watch",
-                      "prop": "Power"
-                    }
-                  },
-                  "b": {
-                    "lit": "Dusk"
-                  }
-                }
-              },
-              {
-                "set": {
-                  "get": "rel",
-                  "rel": "Character->Character.Trust",
-                  "from": "Fisher",
-                  "to": "Stranger"
-                },
-                "op": "-=",
-                "value": {
-                  "op": ">=",
-                  "a": {
-                    "op": "phase>=",
+                    "op": "<",
                     "a": {
-                      "get": "var",
-                      "var": "World.Label"
+                      "lit": 2
                     },
                     "b": {
-                      "lit": "Dawn"
-                    }
-                  },
-                  "b": {
-                    "roll": [
-                      -1,
-                      5
-                    ]
-                  }
-                }
-              }
-            ]
-          },
-          "next": []
-        },
-        "f2n1-4ccc1f63": {
-          "id": "f2n1-4ccc1f63",
-          "requires": {
-            "expr": {
-              "get": "prop",
-              "entity": "Stranger",
-              "prop": "Title"
-            }
-          },
-          "type": "dialogue",
-          "speaker": null,
-          "text": "Line f2n1-4ccc1f63 { Text }",
-          "line": "L_f2n1-4ccc1f63",
-          "vars": {
-            "Text": {
-              "lit": ""
-            }
-          },
-          "next": [
-            "f2n4-675a142a"
-          ]
-        },
-        "f2n2-07bfb710": {
-          "id": "f2n2-07bfb710",
-          "effects": {
-            "do": [
-              {
-                "set": {
-                  "get": "rel",
-                  "rel": "Character->Faction.Loyal",
-                  "from": "Child",
-                  "to": "Guild"
-                },
-                "op": "+=",
-                "value": {
-                  "op": "or",
-                  "a": {
-                    "op": "*",
-                    "a": {
-                      "get": "time",
-                      "field": "hour"
-                    },
-                    "b": {
-                      "get": "time",
-                      "field": "day"
-                    }
-                  },
-                  "b": {
-                    "op": "*",
-                    "a": {
-                      "get": "rel",
-                      "rel": "Character->Character.Trust",
-                      "from": "Child",
-                      "to": "$self"
-                    },
-                    "b": {
-                      "lit": " 4 "
-                    }
-                  }
-                }
-              },
-              {
-                "set": {
-                  "get": "rel",
-                  "rel": "Character->Character.Trust",
-                  "from": "Keeper",
-                  "to": "Fisher"
-                },
-                "op": "=",
-                "value": {
-                  "op": "phase<",
-                  "a": {
-                    "get": "time",
-                    "field": "phase"
-                  },
-                  "b": {
-                    "lit": "Night"
-                  }
-                }
-              }
-            ]
-          },
-          "type": "dialogue",
-          "speaker": "Keeper",
-          "text": "Line f2n2-07bfb710 { Phase } { Third } {Nope}",
-          "line": "L_f2n2-07bfb710",
-          "vars": {
-            "Phase": {
-              "get": "time",
-              "field": "phase"
-            },
-            "Third": {
-              "op": "/",
-              "a": {
-                "get": "var",
-                "var": "World.Count"
-              },
-              "b": {
-                "lit": 3
-              }
-            }
-          },
-          "next": [
-            "f2n1-4ccc1f63",
-            "f2n1-4ccc1f63"
-          ]
-        },
-        "f2n3-ef66eb1b": {
-          "id": "f2n3-ef66eb1b",
-          "count": true,
-          "effects": {
-            "do": [
-              {
-                "set": {
-                  "get": "rel",
-                  "rel": "Character->Faction.Loyal",
-                  "from": "$self",
-                  "to": "Watch"
-                },
-                "op": "=",
-                "value": {
-                  "get": "time",
-                  "field": "hour"
-                }
-              }
-            ]
-          },
-          "takes": 700,
-          "type": "condition",
-          "condition": {
-            "expr": {
-              "op": "or",
-              "a": {
-                "op": "==",
-                "a": {
-                  "op": "*",
-                  "a": {
-                    "lit": "Dusk"
-                  },
-                  "b": {
-                    "get": "time",
-                    "field": "minute"
-                  }
-                },
-                "b": {
-                  "neg": {
-                    "get": "rel",
-                    "rel": "Character->Character.Trust",
-                    "from": "Stranger",
-                    "to": "Child"
-                  }
-                }
-              },
-              "b": {
-                "op": "*",
-                "a": {
-                  "lit": 0
-                },
-                "b": {
-                  "op": "phase<",
-                  "a": {
-                    "lit": 0
-                  },
-                  "b": {
-                    "lit": "Dusk"
-                  }
-                }
-              }
-            }
-          },
-          "onTrue": "f2n6-51ae19f5",
-          "onFalse": "f2n2-07bfb710"
-        },
-        "f2n4-675a142a": {
-          "id": "f2n4-675a142a",
-          "effects": {
-            "do": [
-              {
-                "set": {
-                  "get": "prop",
-                  "entity": "Keeper",
-                  "prop": "Brave"
-                },
-                "op": "-=",
-                "value": {
-                  "lit": true
-                }
-              }
-            ]
-          },
-          "type": "instruction",
-          "instruction": {
-            "do": [
-              {
-                "set": {
-                  "get": "prop",
-                  "entity": "Stranger",
-                  "prop": "Title"
-                },
-                "op": "-=",
-                "value": {
-                  "op": ">",
-                  "a": {
-                    "not": {
-                      "lit": "Night"
-                    }
-                  },
-                  "b": {
-                    "op": "or",
-                    "a": {
-                      "get": "prop",
-                      "entity": "Child",
-                      "prop": "Brave"
-                    },
-                    "b": {
-                      "lit": 0.5
-                    }
-                  }
-                }
-              },
-              {
-                "set": {
-                  "get": "var",
-                  "var": "World.Storm"
-                },
-                "op": "=",
-                "value": {
-                  "op": "phase>",
-                  "a": {
-                    "op": "phase>",
-                    "a": {
-                      "get": "time",
-                      "field": "phase"
-                    },
-                    "b": {
-                      "lit": "Nope"
+                      "lit": 0
                     }
                   },
                   "b": {
@@ -1697,332 +1956,61 @@
             ]
           },
           "next": [
-            "f2n5-ac021b37",
-            "f2n11-7017adc1",
-            "f2n11-7017adc1"
-          ]
-        },
-        "f2n5-ac021b37": {
-          "id": "f2n5-ac021b37",
-          "requires": {
-            "expr": {
-              "op": "phase<",
-              "a": {
-                "op": "or",
-                "a": {
-                  "lit": "Calm"
-                },
-                "b": {
-                  "lit": 10
-                }
-              },
-              "b": {
-                "lit": "Night"
-              }
-            }
-          },
-          "type": "dialogue",
-          "speaker": "Stranger",
-          "text": "Line f2n5-ac021b37 {Ratio} { Mood }",
-          "menuText": "Choose f2n5-ac021b37",
-          "line": "L_f2n5-ac021b37",
-          "menuLine": "L_f2n5-ac021b37_M",
-          "vars": {
-            "Ratio": {
-              "op": "*",
-              "a": {
-                "get": "var",
-                "var": "World.Ratio"
-              },
-              "b": {
-                "lit": 0.3333
-              }
-            },
-            "Mood": {
-              "get": "prop",
-              "entity": "Keeper",
-              "prop": "Mood"
-            }
-          },
-          "next": []
-        },
-        "f2n6-51ae19f5": {
-          "id": "f2n6-51ae19f5",
-          "type": "dialogue",
-          "speaker": "Stranger",
-          "text": "Line f2n6-51ae19f5{Ratio}.",
-          "line": "L_f2n6-51ae19f5",
-          "vars": {
-            "Ratio": {
-              "op": "*",
-              "a": {
-                "get": "var",
-                "var": "World.Ratio"
-              },
-              "b": {
-                "lit": 1
-              }
-            }
-          },
-          "next": [
-            "f2n6-51ae19f5"
-          ]
-        },
-        "f2n7-2cd38ea1": {
-          "id": "f2n7-2cd38ea1",
-          "type": "dialogue",
-          "speaker": "Child",
-          "text": "Line f2n7-2cd38ea1 stray } here",
-          "menuText": "Choose f2n7-2cd38ea1",
-          "line": "L_f2n7-2cd38ea1",
-          "menuLine": "L_f2n7-2cd38ea1_M",
-          "next": [
-            "f2n10-0e2e834d",
-            "f2n7-2cd38ea1"
-          ]
-        },
-        "f2n8-ad20967a": {
-          "id": "f2n8-ad20967a",
-          "count": true,
-          "requires": {
-            "expr": {
-              "op": "and",
-              "a": {
-                "op": "<",
-                "a": {
-                  "get": "visit",
-                  "node": "f2n8-ad20967a"
-                },
-                "b": {
-                  "lit": 2
-                }
-              },
-              "b": {
-                "op": "==",
-                "a": {
-                  "op": "<=",
-                  "a": {
-                    "get": "var",
-                    "var": "World.Ratio"
-                  },
-                  "b": {
-                    "lit": 0
-                  }
-                },
-                "b": {
-                  "op": "phase>",
-                  "a": {
-                    "get": "prop",
-                    "entity": "Fisher",
-                    "prop": "Brave"
-                  },
-                  "b": {
-                    "lit": "Night"
-                  }
-                }
-              }
-            }
-          },
-          "type": "instruction",
-          "instruction": {
-            "do": [
-              {
-                "set": {
-                  "get": "var",
-                  "var": "World.Label"
-                },
-                "op": "+=",
-                "value": {
-                  "lit": 7
-                }
-              },
-              {
-                "pass": 1500
-              }
-            ]
-          },
-          "next": [
-            "f2n6-51ae19f5"
-          ]
-        },
-        "f2n9-21499c8f": {
-          "id": "f2n9-21499c8f",
-          "requires": {
-            "expr": {
-              "op": ">",
-              "a": {
-                "op": "and",
-                "a": {
-                  "lit": 2
-                },
-                "b": {
-                  "get": "time",
-                  "field": "day"
-                }
-              },
-              "b": {
-                "op": "*",
-                "a": {
-                  "lit": "Calm"
-                },
-                "b": {
-                  "get": "time",
-                  "field": "phase"
-                }
-              }
-            }
-          },
-          "effects": {
-            "do": [
-              {
-                "set": {
-                  "get": "var",
-                  "var": "World.Ratio"
-                },
-                "op": "+=",
-                "value": {
-                  "op": "<",
-                  "a": {
-                    "get": "var",
-                    "var": "World.Missing"
-                  },
-                  "b": {
-                    "get": "prop",
-                    "entity": "Fisher",
-                    "prop": "Brave"
-                  }
-                }
-              },
-              {
-                "set": {
-                  "get": "var",
-                  "var": "World.Count"
-                },
-                "op": "=",
-                "value": {
-                  "op": "<=",
-                  "a": {
-                    "lit": "Watch"
-                  },
-                  "b": {
-                    "op": "+",
-                    "a": {
-                      "get": "prop",
-                      "entity": "Keeper",
-                      "prop": "Title"
-                    },
-                    "b": {
-                      "get": "visit",
-                      "node": "f0n10-2f87559a"
-                    }
-                  }
-                }
-              }
-            ]
-          },
-          "type": "dialogue",
-          "speaker": null,
-          "text": "Line f2n9-21499c8f { Clock }{Mood}. { Storm }",
-          "line": "L_f2n9-21499c8f",
-          "vars": {
-            "Clock": {
-              "op": "+",
-              "a": {
-                "get": "time",
-                "field": "hour"
-              },
-              "b": {
-                "op": "/",
-                "a": {
-                  "get": "time",
-                  "field": "minute"
-                },
-                "b": {
-                  "lit": 60
-                }
-              }
-            },
-            "Mood": {
-              "get": "prop",
-              "entity": "Keeper",
-              "prop": "Mood"
-            },
-            "Storm": {
-              "get": "var",
-              "var": "World.Storm"
-            }
-          },
-          "next": [
-            "f2n5-ac021b37",
-            "f2n0-ffc0b9a5",
-            "f2n7-2cd38ea1"
-          ]
-        },
-        "f2n10-0e2e834d": {
-          "id": "f2n10-0e2e834d",
-          "type": "dialogue",
-          "speaker": "Stranger",
-          "text": "Line f2n10-0e2e834d {Mood} {Day}",
-          "line": "L_f2n10-0e2e834d",
-          "vars": {
-            "Mood": {
-              "get": "prop",
-              "entity": "Fisher",
-              "prop": "Mood"
-            },
-            "Day": {
-              "get": "time",
-              "field": "day"
-            }
-          },
-          "next": [
-            "f2n10-0e2e834d",
-            "f2n6-51ae19f5"
+            "f2n7-2cd38ea1",
+            "f2n5-ac021b37"
           ]
         },
         "f2n11-7017adc1": {
           "id": "f2n11-7017adc1",
-          "effects": {
-            "do": [
-              {
-                "set": {
-                  "get": "var",
-                  "var": "World.Ratio"
+          "count": true,
+          "requires": {
+            "expr": {
+              "op": "+",
+              "a": {
+                "lit": null
+              },
+              "b": {
+                "op": "or",
+                "a": {
+                  "lit": 7
                 },
-                "op": "+=",
-                "value": {
-                  "op": "or",
-                  "a": {
-                    "op": "<=",
-                    "a": {
-                      "lit": 1
-                    },
-                    "b": {
-                      "get": "rel",
-                      "rel": "Character->Faction.Loyal",
-                      "from": "$self",
-                      "to": "Watch"
-                    }
-                  },
-                  "b": {
-                    "op": ">=",
-                    "a": {
-                      "get": "prop",
-                      "entity": "Child",
-                      "prop": "Brave"
-                    },
-                    "b": {
-                      "get": "prop",
-                      "entity": "Guild",
-                      "prop": "Power"
-                    }
-                  }
+                "b": {
+                  "get": "prop",
+                  "entity": "Guild",
+                  "prop": "Power"
                 }
               }
-            ]
+            }
           },
-          "type": "jump",
-          "jumpTo": "f2n9-21499c8f"
+          "type": "dialogue",
+          "speaker": "Keeper",
+          "text": "Line f2n11-7017adc1{Phase}. { Ratio } {Mood}",
+          "line": "L_f2n11-7017adc1",
+          "vars": {
+            "Phase": {
+              "get": "time",
+              "field": "phase"
+            },
+            "Ratio": {
+              "op": "*",
+              "a": {
+                "get": "var",
+                "var": "World.Ratio"
+              },
+              "b": {
+                "lit": 7
+              }
+            },
+            "Mood": {
+              "get": "prop",
+              "entity": "Stranger",
+              "prop": "Mood"
+            }
+          },
+          "next": [
+            "f2n2-07bfb710",
+            "f2n8-ad20967a"
+          ]
         }
       }
     },
@@ -2031,222 +2019,115 @@
       "name": "Flow 3",
       "start": [
         "f3n0-d1ee5cfc",
-        "f3n1-4d006020"
+        "f3n0-d1ee5cfc"
       ],
       "nodes": {
         "f3n0-d1ee5cfc": {
           "id": "f3n0-d1ee5cfc",
-          "count": true,
-          "takes": 3,
-          "type": "call",
-          "flow": "missing-flow",
-          "next": [
-            "f3n5-dd481249"
-          ]
-        },
-        "f3n1-4d006020": {
-          "id": "f3n1-4d006020",
-          "count": true,
-          "takes": 0.06666666666666667,
-          "type": "dialogue",
-          "speaker": "Stranger",
-          "text": "Line f3n1-4d006020 }} and {{",
-          "menuText": "Choose f3n1-4d006020 { Mood }",
-          "line": "L_f3n1-4d006020",
-          "menuLine": "L_f3n1-4d006020_M",
-          "vars": {
-            "Mood": {
-              "get": "prop",
-              "entity": "Child",
-              "prop": "Mood"
+          "requires": {
+            "expr": {
+              "lit": 0.5
             }
           },
-          "next": []
-        },
-        "f3n2-2a3877c5": {
-          "id": "f3n2-2a3877c5",
-          "count": true,
           "effects": {
             "do": [
               {
                 "set": {
                   "get": "prop",
-                  "entity": "Keeper",
-                  "prop": "Mood"
+                  "entity": "Stranger",
+                  "prop": "Energy"
                 },
                 "op": "-=",
                 "value": {
-                  "op": "<=",
-                  "a": {
-                    "op": "+",
-                    "a": {
-                      "lit": -2
-                    },
-                    "b": {
-                      "get": "var",
-                      "var": "World.Ratio"
-                    }
-                  },
-                  "b": {
-                    "op": "<",
-                    "a": {
-                      "lit": 7
-                    },
-                    "b": {
-                      "lit": 10
-                    }
-                  }
-                }
-              },
-              {
-                "set": {
-                  "get": "var",
-                  "var": "World.Count"
-                },
-                "op": "+=",
-                "value": {
-                  "op": ">",
-                  "a": {
-                    "lit": "Watch"
-                  },
-                  "b": {
-                    "op": "phase>",
-                    "a": {
-                      "lit": true
-                    },
-                    "b": {
-                      "lit": "Day"
-                    }
-                  }
+                  "get": "rel",
+                  "rel": "Character->Faction.Loyal",
+                  "from": "$self",
+                  "to": "Watch"
                 }
               }
             ]
           },
-          "takes": 0.1,
-          "type": "dialogue",
-          "speaker": null,
-          "text": "Line f3n2-2a3877c5{Clock}.",
-          "menuText": "Choose f3n2-2a3877c5 {Phase} { Label }",
-          "line": "L_f3n2-2a3877c5",
-          "menuLine": "L_f3n2-2a3877c5_M",
-          "vars": {
-            "Clock": {
-              "op": "+",
-              "a": {
-                "get": "time",
-                "field": "hour"
-              },
-              "b": {
-                "op": "/",
-                "a": {
-                  "get": "time",
-                  "field": "minute"
-                },
-                "b": {
-                  "lit": 60
-                }
-              }
-            },
-            "Phase": {
-              "get": "time",
-              "field": "phase"
-            },
-            "Label": {
-              "get": "var",
-              "var": "World.Label"
-            }
-          },
+          "type": "hub",
+          "label": "Hub f3n0-d1ee5cfc",
           "next": [
-            "f3n5-dd481249",
-            "f3n7-1a85003b",
-            "f3n5-dd481249"
+            "f3n7-1a85003b"
           ]
         },
-        "f3n3-f1ccb4b6": {
-          "id": "f3n3-f1ccb4b6",
+        "f3n1-4d006020": {
+          "id": "f3n1-4d006020",
+          "count": true,
           "requires": {
             "expr": {
-              "op": "<",
+              "op": "==",
               "a": {
-                "op": ">=",
-                "a": {
-                  "lit": "Dusk"
-                },
-                "b": {
-                  "lit": 7
-                }
+                "get": "visit",
+                "node": "f3n1-4d006020"
               },
               "b": {
-                "op": "phase<",
-                "a": {
-                  "get": "prop",
-                  "entity": "Child",
-                  "prop": "Brave"
-                },
-                "b": {
-                  "lit": "Day"
-                }
+                "lit": 0
               }
             }
           },
           "type": "instruction",
-          "instruction": {
-            "do": [
-              {
-                "set": {
-                  "get": "var",
-                  "var": "World.Missing"
+          "instruction": null,
+          "next": []
+        },
+        "f3n2-2a3877c5": {
+          "id": "f3n2-2a3877c5",
+          "count": true,
+          "requires": {
+            "expr": {
+              "op": "and",
+              "a": {
+                "op": "<",
+                "a": {
+                  "get": "visit",
+                  "node": "f3n2-2a3877c5"
                 },
-                "op": "+=",
-                "value": {
-                  "op": "==",
-                  "a": {
-                    "lit": "0x1f"
-                  },
-                  "b": {
-                    "neg": {
-                      "lit": 7
-                    }
-                  }
+                "b": {
+                  "lit": 2
                 }
               },
-              {
-                "set": {
-                  "get": "var",
-                  "var": "World.Count"
-                },
-                "op": "=",
-                "value": {
-                  "lit": -1
-                }
-              },
-              {
-                "set": {
-                  "get": "var",
-                  "var": "World.Storm"
-                },
-                "op": "=",
-                "value": {
-                  "neg": {
-                    "op": "or",
-                    "a": {
-                      "get": "prop",
-                      "entity": "Fisher",
-                      "prop": "Mood"
-                    },
-                    "b": {
-                      "get": "var",
-                      "var": "World.Label"
-                    }
-                  }
-                }
+              "b": {
+                "get": "prop",
+                "entity": "$self",
+                "prop": "Energy"
               }
-            ]
+            }
           },
+          "type": "call",
+          "flow": "flow-3-1dc5ccc9",
           "next": [
-            "f3n0-d1ee5cfc",
-            "f3n7-1a85003b"
+            "f3n1-4d006020",
+            "f3n0-d1ee5cfc"
           ]
+        },
+        "f3n3-f1ccb4b6": {
+          "id": "f3n3-f1ccb4b6",
+          "count": true,
+          "requires": {
+            "expr": {
+              "op": "==",
+              "a": {
+                "get": "visit",
+                "node": "f3n3-f1ccb4b6"
+              },
+              "b": {
+                "lit": 0
+              }
+            }
+          },
+          "type": "dialogue",
+          "speaker": "Child",
+          "text": "Line f3n3-f1ccb4b6 { Text }",
+          "menuText": "",
+          "line": "L_f3n3-f1ccb4b6",
+          "vars": {
+            "Text": {
+              "lit": "{braces}"
+            }
+          },
+          "next": []
         },
         "f3n4-c68061e2": {
           "id": "f3n4-c68061e2",
@@ -2263,182 +2144,152 @@
               }
             }
           },
-          "takes": 700,
+          "type": "call",
+          "flow": "flow-2-c7fcceb9",
+          "next": [
+            "f3n0-d1ee5cfc",
+            "f3n2-2a3877c5"
+          ]
+        },
+        "f3n5-dd481249": {
+          "id": "f3n5-dd481249",
+          "count": true,
           "type": "instruction",
           "instruction": {
             "do": [
               {
                 "set": {
-                  "get": "prop",
-                  "entity": "Child",
-                  "prop": "Mood"
+                  "get": "var",
+                  "var": "World.Missing"
                 },
-                "op": "=",
+                "op": "+=",
                 "value": {
-                  "op": "or",
+                  "op": "phase<",
                   "a": {
-                    "roll": [
-                      -1,
-                      6
-                    ]
+                    "neg": {
+                      "lit": 10
+                    }
                   },
                   "b": {
-                    "neg": {
-                      "get": "prop",
-                      "entity": "Keeper",
-                      "prop": "Title"
-                    }
+                    "lit": "Nope"
                   }
                 }
               },
               {
                 "set": {
                   "get": "rel",
-                  "rel": "Character->Character.Trust",
-                  "from": "$self",
-                  "to": "Child"
+                  "rel": "Character->Faction.Loyal",
+                  "from": "Keeper",
+                  "to": "Guild"
                 },
                 "op": "-=",
                 "value": {
-                  "roll": [
-                    1,
-                    6
-                  ]
+                  "op": "-",
+                  "a": {
+                    "op": "and",
+                    "a": {
+                      "get": "var",
+                      "var": "World.Label"
+                    },
+                    "b": {
+                      "get": "time",
+                      "field": "hour"
+                    }
+                  },
+                  "b": {
+                    "roll": [
+                      2,
+                      3
+                    ]
+                  }
                 }
               }
             ]
           },
-          "next": [
-            "f3n7-1a85003b",
-            "f3n8-ab48db1b"
-          ]
-        },
-        "f3n5-dd481249": {
-          "id": "f3n5-dd481249",
-          "requires": {
-            "expr": {
-              "op": "phase<=",
-              "a": {
-                "get": "time",
-                "field": "phase"
-              },
-              "b": {
-                "lit": "Night"
-              }
-            }
-          },
-          "takes": 0.06666666666666667,
-          "type": "jump",
-          "jumpTo": "f3n2-2a3877c5"
+          "next": []
         },
         "f3n6-bc6464d2": {
           "id": "f3n6-bc6464d2",
           "count": true,
           "requires": {
             "expr": {
-              "op": "phase>=",
+              "op": "==",
               "a": {
-                "get": "time",
-                "field": "phase"
+                "op": "/",
+                "a": {
+                  "lit": 1
+                },
+                "b": {
+                  "lit": " 4 "
+                }
               },
               "b": {
-                "lit": "Dusk"
+                "lit": 10
               }
             }
           },
-          "type": "call",
-          "flow": "flow-0-94d5f9e1",
+          "takes": 0.1,
+          "type": "hub",
+          "label": "Hub f3n6-bc6464d2",
           "next": [
-            "f3n2-2a3877c5",
-            "f3n3-f1ccb4b6"
-          ]
+            "f3n5-dd481249",
+            "f3n7-1a85003b"
+          ],
+          "ask": true
         },
         "f3n7-1a85003b": {
           "id": "f3n7-1a85003b",
-          "effects": {
-            "do": [
-              {
-                "set": {
-                  "get": "rel",
-                  "rel": "Character->Faction.Loyal",
-                  "from": "Stranger",
-                  "to": "Watch"
-                },
-                "op": "+=",
-                "value": {
-                  "lit": "3"
-                }
-              },
-              {
-                "set": {
-                  "get": "var",
-                  "var": "World.Label"
-                },
-                "op": "-=",
-                "value": {
-                  "get": "var",
-                  "var": "World.Label"
-                }
-              }
-            ]
+          "type": "dialogue",
+          "speaker": null,
+          "text": "Line f3n7-1a85003b{Count}.",
+          "line": "L_f3n7-1a85003b",
+          "vars": {
+            "Count": {
+              "get": "var",
+              "var": "World.Count"
+            }
           },
-          "takes": 700,
-          "type": "hub",
-          "label": "Hub f3n7-1a85003b",
           "next": [
-            "f3n2-2a3877c5",
-            "f3n5-dd481249",
-            "f3n6-bc6464d2"
+            "f3n8-ab48db1b"
           ]
         },
         "f3n8-ab48db1b": {
           "id": "f3n8-ab48db1b",
-          "requires": {
-            "expr": {
-              "op": "phase<=",
+          "count": true,
+          "takes": 90,
+          "type": "dialogue",
+          "speaker": "Child",
+          "text": "Line f3n8-ab48db1b {Third} { Missing }{Label}.",
+          "menuText": "Choose f3n8-ab48db1b { Phase }",
+          "line": "L_f3n8-ab48db1b",
+          "menuLine": "L_f3n8-ab48db1b_M",
+          "vars": {
+            "Third": {
+              "op": "/",
               "a": {
-                "get": "time",
-                "field": "phase"
-              },
-              "b": {
-                "lit": "Nope"
-              }
-            }
-          },
-          "type": "condition",
-          "condition": {
-            "expr": {
-              "op": ">",
-              "a": {
-                "op": "/",
-                "a": {
-                  "op": "/",
-                  "a": {
-                    "lit": null
-                  },
-                  "b": {
-                    "lit": "Night"
-                  }
-                },
-                "b": {
-                  "op": "phase>=",
-                  "a": {
-                    "get": "time",
-                    "field": "phase"
-                  },
-                  "b": {
-                    "lit": null
-                  }
-                }
-              },
-              "b": {
                 "get": "var",
-                "var": "World.Label"
+                "var": "World.Count"
+              },
+              "b": {
+                "lit": 3
               }
+            },
+            "Missing": {
+              "get": "var",
+              "var": "World.Missing"
+            },
+            "Label": {
+              "get": "var",
+              "var": "World.Label"
+            },
+            "Phase": {
+              "get": "time",
+              "field": "phase"
             }
           },
-          "onTrue": "f3n2-2a3877c5",
-          "onFalse": "f3n2-2a3877c5"
+          "next": [
+            "f3n2-2a3877c5"
+          ]
         }
       }
     }

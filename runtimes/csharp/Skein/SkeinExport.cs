@@ -173,6 +173,10 @@ namespace Skein
         public JsonObject Instruction;
         // hub
         public string Label;
+        /// <summary>v5 hub: offer the choices as a menu even when only one is left.</summary>
+        public bool Ask;
+        /// <summary>v5 hub: where to go when none of its choices is available (null = the path ends).</summary>
+        public string Fallback;
         // dialogue / instruction / hub
         public IReadOnlyList<string> Next = Array.Empty<string>();
         // jump
@@ -200,7 +204,7 @@ namespace Skein
     {
         public const string Format = "skein.export";
         /// <summary>The newest format version this runtime reads (it reads every older one too).</summary>
-        public const int Version = 4;
+        public const int Version = 5;
 
         public string ProjectId;
         public string ProjectName;
@@ -365,6 +369,8 @@ namespace Skein
                 case "hub":
                     n.Type = SkeinNodeType.Hub;
                     n.Label = o.Str("label") ?? "";
+                    n.Ask = o.Bool("ask");
+                    n.Fallback = o.Str("fallback");
                     break;
                 case "jump":
                     n.Type = SkeinNodeType.Jump;

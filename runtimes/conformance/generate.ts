@@ -164,7 +164,11 @@ function synth(seed: number): ExportFile {
       }
       else if (t < 0.6) nodes[id] = { ...base, type: 'condition', condition: r() < 0.1 ? null : { expr: expr(3) }, onTrue: ref(), onFalse: ref() }
       else if (t < 0.75) nodes[id] = { ...base, type: 'instruction', instruction: r() < 0.1 ? null : effects(1 + int(3), true), next: refs() }
-      else if (t < 0.85) nodes[id] = { ...base, type: 'hub', label: `Hub ${id}`, next: refs() }
+      else if (t < 0.85) {
+        // v5: hubs that keep asking with one choice left, and fall back when none is.
+        const fallback = r() < 0.4 ? ref() : null
+        nodes[id] = { ...base, type: 'hub', label: `Hub ${id}`, next: refs(), ...(r() < 0.5 ? { ask: true as const } : {}), ...(fallback ? { fallback } : {}) }
+      }
       // v2: calls into other flows (including this one, and missing flows), and hand-off jumps.
       else if (t < 0.93) nodes[id] = { ...base, type: 'call', flow: r() < 0.1 ? null : r() < 0.1 ? 'missing-flow' : pick(flowKeys), next: refs() }
       else if (r() < 0.6) nodes[id] = { ...base, type: 'jump', jumpTo: ref() }
@@ -187,7 +191,7 @@ function synth(seed: number): ExportFile {
 
   return {
     format: 'skein.export',
-    version: 4,
+    version: 5,
     project: { id: hex(), name: `Synthetic ${seed}` },
     templates: {
       Character: {

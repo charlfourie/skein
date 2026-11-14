@@ -16,7 +16,7 @@ import { z } from 'zod'
  */
 
 export const PROJECT_FORMAT = 'skein.project' as const
-export const SCHEMA_VERSION = 7 as const
+export const SCHEMA_VERSION = 8 as const
 
 export const SECTION_IDS = ['flows', 'entities', 'templates'] as const
 export type SectionId = (typeof SECTION_IDS)[number]

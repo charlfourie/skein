@@ -2,14 +2,25 @@
 
 What's new in Skein, newest first. Dates are when the work landed on `main`.
 
-## Unreleased · Tester feedback
+## Unreleased · 0.9.1 · Tester feedback
+
+Project format 8 and export format 5 (see [VERSIONING.md](docs/VERSIONING.md)). Exports
+only need a version 5 runtime when they use the new hub behaviour below.
 
 ### Added
+- **Hubs fall back when their choices run out.** Hubs have a second output, **none
+  left**, followed once none of their choices is available (every once-only choice used,
+  or every requirement false). Leave it unconnected and the path ends, as before.
 - **Start at, in Play.** A flow with more than one start node gets a picker at the top of
   the Play tab: **Automatic** begins where the game would, or pick any start node to play
   from there. Story tests still begin where the game does.
 
 ### Changed
+- **A hub with several choices keeps asking.** It used to skip its menu when only one
+  choice was left and go straight there, so the player was sent to "Leave" without
+  choosing it. It now shows the menu while any choice is left. A hub with a single
+  connection still passes straight through. This changes how affected stories play, so
+  those exports need a version 5 runtime (the C# runtime is updated).
 - **The inspector only shows State fields that make sense for the node.** Condition nodes
   no longer offer Requires or Effects (a condition is already a check, so changes belong in
   an instruction), and instruction nodes no longer offer a separate Effects (the instruction

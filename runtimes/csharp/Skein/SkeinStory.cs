@@ -213,12 +213,14 @@ namespace Skein
                         break;
                     case SkeinNodeType.Hub:
                         var options = Choices(node.Next);
-                        if (options.Count > 1)
+                        // v5: a hub with several connections (Ask) offers even its last choice as a menu.
+                        if (options.Count > 1 || (node.Ask && options.Count == 1))
                         {
                             pending = options;
                             return new SkeinBeat { Kind = SkeinBeatKind.Choice, Node = node, Choices = options };
                         }
-                        id = options.Count > 0 ? options[0].Node : null;
+                        // v5: none left, so follow the fallback (its own requirement is checked on entry).
+                        id = options.Count > 0 ? options[0].Node : node.Fallback;
                         break;
                     case SkeinNodeType.Jump:
                         id = node.JumpFlow != null ? SwitchTo(node.JumpFlow) : node.JumpTo;

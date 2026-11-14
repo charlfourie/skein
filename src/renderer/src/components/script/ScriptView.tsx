@@ -2,7 +2,7 @@ import { ArrowDown, ArrowUp, ClipboardPaste, Crosshair, CornerDownRight, Flag, P
 import { useEffect, useMemo, useRef, type ClipboardEvent, type ReactNode } from 'react'
 import { dataString, isEndNode } from '@shared/nodes'
 import { parseScreenplay } from '@shared/screenplay'
-import { directionText, endingNumbers, gotoText, lineParts, scriptHtml, scriptOf, type BranchInfo, type ScriptItem } from '@shared/script'
+import { directionText, endingNumbers, gotoText, lineParts, scriptHtml, scriptOf, whenText, type BranchInfo, type ScriptItem } from '@shared/script'
 import type { Flow, Project } from '@shared/schema'
 import { speakerOrder } from '@shared/quickEntry'
 import { cx } from '../../lib/cx'
@@ -129,8 +129,14 @@ function Row({ project, flow, item, selectedId, endings }: { project: Project; f
   }
   if (item.kind === 'when') {
     return (
-      <p style={indent} className={cx('mb-1 mt-3 text-2xs font-semibold uppercase tracking-wider', item.outcome === 'true' ? 'text-ok' : 'text-danger')}>
-        {item.outcome === 'true' ? 'If so' : 'Otherwise'}
+      <p
+        style={indent}
+        className={cx(
+          'mb-1 mt-3 text-2xs font-semibold uppercase tracking-wider',
+          item.outcome === 'true' ? 'text-ok' : item.outcome === 'false' ? 'text-danger' : 'text-muted'
+        )}
+      >
+        {whenText(item.outcome)}
       </p>
     )
   }

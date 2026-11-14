@@ -91,7 +91,9 @@ const Node = z.discriminatedUnion('type', [
     .strict(),
   z.object({ ...nodeBase, type: z.literal('condition'), condition: Condition.nullable(), onTrue: z.string().nullable(), onFalse: z.string().nullable() }).strict(),
   z.object({ ...nodeBase, type: z.literal('instruction'), instruction: Effects.nullable(), next: z.array(z.string()) }).strict(),
-  z.object({ ...nodeBase, type: z.literal('hub'), label: z.string(), next: z.array(z.string()) }).strict(),
+  z
+    .object({ ...nodeBase, type: z.literal('hub'), label: z.string(), next: z.array(z.string()), ask: z.literal(true).optional(), fallback: z.string().optional() })
+    .strict(),
   z.object({ ...nodeBase, type: z.literal('jump'), jumpTo: z.string().nullable(), jumpFlow: z.string().optional() }).strict(),
   z.object({ ...nodeBase, type: z.literal('call'), flow: z.string().nullable(), next: z.array(z.string()) }).strict()
 ])

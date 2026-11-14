@@ -7,7 +7,7 @@
  * continues instead of repeating it. Nodes no start reaches come last.
  */
 import { orderedTargets, outgoingEdges, startNodes } from './flowOrder'
-import { dataString, isEndNode, outputHandles } from './nodes'
+import { branchHandles, dataString, FALLBACK_HANDLE, isEndNode } from './nodes'
 import type { Flow, FlowNode, Project } from './schema'
 
 /** How a branch is offered: a choice the player picks, or the first that's available. */
@@ -27,7 +27,8 @@ export type ScriptItem =
   | { kind: 'line'; nodeId: string; depth: number; branch?: BranchInfo }
   | { kind: 'direction'; nodeId: string; depth: number; branch?: BranchInfo }
   | { kind: 'condition'; nodeId: string; depth: number; branch?: BranchInfo }
-  | { kind: 'when'; nodeId: string; depth: number; outcome: 'true' | 'false' }
+  /** A condition's branch, or (`fallback`) where a hub goes once none of its choices is left. */
+  | { kind: 'when'; nodeId: string; depth: number; outcome: 'true' | 'false' | 'fallback' }
   | { kind: 'goto'; nodeId: string; targetId: string | null; depth: number; reason: 'again' | 'jump'; branch?: BranchInfo }
 
 type Task = { node: string; depth: number; branch?: BranchInfo } | { item: ScriptItem }
@@ -67,11 +68,13 @@ export function scriptOf(flow: Flow): ScriptItem[] {
         }
       } else {
         items.push({ kind: node.type === 'dialogue' ? 'line' : 'direction', nodeId: id, depth, branch })
-        const outs = outputHandles(node.type).flatMap((h) => outgoingEdges(flow, id, h))
-        if (outs.length === 1) next.push({ node: outs[0].target, depth })
+        const outs = branchHandles(node.type).flatMap((h) => outgoingEdges(flow, id, h))
+        const [fallback] = node.type === 'hub' ? orderedTargets(flow, id, FALLBACK_HANDLE) : []
+        if (outs.length === 1 && !fallback) next.push({ node: outs[0].target, depth })
         else {
           const kind: BranchKind = node.type === 'dialogue' || node.type === 'hub' ? 'choice' : 'first'
           outs.forEach((e, index) => next.push({ node: e.target, depth: depth + 1, branch: { kind, edgeId: e.id, index, count: outs.length } }))
+          if (fallback) next.push({ item: { kind: 'when', nodeId: id, depth, outcome: 'fallback' } }, { node: fallback, depth: depth + 1 })
         }
       }
       for (let i = next.length - 1; i >= 0; i--) stack.push(next[i])
@@ -181,7 +184,7 @@ export function scriptHtml(project: Project, flow: Flow, items = scriptOf(flow))
       case 'condition':
         return `<div class="dir" ${pad}>${mark}Check: ${esc(dataString(node!, 'expression') || '(no condition)')}</div>`
       case 'when':
-        return `<div class="when" ${pad}>${item.outcome === 'true' ? 'If so:' : 'Otherwise:'}</div>`
+        return `<div class="when" ${pad}>${whenText(item.outcome)}:</div>`
       case 'goto':
         return `<div class="dir" ${pad}>${mark}→ ${esc(gotoText(project, flow, item))}</div>`
     }
@@ -203,4 +206,9 @@ h2{font-size:11pt;text-transform:uppercase;margin:1.6em 0 .6em;color:#444}
 </style></head><body><h1>${esc(flow.name)}</h1><p class="sub">${esc(project.meta.name)}</p>
 ${rows.join('\n')}
 </body></html>`
+}
+
+/** The heading over a branch in the script: a condition's outcome, or a hub's fallback. */
+export function whenText(outcome: 'true' | 'false' | 'fallback'): string {
+  return outcome === 'true' ? 'If so' : outcome === 'false' ? 'Otherwise' : 'When no choice is left'
 }

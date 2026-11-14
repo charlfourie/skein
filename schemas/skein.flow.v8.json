@@ -1,8 +1,8 @@
 {
-  "$id": "https://raw.githubusercontent.com/charlfourie/skein/main/schemas/skein.flow.v7.json",
+  "$id": "https://raw.githubusercontent.com/charlfourie/skein/main/schemas/skein.flow.v8.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "additionalProperties": true,
-  "description": "One flow of a project folder (flows/<name>.<id>.json), with the story tests for it. Project format version 7.",
+  "description": "One flow of a project folder (flows/<name>.<id>.json), with the story tests for it. Project format version 8.",
   "properties": {
     "comments": {
       "additionalProperties": {

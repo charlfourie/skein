@@ -75,106 +75,96 @@ LOG Rule “Rule 2” for Child
 LOG Rule “Rule 2” for Fisher
 LOG Rule “Rule 2” for Stranger
 FLOW flow-0-2c930e5f seed=0
-CHOICE f0n0-6afb762e [0:f0n0-6afb762e:Hub f0n0-6afb762e#- | 1:f0n8-b8c5af4c:Hub f0n8-b8c5af4c#-] playing=flow-0-2c930e5f flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
-CHOICE f0n0-6afb762e [0:f0n0-6afb762e:Hub f0n0-6afb762e#- | 1:f0n8-b8c5af4c:Hub f0n8-b8c5af4c#-] playing=flow-0-2c930e5f flow=flow-0-2c930e5f depth=0 t=1/Dusk/0/5:51
-END f0n8-b8c5af4c playing=- flow=flow-0-2c930e5f depth=0 t=1/Dusk/0/5:51
-SAVE {"changes":{"rel:Character->Faction.Loyal:Keeper:Watch":-4},"day":1,"phase":"Dusk","seconds":0,"rng":24301}
+END f0n0-6afb762e playing=- flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
+SAVE {"changes":{},"day":1,"phase":"Day","seconds":0,"rng":24301}
 FLOW flow-0-2c930e5f seed=1
-CHOICE f0n0-6afb762e [0:f0n0-6afb762e:Hub f0n0-6afb762e#- | 1:f0n8-b8c5af4c:Hub f0n8-b8c5af4c#-] playing=flow-0-2c930e5f flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
-END f0n8-b8c5af4c playing=- flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
+END f0n0-6afb762e playing=- flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
 SAVE {"changes":{},"day":1,"phase":"Day","seconds":0,"rng":2654435761}
 FLOW flow-0-2c930e5f seed=2
-CHOICE f0n0-6afb762e [0:f0n0-6afb762e:Hub f0n0-6afb762e#- | 1:f0n8-b8c5af4c:Hub f0n8-b8c5af4c#-] playing=flow-0-2c930e5f flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
-CHOICE f0n0-6afb762e [0:f0n0-6afb762e:Hub f0n0-6afb762e#- | 1:f0n8-b8c5af4c:Hub f0n8-b8c5af4c#-] playing=flow-0-2c930e5f flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
-END f0n8-b8c5af4c playing=- flow=flow-0-2c930e5f depth=0 t=1/Dusk/0/5:51
-SAVE {"changes":{"rel:Character->Faction.Loyal:Keeper:Watch":-4},"day":1,"phase":"Dusk","seconds":0,"rng":1013904226}
+END f0n0-6afb762e playing=- flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
+SAVE {"changes":{},"day":1,"phase":"Day","seconds":0,"rng":1013904226}
 FLOW flow-0-2c930e5f seed=3
-CHOICE f0n0-6afb762e [0:f0n0-6afb762e:Hub f0n0-6afb762e#- | 1:f0n8-b8c5af4c:Hub f0n8-b8c5af4c#-] playing=flow-0-2c930e5f flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
-CHOICE f0n8-b8c5af4c [0:f0n6-791fd038:#- | 1:f0n6-791fd038:#-] playing=flow-0-2c930e5f flow=flow-0-2c930e5f depth=0 t=1/Night/0/6:21
-ERROR The flow ran 10,000 automatic steps without reaching a line: check for a loop of conditions, jumps or hubs.
-SAVE {"changes":{"prop:Fisher.Mood":0,"prop:Keeper.Energy":0,"prop:Watch.Power":true,"rel:Character->Faction.Loyal:Keeper:Watch":-159976,"var:World.Missing":-9998,"var:World.Ratio":0.5,"var:World.Storm":-9993,"visit:f0n1-ba98069f":9998,"visit:f0n6-791fd038":2},"day":9999,"phase":"Night","seconds":5715,"rng":1922788217}
+END f0n0-6afb762e playing=- flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
+SAVE {"changes":{},"day":1,"phase":"Day","seconds":0,"rng":3668339987}
 FLOW flow-0-2c930e5f seed=4
-CHOICE f0n0-6afb762e [0:f0n0-6afb762e:Hub f0n0-6afb762e#- | 1:f0n8-b8c5af4c:Hub f0n8-b8c5af4c#-] playing=flow-0-2c930e5f flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
-CHOICE f0n0-6afb762e [0:f0n0-6afb762e:Hub f0n0-6afb762e#- | 1:f0n8-b8c5af4c:Hub f0n8-b8c5af4c#-] playing=flow-0-2c930e5f flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
-END f0n8-b8c5af4c playing=- flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
+END f0n0-6afb762e playing=- flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
 SAVE {"changes":{},"day":1,"phase":"Day","seconds":0,"rng":2027808452}
 FLOW flow-0-2c930e5f seed=5
-CHOICE f0n0-6afb762e [0:f0n0-6afb762e:Hub f0n0-6afb762e#- | 1:f0n8-b8c5af4c:Hub f0n8-b8c5af4c#-] playing=flow-0-2c930e5f flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
-END f0n8-b8c5af4c playing=- flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
+END f0n0-6afb762e playing=- flow=flow-0-2c930e5f depth=0 t=1/Day/0/22:57
 SAVE {"changes":{},"day":1,"phase":"Day","seconds":0,"rng":387276917}
 FLOW flow-1-f565837a seed=0
-LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/180/23:0
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/0/22:57
 LINE f1n6-d6d69095 - "Line f1n6-d6d69095 " #L_f1n6-d6d69095 [0:f1n1-3546c531:#- | 1:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#- | 2:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/3600/7:21
 LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/3606/7:21
 END f1n8-47f14c77 playing=- flow=flow-1-f565837a depth=0 t=1/Night/3606/7:21
 SAVE {"changes":{"rel:Character->Faction.Loyal:Keeper:Watch":-8,"visit:f1n4-69ccfc4d":1,"visit:f1n6-d6d69095":1,"visit:f1n8-47f14c77":1},"day":1,"phase":"Night","seconds":3606,"rng":1831590114}
 FLOW flow-1-f565837a seed=1
-LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/180/23:0
-LINE f1n6-d6d69095 - "Line f1n6-d6d69095 " #L_f1n6-d6d69095 [0:f1n1-3546c531:#- | 1:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#- | 2:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/5580/0:30
-LINE f1n0-9209d10f Fisher "Line f1n0-9209d10ftrue.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/20190/4:33
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/0/22:57
+LINE f1n6-d6d69095 - "Line f1n6-d6d69095 " #L_f1n6-d6d69095 [0:f1n1-3546c531:#- | 1:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#- | 2:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/5400/0:27
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10ftrue.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/19830/4:27
 END f1n4-69ccfc4d playing=- flow=flow-1-f565837a depth=0 t=1/Night/0/6:21
 SAVE {"changes":{"rel:Character->Faction.Loyal:Child:Guild":0,"rel:Character->Faction.Loyal:Keeper:Watch":-8,"var:World.Count":true,"var:World.Label":true,"var:World.Ratio":true,"var:World.Storm":0.5,"visit:f1n4-69ccfc4d":2,"visit:f1n6-d6d69095":1},"day":1,"phase":"Night","seconds":0,"rng":3854165904}
 FLOW flow-1-f565837a seed=2
-LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/180/23:0
-LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/186/23:0
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/0/22:57
+LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/6/22:57
 END f1n8-47f14c77 playing=- flow=flow-1-f565837a depth=0 t=1/Dusk/0/5:51
 SAVE {"changes":{"rel:Character->Faction.Loyal:Keeper:Watch":-4,"visit:f1n4-69ccfc4d":1,"visit:f1n8-47f14c77":1},"day":1,"phase":"Dusk","seconds":0,"rng":2845470039}
 FLOW flow-1-f565837a seed=3
-LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/180/23:0
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/0/22:57
 LINE f1n6-d6d69095 - "Line f1n6-d6d69095 " #L_f1n6-d6d69095 [0:f1n1-3546c531:#- | 1:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#- | 2:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/5400/7:51
 LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/5406/7:51
 END f1n8-47f14c77 playing=- flow=flow-1-f565837a depth=0 t=1/Night/5406/7:51
 SAVE {"changes":{"rel:Character->Faction.Loyal:Keeper:Watch":-8,"visit:f1n4-69ccfc4d":1,"visit:f1n6-d6d69095":1,"visit:f1n8-47f14c77":1},"day":1,"phase":"Night","seconds":5406,"rng":1204938504}
 FLOW flow-1-f565837a seed=4
-LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/180/23:0
-LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/186/23:0
-END f1n8-47f14c77 playing=- flow=flow-1-f565837a depth=0 t=1/Day/186/23:0
-SAVE {"changes":{"visit:f1n4-69ccfc4d":1,"visit:f1n8-47f14c77":1},"day":1,"phase":"Day","seconds":186,"rng":3859374265}
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/0/22:57
+LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/6/22:57
+END f1n8-47f14c77 playing=- flow=flow-1-f565837a depth=0 t=1/Day/6/22:57
+SAVE {"changes":{"visit:f1n4-69ccfc4d":1,"visit:f1n8-47f14c77":1},"day":1,"phase":"Day","seconds":6,"rng":3859374265}
 FLOW flow-1-f565837a seed=5
-LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/180/23:0
-LINE f1n6-d6d69095 - "Line f1n6-d6d69095 " #L_f1n6-d6d69095 [0:f1n1-3546c531:#- | 1:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#- | 2:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/5580/0:30
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/0/22:57
+LINE f1n6-d6d69095 - "Line f1n6-d6d69095 " #L_f1n6-d6d69095 [0:f1n1-3546c531:#- | 1:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#- | 2:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/5400/0:27
 LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/6/6:21
 END f1n8-47f14c77 playing=- flow=flow-1-f565837a depth=0 t=1/Night/6/6:21
 SAVE {"changes":{"rel:Character->Faction.Loyal:Keeper:Watch":-8,"visit:f1n4-69ccfc4d":1,"visit:f1n6-d6d69095":1,"visit:f1n8-47f14c77":1},"day":1,"phase":"Night","seconds":6,"rng":2218842730}
 FLOW flow-2-0bd0748a seed=0
 LINE f2n0-44136ec2 Child "Line f2n0-44136ec2" #L_f2n0-44136ec2 [0:f2n3-cfcf5842:#-] playing=flow-2-0bd0748a flow=flow-2-0bd0748a depth=0 t=1/Day/0/22:57
-LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Dusk/180/5:54
-LINE f1n6-d6d69095 - "Line f1n6-d6d69095 " #L_f1n6-d6d69095 [0:f1n1-3546c531:#- | 1:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#- | 2:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/3780/7:24
-LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/3786/7:24
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Dusk/0/5:51
+LINE f1n6-d6d69095 - "Line f1n6-d6d69095 " #L_f1n6-d6d69095 [0:f1n1-3546c531:#- | 1:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#- | 2:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/3600/7:21
+LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/3606/7:21
 END f1n8-47f14c77 playing=- flow=flow-1-f565837a depth=0 t=2/Dawn/0/13:17
 SAVE {"changes":{"prop:Child.Brave":-16,"prop:Fisher.Energy":3,"prop:Keeper.Energy":2,"prop:Watch.Power":4,"rel:Character->Faction.Loyal:Keeper:Watch":-12,"var:World.Missing":-1,"var:World.Ratio":0.5,"visit:f1n4-69ccfc4d":1,"visit:f1n6-d6d69095":1,"visit:f1n8-47f14c77":1},"day":2,"phase":"Dawn","seconds":0,"rng":3663155927}
 FLOW flow-2-0bd0748a seed=1
 LINE f2n0-44136ec2 Child "Line f2n0-44136ec2" #L_f2n0-44136ec2 [0:f2n3-cfcf5842:#-] playing=flow-2-0bd0748a flow=flow-2-0bd0748a depth=0 t=1/Day/0/22:57
-LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/180/23:0
-LINE f1n6-d6d69095 - "Line f1n6-d6d69095 " #L_f1n6-d6d69095 [0:f1n1-3546c531:#- | 1:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#- | 2:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/5580/0:30
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/0/22:57
+LINE f1n6-d6d69095 - "Line f1n6-d6d69095 " #L_f1n6-d6d69095 [0:f1n1-3546c531:#- | 1:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#- | 2:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/5400/0:27
 LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/6/6:21
 END f1n8-47f14c77 playing=- flow=flow-1-f565837a depth=0 t=1/Night/6/6:21
 SAVE {"changes":{"prop:Child.Brave":-16,"prop:Fisher.Energy":3,"prop:Watch.Power":4,"rel:Character->Faction.Loyal:Keeper:Watch":-8,"visit:f1n4-69ccfc4d":1,"visit:f1n6-d6d69095":1,"visit:f1n8-47f14c77":1},"day":1,"phase":"Night","seconds":6,"rng":191034278}
 FLOW flow-2-0bd0748a seed=2
 LINE f2n0-44136ec2 Child "Line f2n0-44136ec2" #L_f2n0-44136ec2 [0:f2n3-cfcf5842:#-] playing=flow-2-0bd0748a flow=flow-2-0bd0748a depth=0 t=1/Day/0/22:57
-LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/180/23:0
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/0/22:57
 LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Dusk/6/5:51
 END f1n8-47f14c77 playing=- flow=flow-1-f565837a depth=0 t=1/Dusk/6/5:51
 SAVE {"changes":{"prop:Child.Brave":-16,"prop:Fisher.Energy":3,"prop:Watch.Power":4,"rel:Character->Faction.Loyal:Keeper:Watch":-4,"visit:f1n4-69ccfc4d":1,"visit:f1n8-47f14c77":1},"day":1,"phase":"Dusk","seconds":6,"rng":2845470039}
 FLOW flow-2-0bd0748a seed=3
 LINE f2n0-44136ec2 Child "Line f2n0-44136ec2" #L_f2n0-44136ec2 [0:f2n3-cfcf5842:#-] playing=flow-2-0bd0748a flow=flow-2-0bd0748a depth=0 t=1/Day/0/22:57
-LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/180/6:24
-LINE f1n6-d6d69095 - "Line f1n6-d6d69095 " #L_f1n6-d6d69095 [0:f1n1-3546c531:#- | 1:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#- | 2:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/5580/7:54
-LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/5586/7:54
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/0/6:21
+LINE f1n6-d6d69095 - "Line f1n6-d6d69095 " #L_f1n6-d6d69095 [0:f1n1-3546c531:#- | 1:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#- | 2:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/5400/7:51
+LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/5406/7:51
 END f1n8-47f14c77 playing=- flow=flow-1-f565837a depth=0 t=2/Day/0/22:57
 SAVE {"changes":{"prop:Child.Brave":-16,"prop:Fisher.Energy":3,"prop:Fisher.Mood":0,"prop:Keeper.Energy":2,"prop:Watch.Power":4,"rel:Character->Faction.Loyal:Keeper:Watch":-16,"var:World.Missing":-1,"var:World.Ratio":0.5,"visit:f1n4-69ccfc4d":1,"visit:f1n6-d6d69095":1,"visit:f1n8-47f14c77":1},"day":2,"phase":"Day","seconds":0,"rng":3036504317}
 FLOW flow-2-0bd0748a seed=4
 LINE f2n0-44136ec2 Child "Line f2n0-44136ec2" #L_f2n0-44136ec2 [0:f2n3-cfcf5842:#-] playing=flow-2-0bd0748a flow=flow-2-0bd0748a depth=0 t=1/Day/0/22:57
-LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/180/23:0
-LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/186/23:0
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/0/22:57
+LINE f1n8-47f14c77 - "Line f1n8-47f14c77 11.Dusk." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/6/22:57
 END f1n8-47f14c77 playing=- flow=flow-1-f565837a depth=0 t=1/Dusk/0/5:51
 SAVE {"changes":{"prop:Child.Brave":-16,"prop:Fisher.Energy":3,"prop:Watch.Power":4,"rel:Character->Faction.Loyal:Keeper:Watch":-4,"visit:f1n4-69ccfc4d":1,"visit:f1n8-47f14c77":1},"day":1,"phase":"Dusk","seconds":0,"rng":3859374265}
 FLOW flow-2-0bd0748a seed=5
 LINE f2n0-44136ec2 Child "Line f2n0-44136ec2" #L_f2n0-44136ec2 [0:f2n3-cfcf5842:#-] playing=flow-2-0bd0748a flow=flow-2-0bd0748a depth=0 t=1/Day/0/22:57
-LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/180/23:0
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10fDusk.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Day/0/22:57
 LINE f1n6-d6d69095 - "Line f1n6-d6d69095 " #L_f1n6-d6d69095 [0:f1n1-3546c531:#- | 1:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#- | 2:f1n8-47f14c77:Line f1n8-47f14c77 11.Dusk.#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/5400/7:51
-LINE f1n0-9209d10f Fisher "Line f1n0-9209d10ftrue.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/20010/11:54
-LINE f1n8-47f14c77 - "Line f1n8-47f14c77 truetrue.true." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/20016/11:54
+LINE f1n0-9209d10f Fisher "Line f1n0-9209d10ftrue.0." #L_f1n0-9209d10f [0:f1n4-69ccfc4d:#-] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/19830/11:51
+LINE f1n8-47f14c77 - "Line f1n8-47f14c77 truetrue.true." #- [] playing=flow-1-f565837a flow=flow-1-f565837a depth=0 t=1/Night/19836/11:51
 END f1n8-47f14c77 playing=- flow=flow-1-f565837a depth=0 t=2/Day/0/22:57
 SAVE {"changes":{"prop:Child.Brave":-16,"prop:Fisher.Energy":3,"prop:Fisher.Mood":0,"prop:Watch.Power":4,"rel:Character->Faction.Loyal:Child:Guild":0,"rel:Character->Faction.Loyal:Keeper:Watch":-16,"var:World.Count":true,"var:World.Label":true,"var:World.Missing":-1,"var:World.Ratio":1,"var:World.Storm":0.5,"visit:f1n4-69ccfc4d":2,"visit:f1n6-d6d69095":1,"visit:f1n8-47f14c77":1},"day":2,"phase":"Day","seconds":0,"rng":3418572873}
 FLOW flow-3-4eba5882 seed=0

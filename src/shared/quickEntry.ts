@@ -14,7 +14,7 @@ import { compareOrder } from './order'
 import { nextEdgeOrder, outgoingEdges, settleEdgeOrder } from './flowOrder'
 import type { Size } from './frames'
 import { assignLineId } from './lineIds'
-import { canConnect, INPUT_HANDLE, isExclusiveHandle, outputHandles } from './nodes'
+import { branchHandles, canConnect, INPUT_HANDLE, isExclusiveHandle, outputHandles } from './nodes'
 import type { Flow, FlowNode, Position, Project } from './schema'
 
 /** What a fresh dialogue node measures on the canvas, roughly. */
@@ -126,7 +126,7 @@ export function insertLineAfter(
   const flow = project.flows[flowId]
   const from = flow?.nodes[nodeId]
   if (!flow || !from) return null
-  const handles = outputHandles(from.type)
+  const handles = branchHandles(from.type)
   if (!handles.length) return null
   // Condition: the first branch still free, else the true branch.
   const handle = handles.find((h) => !outgoingEdges(flow, nodeId, h).length) ?? handles[0]

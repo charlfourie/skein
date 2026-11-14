@@ -1,4 +1,4 @@
-# Skein game export — format `skein.export` v4
+# Skein game export — format `skein.export` v5
 
 **Export** (Ctrl+E, or the package icon in the top bar) writes a JSON file for your game. It has
 everything the game needs and nothing the editor needs. There are no canvas positions,
@@ -24,7 +24,7 @@ A C# port for Unity, Godot .NET and plain .NET lives in `runtimes/csharp/Skein`
 (C# 9, no dependencies), with Unity components in `runtimes/unity`. Every runtime is
 checked against the shared [conformance kit](../runtimes/conformance): committed
 exports, and the exact trace the reference runtime produces for each. The format is
-also published as a JSON Schema, [`schemas/skein.export.v4.json`](../schemas), and
+also published as a JSON Schema, [`schemas/skein.export.v5.json`](../schemas), and
 [VERSIONING.md](VERSIONING.md) says what each version promises.
 
 ```bash
@@ -48,6 +48,7 @@ use a newer feature keeps loading in older runtimes.
 | 2 | Visit counts (`{ "get": "visit" }`, node `count` / `tag`), flow-scoped rules (rule `flow`), `advanceTo` with `stay`, dice (`chance`, `roll`), `call` nodes and `jumpFlow` |
 | 3 | The clock: node `takes` / `activity`, `{ "pass": m }`, `Time.Hour` / `Time.Minute` reads, a start `minute` |
 | 4 | Variables inside lines: dialogue `vars`, filled into `text` and `menuText` |
+| 5 | Hubs that keep asking (`ask`) and fall back (`fallback`) |
 
 A runtime should refuse a file whose `version` is higher than it knows. (`time.minutes`
 and `time.dayStart` are written in every file, and line IDs, `line` and `menuLine`, in
@@ -58,7 +59,7 @@ every file that has them; older runtimes ignore them.)
 ```jsonc
 {
   "format": "skein.export",
-  "version": 4,                     // the lowest version that reads this file
+  "version": 5,                     // the lowest version that reads this file
   "project": { "id": "…", "name": "The Lighthouse Keeper" },
   "templates": { "<Template>": … },
   "entities":  { "<Entity>": … },
@@ -302,7 +303,7 @@ Node types:
 | `dialogue` | `speaker` (entity name or null), `text`, `menuText?`, `next: [ids]`, `line?`, `menuLine?`, `vars?` | Shows a line. One available `next` = continue. Several = the player chooses (show each target's `menuText`, else its `text`). None = this flow ends after the line: call `choose(0)` to get the end beat (or, inside a Call, the beat after it). |
 | `condition` | `condition`, `onTrue`, `onFalse` (ids or null) | Evaluates and follows a branch automatically. |
 | `instruction` | `instruction` (effects), `next` | Runs `instruction`, then follows the first available `next`. |
-| `hub` | `label`, `next` | A meeting point. One available path is followed automatically; several are offered as a choice. |
+| `hub` | `label`, `next`, `ask?`, `fallback?` | A meeting point. One available path is followed automatically; several are offered as a choice. **v5:** with `ask: true`, a single available path is offered as a choice too (the hub has several connections, and some can disappear). When no path is available, follow `fallback` (a node id) if there is one; otherwise the path ends. |
 | `jump` | `jumpTo` (id or null), `jumpFlow?` | Continues at the target. **v2:** with `jumpFlow` (a flow id), the current flow is over and the story continues at that flow's first available start (a hand-off). |
 | `call` | `flow` (flow id or null), `next` | **v2.** Plays `flow` from its first available start. When that flow runs out, the story comes back and follows the first available `next`. A null or missing `flow` passes straight through to `next`. |
 

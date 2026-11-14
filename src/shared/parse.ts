@@ -45,7 +45,11 @@ const MIGRATIONS: Record<number, (raw: Record<string, unknown>) => Record<string
   // v6 → v7: line IDs on dialogue lines (`data.lineId`), line prefixes and
   // comments on flows, and projects that can be a folder with one file per
   // flow. Line IDs are given to every line after loading (see assignLineIds).
-  6: (raw) => raw
+  6: (raw) => raw,
+  // v7 → v8: hubs gain a second output, "fallback" ("When nothing's left"),
+  // followed when none of their choices is available. Older files have no
+  // fallback connections, so nothing needs rewriting.
+  7: (raw) => raw
 }
 
 function migrateV4toV5(raw: Record<string, unknown>): Record<string, unknown> {

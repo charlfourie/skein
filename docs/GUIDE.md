@@ -45,7 +45,7 @@ invalid identifiers are flagged in red.
 | **Dialogue** | A line spoken by a character |
 | **Condition** | Branches true / false |
 | **Instruction** | Changes game state |
-| **Hub** | A meeting point that paths merge into |
+| **Hub** | A meeting point that paths merge into, and a menu of choices. Its second output, **none left**, is where the story goes once none of its choices is available |
 | **Jump** | Continues at another node, or hands off to another flow's start |
 | **Play flow** | Plays another flow (a reusable scene), then carries on from here |
 
@@ -267,6 +267,13 @@ outcome and weights the endings by the odds.
 Give a node a **Tag** in its inspector to refer to it with `Seen.Tag` / `Visits.Tag`
 from any flow. **Only once** hides a choice after it has been picked. A rule can be
 limited to **While playing** one flow, so it doesn't run during other scenes.
+
+**When choices run out.** A hub with several choices keeps showing its menu while any
+choice is left, even just one, so the player still picks "Leave" rather than being
+sent there. Once none is left, the story follows the hub's **none left** output, for
+example to "I've heard all your jokes." With nothing connected there, the path ends.
+Only once on the hub itself means the story can't come back to the hub at all: put it
+on the choices instead.
 
 Operators: `and or not` (or `&& || !`), `== != < <= > >=`, `is`, `is not`, and
 `+ - * /`. `#` starts a comment.

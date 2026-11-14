@@ -187,6 +187,22 @@ export const NarrativeNode = memo(function NarrativeNode({ id, data, selected }:
       {outputs.length === 1 && (
         <Handle type="source" position={Position.Bottom} id={outputs[0]} className={handleClass(outputState[outputs[0]] ?? 'idle')} />
       )}
+      {node.type === 'hub' && (
+        <>
+          <div className="flex justify-end px-2 pb-1 text-[10px] font-medium text-faint" title="When nothing's left: followed when none of the hub's choices is available">
+            none left
+          </div>
+          <Handle type="source" position={Position.Bottom} id="out" style={{ left: '42%' }} className={handleClass(outputState.out ?? 'idle')} />
+          <Handle
+            type="source"
+            position={Position.Bottom}
+            id="fallback"
+            title="When nothing's left: followed when none of the hub's choices is available"
+            style={{ left: '84%' }}
+            className={cx(handleClass(outputState.fallback ?? 'idle'), 'sk-handle--fallback')}
+          />
+        </>
+      )}
       {node.type === 'condition' && (
         <>
           <div className="flex justify-between px-6 pb-1.5 text-[10px] font-semibold uppercase tracking-wider">

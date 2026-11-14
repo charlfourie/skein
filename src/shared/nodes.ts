@@ -11,7 +11,7 @@ import type { Flow, FlowNode } from './schema'
  *   dialogue     speakerId?: entity id, text?, menuText?
  *   condition    expression?: string          (outputs: "true", "false")
  *   instruction  script?: string
- *   hub          label?: string
+ *   hub          label?: string             (outputs: "out" choices, "fallback" when none is left)
  *   jump         targetId?: node id           (no outputs: flow continues at the target)
  *                targetFlowId?: flow id       (instead: continue at that flow's start, a hand-off)
  *   call         flowId?: flow id             (plays that flow from its start, then continues on "out")
@@ -26,7 +26,7 @@ const OUTPUTS: Record<NodeType, readonly string[]> = {
   dialogue: ['out'],
   condition: ['true', 'false'],
   instruction: ['out'],
-  hub: ['out'],
+  hub: ['out', 'fallback'],
   jump: [],
   call: ['out']
 }
@@ -35,9 +35,17 @@ export function isKnownNodeType(type: string): type is NodeType {
   return (NODE_TYPES as readonly string[]).includes(type)
 }
 
+/** A hub's "When nothing's left" output: followed when none of its choices is available. */
+export const FALLBACK_HANDLE = 'fallback'
+
 /** Output handle ids for a node type (unknown types get a single "out"). */
 export function outputHandles(type: string): readonly string[] {
   return isKnownNodeType(type) ? OUTPUTS[type] : ['out']
+}
+
+/** The outputs that carry the story on as choices or branches (a hub's fallback isn't one of its choices). */
+export function branchHandles(type: string): readonly string[] {
+  return outputHandles(type).filter((h) => h !== FALLBACK_HANDLE)
 }
 
 /**
@@ -120,7 +128,7 @@ export function canConnect(flow: Pick<Flow, 'nodes' | 'edges'>, c: ConnectionLik
   return { ok: true }
 }
 
-/** Condition branches carry one connection each; connecting a branch again replaces it. */
+/** Condition branches and a hub's fallback carry one connection each; connecting again replaces it. */
 export function isExclusiveHandle(type: string, handle: string): boolean {
-  return type === 'condition' && (handle === 'true' || handle === 'false')
+  return (type === 'condition' && (handle === 'true' || handle === 'false')) || (type === 'hub' && handle === FALLBACK_HANDLE)
 }

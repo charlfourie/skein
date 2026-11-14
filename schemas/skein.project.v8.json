@@ -1,8 +1,8 @@
 {
-  "$id": "https://raw.githubusercontent.com/charlfourie/skein/main/schemas/skein.project.v7.json",
+  "$id": "https://raw.githubusercontent.com/charlfourie/skein/main/schemas/skein.project.v8.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "additionalProperties": true,
-  "description": "A Skein project (format \"skein.project\", version 7): a single .skein.json file, or the project.json of a project folder (whose flows are in flows/*.json).",
+  "description": "A Skein project (format \"skein.project\", version 8): a single .skein.json file, or the project.json of a project folder (whose flows are in flows/*.json).",
   "properties": {
     "entities": {
       "additionalProperties": {
@@ -366,7 +366,7 @@
       "type": "object"
     },
     "schemaVersion": {
-      "const": 7,
+      "const": 8,
       "type": "number"
     },
     "state": {

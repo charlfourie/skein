@@ -55,10 +55,11 @@ describe('Seen, Visits and Only once', () => {
     expect(write.diagnostics[0].message).toMatch(/counts itself/)
   })
 
-  it('exports counted nodes, "only once" as a requirement, and flow-scoped rules, as format v2', () => {
+  it('exports counted nodes, "only once" as a requirement, and flow-scoped rules, as format v2 (v5 for the hub that keeps asking)', () => {
     const { file, problems } = buildExport(project())
     expect(problems).toEqual([])
-    expect(file.version).toBe(2)
+    // The hub offers once-only choices, so it keeps asking while one is left (v5); without that it would be v2.
+    expect(file.version).toBe(5)
     const ask = file.flows.f1.nodes.ask
     expect(ask.count).toBe(true)
     expect(ask.tag).toBe('Ask')

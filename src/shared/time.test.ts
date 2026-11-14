@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { compile } from './expr/check'
 import { buildExport } from './export/build'
 import { SkeinStory, SkeinWorld } from './export/runtime'
+import { EXPORT_VERSION } from './export/types'
 import { createEmptyProject, createFlow } from './factory'
 import { explore } from './play/explore'
 import type { Project } from './schema'
@@ -66,6 +67,6 @@ describe('advance to / advance until', () => {
 
   it('a runtime refuses a file from a newer format', () => {
     const { file } = buildExport(project(''))
-    expect(() => new SkeinWorld({ ...file, version: 5 as never })).toThrow(/version 5/)
+    expect(() => new SkeinWorld({ ...file, version: (EXPORT_VERSION + 1) as never })).toThrow(new RegExp(`version ${EXPORT_VERSION + 1}`))
   })
 })

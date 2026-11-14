@@ -190,6 +190,9 @@ textarea,
 .react-flow__handle.sk-handle--false {
   border-color: #f87171aa;
 }
+.react-flow__handle.sk-handle--fallback {
+  border-style: dashed;
+}
 @keyframes sk-handle-pulse {
   0%,
   100% {
