@@ -8,6 +8,10 @@ Project format 8 and export format 5 (see [VERSIONING.md](docs/VERSIONING.md)). 
 only need a version 5 runtime when they use the new hub behaviour below.
 
 ### Added
+- **Step back and skip in Play.** **Backspace** (or the ↶ button) undoes the last step,
+  as far back as the start, with values, time and dice exactly as they were.
+  **Shift+Enter** (or ⏭) continues through lines with one way on and stops at the next
+  real choice.
 - **Each choice has its own text, Only once and Requires.** Choices now belong to the
   connection, not the line they lead to: select the line or hub that offers them and edit
   each one under **Choices, in order**. The same line can be offered with different words
@@ -45,6 +49,9 @@ only need a version 5 runtime when they use the new hub behaviour below.
   stuck on screen: the close button and the **Playing** toggle stopped it playing but
   didn't remove it until you left the canvas.
 - **Save as test** no longer gets squeezed when the note beside it is long.
+- **Backspace during Play no longer deletes a node.** After picking a choice, focus left
+  the Play panel, so Backspace reached the canvas and deleted the node Play had selected.
+  The panel now keeps the keyboard.
 
 ## 2026-11-12 · 0.9.0 · Phase 9: writer's workflow
 

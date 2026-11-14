@@ -37,6 +37,13 @@ export interface PlayOption {
  * using the export would do. Records a transcript, including every state
  * change and the time and rule activity each step causes.
  */
+/** One action taken during a play-through (see PlaySession.stepBack). */
+type Input =
+  | { k: 'choose'; index: number; pick?: true; route?: true }
+  | { k: 'advance'; phases: number }
+  | { k: 'continue'; flowId: string }
+  | { k: 'endReplay' }
+
 export class PlaySession {
   readonly world: SkeinWorld
   story: SkeinStory
@@ -68,6 +75,7 @@ export class PlaySession {
   ) {
     this.startFlowId = flowId
     this.startNodeId = startNodeId ?? null
+    this.args = [file, flowId, start, extra, picks, route, startNodeId]
     this.tags = tagsOf(file)
     this.world = new SkeinWorld(file)
     applyStart(this.world, start, extra)
@@ -124,6 +132,11 @@ export class PlaySession {
     this.beat = this.step(() => this.story.start(this.startNodeId ?? undefined))
   }
 
+  /** What the constructor was given, so stepping back can start the same play-through again. */
+  private readonly args: ConstructorParameters<typeof PlaySession>
+  /** Every action taken, in order, so stepping back can replay all but the last (dice come out the same). */
+  private readonly inputs: Input[] = []
+
   /** Pass entries waiting for the clock reading at the end of the step. */
   private pendingPass: Extract<PlayEntry, { kind: 'pass' }>[] = []
   private replayPicks: number[] | null = null
@@ -176,6 +189,13 @@ export class PlaySession {
   choose(index: number): void {
     if (this.ended) return
     const choices = choicesOf(this.beat)
+    if (!choices[index] && choices.length > 0) return // not an option: nothing happens, so nothing to step back over
+    this.inputs.push({ k: 'choose', index })
+    this.doChoose(index)
+  }
+
+  private doChoose(index: number): void {
+    const choices = choicesOf(this.beat)
     const choice = choices[index]
     if (!choice) {
       // A line with nothing after it: moving on ends the story.
@@ -191,6 +211,7 @@ export class PlaySession {
 
   /** Move time on, as a game clock would between beats. */
   advance(phases = 1): void {
+    this.inputs.push({ k: 'advance', phases })
     this.step(() => {
       this.world.advance(phases)
       return this.beat
@@ -199,6 +220,7 @@ export class PlaySession {
 
   /** Carry the same world into another flow (e.g. the next scene). */
   continueIn(flowId: string): void {
+    this.inputs.push({ k: 'continue', flowId })
     this.continued = true
     this.story = this.attach(new SkeinStory(this.world, flowId))
     this.visited.clear()
@@ -213,9 +235,15 @@ export class PlaySession {
     for (let guard = 0; guard < 1000 && !this.ended; guard++) {
       if (choicesOf(this.beat).length > 1) {
         if (this.replayIndex >= picks.length) break
-        this.choose(picks[this.replayIndex++])
-      } else this.choose(0)
+        const index = picks[this.replayIndex++]
+        this.inputs.push({ k: 'choose', index, pick: true })
+        this.doChoose(index)
+      } else {
+        this.inputs.push({ k: 'choose', index: 0 })
+        this.doChoose(0)
+      }
     }
+    this.inputs.push({ k: 'endReplay' })
     this.world.decide = undefined
   }
 
@@ -237,9 +265,67 @@ export class PlaySession {
           break
         }
         this.routeIndex++
-        this.choose(choice.index)
-      } else this.choose(0)
+        this.inputs.push({ k: 'choose', index: choice.index, route: true })
+        this.doChoose(choice.index)
+      } else {
+        this.inputs.push({ k: 'choose', index: 0 })
+        this.doChoose(0)
+      }
     }
+  }
+
+  /** Whether there's a step to go back to. */
+  get canStepBack(): boolean {
+    return this.inputs.some((i) => i.k !== 'endReplay')
+  }
+
+  /**
+   * The same play-through one step earlier: a new session that replays every
+   * action but the last. The start state and seed are the same, so dice come
+   * out as they did. Null at the very start.
+   */
+  stepBack(): PlaySession | null {
+    const inputs = [...this.inputs]
+    while (inputs.length && inputs[inputs.length - 1].k === 'endReplay') inputs.pop()
+    if (!inputs.length) return null
+    inputs.pop()
+    const s = new PlaySession(...this.args)
+    for (const input of inputs) s.apply(input)
+    return s
+  }
+
+  /** Redo one recorded action exactly as it happened (including the recorded picks and route steps it used). */
+  private apply(input: Input): void {
+    this.inputs.push(input)
+    switch (input.k) {
+      case 'choose':
+        if (input.pick) this.replayIndex++
+        if (input.route) this.routeIndex++
+        return this.doChoose(input.index)
+      case 'advance':
+        this.inputs.pop()
+        return this.advance(input.phases)
+      case 'continue':
+        this.inputs.pop()
+        return this.continueIn(input.flowId)
+      case 'endReplay':
+        this.world.decide = undefined
+    }
+  }
+
+  /**
+   * Continue through lines with only one way on, stopping at the next real
+   * choice (or where the story ends). Returns how many steps it took.
+   */
+  skipToChoice(): number {
+    let steps = 0
+    for (; steps < 500 && !this.ended; steps++) {
+      const options = this.options()
+      const available = options.filter((o) => o.available).length
+      if (this.beat.kind !== 'line' || available !== 1 || options.length > 1) break
+      this.choose(0)
+    }
+    return steps
   }
 
   /** Move the world's time and rule log into the transcript. */

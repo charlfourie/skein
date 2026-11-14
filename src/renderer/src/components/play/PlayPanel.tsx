@@ -1,7 +1,7 @@
 import { ExprText } from '../defs/ExprText'
 import { formatDuration } from '@shared/time'
 import { motion } from 'framer-motion'
-import { AlertTriangle, ArrowRightCircle, Clock, Crosshair, Flag, FlaskConical, Lock, Play, RotateCcw, X } from 'lucide-react'
+import { AlertTriangle, ArrowRightCircle, Clock, Crosshair, Flag, FlaskConical, Lock, Play, RotateCcw, SkipForward, Undo2, X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { buildExport, type ExportResult } from '@shared/export/build'
 import type { ExportFile } from '@shared/export/types'
@@ -88,6 +88,15 @@ export function PlayPanel({ project, flowId }: { project: Project; flowId: strin
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [flowId])
 
+  /** Swap in another session for the same play-through (one step back). */
+  const replace = (s: PlaySession | null) => {
+    if (!s) return
+    usePlay.getState().setSession(s)
+    if (s.flowId !== usePlay.getState().flowId) usePlay.setState({ flowId: s.flowId })
+    follow(s)
+    keepFocus()
+  }
+
   const act = (fn: (s: PlaySession) => void) => {
     const s = usePlay.getState().session
     if (!s) return
@@ -97,10 +106,17 @@ export function PlayPanel({ project, flowId }: { project: Project; flowId: strin
     if (s.flowId !== before) usePlay.setState({ flowId: s.flowId })
     usePlay.getState().touch()
     follow(s)
+    keepFocus()
   }
 
   // Take keyboard focus on open, so Enter and 1–9 play the story straight away.
   const panelRef = useRef<HTMLElement>(null)
+  /** After a step, a clicked button may have re-rendered away: give the panel the keyboard back. */
+  const keepFocus = () =>
+    requestAnimationFrame(() => {
+      const a = document.activeElement
+      if (!a || a === document.body) panelRef.current?.focus({ preventScroll: true })
+    })
   useEffect(() => {
     panelRef.current?.focus({ preventScroll: true })
   }, [])
@@ -145,6 +161,7 @@ export function PlayPanel({ project, flowId }: { project: Project; flowId: strin
             exportResult={build}
             problems={flowProblems.map((p) => p.message)}
             act={act}
+            replace={replace}
             restart={() => restart()}
             onSaved={() => setTab('tests')}
           />
@@ -223,6 +240,7 @@ function PlayTab({
   exportResult,
   problems,
   act,
+  replace,
   restart,
   onSaved
 }: {
@@ -232,6 +250,7 @@ function PlayTab({
   exportResult: ExportResult
   problems: string[]
   act(fn: (s: PlaySession) => void): void
+  replace(s: PlaySession | null): void
   restart(): void
   onSaved(): void
 }) {
@@ -266,6 +285,20 @@ function PlayTab({
           t.blur()
         } else return
       }
+      // In the panel only (on the canvas, Backspace deletes): Backspace steps back; Shift+Enter skips to the next real choice.
+      // Focus lost to the page (a clicked choice re-rendered away) counts as the panel, so the canvas never deletes on it.
+      const inPanel = Boolean(t.closest('[data-play-panel]')) || t === document.body
+      if (inPanel && (e.key === 'Backspace' || (e.key === 'Enter' && e.shiftKey))) e.stopPropagation()
+      if (e.key === 'Backspace' && inPanel) {
+        e.preventDefault()
+        if (session.canStepBack) replace(session.stepBack())
+        return
+      }
+      if (e.key === 'Enter' && e.shiftKey && inPanel) {
+        e.preventDefault()
+        act((s) => s.skipToChoice())
+        return
+      }
       const available = options.filter((o) => o.available)
       if (e.key === 'Enter' && available.length === 1) {
         e.preventDefault()
@@ -298,6 +331,8 @@ function PlayTab({
         </span>
         <IconButton size="sm" icon={ArrowRightCircle} label="Advance time one phase (as a game clock would)" onClick={() => act((s) => s.advance(1))} />
         <div className="flex-1" />
+        <IconButton size="sm" icon={Undo2} label="Step back (Backspace)" disabled={!session.canStepBack} onClick={() => replace(session.stepBack())} />
+        <IconButton size="sm" icon={SkipForward} label="Skip to the next choice (Shift+Enter)" disabled={session.ended} onClick={() => act((s) => s.skipToChoice())} />
         <IconButton size="sm" icon={Crosshair} label={follow ? 'Following the story on the canvas' : 'Follow the story on the canvas'} active={follow} onClick={() => usePlay.getState().setFollow(!follow)} />
         <IconButton size="sm" icon={RotateCcw} label="Restart from the starting state" onClick={restart} />
       </div>
