@@ -64,6 +64,8 @@ export function TemplateDesigner({ template }: { template: Template }) {
         />
         {template.description && <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-muted">{template.description}</p>}
 
+        <TemplateEntities project={project} templateId={template.id} />
+
         <div className="mb-2 mt-8 flex items-center justify-between">
           <h2 className="text-2xs font-semibold uppercase tracking-wider text-faint">Properties</h2>
           <Button variant="primary" icon={Plus} onClick={(e) => addMenu.open(e.currentTarget)}>
@@ -117,6 +119,33 @@ export function TemplateDesigner({ template }: { template: Template }) {
         })}
       </Popover>
       <TemplatePicker project={project} anchor={entityMenu.anchor} onClose={entityMenu.close} folderId={null} />
+    </div>
+  )
+}
+
+/** The entities made from this template, each a link to its sheet. */
+function TemplateEntities({ project, templateId }: { project: Project; templateId: string }) {
+  const select = useProjectStore((s) => s.select)
+  const entities = Object.values(project.entities)
+    .filter((e) => e.templateId === templateId)
+    .sort((a, b) => a.name.localeCompare(b.name))
+  if (entities.length === 0) return null
+  return (
+    <div className="mt-6">
+      <h2 className="mb-2 text-2xs font-semibold uppercase tracking-wider text-faint">Entities ({entities.length})</h2>
+      <div className="flex flex-wrap gap-1.5">
+        {entities.map((e) => (
+          <button
+            key={e.id}
+            type="button"
+            onClick={() => select({ kind: 'entity', id: e.id })}
+            title={`Open ${e.name}`}
+            className="rounded-md border border-line bg-panel px-2.5 py-1 text-xs text-fg transition-colors hover:border-accent/50 hover:text-accent"
+          >
+            {e.name || e.technicalName || '(unnamed)'}
+          </button>
+        ))}
+      </div>
     </div>
   )
 }

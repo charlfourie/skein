@@ -30,7 +30,10 @@ template) and pick the template. The entity sheet shows every property:
 - a grey dot means it is inherited from the template default;
 - ↺ resets a value to the default.
 
-Duplicate an entity with Ctrl+D. Entities that link to the open one are listed at the bottom.
+Duplicate an entity with Ctrl+D. At the bottom of its sheet: the lines it speaks, **Used in
+logic** (every condition, effect, requirement, line and rule that reads or changes its
+state or relationships, each a link) and the entities that link to it. A template's page
+lists the entities made from it, each a link to its sheet.
 
 **Technical names** (e.g. `IsAlive`) are the identifiers scripts and game engines will use. They
 are derived from the display name and follow renames, until you edit one by hand. Duplicates and

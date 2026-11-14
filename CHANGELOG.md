@@ -8,6 +8,10 @@ Project format 8 and export format 5 (see [VERSIONING.md](docs/VERSIONING.md)). 
 only need a version 5 runtime when they use the new hub behaviour below.
 
 ### Added
+- **Used in logic, on every entity.** An entity's sheet lists every condition, effect,
+  requirement, line and rule that reads or changes its state or relationships, so items
+  and locations are indexed like characters' lines. A template's page lists its entities,
+  each a link, instead of just a count.
 - **Download a play-through as a log.** The page button in Play saves it as a
   `.log.txt`: every line, pick, roll, state change and time passing, then what changed
   overall. Saved routes show a pencil on hover, as a reminder that their names can be edited.

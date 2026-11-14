@@ -1,5 +1,7 @@
+import { stateUsage } from '@shared/expr/usage'
+import { describeNode } from '../flow/FlowEditor'
 import { AnimatePresence, motion } from 'framer-motion'
-import { AlertTriangle, ArrowRight, Copy, HeartHandshake, Info, Link2, MessageSquare, RotateCcw, Shapes } from 'lucide-react'
+import { AlertTriangle, ArrowRight, Copy, HeartHandshake, Info, Link2, MessageSquare, RotateCcw, Shapes, Braces } from 'lucide-react'
 import { useMemo } from 'react'
 import { findEntityReferences, findSpeakerLines } from '@shared/mutations'
 import { dataString } from '@shared/nodes'
@@ -181,6 +183,8 @@ export function EntitySheet({ entity }: { entity: Entity }) {
           </section>
         )}
 
+        <UsedInLogic project={project} entityId={entity.id} />
+
         {references.length > 0 && (
           <section className="mt-8">
             <h2 className="mb-2 text-2xs font-semibold uppercase tracking-wider text-faint">Linked from</h2>
@@ -286,6 +290,61 @@ function RelationshipsSection({ project, entity }: { project: Project; entity: E
           )
         })}
       </div>
+    </section>
+  )
+}
+
+/** Where the story's logic reads or changes this entity: conditions, effects, requirements, lines and rules. */
+function UsedInLogic({ project, entityId }: { project: Project; entityId: string }) {
+  const focusNode = useProjectStore((s) => s.focusNode)
+  const select = useProjectStore((s) => s.select)
+  const owners = stateUsage(project).sites.get(`entity:${entityId}`) ?? []
+  if (owners.length === 0) return null
+  return (
+    <section className="mt-8">
+      <h2 className="mb-2 text-2xs font-semibold uppercase tracking-wider text-faint">
+        Used in logic · {owners.length} place{owners.length === 1 ? '' : 's'}
+      </h2>
+      <ul className="flex flex-col gap-1">
+        {owners.slice(0, 50).map((o, i) => {
+          if (o.kind === 'node') {
+            const flow = project.flows[o.flowId]
+            const node = flow?.nodes[o.nodeId]
+            if (!flow || !node) return null
+            return (
+              <li key={`${o.nodeId}:${i}`}>
+                <button
+                  type="button"
+                  onClick={() => focusNode(o.flowId, o.nodeId)}
+                  className="flex w-full items-center gap-2 rounded-md border border-line bg-panel px-2.5 py-1.5 text-left text-xs transition-colors hover:border-accent/50"
+                >
+                  <Braces size={12} className="shrink-0 text-accent" />
+                  <span className="shrink-0 text-faint">{flow.name}</span>
+                  <span className="truncate text-fg">{describeNode(project, node)}</span>
+                </button>
+              </li>
+            )
+          }
+          if (o.kind === 'rule') {
+            const rule = project.state.rules[o.ruleId]
+            if (!rule) return null
+            return (
+              <li key={`${o.ruleId}:${i}`}>
+                <button
+                  type="button"
+                  onClick={() => select({ kind: 'state', id: 'time' })}
+                  className="flex w-full items-center gap-2 rounded-md border border-line bg-panel px-2.5 py-1.5 text-left text-xs transition-colors hover:border-accent/50"
+                >
+                  <Braces size={12} className="shrink-0 text-accent" />
+                  <span className="shrink-0 text-faint">Rule</span>
+                  <span className="truncate text-fg">{rule.name}</span>
+                </button>
+              </li>
+            )
+          }
+          return null
+        })}
+      </ul>
     </section>
   )
 }
