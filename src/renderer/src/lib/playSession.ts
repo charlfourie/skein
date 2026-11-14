@@ -47,6 +47,8 @@ export class PlaySession {
   readonly route: RouteStep[] = []
   /** The flow the play-through began in (the story may hand off to others). */
   readonly startFlowId: string
+  /** The start node chosen in the Play tab (null: the first available, as the game does). */
+  readonly startNodeId: string | null
   /** Set once the story carries on into another flow by hand: a test covers one flow, so it can't be saved. */
   continued = false
   private readonly baseline: SkeinWorld
@@ -60,9 +62,12 @@ export class PlaySession {
     /** Replay a path from the explorer: its picks, in order (choices and dice outcomes). */
     picks?: number[],
     /** Replay a story test's route: dice come out as it recorded them (follow it with followRoute()). */
-    route?: RouteStep[]
+    route?: RouteStep[],
+    /** Begin at this start node instead of the first available one. */
+    startNodeId?: string | null
   ) {
     this.startFlowId = flowId
+    this.startNodeId = startNodeId ?? null
     this.tags = tagsOf(file)
     this.world = new SkeinWorld(file)
     applyStart(this.world, start, extra)
@@ -116,7 +121,7 @@ export class PlaySession {
     this.baseline = new SkeinWorld(file)
     applyStart(this.baseline, start, extra)
     this.story = this.attach(new SkeinStory(this.world, flowId))
-    this.beat = this.step(() => this.story.start())
+    this.beat = this.step(() => this.story.start(this.startNodeId ?? undefined))
   }
 
   /** Pass entries waiting for the clock reading at the end of the step. */

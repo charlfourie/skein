@@ -7,6 +7,10 @@ C# port in `runtimes/csharp`), so what you see is what the game will do.
 ## Play
 
 - Shows the current line or choice. **1–9** pick a choice, **Enter** continues.
+- A flow with several start nodes gets a **Start at** picker. **Automatic** begins where
+  the game would (the first start, by priority, whose requirement holds); pick a start to
+  play from there instead. A picked start still checks its own requirement. Story tests
+  always begin where the game does, so switch back to Automatic to record one.
 - Choices that aren't available right now are listed greyed out, with the
   requirement that hides them.
 - The canvas follows the story (toggle with the crosshair). The current node

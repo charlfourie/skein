@@ -28,6 +28,8 @@ interface PlayState {
   maxPaths: number
   /** Play tab: keep the canvas centred on the current node. */
   follow: boolean
+  /** Play tab: the start node to begin at, for a flow with several (null: the first available, as the game does). */
+  startNodeId: string | null
   /** The current play-through (lives here so it survives switching to another flow's canvas). */
   session: PlaySession | null
   /** Bumped whenever the session changes, so components re-render. */
@@ -45,6 +47,7 @@ interface PlayState {
   setVary(key: StateKey, spec: string | undefined): void
   setMaxPaths(n: number): void
   setFollow(follow: boolean): void
+  setStartNode(startNodeId: string | null): void
   /** Forget the play-through and test settings (a project closed or another one opened). */
   reset(): void
 }
@@ -64,6 +67,7 @@ const PER_PROJECT = {
   seed: null,
   scenarioId: null,
   vary: {},
+  startNodeId: null,
   session: null
 } as const satisfies Partial<PlayState>
 
@@ -81,13 +85,14 @@ export const usePlay = create<PlayState>((set) => ({
   vary: {},
   maxPaths: 20000,
   follow: true,
+  startNodeId: null,
   session: null,
   version: 0,
   setSession: (session) =>
     set((s) => ({ session, version: s.version + 1, current: session?.currentNodeId ?? null, visited: new Set(session?.visited ?? []) })),
   touch: () =>
     set((s) => ({ version: s.version + 1, current: s.session?.currentNodeId ?? null, visited: new Set(s.session?.visited ?? []) })),
-  openFor: (flowId, tab) => set((s) => ({ open: true, flowId, tab: tab ?? s.tab, ...(s.flowId !== flowId ? { current: null, visited: EMPTY } : {}) })),
+  openFor: (flowId, tab) => set((s) => ({ open: true, flowId, tab: tab ?? s.tab, ...(s.flowId !== flowId ? { current: null, visited: EMPTY, startNodeId: null } : {}) })),
   close: () => set({ open: false, current: null, visited: EMPTY, session: null }),
   setTab: (tab) => set({ tab }),
   setPosition: (current, visited) => set({ current, visited }),
@@ -110,7 +115,8 @@ export const usePlay = create<PlayState>((set) => ({
       return { vary }
     }),
   setMaxPaths: (maxPaths) => set({ maxPaths }),
-  setFollow: (follow) => set({ follow })
+  setFollow: (follow) => set({ follow }),
+  setStartNode: (startNodeId) => set({ startNodeId })
 }))
 
 /** How a canvas node should be marked while its flow is being played. */

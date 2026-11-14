@@ -4,6 +4,11 @@ What's new in Skein, newest first. Dates are when the work landed on `main`.
 
 ## Unreleased · Tester feedback
 
+### Added
+- **Start at, in Play.** A flow with more than one start node gets a picker at the top of
+  the Play tab: **Automatic** begins where the game would, or pick any start node to play
+  from there. Story tests still begin where the game does.
+
 ### Changed
 - **The inspector only shows State fields that make sense for the node.** Condition nodes
   no longer offer Requires or Effects (a condition is already a check, so changes belong in
@@ -16,6 +21,7 @@ What's new in Skein, newest first. Dates are when the work landed on `main`.
   switching tabs (Play, Explore, Start state, or **Record a play-through**) left the panel
   stuck on screen: the close button and the **Playing** toggle stopped it playing but
   didn't remove it until you left the canvas.
+- **Save as test** no longer gets squeezed when the note beside it is long.
 
 ## 2026-11-12 · 0.9.0 · Phase 9: writer's workflow
 

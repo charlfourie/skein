@@ -54,7 +54,10 @@ export function PlayPanel({ project, flowId }: { project: Project; flowId: strin
   const restart = useCallback(
     (example?: PathExample) => {
       if (!build.file.flows[flowId]) return
-      const s = new PlaySession(build.file, flowId, currentStart(), example?.start ?? {}, example?.picks)
+      // An explored path is replayed from the first available start, as the explorer found it.
+      const chosen = usePlay.getState().startNodeId
+      const startNodeId = !example && chosen && build.file.flows[flowId].start.includes(chosen) ? chosen : null
+      const s = new PlaySession(build.file, flowId, currentStart(), example?.start ?? {}, example?.picks, undefined, startNodeId)
       if (example) s.replay()
       usePlay.getState().setSession(s)
       if (s.flowId !== flowId) usePlay.setState({ flowId: s.flowId }) // the path ended in another flow
@@ -174,6 +177,34 @@ export function PlayPanel({ project, flowId }: { project: Project; flowId: strin
   )
 }
 
+/**
+ * For a flow with several start nodes: which one to begin at. Automatic is
+ * what the game does (the first, by priority, whose requirement holds). A
+ * picked start still checks its own requirement, so set up the start state to match.
+ */
+function StartPicker({ build, flowId, restart }: { build: ExportFile; flowId: string; restart(): void }) {
+  const chosen = usePlay((s) => s.startNodeId)
+  const starts = build.flows[flowId]?.start ?? []
+  if (starts.length < 2) return null
+  const value = chosen && starts.includes(chosen) ? chosen : null
+  return (
+    <div className="flex items-center gap-2">
+      <span className="shrink-0 text-2xs text-faint">Start at</span>
+      <div className="min-w-0 flex-1">
+        <Select
+          value={value}
+          placeholder="Automatic (first available, as in the game)"
+          options={starts.map((id, i) => ({ value: id, label: `${i + 1}. ${nodeLabel(build, id).replace(/^“|”$/g, '')}` }))}
+          onChange={(id) => {
+            usePlay.getState().setStartNode(id)
+            restart()
+          }}
+        />
+      </div>
+    </div>
+  )
+}
+
 /** The Tests tab's name, with a dot when a test of this flow is failing. */
 function TestsLabel({ flowId }: { flowId: string }) {
   const failing = useTests((s) => Object.values(s.results).some((r) => r.flowId === flowId && r.status !== 'pass'))
@@ -270,6 +301,8 @@ function PlayTab({
         <IconButton size="sm" icon={Crosshair} label={follow ? 'Following the story on the canvas' : 'Follow the story on the canvas'} active={follow} onClick={() => usePlay.getState().setFollow(!follow)} />
         <IconButton size="sm" icon={RotateCcw} label="Restart from the starting state" onClick={restart} />
       </div>
+
+      <StartPicker build={build} flowId={session.startFlowId} restart={restart} />
 
       <Hud project={project} session={session} />
 
@@ -521,7 +554,13 @@ function SaveAsTest({ project, session, build, stale, onSaved }: { project: Proj
   const [open, setOpen] = useState(false)
   const [name, setName] = useState('')
   const [checks, setChecks] = useState('')
-  const disabled = session.continued ? 'A test covers one flow. Restart to record a play-through you can save.' : stale ? 'Restart to play the current version first.' : null
+  const disabled = session.continued
+    ? 'A test covers one flow. Restart to record a play-through you can save.'
+    : session.startNodeId
+      ? 'Tests begin where the game does: set Start at to Automatic to record one.'
+      : stale
+        ? 'Restart to play the current version first.'
+        : null
 
   // Where the test runner would stop on this route (a final line ends the story; a choice waits).
   const [ends, setEnds] = useState(true)
@@ -547,7 +586,7 @@ function SaveAsTest({ project, session, build, stale, onSaved }: { project: Proj
   if (!open)
     return (
       <div className="flex items-center gap-2">
-        <Button icon={FlaskConical} disabled={!!disabled} title={disabled ?? 'Save this play-through as a story test'} onClick={begin}>
+        <Button className="shrink-0" icon={FlaskConical} disabled={!!disabled} title={disabled ?? 'Save this play-through as a story test'} onClick={begin}>
           Save as test
         </Button>
         {disabled ? (
