@@ -40,11 +40,12 @@ It's built for:
 
 | | |
 | --- | --- |
-| ✍️ **Fast to write in** | Press Enter to write the next line (speakers alternate by themselves), read and edit a flow as a script, paste a scene written anywhere as connected lines, copy and paste nodes between projects, and get unsaved work back after a crash. |
+| ✍️ **Fast to write in** | Press Enter to write the next line (speakers alternate by themselves), read and edit a flow as a script, paste a scene written anywhere as connected lines, copy and paste nodes between projects (keys or right-click), and get unsaved work back after a crash. |
 | 🔎 **Search and Problems** | Find and replace across every line, condition and note (with regular expressions, and a preview that refuses replacements that would break logic), and one list of every error, warning and failing test. |
-| 🗺️ **Flowchart editor** | Dialogue, conditions, hubs, jumps and reusable scenes on an infinite canvas, with auto-layout, frames and live warnings for dead ends and orphans. |
-| 🧠 **Real game state** | World variables, character stats, one-way relationships (who trusts whom), dice, and a clock where actions take time. Expressions are checked as you type, with "did you mean…?" suggestions. |
-| ▶️ **Play mode** | Click through any flow exactly as the game will run it, with live state, a transcript, and a HUD for values like coins. Choices you can't afford show as locked, with the reason. |
+| 🗺️ **Flowchart editor** | Dialogue, conditions, hubs, jumps and reusable scenes on an infinite canvas, with auto-layout, frames, alignment, "select everything before/after" and live warnings for dead ends and orphans. |
+| 🔀 **Choices that do what you mean** | Every choice has its own text, **Only once** and requirement, so the same line can be offered differently from different places. Hubs keep their menu up while any choice is left, and fall back somewhere sensible when none is. |
+| 🧠 **Real game state** | World variables, character stats, one-way relationships (who trusts whom), dice, and a clock where actions take time. Expressions are checked as you type, with "did you mean…?" suggestions, and every entity shows where the logic uses it. |
+| ▶️ **Play mode** | Click through any flow exactly as the game will run it, with live state, a transcript, and a HUD for values like coins. Choices you can't afford show as locked, with the reason. Step back, skip to the next choice, pick which start to begin from, and download the play-through as a `.log.txt`. |
 | 🔍 **Explore every path** | Plays every combination of choices and reports endings, unreachable nodes, loops with no way out, and where numbers end up. |
 | 🧪 **Story tests** | Save a play-through or an every-path check, with conditions that must hold. Tests re-run after every edit and in your build pipeline, so a change that breaks the story shows up straight away. |
 | 📦 **Engine export** | Clean, deterministic JSON with every condition pre-compiled, plus ready-made runtimes for **TypeScript**, **C#** (Unity, Godot .NET, .NET) and **Unity components**. |
