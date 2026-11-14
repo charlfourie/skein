@@ -8,6 +8,9 @@ Project format 8 and export format 5 (see [VERSIONING.md](docs/VERSIONING.md)). 
 only need a version 5 runtime when they use the new hub behaviour below.
 
 ### Added
+- **Right-click to copy and paste.** Right-click a node for Copy, Cut, Paste, Duplicate
+  and Delete, or empty canvas for **Paste here** (at that spot). Same clipboard as
+  Ctrl/⌘+C and V, so you can mix the two.
 - **Used in logic, on every entity.** An entity's sheet lists every condition, effect,
   requirement, line and rule that reads or changes its state or relationships, so items
   and locations are indexed like characters' lines. A template's page lists its entities,

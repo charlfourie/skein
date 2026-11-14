@@ -17,7 +17,7 @@ import {
   type OnSelectionChangeParams
 } from '@xyflow/react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Activity, AlertTriangle, Frame as FrameIcon, Grid3x3, Maximize, MessageSquare, Network, Play, Repeat } from 'lucide-react'
+import { Activity, AlertTriangle, ClipboardPaste, Copy, CopyPlus, Frame as FrameIcon, Grid3x3, Maximize, MessageSquare, Network, Play, Repeat, Scissors, Trash2 } from 'lucide-react'
 import { openThreadCounts } from '@shared/comments'
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react'
 import { analyzeFlow, type FlowAnalysis } from '@shared/flowAnalysis'
@@ -30,7 +30,7 @@ import type { IssueMap } from '@shared/validate'
 import { useIssues } from '../../hooks/useIssues'
 import { cx } from '../../lib/cx'
 import { addFrame, addNode, autoLayout, connect, deleteElements, duplicateNodes, moveNodes, pasteNodes, placeFrame, reconnect } from '../../store/flowOps'
-import { copySelection, readClipboard } from '@shared/clipboard'
+import { copySelection, readClipboard, type ClipboardPayload } from '@shared/clipboard'
 import { parseScreenplay } from '@shared/screenplay'
 import { endingNumbers } from '@shared/script'
 import { toast } from '../../lib/toast'
@@ -56,6 +56,9 @@ const edgeTypes = { narrative: NarrativeEdge }
 /** Where new nodes appear relative to the pointer (roughly the node's top centre). */
 const DROP_OFFSET = { x: 130, y: 24 }
 
+
+/** The last nodes copied in this tab, for pasting from the right-click menu when the browser won't share the clipboard. */
+let lastCopied: ClipboardPayload | null = null
 /** Width of the Play panel plus its margin (see PlayPanel). */
 const PLAY_PANEL_WIDTH = 404
 
@@ -272,6 +275,7 @@ export function FlowEditor({ flow }: { flow: Flow }) {
   )
 
   const [quickAdd, setQuickAdd] = useState<QuickAdd | null>(null)
+  const [nodeMenu, setNodeMenu] = useState<{ anchor: DOMRect; at: Position } | null>(null)
 
   const openQuickAdd = (client: { x: number; y: number }, extra?: Pick<QuickAdd, 'from' | 'to'>) => {
     const position = rf.screenToFlowPosition(client)
@@ -493,6 +497,7 @@ export function FlowEditor({ flow }: { flow: Flow }) {
     const payload = copySelection(project, flow.id, sel.nodes, sel.frames)
     if (!payload || !e.clipboardData) return
     e.preventDefault()
+    lastCopied = payload
     e.clipboardData.setData('text/plain', JSON.stringify(payload))
     if (cut) deleteElements(flow.id, sel.nodes, [], sel.frames)
   }
@@ -510,12 +515,38 @@ export function FlowEditor({ flow }: { flow: Flow }) {
       return
     }
     e.preventDefault()
-    const result = pasteNodes(flow.id, payload, pointer.current)
+    lastCopied = payload
+    applyPaste(payload, pointer.current)
+  }
+  const applyPaste = (payload: ClipboardPayload, at: Position | null) => {
+    const result = pasteNodes(flow.id, payload, at)
     if (!result.nodeIds.length) return
     selectNext.current = new Set(result.nodeIds)
     if (result.nodeIds.length === 1) select({ kind: 'node', flowId: flow.id, id: result.nodeIds[0] })
     else select({ kind: 'flow', id: flow.id })
     if (result.notes.length) toast.info(`Pasted ${result.nodeIds.length} node${result.nodeIds.length === 1 ? '' : 's'}`, result.notes.join('\n'))
+  }
+
+  // Right-click menu: the same copy and paste as the keys, through the system clipboard
+  // (with the last copy kept here too, for when the browser won't let a page read it).
+  const menuCopy = (cut: boolean) => {
+    const sel = selectedIds()
+    const payload = copySelection(project, flow.id, sel.nodes, sel.frames)
+    if (!payload) return
+    lastCopied = payload
+    void navigator.clipboard?.writeText(JSON.stringify(payload)).catch(() => undefined)
+    if (cut) deleteElements(flow.id, sel.nodes, [], sel.frames)
+  }
+  const menuPaste = async (at: Position) => {
+    let payload: ClipboardPayload | null = null
+    try {
+      payload = readClipboard((await navigator.clipboard?.readText()) ?? '')
+    } catch {
+      // Reading the clipboard was refused: fall back to the last copy made here.
+    }
+    payload ??= lastCopied
+    if (!payload) return toast.info('Nothing to paste', 'Copy some nodes first (right-click › Copy, or Ctrl/⌘+C).')
+    applyPaste(payload, at)
   }
   useEffect(() => {
     const ours = (e: Event) => {
@@ -621,6 +652,16 @@ export function FlowEditor({ flow }: { flow: Flow }) {
           onPaneContextMenu={(e) => {
             e.preventDefault()
             openQuickAdd({ x: e.clientX, y: e.clientY })
+          }}
+          onNodeContextMenu={(e, node) => {
+            e.preventDefault()
+            if (isFrame(node)) return
+            // Right-clicking outside the selection acts on that node alone, as in most editors.
+            if (!node.selected) {
+              rf.setNodes((ns) => ns.map((n) => ({ ...n, selected: n.id === node.id })))
+              select({ kind: 'node', flowId: flow.id, id: node.id })
+            }
+            setNodeMenu({ anchor: new DOMRect(e.clientX, e.clientY, 0, 0), at: rf.screenToFlowPosition({ x: e.clientX + 30, y: e.clientY + 30 }) })
           }}
           zoomOnDoubleClick={false}
           colorMode="dark"
@@ -740,6 +781,21 @@ export function FlowEditor({ flow }: { flow: Flow }) {
       </div>
 
       <Popover anchor={quickAdd?.anchor ?? null} onClose={() => setQuickAdd(null)} width={240}>
+        {quickAdd && !quickAdd.from && !quickAdd.to && (
+          <>
+            <MenuItem
+              icon={<ClipboardPaste size={14} />}
+              label="Paste here"
+              hint="Ctrl/⌘+V"
+              onClick={() => {
+                const at = { x: quickAdd.position.x + DROP_OFFSET.x, y: quickAdd.position.y + DROP_OFFSET.y }
+                setQuickAdd(null)
+                void menuPaste(at)
+              }}
+            />
+            <div className="mx-1 my-1 h-px bg-line" />
+          </>
+        )}
         <p className="px-2 pb-1 pt-1.5 text-2xs font-semibold uppercase tracking-wider text-faint">
           {quickAdd?.from ? 'Continue with…' : quickAdd?.to ? 'Lead into it with…' : 'Add node'}
         </p>
@@ -750,6 +806,35 @@ export function FlowEditor({ flow }: { flow: Flow }) {
             <MenuItem key={type} icon={<Icon size={14} />} color={meta.color} label={meta.label} hint={meta.hint} onClick={() => createFromQuickAdd(type)} />
           )
         })}
+      </Popover>
+      <Popover anchor={nodeMenu?.anchor ?? null} onClose={() => setNodeMenu(null)} width={200}>
+        {(() => {
+          const sel = selectedIds()
+          const n = sel.nodes.length
+          const what = n === 1 ? 'node' : `${n} nodes`
+          const run = (fn: () => void) => () => {
+            setNodeMenu(null)
+            fn()
+          }
+          return (
+            <>
+              <MenuItem icon={<Copy size={14} />} label={`Copy ${what}`} hint="Ctrl/⌘+C" onClick={run(() => menuCopy(false))} />
+              <MenuItem icon={<Scissors size={14} />} label={`Cut ${what}`} hint="Ctrl/⌘+X" onClick={run(() => menuCopy(true))} />
+              <MenuItem icon={<ClipboardPaste size={14} />} label="Paste" hint="Ctrl/⌘+V" onClick={run(() => nodeMenu && void menuPaste(nodeMenu.at))} />
+              <MenuItem
+                icon={<CopyPlus size={14} />}
+                label={`Duplicate ${what}`}
+                hint="Ctrl/⌘+D"
+                onClick={run(() => {
+                  const ids = duplicateNodes(flow.id, sel.nodes)
+                  if (ids.length) selectNext.current = new Set(ids)
+                })}
+              />
+              <div className="mx-1 my-1 h-px bg-line" />
+              <MenuItem icon={<Trash2 size={14} />} color="#f87171" label={`Delete ${what}`} hint="Delete" onClick={run(() => deleteElements(flow.id, sel.nodes, [], sel.frames))} />
+            </>
+          )
+        })()}
       </Popover>
     </FlowContext.Provider>
   )

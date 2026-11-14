@@ -99,6 +99,8 @@ invalid identifiers are flagged in red.
   comment and stays on your computer (there are no accounts). Nodes with open threads
   show a 💬 badge, and the **open comments** chip at the top right visits each one.
   Comments travel with the project file and are never exported.
+- **Right-click** a node for Copy, Cut, Paste, Duplicate and Delete (on the whole selection
+  when the node is part of it), or empty canvas for **Paste here** and the node list.
 - **Keys:** Delete removes, Ctrl+D duplicates, Shift+drag box-selects. Press **?** for
   every shortcut.
 - **Auto-layout and preferences:** auto-layout (dagre, undoable) tidies the flow. Snap
