@@ -10,6 +10,10 @@ C# port in `runtimes/csharp`), so what you see is what the game will do.
 - **Step back** (**Backspace**) undoes the last step: a choice, a line, or time moving on.
   Values, time and dice go back exactly as they were, and the same seed rolls the same
   dice when you play on. Step back as far as the start.
+- **Download a log** (the page button) saves the play-through as a `.log.txt`: every line,
+  pick, roll, state change and time passing, then what changed overall. Handy for bug
+  reports and for anyone without Skein. Saved routes (Save as test) can be named when you
+  save them, and renamed by clicking their name in the Tests tab.
 - **Skip to the next choice** (**Shift+Enter**) continues through lines that only go one
   way and stops at the next real choice, or where the story ends.
 - A flow with several start nodes gets a **Start at** picker. **Automatic** begins where

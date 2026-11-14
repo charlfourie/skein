@@ -8,6 +8,9 @@ Project format 8 and export format 5 (see [VERSIONING.md](docs/VERSIONING.md)). 
 only need a version 5 runtime when they use the new hub behaviour below.
 
 ### Added
+- **Download a play-through as a log.** The page button in Play saves it as a
+  `.log.txt`: every line, pick, roll, state change and time passing, then what changed
+  overall. Saved routes show a pencil on hover, as a reminder that their names can be edited.
 - **Step back and skip in Play.** **Backspace** (or the ↶ button) undoes the last step,
   as far back as the start, with values, time and dice exactly as they were.
   **Shift+Enter** (or ⏭) continues through lines with one way on and stops at the next

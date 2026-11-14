@@ -1,4 +1,4 @@
-import { Eye, FlaskConical, Play, Plus, Route, Trash2 } from 'lucide-react'
+import { Eye, FlaskConical, Play, Plus, Route, Trash2, Pencil } from 'lucide-react'
 import type { ExportResult } from '@shared/export/build'
 import type { ExportNode } from '@shared/export/types'
 import type { PathExample } from '@shared/play/explore'
@@ -136,8 +136,15 @@ function TestCard({
         <span className={cx('transition-opacity', stale && 'opacity-40')} title={stale ? 'Re-checking after your edit…' : undefined}>
           <TestStatusIcon status={status} />
         </span>
-        <div className="min-w-0 flex-1">
-          <TextInput value={t.name} required placeholder="Test name" onCommit={(name) => updateTest(t.id, { name })} className="h-7 border-transparent bg-transparent px-1 py-0.5 text-xs font-medium hover:border-line" />
+        <div className="group/name relative min-w-0 flex-1" title="Click to rename">
+          <TextInput
+            value={t.name}
+            required
+            placeholder="Name this route"
+            onCommit={(name) => updateTest(t.id, { name })}
+            className="h-7 border-transparent bg-transparent px-1 py-0.5 pr-6 text-xs font-medium hover:border-line"
+          />
+          <Pencil size={11} className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-faint opacity-0 transition-opacity group-hover/name:opacity-100" />
         </div>
         {t.kind === 'play' && (
           <IconButton size="sm" icon={Play} label="Play this test's route" onClick={() => onPlayRoute(t.flowId, t.scenarioId, t.route ?? [])} />

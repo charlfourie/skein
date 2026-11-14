@@ -1,7 +1,7 @@
 import { ExprText } from '../defs/ExprText'
 import { formatDuration } from '@shared/time'
 import { motion } from 'framer-motion'
-import { AlertTriangle, ArrowRightCircle, Clock, Crosshair, Flag, FlaskConical, Lock, Play, RotateCcw, SkipForward, Undo2, X } from 'lucide-react'
+import { AlertTriangle, ArrowRightCircle, Clock, Crosshair, FileText, Flag, FlaskConical, Lock, Play, RotateCcw, SkipForward, Undo2, X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { buildExport, type ExportResult } from '@shared/export/build'
 import type { ExportFile } from '@shared/export/types'
@@ -9,6 +9,7 @@ import type { PathExample } from '@shared/play/explore'
 import type { Project, RouteStep } from '@shared/schema'
 import { nodeLabel, playRoute, scenarioStart } from '@shared/play/storyTests'
 import { cx } from '../../lib/cx'
+import { downloadText, playLog, playLogName } from '../../lib/playLog'
 import { formatValue, PlaySession, type PlayEntry, clockText } from '../../lib/playSession'
 import { usePlay } from '../../store/play'
 import { useProjectStore } from '../../store/projectStore'
@@ -333,6 +334,17 @@ function PlayTab({
         <div className="flex-1" />
         <IconButton size="sm" icon={Undo2} label="Step back (Backspace)" disabled={!session.canStepBack} onClick={() => replace(session.stepBack())} />
         <IconButton size="sm" icon={SkipForward} label="Skip to the next choice (Shift+Enter)" disabled={session.ended} onClick={() => act((s) => s.skipToChoice())} />
+        <IconButton
+          size="sm"
+          icon={FileText}
+          label="Download this play-through as a log (.txt)"
+          onClick={() => {
+            const when = new Date()
+            const flow = project.flows[session.startFlowId]?.name ?? 'Play'
+            const startLabel = session.startNodeId ? nodeLabel(build, session.startNodeId) : null
+            downloadText(playLogName(flow, when), playLog(session, { project: project.meta.name, flow, when, startLabel }))
+          }}
+        />
         <IconButton size="sm" icon={Crosshair} label={follow ? 'Following the story on the canvas' : 'Follow the story on the canvas'} active={follow} onClick={() => usePlay.getState().setFollow(!follow)} />
         <IconButton size="sm" icon={RotateCcw} label="Restart from the starting state" onClick={restart} />
       </div>
@@ -639,7 +651,7 @@ function SaveAsTest({ project, session, build, stale, onSaved }: { project: Proj
       <h3 className="flex items-center gap-1.5 text-2xs font-semibold uppercase tracking-wider text-accent">
         <FlaskConical size={11} /> Save as test
       </h3>
-      <TextInput value={name} autoFocus placeholder="Test name" onCommit={setName} />
+      <TextInput value={name} autoFocus placeholder="Name this route" onCommit={setName} />
       <div>
         <p className="mb-1 text-2xs text-muted">
           {ends ? 'It should end here' : 'It should wait at this choice'}, and these should be true there (one per line):
