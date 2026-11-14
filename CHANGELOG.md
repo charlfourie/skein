@@ -2,6 +2,14 @@
 
 What's new in Skein, newest first. Dates are when the work landed on `main`.
 
+## Unreleased · Tester feedback
+
+### Fixed
+- **The Play panel closes again.** Opening it from the status bar's test count and then
+  switching tabs (Play, Explore, Start state, or **Record a play-through**) left the panel
+  stuck on screen: the close button and the **Playing** toggle stopped it playing but
+  didn't remove it until you left the canvas.
+
 ## 2026-11-12 · 0.9.0 · Phase 9: writer's workflow
 
 ### Added

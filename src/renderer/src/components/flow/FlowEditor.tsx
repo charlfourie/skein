@@ -714,7 +714,9 @@ export function FlowEditor({ flow }: { flow: Flow }) {
             </div>
           </Panel>
         </ReactFlow>
-        <AnimatePresence>{playing && <PlayPanel key="play" project={project} flowId={flow.id} />}</AnimatePresence>
+        {/* Not inside AnimatePresence: the panel has no exit animation, and AnimatePresence could hold on to it
+            after closing (opened from the status bar, then any tab switch), leaving it stuck on screen. */}
+        {playing && <PlayPanel key="play" project={project} flowId={flow.id} />}
 
         {empty && (
           <motion.div
