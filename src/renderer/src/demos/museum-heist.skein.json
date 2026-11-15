@@ -167,6 +167,8 @@
     "b2b736a1-b5cc-4d7a-99e9-8b81ebdfe470": {
       "edges": {
         "0664b47e-e22d-4797-bd8b-780056345700": {
+          "choiceLineId": "F3_GETAWAY_fa0b2d_M",
+          "choiceText": "Return it to the museum",
           "id": "0664b47e-e22d-4797-bd8b-780056345700",
           "source": "0ce28de2-3145-4d50-b65c-a4e270af1bfe",
           "sourceHandle": "out",
@@ -230,6 +232,8 @@
           "targetHandle": "in"
         },
         "d7d20661-00f6-445c-bacc-e049e7fc6666": {
+          "choiceLineId": "F3_GETAWAY_61c792_M",
+          "choiceText": "Floor it, Bruno",
           "id": "d7d20661-00f6-445c-bacc-e049e7fc6666",
           "source": "d7fdf78a-c338-406e-b548-c1f4152c8232",
           "sourceHandle": "out",
@@ -244,6 +248,8 @@
           "targetHandle": "in"
         },
         "de336bc6-56a5-41d0-ac56-a582b3ded24a": {
+          "choiceLineId": "F3_GETAWAY_4219c1_M",
+          "choiceText": "Hand it to Madame Vex",
           "id": "de336bc6-56a5-41d0-ac56-a582b3ded24a",
           "source": "0ce28de2-3145-4d50-b65c-a4e270af1bfe",
           "sourceHandle": "out",
@@ -272,6 +278,8 @@
           "targetHandle": "in"
         },
         "f14b7307-c7c5-402f-8455-204979758590": {
+          "choiceLineId": "F3_GETAWAY_5035a6_M",
+          "choiceText": "Pay the car wash (2 coins)",
           "id": "f14b7307-c7c5-402f-8455-204979758590",
           "source": "d7fdf78a-c338-406e-b548-c1f4152c8232",
           "sourceHandle": "out",
@@ -368,7 +376,6 @@
           "data": {
             "effects": "Vex->Rook.Trust += 3\nPlayer.Coins += 50",
             "lineId": "F3_GETAWAY_4219c1",
-            "menuText": "Hand it to Madame Vex",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
             "text": "A deal’s a deal."
           },
@@ -383,7 +390,6 @@
           "data": {
             "effects": "Player.Coins -= 2\nadvance to Dawn",
             "lineId": "F3_GETAWAY_5035a6",
-            "menuText": "Pay the car wash (2 coins)",
             "note": "Only offered with 2+ coins: a guaranteed escape.",
             "requires": "Player.Coins >= 2",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
@@ -399,7 +405,6 @@
         "61c79284-723b-4c4d-87b4-46d52360c7c7": {
           "data": {
             "lineId": "F3_GETAWAY_61c792",
-            "menuText": "Floor it, Bruno",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
             "text": "No time. Floor it!"
           },
@@ -509,7 +514,6 @@
         "fa0b2d9d-3ce2-4a9a-8bac-d76fe0f06c81": {
           "data": {
             "lineId": "F3_GETAWAY_fa0b2d",
-            "menuText": "Return it to the museum",
             "note": "Only offered if Gustav fell for the bluff.",
             "requires": "Gustav->Rook.Trust >= 1",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
@@ -591,6 +595,8 @@
           "targetHandle": "in"
         },
         "843153b2-d066-4cb0-bcf4-fce8b702a6d9": {
+          "choiceLineId": "F2_HEIST_b9b53d_M",
+          "choiceText": "Slip Gustav a bribe (4 coins)",
           "id": "843153b2-d066-4cb0-bcf4-fce8b702a6d9",
           "source": "94731954-a15a-415e-89ea-13ade2298f3a",
           "sourceHandle": "out",
@@ -605,6 +611,8 @@
           "targetHandle": "in"
         },
         "a01b8537-5b49-4685-bfa4-76997fc174d1": {
+          "choiceLineId": "F2_HEIST_fe82a3_M",
+          "choiceText": "Wake Gustav and bluff",
           "id": "a01b8537-5b49-4685-bfa4-76997fc174d1",
           "source": "94731954-a15a-415e-89ea-13ade2298f3a",
           "sourceHandle": "out",
@@ -626,6 +634,8 @@
           "targetHandle": "in"
         },
         "d9f69f47-59c4-44a1-a163-a1462b2fb8d7": {
+          "choiceLineId": "F2_HEIST_485135_M",
+          "choiceText": "Roll a cat treat across the floor",
           "id": "d9f69f47-59c4-44a1-a163-a1462b2fb8d7",
           "source": "94731954-a15a-415e-89ea-13ade2298f3a",
           "sourceHandle": "out",
@@ -654,6 +664,8 @@
           "targetHandle": "in"
         },
         "ee06439d-e819-48ca-ac8e-907f038ed440": {
+          "choiceLineId": "F2_HEIST_b4080e_M",
+          "choiceText": "Tiptoe past Biscuit",
           "id": "ee06439d-e819-48ca-ac8e-907f038ed440",
           "source": "94731954-a15a-415e-89ea-13ade2298f3a",
           "sourceHandle": "out",
@@ -719,7 +731,6 @@
           "data": {
             "effects": "Heist.HasCatTreats = false",
             "lineId": "F2_HEIST_485135",
-            "menuText": "Roll a cat treat across the floor",
             "requires": "Heist.HasCatTreats",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
             "text": "Here, Biscuit. Salmon. Your favourite."
@@ -813,7 +824,6 @@
         "b4080e83-24bd-4e80-b706-859d5b21eb3c": {
           "data": {
             "lineId": "F2_HEIST_b4080e",
-            "menuText": "Tiptoe past Biscuit",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
             "text": "Easy… easy…"
           },
@@ -828,7 +838,6 @@
           "data": {
             "effects": "Player.Coins -= 4",
             "lineId": "F2_HEIST_b9b53d",
-            "menuText": "Slip Gustav a bribe (4 coins)",
             "note": "Only offered with 4+ coins. With 5 to start, buying treats or coffee in The Plan makes this unaffordable.",
             "requires": "Player.Coins >= 4",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
@@ -873,7 +882,6 @@
         "fe82a37d-4af8-4f4a-abc6-7276c651e311": {
           "data": {
             "lineId": "F2_HEIST_fe82a3",
-            "menuText": "Wake Gustav and bluff",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
             "text": "Evening! Pest control. We had reports of a… monkey."
           },
@@ -911,6 +919,8 @@
           "targetHandle": "in"
         },
         "23a0d5c9-c533-459a-9e75-9068d9c279fe": {
+          "choiceLineId": "F1_PLAN_461dae_M",
+          "choiceText": "Ask Bruno for lockpicks",
           "id": "23a0d5c9-c533-459a-9e75-9068d9c279fe",
           "source": "ff14dfd2-aa7f-4ebb-bbcb-62adbae5364e",
           "sourceHandle": "out",
@@ -967,6 +977,8 @@
           "targetHandle": "in"
         },
         "82fd1ae0-6a67-4b85-bab7-334aaca06d25": {
+          "choiceLineId": "F1_PLAN_951fe1_M",
+          "choiceText": "Buy cat treats (2 coins)",
           "id": "82fd1ae0-6a67-4b85-bab7-334aaca06d25",
           "source": "ff14dfd2-aa7f-4ebb-bbcb-62adbae5364e",
           "sourceHandle": "out",
@@ -1002,6 +1014,8 @@
           "targetHandle": "in"
         },
         "ae5d61d3-a25a-4ecd-b9c1-619acd7d7e48": {
+          "choiceLineId": "F1_PLAN_f8e3a6_M",
+          "choiceText": "Buy Juni a coffee (1 coin)",
           "id": "ae5d61d3-a25a-4ecd-b9c1-619acd7d7e48",
           "source": "ff14dfd2-aa7f-4ebb-bbcb-62adbae5364e",
           "sourceHandle": "out",
@@ -1009,6 +1023,8 @@
           "targetHandle": "in"
         },
         "dd145171-5890-4acd-82e9-0182a55d2bdc": {
+          "choiceLineId": "F1_PLAN_1a78a0_M",
+          "choiceText": "Give Bruno a pep talk",
           "id": "dd145171-5890-4acd-82e9-0182a55d2bdc",
           "source": "ff14dfd2-aa7f-4ebb-bbcb-62adbae5364e",
           "sourceHandle": "out",
@@ -1023,6 +1039,8 @@
           "targetHandle": "in"
         },
         "ebf947ff-3d71-427b-8201-1ca1734abbcb": {
+          "choiceLineId": "F1_PLAN_88c448_M",
+          "choiceText": "We’re ready. Let’s go.",
           "id": "ebf947ff-3d71-427b-8201-1ca1734abbcb",
           "source": "ff14dfd2-aa7f-4ebb-bbcb-62adbae5364e",
           "sourceHandle": "out",
@@ -1030,6 +1048,8 @@
           "targetHandle": "in"
         },
         "ef8532d0-7dcc-4dde-8bb6-6f852174ff18": {
+          "choiceLineId": "F1_PLAN_297fb6_M",
+          "choiceText": "Ask Juni for the blueprints",
           "id": "ef8532d0-7dcc-4dde-8bb6-6f852174ff18",
           "source": "ff14dfd2-aa7f-4ebb-bbcb-62adbae5364e",
           "sourceHandle": "out",
@@ -1100,7 +1120,6 @@
         "1a78a0b6-c0b2-4ae0-bb30-490e2c0c143f": {
           "data": {
             "lineId": "F1_PLAN_1a78a0",
-            "menuText": "Give Bruno a pep talk",
             "requires": "Bruno.Nerve < 4",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
             "text": "Bruno. Best driver in the city. Tonight is going to be easy."
@@ -1138,7 +1157,6 @@
         "297fb645-2f74-4c95-8c41-fc5b7169df92": {
           "data": {
             "lineId": "F1_PLAN_297fb6",
-            "menuText": "Ask Juni for the blueprints",
             "requires": "not Heist.HasBlueprints",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
             "text": "Juni, can you get us into the museum’s plans?"
@@ -1164,7 +1182,6 @@
         "461dae9f-6a2d-4887-b5dc-f2a45018148c": {
           "data": {
             "lineId": "F1_PLAN_461dae",
-            "menuText": "Ask Bruno for lockpicks",
             "requires": "not Heist.HasLockpicks",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
             "text": "Bruno, we’ll need your lockpicks."
@@ -1219,7 +1236,6 @@
         "88c4482d-881a-4134-8d98-da8ca25c17b7": {
           "data": {
             "lineId": "F1_PLAN_88c448",
-            "menuText": "We’re ready. Let’s go.",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
             "text": "Right. Everyone in the van."
           },
@@ -1234,7 +1250,6 @@
           "data": {
             "effects": "Player.Coins -= 2\nHeist.HasCatTreats = true",
             "lineId": "F1_PLAN_951fe1",
-            "menuText": "Buy cat treats (2 coins)",
             "requires": "not Heist.HasCatTreats and Player.Coins >= 2",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
             "text": "The guard has a cat, apparently. One packet of salmon treats, please."
@@ -1327,7 +1342,6 @@
           "data": {
             "effects": "Player.Coins -= 1\nJuni->Rook.Trust += 1",
             "lineId": "F1_PLAN_f8e3a6",
-            "menuText": "Buy Juni a coffee (1 coin)",
             "requires": "Juni->Rook.Trust < 2 and Player.Coins >= 1",
             "speakerId": "4831b05f-e174-41e6-a0f3-acd4a37bae9b",
             "text": "Flat white, extra shot. You’ve earned it."
@@ -1406,7 +1420,7 @@
       "setup": "Heist.HasJadeMonkey = true\nHeist.Alarm = 3"
     }
   },
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "state": {
     "relationships": {
       "f8ccc4e9-1fd1-4118-ad75-416a18d9526d": {

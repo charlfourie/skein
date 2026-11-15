@@ -34,6 +34,9 @@ interface UiState {
   focusLine(nodeId: string, where?: LineFocusTarget): void
   flowView: FlowView
   setFlowView(view: FlowView): void
+  /** "Things to try", shown beside the canvas while a demo is open (null: not a demo, or dismissed). */
+  tryList: { title: string; items: string[] } | null
+  setTryList(list: { title: string; items: string[] } | null): void
   scenePaste: ScenePaste | null
   setScenePaste(paste: ScenePaste | null): void
   /** Asks the canvas to bring a node into view if it's off screen (keeping the zoom). */
@@ -54,6 +57,8 @@ export const useUi = create<UiState>((set) => ({
   focusLine: (nodeId, where = 'inspector') => set((s) => ({ lineFocus: { nodeId, where, nonce: (s.lineFocus?.nonce ?? 0) + 1 } })),
   flowView: 'canvas',
   setFlowView: (flowView) => set({ flowView }),
+  tryList: null,
+  setTryList: (tryList) => set({ tryList }),
   scenePaste: null,
   setScenePaste: (scenePaste) => set({ scenePaste }),
   reveal: null,

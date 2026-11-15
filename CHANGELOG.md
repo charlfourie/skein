@@ -8,6 +8,10 @@ Project format 8 and export format 5 (see [VERSIONING.md](docs/VERSIONING.md)). 
 only need a version 5 runtime when they use the new hub behaviour below.
 
 ### Added
+- **Things to try, in the demos.** Opening a demo shows a short checklist beside the
+  canvas: what to play, what to break, where to look. Tick items off or close it.
+- **A warning for Only once on a hub.** It closes the hub itself, so a loop back to it ends
+  the conversation. The warning says so and points to the choice's own Only once.
 - **Select everything before or after a node, and align a selection.** Right-click a node:
   **Select everything after** / **before** picks every node the story can reach from it, or
   that leads to it. With several selected, **Align** lines up left, centre, right, top,
@@ -58,6 +62,9 @@ only need a version 5 runtime when they use the new hub behaviour below.
   move them, so nothing is hidden.
 
 ### Fixed
+- **Pip no longer sells the "last" biscuit five times.** Her line in the Coffee Order demo
+  now reads "Fresh from the jar." The demos also ship in the current format, with choice
+  text on the choices.
 - **The Play panel closes again.** Opening it from the status bar's test count and then
   switching tabs (Play, Explore, Start state, or **Record a play-through**) left the panel
   stuck on screen: the close button and the **Playing** toggle stopped it playing but

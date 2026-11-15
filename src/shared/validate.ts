@@ -231,6 +231,14 @@ export function validateProject(project: Project): IssueMap {
       if (n.type === 'condition' && !dataString(n, 'expression').trim()) {
         node(n.id, { level: 'warning', message: 'Condition has no expression yet.' })
       }
+      // "Only once" on a hub closes the hub itself: the story can never come back to it.
+      if (n.type === 'hub' && n.data.once === true && (a.incoming.get(n.id) ?? 0) > 0) {
+        node(n.id, {
+          level: 'warning',
+          field: 'once',
+          message: 'Only once is on this hub, so the story can’t come back to it and a loop back here ends the conversation. To use up a single choice, turn Only once on for that choice instead (under Choices, in order).'
+        })
+      }
       const tag = dataString(n, 'tag')
       if (tag && !TECHNICAL_NAME_RE.test(tag)) {
         node(n.id, { level: 'error', message: `Tag “${tag}” can only use letters, digits and _, and can't start with a digit.` })

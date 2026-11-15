@@ -24,6 +24,7 @@ import { analyzeFlow } from '../src/shared/flowAnalysis'
 import { newId } from '../src/shared/ids'
 import { assignLineIds } from '../src/shared/lineIds'
 import type { Flow, Project, PropertyDef } from '../src/shared/schema'
+import { parseRaw } from '../src/shared/parse'
 import { serializeProject } from '../src/shared/serialize'
 
 const OUT = 'src/renderer/src/demos'
@@ -115,6 +116,17 @@ function withLineIds(project: Project): Project {
   return project
 }
 
+/**
+ * The demos are written here with choice text on the line (`menuText`), as format 7 had it.
+ * Load them as a format 7 file so the same migration every older project gets moves the
+ * text onto the choices, and the demos ship in the current format.
+ */
+function asCurrentFormat(project: Project): Project {
+  const r = parseRaw({ ...JSON.parse(serializeProject(project)), schemaVersion: 7 })
+  if (!r.ok) throw new Error(r.error)
+  return r.project
+}
+
 function newDemo(name: string, description: string): Project {
   const project = createEmptyProject(name)
   project.meta.description = description
@@ -195,7 +207,7 @@ function coffeeOrder(): Project {
   }
   const flat = buy('FlatWhiteTooDear', 'A flat white', 'A flat white, please.', p.flatWhite, 'One flat white, with a fern on top.', `A flat white's ${coins(p.flatWhite)}, and you've got {Player.Coins}. Something a bit cheaper?`)
   const cocoa = buy('CocoaTooDear', 'Hot chocolate', 'Hot chocolate. Extra marshmallows.', p.hotChocolate, 'Marshmallow tower, coming right up.', `Hot chocolate's ${coins(p.hotChocolate)}. You've only got {Player.Coins}, love. Anything else take your fancy?`)
-  const biscuit = buy('BiscuitTooDear', 'A ginger biscuit', 'And one of those ginger biscuits.', p.biscuit, 'Last one in the jar. Lucky you.', "Biscuits are a coin each, and your pockets are empty. Water's free, though.")
+  const biscuit = buy('BiscuitTooDear', 'A ginger biscuit', 'And one of those ginger biscuits.', p.biscuit, 'Fresh from the jar. Lucky you.', "Biscuits are a coin each, and your pockets are empty. Water's free, though.")
   const water = n('dialogue', { speakerId: you.id, menuText: 'Just water (free)', text: 'Just water, thanks.', once: true, note: 'Free, so you are never stuck with nothing to pick. Only once: after a glass it leaves the menu, so every path ends (Explore checks this).' })
   const waterYes = n('dialogue', { speakerId: pip.id, text: 'On the house!' })
   const done = n('dialogue', { speakerId: you.id, menuText: "That's everything", text: "That's everything, thanks." })
@@ -533,7 +545,7 @@ function museumHeist(): Project {
 
 mkdirSync(OUT, { recursive: true })
 seedIds(1)
-writeFileSync(`${OUT}/coffee-order.skein.json`, serializeProject(withLineIds(coffeeOrder())))
+writeFileSync(`${OUT}/coffee-order.skein.json`, serializeProject(asCurrentFormat(withLineIds(coffeeOrder()))))
 seedIds(2)
-writeFileSync(`${OUT}/museum-heist.skein.json`, serializeProject(withLineIds(museumHeist())))
+writeFileSync(`${OUT}/museum-heist.skein.json`, serializeProject(asCurrentFormat(withLineIds(museumHeist()))))
 console.log(`Wrote ${OUT}/coffee-order.skein.json and ${OUT}/museum-heist.skein.json`)

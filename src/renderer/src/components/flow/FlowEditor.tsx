@@ -732,6 +732,7 @@ export function FlowEditor({ flow }: { flow: Flow }) {
 
           <Panel position="top-left">
             <Palette onAdd={addAtCenter} onFrame={addFrameHere} />
+            <TryList />
           </Panel>
 
           <Panel position="top-right">
@@ -899,6 +900,44 @@ export function FlowEditor({ flow }: { flow: Flow }) {
 }
 
 // ---------------------------------------------------------------------------
+
+/** While a demo is open: a short list of things worth trying. Tick them off, or close it. */
+function TryList() {
+  const list = useUi((s) => s.tryList)
+  const [done, setDone] = useState<ReadonlySet<number>>(new Set())
+  const [open, setOpen] = useState(true)
+  useEffect(() => setDone(new Set()), [list])
+  if (!list) return null
+  return (
+    <div className="mt-2 w-[230px] rounded-lg border border-accent/30 bg-panel/95 shadow-pop backdrop-blur">
+      <div className="flex items-center gap-1 px-2.5 py-1.5">
+        <button type="button" onClick={() => setOpen(!open)} className="flex-1 text-left text-2xs font-semibold uppercase tracking-wider text-accent">
+          Things to try {done.size > 0 && <span className="text-faint">· {done.size}/{list.items.length}</span>}
+        </button>
+        <button type="button" onClick={() => useUi.getState().setTryList(null)} className="rounded px-1 text-xs text-faint hover:text-fg" aria-label="Close the list of things to try">
+          ✕
+        </button>
+      </div>
+      {open && (
+        <ul className="flex max-h-[42vh] flex-col gap-1.5 overflow-y-auto px-2.5 pb-2.5">
+          {list.items.map((item, i) => (
+            <li key={i}>
+              <label className="flex cursor-pointer items-start gap-2 text-xs leading-snug">
+                <input
+                  type="checkbox"
+                  className="mt-0.5 shrink-0 accent-current"
+                  checked={done.has(i)}
+                  onChange={() => setDone((d) => { const n = new Set(d); if (n.has(i)) n.delete(i); else n.add(i); return n })}
+                />
+                <span className={done.has(i) ? 'text-faint line-through' : 'text-muted'}>{item}</span>
+              </label>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
 
 function Palette({ onAdd, onFrame }: { onAdd(type: NodeType): void; onFrame(): void }) {
   return (

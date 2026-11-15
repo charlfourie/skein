@@ -80,7 +80,8 @@ npm run build      # a static site in dist/, for any web server
 ## 🎬 A five-minute tour
 
 The two built-in demos have nothing to do with any particular game, so they're a safe
-place to poke around. Demos open as unsaved copies, so experiment freely. **Home** (top
+place to poke around. Demos open as unsaved copies, so experiment freely, and each one
+shows a short **Things to try** list beside the canvas. **Home** (top
 left) takes you back to the Welcome screen at any time.
 
 <img src="docs/images/welcome.png" alt="The Skein Welcome screen with New project, Open project, and two demo cards: The Coffee Order and The Midnight Museum Heist" width="860">

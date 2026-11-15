@@ -1,3 +1,4 @@
+import { useUi } from './ui'
 import { assignChoiceLineIds } from '@shared/lineIds'
 import { produce, type Draft } from 'immer'
 import { create } from 'zustand'
@@ -143,6 +144,7 @@ export const useProjectStore = create<ProjectStore>()((set, get) => ({
 
   loadProject: (project, filePath, options) => {
     usePlay.getState().reset()
+    useUi.getState().setTryList(null) // a demo's list goes with the demo (openDemo sets it again)
     const frozen = produce(project, () => undefined) // freeze, so later edits share structure safely
     set({
       ...initialState,
@@ -156,6 +158,7 @@ export const useProjectStore = create<ProjectStore>()((set, get) => ({
 
   closeProject: () => {
     usePlay.getState().reset()
+    useUi.getState().setTryList(null)
     set({ ...initialState })
   },
 

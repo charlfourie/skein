@@ -1,3 +1,4 @@
+import { useUi } from '../store/ui'
 import { createEmptyProject } from '@shared/factory'
 import type { ProjectLayout } from '@shared/bridge'
 import { parseProject } from '@shared/parse'
@@ -87,6 +88,7 @@ export async function openDemo(demo: Demo): Promise<boolean> {
     return false
   }
   store().loadProject(parsed.project, null)
+  useUi.getState().setTryList({ title: demo.title, items: demo.tryThis })
   toast.success(`Opened ${demo.title}`, 'This is a demo copy. Use Save As to keep your changes.')
   return true
 }

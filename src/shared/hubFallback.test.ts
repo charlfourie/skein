@@ -4,6 +4,7 @@ import { SkeinStory, SkeinWorld, type Beat } from './export/runtime'
 import { createEmptyProject, createFlow } from './factory'
 import { scriptOf } from './script'
 import type { Project } from './schema'
+import { validateProject } from './validate'
 
 /**
  * "Hi." → hub "Talk": 1 "Tell a joke" (only once) → back to the hub, 2 "Leave" (only once) → "Bye."
@@ -84,5 +85,13 @@ describe('hubs: asking and falling back (export v5)', () => {
     expect(items.some((i) => i.kind === 'when' && i.outcome === 'fallback')).toBe(true)
     const choiceCounts = items.flatMap((i) => ('branch' in i && i.branch ? [i.branch.count] : []))
     expect(new Set(choiceCounts)).toEqual(new Set([2]))
+  })
+
+  it('warns when Only once is set on the hub itself', () => {
+    const p = project()
+    expect(validateProject(p).get('h')?.some((i) => /Only once is on this hub/.test(i.message)) ?? false).toBe(false)
+    const q = project()
+    q.flows.f1.nodes.h.data.once = true
+    expect(validateProject(q).get('h')?.some((i) => i.level === 'warning' && /Only once is on this hub/.test(i.message))).toBe(true)
   })
 })

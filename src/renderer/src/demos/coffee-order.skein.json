@@ -25,6 +25,8 @@
     "ced87b88-daaf-445d-b4da-e4db7d994a39": {
       "edges": {
         "0c30d301-3a52-40b9-a12d-e3fff5a132de": {
+          "choiceLineId": "ORDER_e806b5_M",
+          "choiceText": "Drop a coin in the jar (1 coin)",
           "id": "0c30d301-3a52-40b9-a12d-e3fff5a132de",
           "order": 0,
           "source": "3e3ed6f2-037a-480e-8cbb-4ecca714cf14",
@@ -41,6 +43,8 @@
           "targetHandle": "in"
         },
         "15cd4677-e05a-48c5-bdff-82f3fed5599e": {
+          "choiceLineId": "ORDER_8ae4d8_M",
+          "choiceText": "A flat white (4 coins)",
           "id": "15cd4677-e05a-48c5-bdff-82f3fed5599e",
           "order": 0,
           "source": "4d02fe43-acf4-4a6c-9821-85f2d7c2363b",
@@ -89,6 +93,8 @@
           "targetHandle": "in"
         },
         "4acd6309-191c-4638-b623-87b69c345d46": {
+          "choiceLineId": "ORDER_24f4f7_M",
+          "choiceText": "That's everything",
           "id": "4acd6309-191c-4638-b623-87b69c345d46",
           "order": 4,
           "source": "4d02fe43-acf4-4a6c-9821-85f2d7c2363b",
@@ -105,6 +111,8 @@
           "targetHandle": "in"
         },
         "5c5ca517-d325-490a-a385-e48fdbb16a2b": {
+          "choiceLineId": "ORDER_2c5fa1_M",
+          "choiceText": "Hot chocolate (3 coins)",
           "id": "5c5ca517-d325-490a-a385-e48fdbb16a2b",
           "order": 1,
           "source": "4d02fe43-acf4-4a6c-9821-85f2d7c2363b",
@@ -113,6 +121,8 @@
           "targetHandle": "in"
         },
         "62413dd9-0b3a-4a0b-9dd9-ec127f1812ae": {
+          "choiceLineId": "ORDER_0998f5_M",
+          "choiceText": "Drop in a handful (3 coins)",
           "id": "62413dd9-0b3a-4a0b-9dd9-ec127f1812ae",
           "order": 1,
           "source": "3e3ed6f2-037a-480e-8cbb-4ecca714cf14",
@@ -145,6 +155,8 @@
           "targetHandle": "in"
         },
         "783b52f7-564c-4b58-afb5-12afa186f9b8": {
+          "choiceLineId": "ORDER_01d9c2_M",
+          "choiceText": "Just water (free)",
           "id": "783b52f7-564c-4b58-afb5-12afa186f9b8",
           "order": 3,
           "source": "4d02fe43-acf4-4a6c-9821-85f2d7c2363b",
@@ -249,6 +261,8 @@
           "targetHandle": "in"
         },
         "bf943a1a-221c-44ba-9b15-5e2677bd8148": {
+          "choiceLineId": "ORDER_dffcc3_M",
+          "choiceText": "A ginger biscuit (1 coin)",
           "id": "bf943a1a-221c-44ba-9b15-5e2677bd8148",
           "order": 2,
           "source": "4d02fe43-acf4-4a6c-9821-85f2d7c2363b",
@@ -305,6 +319,8 @@
           "targetHandle": "in"
         },
         "e8b0585a-a64d-49dc-b0db-cf5b9c5d30a6": {
+          "choiceLineId": "ORDER_a215bb_M",
+          "choiceText": "Not today",
           "id": "e8b0585a-a64d-49dc-b0db-cf5b9c5d30a6",
           "order": 2,
           "source": "3e3ed6f2-037a-480e-8cbb-4ecca714cf14",
@@ -328,7 +344,6 @@
         "01d9c28a-c954-4c7c-951a-bee15e2e08bc": {
           "data": {
             "lineId": "ORDER_01d9c2",
-            "menuText": "Just water (free)",
             "note": "Free, so you are never stuck with nothing to pick. Only once: after a glass it leaves the menu, so every path ends (Explore checks this).",
             "once": true,
             "speakerId": "0a1943b8-de62-44b6-b829-ef96c400b453",
@@ -356,7 +371,6 @@
         "0998f58f-8eb4-4574-83a1-238d25a04648": {
           "data": {
             "lineId": "ORDER_0998f5",
-            "menuText": "Drop in a handful (3 coins)",
             "requires": "not Seen.TipTooBig",
             "speakerId": "0a1943b8-de62-44b6-b829-ef96c400b453",
             "text": "Keep the change. All of it."
@@ -410,7 +424,6 @@
         "24f4f7b2-a4e3-4cb6-8786-1a02a45e688d": {
           "data": {
             "lineId": "ORDER_24f4f7",
-            "menuText": "That's everything",
             "speakerId": "0a1943b8-de62-44b6-b829-ef96c400b453",
             "text": "That's everything, thanks."
           },
@@ -424,7 +437,6 @@
         "2c5fa18f-ae51-40ba-a613-c71cdd3e4354": {
           "data": {
             "lineId": "ORDER_2c5fa1",
-            "menuText": "Hot chocolate (3 coins)",
             "note": "Offered until Pip has told you it's too dear: coins only go down, so asking again wouldn't change her answer (and Explore can see every path ends).",
             "requires": "not Seen.CocoaTooDear",
             "speakerId": "0a1943b8-de62-44b6-b829-ef96c400b453",
@@ -520,7 +532,7 @@
             "lineId": "ORDER_6f9dfa",
             "note": "Effects spend the coins as the story passes through, so only once the check has passed.",
             "speakerId": "f3dfa76d-ec5f-4b15-9d59-ef1006a91d63",
-            "text": "Last one in the jar. Lucky you."
+            "text": "Fresh from the jar. Lucky you."
           },
           "id": "6f9dfada-3480-4250-9a57-0bdfafc99925",
           "position": {
@@ -532,7 +544,6 @@
         "8ae4d8b2-498c-4e27-ae8b-dc9c1250a20a": {
           "data": {
             "lineId": "ORDER_8ae4d8",
-            "menuText": "A flat white (4 coins)",
             "note": "Offered until Pip has told you it's too dear: coins only go down, so asking again wouldn't change her answer (and Explore can see every path ends).",
             "requires": "not Seen.FlatWhiteTooDear",
             "speakerId": "0a1943b8-de62-44b6-b829-ef96c400b453",
@@ -618,7 +629,6 @@
         "a215bbd7-fce7-4eae-bcc9-7e2763140510": {
           "data": {
             "lineId": "ORDER_a215bb",
-            "menuText": "Not today",
             "speakerId": "0a1943b8-de62-44b6-b829-ef96c400b453",
             "text": "Not today, sorry."
           },
@@ -714,7 +724,6 @@
         "dffcc3a7-c7e0-418a-9b3d-08a2b203cd52": {
           "data": {
             "lineId": "ORDER_dffcc3",
-            "menuText": "A ginger biscuit (1 coin)",
             "note": "Offered until Pip has told you it's too dear: coins only go down, so asking again wouldn't change her answer (and Explore can see every path ends).",
             "requires": "not Seen.BiscuitTooDear",
             "speakerId": "0a1943b8-de62-44b6-b829-ef96c400b453",
@@ -730,7 +739,6 @@
         "e806b5f5-6c94-42ff-b89f-5fc62100f61c": {
           "data": {
             "lineId": "ORDER_e806b5",
-            "menuText": "Drop a coin in the jar (1 coin)",
             "note": "You only get here with a coin or more, so this one needs no check.",
             "speakerId": "0a1943b8-de62-44b6-b829-ef96c400b453",
             "text": "Here you go."
@@ -801,7 +809,7 @@
       "setup": "Player.Coins = 1"
     }
   },
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "state": {
     "relationships": {},
     "rules": {},
