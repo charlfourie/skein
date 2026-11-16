@@ -1,3 +1,5 @@
+import { SCHEMA_VERSION } from '@shared/schema'
+import { downloadText } from './playLog'
 import { useUi } from '../store/ui'
 import { createEmptyProject } from '@shared/factory'
 import type { ProjectLayout } from '@shared/bridge'
@@ -121,10 +123,25 @@ async function loadFrom(path: string, options: { offerRecovery?: boolean } = {})
         `${list}${more}\nSave to keep the fixes.`
       )
     }
+    if (parsed.upgraded) await offerBackup(res.path, 'text' in res ? res.text : parsed.upgraded.original, parsed.upgraded.from)
     return true
   })
   if (loaded && options.offerRecovery !== false) await offerRecovery()
   return loaded
+}
+
+/**
+ * An older project was just opened: saving will upgrade its format, and older
+ * versions of Skein can't open the result. Offer a copy of the file as it was.
+ */
+async function offerBackup(path: string, original: string, from: number): Promise<void> {
+  const name = displayName(path).replace(/\.skein(\.json)?$/i, '')
+  const yes = await window.api.confirm({
+    message: `“${displayName(path)}” was saved by an older version of Skein (format ${from}).`,
+    detail: `Saving will upgrade it to format ${SCHEMA_VERSION}, and older versions of Skein won't be able to open it. Download a backup copy of the original first?`,
+    confirmLabel: 'Download backup'
+  })
+  if (yes) downloadText(`${name}.backup-v${from}.skein.json`, original)
 }
 
 /** When a copy was kept, in words: "today at 14:32", "3 Nov at 09:05". */

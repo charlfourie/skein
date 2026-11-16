@@ -8,6 +8,11 @@ Project format 8 and export format 5 (see [VERSIONING.md](docs/VERSIONING.md)). 
 only need a version 5 runtime when they use the new hub behaviour below.
 
 ### Added
+- **A backup before an upgrade.** Opening a project saved by an older Skein offers to
+  download a copy of it as it was, since saving upgrades the format and older versions
+  can't open the result.
+- **Feedback, in the status bar.** Opens a new GitHub issue with your Skein version filled
+  in. Nothing from your project is sent.
 - **Things to try, in the demos.** Opening a demo shows a short checklist beside the
   canvas: what to play, what to break, where to look. Tick items off or close it.
 - **A warning for Only once on a hub.** It closes the hub itself, so a loop back to it ends
@@ -62,6 +67,8 @@ only need a version 5 runtime when they use the new hub behaviour below.
   move them, so nothing is hidden.
 
 ### Fixed
+- **Unity and C#: a hub's menu with one choice left shows as a menu.** `IsChoice` was false
+  for it, so the Unity dialogue box showed a bare Continue button with no choice text.
 - **Pip no longer sells the "last" biscuit five times.** Her line in the Coffee Order demo
   now reads "Fresh from the jar." The demos also ship in the current format, with choice
   text on the choices.

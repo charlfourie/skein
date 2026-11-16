@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { AlertTriangle, Circle, CircleCheck, CircleDot, Keyboard, XCircle } from 'lucide-react'
+import { AlertTriangle, Circle, CircleCheck, CircleDot, Keyboard, MessageSquarePlus, XCircle } from 'lucide-react'
 import { sortedTests } from '@shared/play/storyTests'
 import { isFolderProjectPath } from '@shared/projectFiles'
 import { SCHEMA_VERSION, type Project } from '@shared/schema'
@@ -11,6 +11,11 @@ import { useTests } from '../../store/tests'
 import { useUi } from '../../store/ui'
 import { TestStatusIcon } from '../play/TestStatus'
 import { useProblems } from '../problems/ProblemsPanel'
+
+/** A new GitHub issue, with the version filled in. Only the version goes along: no project content. */
+const FEEDBACK_URL = `https://github.com/charlfourie/skein/issues/new?body=${encodeURIComponent(
+  `**What happened?**\n\n\n**What did you expect?**\n\n\n**Steps to see it** (a demo is fine)\n\n\n---\nSkein ${SKEIN_VERSION} · format v${SCHEMA_VERSION}`
+)}`
 
 export function StatusBar() {
   const filePath = useProjectStore((s) => s.filePath)
@@ -56,6 +61,15 @@ export function StatusBar() {
       <span className="font-mono text-faint" title={`Skein ${SKEIN_VERSION}, project format v${SCHEMA_VERSION}`}>
         {SKEIN_VERSION} · format v{SCHEMA_VERSION}
       </span>
+      <a
+        href={FEEDBACK_URL}
+        target="_blank"
+        rel="noreferrer"
+        title="Report a bug or suggest something (opens GitHub in a new tab; nothing from your project is sent)"
+        className="flex items-center gap-1 rounded px-1 text-faint hover:bg-raised hover:text-fg"
+      >
+        <MessageSquarePlus size={12} /> Feedback
+      </a>
       <button
         type="button"
         onClick={() => useUi.getState().setShortcutsOpen(true)}

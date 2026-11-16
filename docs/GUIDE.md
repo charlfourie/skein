@@ -104,6 +104,8 @@ invalid identifiers are flagged in red.
   On one node, **Select everything after** / **before** selects every node the story can
   reach from it, or that leads to it (jumps included). With several selected, **Align**
   lines up their edges or centres, or spreads them evenly. All of it undoes with Ctrl+Z.
+- **Feedback** (status bar, bottom right) opens a new GitHub issue with your Skein version
+  filled in. Nothing from your project is sent.
 - **Keys:** Delete removes, Ctrl+D duplicates, Shift+drag box-selects. Press **?** for
   every shortcut.
 - **Auto-layout and preferences:** auto-layout (dagre, undoable) tidies the flow. Snap

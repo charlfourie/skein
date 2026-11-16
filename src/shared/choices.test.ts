@@ -48,6 +48,16 @@ describe('choices belong to connections (format 8)', () => {
     expect(f.nodes.quiet.data.menuText).toBe('Unused choice text')
   })
 
+  it('reports that an older file was upgraded, with the original to back up', () => {
+    const r = parseRaw(v7())
+    if (!r.ok) throw new Error(r.error)
+    expect(r.upgraded?.from).toBe(7)
+    expect(JSON.parse(r.upgraded!.original).schemaVersion).toBe(7)
+    expect(JSON.parse(r.upgraded!.original).flows.f1.nodes.j.data.menuText).toBe('Tell a joke')
+    const again = parseRaw(JSON.parse(serializeProject(r.project)))
+    expect(again.ok && again.upgraded).toBeUndefined()
+  })
+
   it('gives a choice its line ID when it gains text, and drops it when the text goes', () => {
     const p = load(v7())
     delete p.flows.f1.edges.b.choiceText

@@ -14,7 +14,7 @@ import {
 } from './schema'
 
 export type ParseResult =
-  | { ok: true; project: Project; repairs: string[] }
+  | { ok: true; project: Project; repairs: string[]; upgraded?: { from: number; original: string } }
   | { ok: false; error: string }
 
 /**
@@ -209,6 +209,9 @@ export function parseProject(input: string): ParseResult {
  * while assembling it.
  */
 export function parseRaw(raw: unknown, earlier: string[] = []): ParseResult {
+  // An older file is upgraded in memory (and on the next save). Keep it as it was, for a backup copy.
+  const from = isPlainObject(raw) && typeof raw.schemaVersion === 'number' && raw.schemaVersion < SCHEMA_VERSION ? raw.schemaVersion : null
+  const original = from !== null ? JSON.stringify(raw, null, 2) : null
   const migrated = migrate(raw)
   if (!migrated.ok) return migrated
 
@@ -222,7 +225,7 @@ export function parseRaw(raw: unknown, earlier: string[] = []): ParseResult {
   const { duplicates } = assignLineIds(project)
   assignChoiceLineIds(project)
   for (const d of duplicates) repairs.push(`Flow "${d.flow}": two lines shared the line ID ${d.lineId}; one got a new ID.`)
-  return { ok: true, project, repairs }
+  return { ok: true, project, repairs, ...(from !== null && original !== null ? { upgraded: { from, original } } : {}) }
 }
 
 // ---------------------------------------------------------------------------

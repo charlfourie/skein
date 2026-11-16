@@ -25,6 +25,8 @@ plus `flows/*.json`). Published as JSON Schemas in [`schemas/`](../schemas).
 - **Skein opens every older project**, forever. Each version step has a migration
   in `src/shared/parse.ts`; an old project is upgraded in memory and saved in the
   new format the next time you save.
+- **Opening an older project offers a backup.** Before anything is saved, Skein offers to
+  download the file as it was, in its old format.
 - **A newer project isn't opened by an older Skein.** It says which version it
   needs, instead of guessing and losing data.
 - **Unknown fields are kept.** A field written by a newer build survives a save

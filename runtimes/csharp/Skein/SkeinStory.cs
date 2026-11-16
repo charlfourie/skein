@@ -53,8 +53,8 @@ namespace Skein
 
         /// <summary>True for a line with exactly one way on (show a "continue" prompt).</summary>
         public bool IsContinue => Kind == SkeinBeatKind.Line && Choices.Count == 1;
-        /// <summary>True when the player has to pick between several options.</summary>
-        public bool IsChoice => Choices.Count > 1;
+        /// <summary>True when the player picks from a menu: several options, or a hub's menu with one option left (v5).</summary>
+        public bool IsChoice => Choices.Count > 1 || (Kind == SkeinBeatKind.Choice && Choices.Count == 1);
     }
 
     public sealed class SkeinStory
